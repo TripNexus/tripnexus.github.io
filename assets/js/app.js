@@ -371,7 +371,7 @@ function executarPesquisa(){
 function desenharResultados(){
   const o = ESTADO.origem, d = ESTADO.destino;
   const ida = ESTADO.ida, volta = ESTADO.tipo === 'so-ida' ? null : ESTADO.volta;
-  const ctx = {origem:o, destino:d, ida, volta, adultos:ESTADO.pax.adultos};
+  const ctx = {origem:o, destino:d, ida, volta, adultos:ESTADO.pax.adultos, criancas:ESTADO.pax.criancas, classe:ESTADO.classe};
   const fimEstadia = volta || (() => { const x = new Date(ida); x.setDate(x.getDate() + 3); return x; })();
   const noites = Math.max(1, Math.round((fimEstadia - ida) / 86400000));
 
@@ -418,12 +418,12 @@ function desenharResultados(){
     <div class="res-grelha">
       <div class="res-coluna">
 
-        <div class="bloco">
+        <div class="bloco" id="bloco-voos">
           <div class="bloco-titulo">✈ Voos · ${voos.length} sites comparados</div>
           ${voos.map((q, idx) => linhaOferta(q, {
             melhor: idx === 0,
             detalhe: `${q.companhia} · ${q.escalas === 0 ? 'directo' : q.escalas + (q.escalas === 1 ? ' escala' : ' escalas')} · ${q.duracao} · partida ${q.partida}`,
-            url: ligacaoParceiro(q.parceiro, ctx)
+            url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'voo'})
           })).join('')}
         </div>
 
@@ -435,7 +435,7 @@ function desenharResultados(){
             ${terrestre.linhas.slice(0,4).map((q, idx) => linhaOferta(q, {
               melhor: idx === 0, tag: q.meio,
               detalhe: `Duração aprox. ${q.duracao}`,
-              url: ligacaoParceiro(q.parceiro, ctx)
+              url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'terrestre', meio:q.meio})
             })).join('')}
             ${terrestre.linhas[0].precoFinal < melhorVoo.precoFinal ? `<p class="bloco-sub" style="margin-top:.6rem">💡 A opção terrestre mais barata fica <strong>${euros(melhorVoo.precoFinal - terrestre.linhas[0].precoFinal)}</strong> abaixo do melhor voo.</p>` : ''}
           ` : `
@@ -452,7 +452,7 @@ function desenharResultados(){
           ${alojamentos.slice(0,6).map((q, idx) => linhaOferta(q, {
             melhor: idx === 0, tag: tiposAloj[q.tipo],
             detalhe: `${q.descricao} · ${euros(q.porNoite)}/noite × ${q.noites} ${q.noites === 1 ? 'noite' : 'noites'}${q.tipo === 'hostel' ? ' × ' + q.quartos + ' camas' : (q.quartos > 1 ? ' × ' + q.quartos + ' quartos' : '')}`,
-            url: ligacaoParceiro(q.parceiro, ctx)
+            url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'hotel'})
           })).join('')}
         </div>` : ''}
 
@@ -462,7 +462,7 @@ function desenharResultados(){
           ${carros.map((q, idx) => linhaOferta(q, {
             melhor: idx === 0,
             detalhe: `${q.descricao} · ${euros(q.porDia)}/dia`,
-            url: ligacaoParceiro(q.parceiro, ctx)
+            url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'carro'})
           })).join('')}
         </div>` : ''}
 
@@ -471,7 +471,7 @@ function desenharResultados(){
           <p class="bloco-sub">Sugestões opcionais, não incluídas no total. Preços para ${actividades[0].pessoas} ${actividades[0].pessoas === 1 ? 'pessoa' : 'pessoas'}.</p>
           ${actividades.map((q, idx) => linhaOferta(q, {
             melhor: idx === 0, detalhe: q.descricao,
-            url: ligacaoParceiro(q.parceiro, ctx)
+            url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'actividade'})
           })).join('')}
         </div>
       </div>
@@ -500,7 +500,7 @@ function desenharResultados(){
               <div class="pacote-cabeca">${iconeParceiro(q.parceiro)}
                 <div><div class="pacote-nome">${PARCEIROS[q.parceiro].nome}</div><div class="pacote-inclui">${q.inclui}</div>${etiquetaCupao(q.cupao)}</div>
                 <div class="pacote-preco">${q.cupao ? `<div class="preco-antes">${euros(q.preco)}</div>` : ''}<div class="preco-actual">${euros(q.precoFinal)}</div>
-                  <a class="btn-ver" href="${ligacaoParceiro(q.parceiro, ctx)}" target="_blank" rel="noopener">Ver pacote</a></div>
+                  <a class="btn-ver" href="${ligacaoParceiro(q.parceiro, {...ctx, seccao:'pacote'})}" target="_blank" rel="noopener">Ver pacote</a></div>
               </div>
               <div class="pacote-compara">${
                 recomendado
@@ -524,13 +524,14 @@ function desenharResultados(){
   sec.innerHTML = html;
   sec.hidden = false;
   desenharMapaResultados([o, d]);
+  if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
 }
 
 /* ── resultados: várias cidades ──────────────────────────────── */
 function desenharResultadosMulti(){
   const trocos = ESTADO.trocos;
   const n = totalPax();
-  const ctx = {origem:trocos[0].origem, destino:trocos[trocos.length-1].destino, ida:trocos[0].data, volta:null, adultos:ESTADO.pax.adultos};
+  const ctx = {origem:trocos[0].origem, destino:trocos[trocos.length-1].destino, ida:trocos[0].data, volta:null, adultos:ESTADO.pax.adultos, criancas:ESTADO.pax.criancas, classe:ESTADO.classe};
 
   /* por parceiro: soma das cotações de todos os trocos */
   const voos = ['google','skyscanner','kayak','momondo','edreams','expedia','trip'].map(c => {
@@ -558,8 +559,8 @@ function desenharResultadosMulti(){
     const noites = Math.max(1, Math.round((fim - inicio) / 86400000));
     if(ESTADO.alojamento.length){
       const melhores = cotacoesAlojamento(cidade, inicio, fim, ESTADO.pax, tiposAlojamento());
-      estadias.push({cidade, noites, melhor: melhores[0], inicio});
-    } else estadias.push({cidade, noites, melhor:null, inicio});
+      estadias.push({cidade, noites, melhor: melhores[0], inicio, fim});
+    } else estadias.push({cidade, noites, melhor:null, inicio, fim});
   }
   const totalAloj = estadias.reduce((s, e) => s + (e.melhor ? e.melhor.precoFinal : 0), 0);
   const total = melhorVoo.precoFinal + totalAloj;
@@ -575,7 +576,7 @@ function desenharResultadosMulti(){
       <div class="res-coluna">
         <div class="bloco">
           <div class="bloco-titulo">✈ Voos (todos os trocos) · ${voos.length} sites comparados</div>
-          ${voos.map((q, idx) => linhaOferta(q, {melhor: idx === 0, detalhe: q.detalhe, url: ligacaoParceiro(q.parceiro, ctx)})).join('')}
+          ${voos.map((q, idx) => linhaOferta(q, {melhor: idx === 0, detalhe: q.detalhe, url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'voo'})})).join('')}
         </div>
         ${ESTADO.alojamento.length ? `
         <div class="bloco">
@@ -583,7 +584,7 @@ function desenharResultadosMulti(){
           ${estadias.map(e => e.melhor ? linhaOferta(e.melhor, {
             tag: e.cidade.n,
             detalhe: `${e.melhor.descricao} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} desde ${formatarDataCurta(e.inicio)}`,
-            url: ligacaoParceiro(e.melhor.parceiro, {destino:e.cidade, ida:e.inicio, volta:null, adultos:ESTADO.pax.adultos})
+            url: ligacaoParceiro(e.melhor.parceiro, {destino:e.cidade, ida:e.inicio, volta:e.fim, adultos:ESTADO.pax.adultos, criancas:ESTADO.pax.criancas, classe:ESTADO.classe, seccao:'hotel'})
           }) : '').join('')}
         </div>` : ''}
       </div>

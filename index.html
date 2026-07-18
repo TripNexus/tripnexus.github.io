@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TripNexus | Comparador de viagens: voos, alojamento, carros e transportes</title>
 <meta name="description" content="O TripNexus compara preços de viagens em mais de 24 sites (Google Voos, Skyscanner, Kayak, Momondo, Booking, Airbnb, Omio e muitos mais), aplica cupões automaticamente e recomenda pacotes quando compensam.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234353ff'/%3E%3Cpath d='M14 36l8-4 20-14 4 2-12 16 10 4 4-2 2 2-8 6-6-2-4 10-3-1 1-11-10-3z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,7 +17,8 @@
 <header class="topbar" id="topo">
   <div class="topbar-inner">
     <a class="logo" href="#" id="logo-link">
-      <span class="logo-icone">✈</span> Trip<span class="logo-nexus">Nexus</span>
+      <span class="logo-icone"><img src="assets/img/logo.svg" alt="TripNexus"></span>
+      <span class="logo-texto"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></span>
     </a>
     <nav class="nav-principal">
       <button class="nav-btn activo" data-vista="pesquisa" type="button">Pesquisar</button>
@@ -189,7 +190,7 @@
 <footer class="rodape">
   <div class="rodape-inner">
     <div>
-      <p class="logo-rodape">✈ TripNexus</p>
+      <p class="logo-rodape"><img src="assets/img/logo.svg" alt="" class="logo-rodape-img"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></p>
       <p>Comparador independente de viagens. Não vendemos bilhetes nem reservas: encontramos o melhor preço e encaminhamo-lo para o site do parceiro para concluir a reserva.</p>
     </div>
     <div>
@@ -218,9 +219,16 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  /* Preços em tempo real: depois de instalar o backend (ver backend/README.md),
+     colocar aqui o endereço do Worker, por exemplo:
+     window.TRIPNEXUS_API = 'https://tripnexus-api.o-seu-subdominio.workers.dev'; */
+  window.TRIPNEXUS_API = '';
+</script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/engine.js"></script>
 <script src="assets/js/calendar.js"></script>
+<script src="assets/js/live.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>
