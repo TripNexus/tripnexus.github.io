@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   TripNexus — motor de estimativas e comparação
+   TripNexus: motor de estimativas e comparação
    Os preços são calculados de forma determinística (a mesma rota
    nas mesmas datas dá sempre o mesmo valor) a partir da distância,
    época do ano, dia da semana e perfil de cada parceiro.
@@ -225,7 +225,7 @@ function cotacoesActividades(cidade, pax){
 function cotacoesPacote(origem, destino, ida, volta, classe, pax, somaSeparado, incluiCarro){
   return ['edreams','expedia','logitravel'].map(chave => {
     const r = semente('pacote|' + chave + origem.i + destino.i + chaveData(ida));
-    const factor = 0.86 + r() * 0.20;                    // 0.86 – 1.06 do preço em separado
+    const factor = 0.86 + r() * 0.20;                    // 0.86 a 1.06 do preço em separado
     const preco = somaSeparado * factor * PARCEIROS[chave].fx;
     const cupao = procurarCupao(chave, 'pacote' + origem.i + destino.i, preco);
     return {parceiro:chave, preco:arred(preco), cupao, precoFinal:arred(cupao ? cupao.depois : preco),
@@ -254,7 +254,7 @@ function calcularOfertas(origemNome){
     .sort((a,b) => b.queda - a.queda);
 }
 
-/* arredondamento a euros inteiros — mantém os totais coerentes com as parcelas */
+/* arredondamento a euros inteiros: mantém os totais coerentes com as parcelas */
 function arred(v){ return Math.round(v); }
 function euros(v){
   return v.toLocaleString('pt-PT', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' €';
