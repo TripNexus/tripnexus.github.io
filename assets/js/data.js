@@ -145,40 +145,122 @@ const PARCEIROS = {
   flixbus:     {nome:'FlixBus',       dom:'flixbus.pt',        cat:['autocarro'],      fx:0.85, desc:'O maior operador de autocarros low-cost de longo curso.'}
 };
 
-/* Ligações de reserva (deep links) por parceiro. */
+/* Ligações de reserva (deep links) por parceiro.
+   Sempre que o parceiro aceita parâmetros no URL, a ligação abre a pesquisa
+   exacta (rota, datas, passageiros e classe) e não a página geral.
+   ctx: {origem, destino, ida, volta, adultos, criancas, classe, seccao, meio} */
 function ligacaoParceiro(chave, ctx){
   const c = ctx || {};
-  const o = c.origem, d = c.destino;
-  const fData = x => x ? x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0') : '';
+  const o = c.origem, d = c.destino, s = c.seccao || '';
+  const pad = n => String(n).padStart(2, '0');
+  const fData = x => x ? x.getFullYear() + '-' + pad(x.getMonth()+1) + '-' + pad(x.getDate()) : '';
   const fCurta = x => x ? fData(x).slice(2).replace(/-/g,'') : '';
-  const ad = c.adultos || 1;
+  const fBarra = x => x ? pad(x.getDate()) + '/' + pad(x.getMonth()+1) + '/' + x.getFullYear() : '';
+  const enc = encodeURIComponent;
+  const slug = n => n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-');
+  const ad = c.adultos || 1, cr = c.criancas || 0;
+  const quartos = Math.max(1, Math.ceil((ad + cr) / 2));
+  const cab = {economica:'economy', premium:'premiumeconomy', executiva:'business', primeira:'first'}[c.classe] || 'economy';
+  const cabKayak = {premium:'/premium', executiva:'/business', primeira:'/first'}[c.classe] || '';
+  const temRota = o && d && c.ida;
+  const temEstadia = d && c.ida && c.volta;
+
   switch(chave){
-    case 'google':       return 'https://www.google.com/travel/flights?q=' + encodeURIComponent('voos de ' + (o?o.n:'') + ' para ' + (d?d.n:''));
-    case 'googleHoteis': return 'https://www.google.com/travel/hotels?q=' + encodeURIComponent('hotéis em ' + (d?d.n:''));
-    case 'skyscanner':   return o&&d ? `https://www.skyscanner.pt/transport/flights/${o.i.toLowerCase()}/${d.i.toLowerCase()}/${fCurta(c.ida)}/${c.volta?fCurta(c.volta)+'/':''}?adultsv2=${ad}` : 'https://www.skyscanner.pt';
-    case 'kayak':        return o&&d ? `https://www.kayak.pt/flights/${o.i}-${d.i}/${fData(c.ida)}${c.volta?'/'+fData(c.volta):''}?sort=price_a` : 'https://www.kayak.pt';
-    case 'momondo':      return o&&d ? `https://www.momondo.pt/flight-search/${o.i}-${d.i}/${fData(c.ida)}${c.volta?'/'+fData(c.volta):''}` : 'https://www.momondo.pt';
-    case 'trivago':      return 'https://www.trivago.pt/pt-PT/srl?search=' + encodeURIComponent(d?d.n:'');
-    case 'booking':      return d ? `https://www.booking.com/searchresults.pt-pt.html?ss=${encodeURIComponent(d.n)}&checkin=${fData(c.ida)}&checkout=${fData(c.volta)}&group_adults=${ad}` : 'https://www.booking.com';
-    case 'expedia':      return 'https://www.expedia.pt/';
-    case 'trip':         return 'https://www.trip.com/';
-    case 'edreams':      return 'https://www.edreams.pt/';
-    case 'logitravel':   return 'https://www.logitravel.com/';
-    case 'agoda':        return d ? 'https://www.agoda.com/pt-pt/search?city=0&textToSearch=' + encodeURIComponent(d.n) : 'https://www.agoda.com/pt-pt/';
-    case 'airbnb':       return d ? `https://www.airbnb.pt/s/${encodeURIComponent(d.n)}/homes?checkin=${fData(c.ida)}&checkout=${fData(c.volta)}&adults=${ad}` : 'https://www.airbnb.pt';
-    case 'vrbo':         return d ? 'https://www.vrbo.com/pt-pt/search?destination=' + encodeURIComponent(d.n) : 'https://www.vrbo.com/pt-pt/';
-    case 'hostelworld':  return d ? 'https://www.hostelworld.com/pt/pesquisa?search_keywords=' + encodeURIComponent(d.n) : 'https://www.hostelworld.com/pt/';
-    case 'rentalcars':   return 'https://www.rentalcars.com/pt/';
-    case 'discovercars': return 'https://www.discovercars.com/pt';
-    case 'autoeurope':   return 'https://www.autoeurope.eu/';
-    case 'getyourguide': return d ? 'https://www.getyourguide.pt/s/?q=' + encodeURIComponent(d.n) : 'https://www.getyourguide.pt';
-    case 'civitatis':    return d ? 'https://www.civitatis.com/pt/pesquisa/?q=' + encodeURIComponent(d.n) : 'https://www.civitatis.com/pt/';
-    case 'viator':       return d ? 'https://www.viator.com/pt-PT/searchResults/all?text=' + encodeURIComponent(d.n) : 'https://www.viator.com/pt-PT/';
-    case 'rome2rio':     return o&&d ? `https://www.rome2rio.com/pt/map/${encodeURIComponent(o.n)}/${encodeURIComponent(d.n)}` : 'https://www.rome2rio.com/pt/';
-    case 'omio':         return 'https://www.omio.pt/';
-    case 'trainline':    return 'https://www.thetrainline.com/pt';
-    case 'flixbus':      return 'https://www.flixbus.pt/';
-    default:             return '#';
+    case 'google':
+      return d ? 'https://www.google.com/travel/flights?q=' + enc(
+        `voos de ${o ? o.n : 'Lisboa'} para ${d.n}` +
+        (c.ida ? ` a ${fData(c.ida)}` : '') +
+        (c.volta ? ` regresso a ${fData(c.volta)}` : (c.ida ? ' só ida' : ''))
+      ) : 'https://www.google.com/travel/flights';
+    case 'googleHoteis':
+      return d ? 'https://www.google.com/travel/hotels?q=' + enc(
+        `hotéis em ${d.n}` + (temEstadia ? ` de ${fData(c.ida)} a ${fData(c.volta)}` : '')
+      ) : 'https://www.google.com/travel/hotels';
+    case 'skyscanner':
+      return temRota
+        ? `https://www.skyscanner.pt/transport/flights/${o.i.toLowerCase()}/${d.i.toLowerCase()}/${fCurta(c.ida)}/${c.volta ? fCurta(c.volta) + '/' : ''}?adultsv2=${ad}&children=${cr}&cabinclass=${cab}&rtn=${c.volta ? 1 : 0}`
+        : 'https://www.skyscanner.pt';
+    case 'kayak':
+      if(s === 'hotel' && temEstadia)
+        return `https://www.kayak.pt/hotels/${enc(d.n)}/${fData(c.ida)}/${fData(c.volta)}/${ad}adults?sort=price_a`;
+      return temRota
+        ? `https://www.kayak.pt/flights/${o.i}-${d.i}/${fData(c.ida)}${c.volta ? '/' + fData(c.volta) : ''}${cabKayak}/${ad}adults${cr ? '/' + cr + 'children' : ''}?sort=price_a`
+        : 'https://www.kayak.pt';
+    case 'momondo':
+      if(s === 'hotel' && temEstadia)
+        return `https://www.momondo.pt/hotel-search/${enc(d.n)}/${fData(c.ida)}/${fData(c.volta)}/${ad}adults?sort=price_a`;
+      return temRota
+        ? `https://www.momondo.pt/flight-search/${o.i}-${d.i}/${fData(c.ida)}${c.volta ? '/' + fData(c.volta) : ''}${cabKayak}/${ad}adults${cr ? '/' + cr + 'children' : ''}?sort=price_a`
+        : 'https://www.momondo.pt';
+    case 'trivago':
+      return d ? 'https://www.trivago.pt/pt-PT/srl?search=' + enc(d.n) : 'https://www.trivago.pt';
+    case 'booking':
+      return d
+        ? `https://www.booking.com/searchresults.pt-pt.html?ss=${enc(d.n)}${temEstadia ? `&checkin=${fData(c.ida)}&checkout=${fData(c.volta)}` : ''}&group_adults=${ad}&group_children=${cr}&no_rooms=${quartos}&selected_currency=EUR`
+        : 'https://www.booking.com/index.pt-pt.html';
+    case 'expedia':
+      if(s === 'voo' && temRota)
+        return `https://www.expedia.pt/Flights-Search?trip=${c.volta ? 'roundtrip' : 'oneway'}&leg1=${enc(`from:${o.i},to:${d.i},departure:${fBarra(c.ida)}TANYT`)}${c.volta ? '&leg2=' + enc(`from:${d.i},to:${o.i},departure:${fBarra(c.volta)}TANYT`) : ''}&passengers=${enc(`adults:${ad},children:${cr}`)}&mode=search`;
+      if(s === 'hotel' && temEstadia)
+        return `https://www.expedia.pt/Hotel-Search?destination=${enc(d.n)}&startDate=${fData(c.ida)}&endDate=${fData(c.volta)}&adults=${ad}`;
+      if(s === 'carro') return 'https://www.expedia.pt/Cars';
+      if(s === 'pacote') return 'https://www.expedia.pt/Vacation-Packages';
+      return 'https://www.expedia.pt/';
+    case 'trip':
+      if((s === 'terrestre' || s === 'comboio')) return 'https://www.trip.com/trains/';
+      if(s === 'hotel' && temEstadia)
+        return `https://www.trip.com/hotels/list?cityName=${enc(d.n)}&checkin=${fData(c.ida)}&checkout=${fData(c.volta)}&adult=${ad}&children=${cr}`;
+      return temRota
+        ? `https://www.trip.com/flights/showfarefirst?dcity=${o.i.toLowerCase()}&acity=${d.i.toLowerCase()}&ddate=${fData(c.ida)}${c.volta ? '&rdate=' + fData(c.volta) + '&triptype=rt' : '&triptype=ow'}&class=${{economica:'y', premium:'s', executiva:'c', primeira:'f'}[c.classe] || 'y'}&quantity=${ad}`
+        : 'https://www.trip.com/';
+    case 'edreams':
+      return (s === 'voo' && temRota)
+        ? `https://www.edreams.pt/travel/#results/type=${c.volta ? 'R' : 'O'};dep=${fData(c.ida)}${c.volta ? ';ret=' + fData(c.volta) : ''};from=${o.i};to=${d.i};numAdults=${ad};numChildren=${cr};cabinClass=${cab.toUpperCase()}`
+        : 'https://www.edreams.pt/';
+    case 'logitravel':
+      return s === 'hotel' ? 'https://www.logitravel.com/hoteis/' : 'https://www.logitravel.com/';
+    case 'agoda':
+      return d
+        ? `https://www.agoda.com/pt-pt/search?textToSearch=${enc(d.n)}${temEstadia ? `&checkIn=${fData(c.ida)}&checkOut=${fData(c.volta)}` : ''}&adults=${ad}&children=${cr}&rooms=${quartos}`
+        : 'https://www.agoda.com/pt-pt/';
+    case 'airbnb':
+      return d
+        ? `https://www.airbnb.pt/s/${enc(d.n)}/homes?${temEstadia ? `checkin=${fData(c.ida)}&checkout=${fData(c.volta)}&` : ''}adults=${ad}&children=${cr}`
+        : 'https://www.airbnb.pt';
+    case 'vrbo':
+      return d
+        ? `https://www.vrbo.com/pt-pt/search?destination=${enc(d.n)}${temEstadia ? `&startDate=${fData(c.ida)}&endDate=${fData(c.volta)}` : ''}&adults=${ad}`
+        : 'https://www.vrbo.com/pt-pt/';
+    case 'hostelworld':
+      return d
+        ? `https://www.hostelworld.com/pt/pesquisa?search_keywords=${enc(d.n)}${temEstadia ? `&date_from=${fData(c.ida)}&date_to=${fData(c.volta)}` : ''}&number_of_guests=${ad + cr}`
+        : 'https://www.hostelworld.com/pt/';
+    case 'rentalcars':
+      return d ? `https://www.rentalcars.com/pt/search-results?location=${enc(d.n)}` : 'https://www.rentalcars.com/pt/';
+    case 'discovercars':
+      return d ? `https://www.discovercars.com/pt/search?location=${enc(d.n)}` : 'https://www.discovercars.com/pt';
+    case 'autoeurope':
+      return 'https://www.autoeurope.pt/';
+    case 'getyourguide':
+      return d
+        ? `https://www.getyourguide.pt/s/?q=${enc(d.n)}${temEstadia ? `&date_from=${fData(c.ida)}&date_to=${fData(c.volta)}` : ''}`
+        : 'https://www.getyourguide.pt';
+    case 'civitatis':
+      return d ? 'https://www.civitatis.com/pt/pesquisa/?q=' + enc(d.n) : 'https://www.civitatis.com/pt/';
+    case 'viator':
+      return d ? 'https://www.viator.com/pt-PT/searchResults/all?text=' + enc(d.n) : 'https://www.viator.com/pt-PT/';
+    case 'rome2rio':
+      return o && d ? `https://www.rome2rio.com/pt/map/${enc(o.n)}/${enc(d.n)}` : 'https://www.rome2rio.com/pt/';
+    case 'omio':
+      return o && d
+        ? `https://www.omio.pt/${c.meio === 'Autocarro' ? 'autocarros' : 'comboios'}/${slug(o.n)}/${slug(d.n)}`
+        : 'https://www.omio.pt/';
+    case 'trainline':
+      return 'https://www.thetrainline.com/pt';
+    case 'flixbus':
+      return 'https://www.flixbus.pt/';
+    default:
+      return '#';
   }
 }
 
