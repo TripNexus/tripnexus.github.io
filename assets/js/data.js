@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════
-   TripNexus — dados: cidades, parceiros e cupões
+   TripNexus: dados: cidades, parceiros e cupões
    ═══════════════════════════════════════════════════════════════ */
 
 /* Cidades disponíveis no autocomplete (nome, país, bandeira, IATA, lat, lng,
-   índice de custo local 0.6–1.6 usado nas estimativas de alojamento). */
+   índice de custo local de 0.6 a 1.6 usado nas estimativas de alojamento). */
 const CIDADES = [
   {n:'Lisboa',        p:'Portugal',        f:'🇵🇹', i:'LIS', la:38.716, lo:-9.139, c:1.00},
   {n:'Porto',         p:'Portugal',        f:'🇵🇹', i:'OPO', la:41.149, lo:-8.611, c:0.92},

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   TripNexus — aplicação (interface e ligação de tudo)
+   TripNexus: aplicação (interface e ligação de tudo)
    ═══════════════════════════════════════════════════════════════ */
 
 const ESTADO = {
@@ -100,13 +100,14 @@ document.querySelectorAll('input[name="tipo-viagem"]').forEach(r =>
     if(multi) desenharTrocos();
     const regresso = document.getElementById('input-regresso');
     if(ESTADO.tipo === 'so-ida'){
-      ESTADO.volta = null; regresso.value = ''; regresso.placeholder = '— (só ida)';
+      ESTADO.volta = null; regresso.value = ''; regresso.placeholder = '(só ida)';
       regresso.closest('.campo').style.opacity = .55;
     }else{
       regresso.placeholder = 'Regresso';
       regresso.closest('.campo').style.opacity = 1;
     }
     actualizarRotulos();
+    reactualizarResultados();
   }));
 
 /* passageiros */
@@ -118,6 +119,7 @@ document.querySelectorAll('#dd-passageiros .contador').forEach(c => {
     c.querySelector('.menos').disabled = ESTADO.pax[tipo] <= limites[tipo][0];
     c.querySelector('.mais').disabled = ESTADO.pax[tipo] >= limites[tipo][1];
     actualizarRotulos();
+    reactualizarResultados();
   };
   c.querySelector('.menos').addEventListener('click', () => { ESTADO.pax[tipo] = Math.max(limites[tipo][0], ESTADO.pax[tipo]-1); actualizar(); });
   c.querySelector('.mais').addEventListener('click', () => { ESTADO.pax[tipo] = Math.min(limites[tipo][1], ESTADO.pax[tipo]+1); actualizar(); });
@@ -128,18 +130,20 @@ document.querySelector('#dd-passageiros .painel-ok').addEventListener('click', (
 
 /* classe */
 document.querySelectorAll('input[name="classe"]').forEach(r =>
-  r.addEventListener('change', () => { ESTADO.classe = r.value; actualizarRotulos(); }));
+  r.addEventListener('change', () => { ESTADO.classe = r.value; actualizarRotulos(); reactualizarResultados(); }));
 
 /* transportes e alojamento (caixas de selecção) */
 document.querySelectorAll('input[name="transporte"]').forEach(cb =>
   cb.addEventListener('change', () => {
     ESTADO.transportes = [...document.querySelectorAll('input[name="transporte"]:checked')].map(x => x.value);
     actualizarRotulos();
+    reactualizarResultados();
   }));
 document.querySelectorAll('input[name="alojamento"]').forEach(cb =>
   cb.addEventListener('change', () => {
     ESTADO.alojamento = [...document.querySelectorAll('input[name="alojamento"]:checked')].map(x => x.value);
     actualizarRotulos();
+    reactualizarResultados();
   }));
 
 /* ── autocomplete (sugestões de cidades) ─────────────────────── */
@@ -196,13 +200,14 @@ function esconderSugestoes(){ elSugestoes.hidden = true; sugIndice = -1; }
 
 const inputOrigem = document.getElementById('input-origem');
 const inputDestino = document.getElementById('input-destino');
-ligarAutocomplete(inputOrigem, c => { ESTADO.origem = c; });
-ligarAutocomplete(inputDestino, c => { ESTADO.destino = c; });
+ligarAutocomplete(inputOrigem, c => { ESTADO.origem = c; reactualizarResultados(); });
+ligarAutocomplete(inputDestino, c => { ESTADO.destino = c; reactualizarResultados(); });
 
 document.getElementById('btn-trocar').addEventListener('click', () => {
   [inputOrigem.value, inputDestino.value] = [inputDestino.value, inputOrigem.value];
   [inputOrigem.dataset.cidade, inputDestino.dataset.cidade] = [inputDestino.dataset.cidade || '', inputOrigem.dataset.cidade || ''];
   [ESTADO.origem, ESTADO.destino] = [ESTADO.destino, ESTADO.origem];
+  reactualizarResultados();
 });
 
 /* ── campos de datas → calendário ────────────────────────────── */
@@ -220,6 +225,7 @@ function abrirCalendarioPrincipal(modo){
       ESTADO.ida = ida; ESTADO.volta = volta;
       document.getElementById('input-partida').value = formatarDataCurta(ida);
       document.getElementById('input-regresso').value = formatarDataCurta(volta);
+      reactualizarResultados();
     }
   });
 }
@@ -254,10 +260,11 @@ function desenharTrocos(){
 
   zona.querySelectorAll('.troco').forEach(linha => {
     const i = +linha.dataset.i;
-    ligarAutocomplete(linha.querySelector('.troco-origem'), c => { ESTADO.trocos[i].origem = c; });
+    ligarAutocomplete(linha.querySelector('.troco-origem'), c => { ESTADO.trocos[i].origem = c; reactualizarResultados(); });
     ligarAutocomplete(linha.querySelector('.troco-destino'), c => {
       ESTADO.trocos[i].destino = c;
       if(ESTADO.trocos[i+1] && !ESTADO.trocos[i+1].origem){ ESTADO.trocos[i+1].origem = c; desenharTrocos(); }
+      reactualizarResultados();
     });
     linha.querySelector('.troco-data').addEventListener('click', () => {
       const t = ESTADO.trocos[i];
@@ -266,11 +273,11 @@ function desenharTrocos(){
       abrirCalendario({
         modo:'ida', sohIda:true, ida:t.data,
         origem:t.origem, destino:t.destino, classe:ESTADO.classe,
-        aoEscolher(ida){ t.data = ida; desenharTrocos(); }
+        aoEscolher(ida){ t.data = ida; desenharTrocos(); reactualizarResultados(); }
       });
     });
     linha.querySelector('.btn-remover').addEventListener('click', () => {
-      ESTADO.trocos.splice(i, 1); desenharTrocos();
+      ESTADO.trocos.splice(i, 1); desenharTrocos(); reactualizarResultados();
     });
   });
 }
@@ -284,32 +291,47 @@ document.getElementById('btn-add-troco').addEventListener('click', () => {
 /* ── pesquisa ────────────────────────────────────────────────── */
 function marcarErro(el){ el.classList.add('erro'); setTimeout(() => el.classList.remove('erro'), 900); }
 
-function validarPesquisaSimples(){
+function validarPesquisaSimples(silencioso){
   resolverCidades();
+  const erro = el => { if(!silencioso) marcarErro(el); };
   let ok = true;
-  if(!ESTADO.origem){ marcarErro(document.getElementById('campo-origem')); ok = false; }
-  if(!ESTADO.destino || (ESTADO.origem && ESTADO.destino.i === ESTADO.origem.i)){ marcarErro(document.getElementById('campo-destino')); ok = false; }
-  if(!ESTADO.ida){ marcarErro(document.getElementById('campo-partida')); ok = false; }
-  if(ESTADO.tipo === 'ida-volta' && !ESTADO.volta){ marcarErro(document.getElementById('campo-regresso')); ok = false; }
+  if(!ESTADO.origem){ erro(document.getElementById('campo-origem')); ok = false; }
+  if(!ESTADO.destino || (ESTADO.origem && ESTADO.destino.i === ESTADO.origem.i)){ erro(document.getElementById('campo-destino')); ok = false; }
+  if(!ESTADO.ida){ erro(document.getElementById('campo-partida')); ok = false; }
+  if(ESTADO.tipo === 'ida-volta' && !ESTADO.volta){ erro(document.getElementById('campo-regresso')); ok = false; }
   return ok;
 }
-function validarPesquisaMulti(){
+function validarPesquisaMulti(silencioso){
+  const erro = el => { if(!silencioso) marcarErro(el); };
   let ok = true;
   document.querySelectorAll('#lista-trocos .troco').forEach(linha => {
     const i = +linha.dataset.i, t = ESTADO.trocos[i];
     t.origem = cidadePorNome(linha.querySelector('.troco-origem').value);
     t.destino = cidadePorNome(linha.querySelector('.troco-destino').value);
-    if(!t.origem){ marcarErro(linha.querySelector('.troco-origem').closest('.campo')); ok = false; }
-    if(!t.destino){ marcarErro(linha.querySelector('.troco-destino').closest('.campo')); ok = false; }
-    if(!t.data){ marcarErro(linha.querySelector('.troco-data').closest('.campo')); ok = false; }
+    if(!t.origem){ erro(linha.querySelector('.troco-origem').closest('.campo')); ok = false; }
+    if(!t.destino){ erro(linha.querySelector('.troco-destino').closest('.campo')); ok = false; }
+    if(!t.data){ erro(linha.querySelector('.troco-data').closest('.campo')); ok = false; }
   });
   for(let i = 1; i < ESTADO.trocos.length; i++){
     const a = ESTADO.trocos[i-1], b = ESTADO.trocos[i];
     if(a.data && b.data && b.data < a.data){
-      marcarErro(document.querySelectorAll('#lista-trocos .troco-data')[i].closest('.campo')); ok = false;
+      erro(document.querySelectorAll('#lista-trocos .troco-data')[i].closest('.campo')); ok = false;
     }
   }
   return ok;
+}
+
+/* Mantém os resultados sempre actualizados: quando o utilizador altera
+   qualquer opção (passageiros, classe, transportes, alojamento, datas,
+   cidades ou tipo de viagem) depois de uma pesquisa, tudo é recalculado. */
+function reactualizarResultados(){
+  const sec = document.getElementById('resultados');
+  if(!sec || sec.hidden) return;
+  if(ESTADO.tipo === 'multi'){
+    if(validarPesquisaMulti(true)) desenharResultadosMulti();
+  }else if(validarPesquisaSimples(true)){
+    desenharResultados();
+  }
 }
 
 document.getElementById('btn-pesquisar').addEventListener('click', () => {
@@ -389,7 +411,7 @@ function desenharResultados(){
   let html = `
     <div class="res-cabecalho">
       <h2>${o.f} ${o.n} ✈ ${d.f} ${d.n}</h2>
-      <span class="res-detalhe">${formatarDataCurta(ida)}${volta ? ' – ' + formatarDataCurta(volta) : ' (só ida)'} ·
+      <span class="res-detalhe">${formatarDataCurta(ida)}${volta ? ' - ' + formatarDataCurta(volta) : ' (só ida)'} ·
         ${n} ${n === 1 ? 'passageiro' : 'passageiros'} · ${NOME_CLASSE[ESTADO.classe]}
         ${nCupoes ? ` · <strong>🎟 ${nCupoes} ${nCupoes === 1 ? 'cupão encontrado' : 'cupões encontrados'}</strong>` : ''}</span>
     </div>
@@ -397,7 +419,7 @@ function desenharResultados(){
       <div class="res-coluna">
 
         <div class="bloco">
-          <div class="bloco-titulo">✈ Voos — ${voos.length} sites comparados</div>
+          <div class="bloco-titulo">✈ Voos · ${voos.length} sites comparados</div>
           ${voos.map((q, idx) => linhaOferta(q, {
             melhor: idx === 0,
             detalhe: `${q.companhia} · ${q.escalas === 0 ? 'directo' : q.escalas + (q.escalas === 1 ? ' escala' : ' escalas')} · ${q.duracao} · partida ${q.partida}`,
@@ -426,7 +448,7 @@ function desenharResultados(){
 
         ${alojamentos.length ? `
         <div class="bloco">
-          <div class="bloco-titulo">🏨 Alojamento em ${d.n} — ${noites} ${noites === 1 ? 'noite' : 'noites'}</div>
+          <div class="bloco-titulo">🏨 Alojamento em ${d.n} · ${noites} ${noites === 1 ? 'noite' : 'noites'}</div>
           ${alojamentos.slice(0,6).map((q, idx) => linhaOferta(q, {
             melhor: idx === 0, tag: tiposAloj[q.tipo],
             detalhe: `${q.descricao} · ${euros(q.porNoite)}/noite × ${q.noites} ${q.noites === 1 ? 'noite' : 'noites'}${q.tipo === 'hostel' ? ' × ' + q.quartos + ' camas' : (q.quartos > 1 ? ' × ' + q.quartos + ' quartos' : '')}`,
@@ -436,7 +458,7 @@ function desenharResultados(){
 
         ${carros ? `
         <div class="bloco">
-          <div class="bloco-titulo">🚗 Carro privado alugado — ${carros[0].dias} ${carros[0].dias === 1 ? 'dia' : 'dias'}</div>
+          <div class="bloco-titulo">🚗 Carro privado alugado · ${carros[0].dias} ${carros[0].dias === 1 ? 'dia' : 'dias'}</div>
           ${carros.map((q, idx) => linhaOferta(q, {
             melhor: idx === 0,
             detalhe: `${q.descricao} · ${euros(q.porDia)}/dia`,
@@ -446,7 +468,7 @@ function desenharResultados(){
 
         <div class="bloco">
           <div class="bloco-titulo">🎟 Actividades em ${d.n}</div>
-          <p class="bloco-sub">Sugestões opcionais — não estão incluídas no total. Preços para ${actividades[0].pessoas} ${actividades[0].pessoas === 1 ? 'pessoa' : 'pessoas'}.</p>
+          <p class="bloco-sub">Sugestões opcionais, não incluídas no total. Preços para ${actividades[0].pessoas} ${actividades[0].pessoas === 1 ? 'pessoa' : 'pessoas'}.</p>
           ${actividades.map((q, idx) => linhaOferta(q, {
             melhor: idx === 0, detalhe: q.descricao,
             url: ligacaoParceiro(q.parceiro, ctx)
@@ -462,7 +484,7 @@ function desenharResultados(){
           ${melhorCarro ? `<div class="resumo-linha"><span>🚗 Carro (${PARCEIROS[melhorCarro.parceiro].nome})</span><strong>${euros(melhorCarro.precoFinal)}</strong></div>` : ''}
           ${tp ? `<div class="resumo-linha"><span>🚇 Transportes públicos (${tp.dias} dias × ${tp.pessoas} ${tp.pessoas === 1 ? 'pessoa' : 'pessoas'})</span><strong>${euros(tp.total)}</strong></div>` : ''}
           <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${euros(total)}</span></div>
-          <p class="resumo-nota">Combinação mais barata encontrada, com cupões já descontados. Valores estimados — confirmados no site de cada parceiro.</p>
+          <p class="resumo-nota">Combinação mais barata encontrada, com cupões já descontados. Valores estimados, confirmados no site de cada parceiro.</p>
         </div>
 
         ${pacotes.length ? `
@@ -482,9 +504,9 @@ function desenharResultados(){
               </div>
               <div class="pacote-compara">${
                 recomendado
-                  ? `<span class="poupa">Poupa ${euros(-dif)}</span> face às reservas em separado — é a melhor opção.`
+                  ? `<span class="poupa">Poupa ${euros(-dif)}</span> face às reservas em separado. É a melhor opção.`
                   : margemPequena
-                    ? `Fica apenas <span class="acima">${euros(dif)} acima (${Math.round(dif / somaPacote * 100)} %)</span> — pode compensar pela comodidade e protecção de pacote.`
+                    ? `Fica apenas <span class="acima">${euros(dif)} acima (${Math.round(dif / somaPacote * 100)} %)</span>. Pode compensar pela comodidade e protecção de pacote.`
                     : `Fica ${euros(dif)} acima das reservas em separado.`
               }</div>
             </div>`;
@@ -552,7 +574,7 @@ function desenharResultadosMulti(){
     <div class="res-grelha">
       <div class="res-coluna">
         <div class="bloco">
-          <div class="bloco-titulo">✈ Voos (todos os trocos) — ${voos.length} sites comparados</div>
+          <div class="bloco-titulo">✈ Voos (todos os trocos) · ${voos.length} sites comparados</div>
           ${voos.map((q, idx) => linhaOferta(q, {melhor: idx === 0, detalhe: q.detalhe, url: ligacaoParceiro(q.parceiro, ctx)})).join('')}
         </div>
         ${ESTADO.alojamento.length ? `
@@ -568,8 +590,8 @@ function desenharResultadosMulti(){
       <div class="res-coluna">
         <div class="bloco resumo">
           <div class="bloco-titulo">🧾 Total estimado da viagem</div>
-          <div class="resumo-linha"><span>✈ Voos — ${trocos.length} trocos (${PARCEIROS[melhorVoo.parceiro].nome})</span><strong>${euros(melhorVoo.precoFinal)}</strong></div>
-          ${estadias.filter(e => e.melhor).map(e => `<div class="resumo-linha"><span>🏨 ${e.cidade.n} — ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} (${PARCEIROS[e.melhor.parceiro].nome})</span><strong>${euros(e.melhor.precoFinal)}</strong></div>`).join('')}
+          <div class="resumo-linha"><span>✈ Voos · ${trocos.length} trocos (${PARCEIROS[melhorVoo.parceiro].nome})</span><strong>${euros(melhorVoo.precoFinal)}</strong></div>
+          ${estadias.filter(e => e.melhor).map(e => `<div class="resumo-linha"><span>🏨 ${e.cidade.n} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} (${PARCEIROS[e.melhor.parceiro].nome})</span><strong>${euros(e.melhor.precoFinal)}</strong></div>`).join('')}
           <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${euros(total)}</span></div>
           <p class="resumo-nota">Os pacotes e o aluguer de carro estão disponíveis nas pesquisas de ida e volta. Valores estimados.</p>
         </div>
@@ -611,6 +633,35 @@ function desenharMapaResultados(cidades){
 }
 
 /* ── ofertas em conta ────────────────────────────────────────── */
+
+/* banner fotográfico do destino (imagem principal da Wikipédia);
+   o gradiente colorido fica como recurso se a fotografia não carregar */
+const cacheBanners = {};
+function aplicarBanner(cidade, el){
+  const titulo = cidade.w || cidade.n;
+  const aplicar = url => {
+    if(!url) return;
+    const foto = new Image();
+    foto.onload = () => {
+      const gradiente = el.style.backgroundImage || 'none';
+      el.style.backgroundImage = `linear-gradient(rgba(16,18,42,.28), rgba(16,18,42,.6)), url("${url}"), ${gradiente}`;
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+    };
+    foto.src = url;
+  };
+  if(titulo in cacheBanners){ aplicar(cacheBanners[titulo]); return; }
+  fetch('https://pt.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(titulo))
+    .then(r => r.ok ? r.json() : null)
+    .then(j => {
+      let url = j && j.thumbnail ? j.thumbnail.source : null;
+      if(url) url = url.replace(/\/(\d+)px-/, '/640px-');
+      cacheBanners[titulo] = url;
+      aplicar(url);
+    })
+    .catch(() => { cacheBanners[titulo] = null; });
+}
+
 function desenharOfertas(){
   const selector = document.getElementById('ofertas-origem');
   if(!selector.options.length){
@@ -636,7 +687,7 @@ function desenharOfertas(){
         <span class="oferta-cidade">${of.destino.n}</span>
       </div>
       <div class="oferta-corpo">
-        <span class="oferta-datas">✈ ${origem.n} → ${of.destino.n} · ${formatarDataCurta(of.ida)} – ${formatarDataCurta(of.volta)}</span>
+        <span class="oferta-datas">✈ ${origem.n} → ${of.destino.n} · ${formatarDataCurta(of.ida)} - ${formatarDataCurta(of.volta)}</span>
         <div class="oferta-precos"><span class="oferta-agora">${of.agora} €</span><span class="oferta-tipico">${of.tipico} €</span></div>
         <span class="oferta-poupanca">Poupa ${of.tipico - of.agora} € face ao valor típico em datas anteriores</span>
         <button type="button" class="btn-oferta" data-i="${i}">Ver esta viagem</button>
@@ -645,6 +696,9 @@ function desenharOfertas(){
 
   document.querySelectorAll('.btn-oferta').forEach(btn =>
     btn.addEventListener('click', () => aplicarOferta(origem, ofertas[+btn.dataset.i])));
+
+  document.querySelectorAll('#grelha-ofertas .oferta-topo').forEach((el, i) =>
+    aplicarBanner(ofertas[i].destino, el));
 
   /* mapa das ofertas */
   if(mapaOfertas){ mapaOfertas.remove(); mapaOfertas = null; }
@@ -689,7 +743,7 @@ function desenharParceiros(){
       ${iconeParceiro(chave)}
       <div>
         <div class="parceiro-nome">${p.nome}</div>
-        <div class="parceiro-desc">${p.cat.map(c => nomesCat[c]).join(' · ')} — ${p.desc}</div>
+        <div class="parceiro-desc">${p.cat.map(c => nomesCat[c]).join(' · ')}: ${p.desc}</div>
       </div>
     </div>`;
   }).join('');
