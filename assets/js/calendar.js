@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   TripNexus — calendário de datas com preços (estilo Google Voos)
+   TripNexus: calendário de datas com preços (estilo Google Voos)
    ═══════════════════════════════════════════════════════════════ */
 
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
