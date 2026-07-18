@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TripNexus — Comparador de viagens: voos, alojamento, carros e transportes</title>
+<meta name="description" content="O TripNexus compara preços de viagens em mais de 24 sites (Google Voos, Skyscanner, Kayak, Momondo, Booking, Airbnb, Omio e muitos mais), aplica cupões automaticamente e recomenda pacotes quando compensam.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234353ff'/%3E%3Cpath d='M14 36l8-4 20-14 4 2-12 16 10 4 4-2 2 2-8 6-6-2-4 10-3-1 1-11-10-3z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar" id="topo">
+  <div class="topbar-inner">
+    <a class="logo" href="#" id="logo-link">
+      <span class="logo-icone">✈</span> Trip<span class="logo-nexus">Nexus</span>
+    </a>
+    <nav class="nav-principal">
+      <button class="nav-btn activo" data-vista="pesquisa" type="button">Pesquisar</button>
+      <button class="nav-btn" data-vista="ofertas" type="button">Ofertas em conta <span class="fogo">🔥</span></button>
+      <button class="nav-btn" data-vista="parceiros" type="button">Parceiros</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ══════════════════ VISTA: PESQUISA ══════════════════ -->
+<section id="vista-pesquisa" class="vista">
+  <div class="hero">
+    <div class="hero-inner">
+      <h1>Encontre a viagem mais barata,<br>sem procurar site a site.</h1>
+      <p class="hero-sub">Comparamos voos, alojamento, carros e transportes em mais de <strong>24 sites</strong> em simultâneo,
+      aplicamos <strong>cupões</strong> automaticamente e recomendamos <strong>pacotes</strong> sempre que compensam.</p>
+
+      <div class="cartao-pesquisa" id="cartao-pesquisa">
+
+        <!-- linha de opções (dropdowns e caixas de selecção) -->
+        <div class="linha-opcoes">
+
+          <div class="dropdown" id="dd-tipo">
+            <button class="dd-btn" type="button"><span class="dd-ico">⇄</span><span class="dd-rotulo">Ida e volta</span><span class="seta">▾</span></button>
+            <div class="painel">
+              <label class="opcao-radio"><input type="radio" name="tipo-viagem" value="ida-volta" checked><span>Ida e volta</span></label>
+              <label class="opcao-radio"><input type="radio" name="tipo-viagem" value="so-ida"><span>Só ida</span></label>
+              <label class="opcao-radio"><input type="radio" name="tipo-viagem" value="multi"><span>Várias cidades</span></label>
+            </div>
+          </div>
+
+          <div class="dropdown" id="dd-passageiros">
+            <button class="dd-btn" type="button"><span class="dd-ico">👤</span><span class="dd-rotulo">1 passageiro</span><span class="seta">▾</span></button>
+            <div class="painel painel-passageiros">
+              <div class="contador" data-tipo="adultos">
+                <div><strong>Adultos</strong><small>12 ou mais anos</small></div>
+                <div class="contador-ctl"><button type="button" class="menos">−</button><span class="valor">1</span><button type="button" class="mais">+</button></div>
+              </div>
+              <div class="contador" data-tipo="criancas">
+                <div><strong>Crianças</strong><small>2 – 11 anos</small></div>
+                <div class="contador-ctl"><button type="button" class="menos">−</button><span class="valor">0</span><button type="button" class="mais">+</button></div>
+              </div>
+              <div class="contador" data-tipo="bebes">
+                <div><strong>Bebés</strong><small>Menos de 2 anos</small></div>
+                <div class="contador-ctl"><button type="button" class="menos">−</button><span class="valor">0</span><button type="button" class="mais">+</button></div>
+              </div>
+              <button type="button" class="painel-ok">Concluído</button>
+            </div>
+          </div>
+
+          <div class="dropdown" id="dd-classe">
+            <button class="dd-btn" type="button"><span class="dd-ico">💺</span><span class="dd-rotulo">Económica</span><span class="seta">▾</span></button>
+            <div class="painel">
+              <label class="opcao-radio"><input type="radio" name="classe" value="economica" checked><span>Económica</span></label>
+              <label class="opcao-radio"><input type="radio" name="classe" value="premium"><span>Económica premium</span></label>
+              <label class="opcao-radio"><input type="radio" name="classe" value="executiva"><span>Executiva</span></label>
+              <label class="opcao-radio"><input type="radio" name="classe" value="primeira"><span>Primeira classe</span></label>
+            </div>
+          </div>
+
+          <div class="dropdown" id="dd-transportes">
+            <button class="dd-btn" type="button"><span class="dd-ico">🚆</span><span class="dd-rotulo">Transportes</span><span class="seta">▾</span></button>
+            <div class="painel">
+              <p class="painel-titulo">Incluir nos cálculos:</p>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="carro"><span>Carro privado alugado</span></label>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="comboio"><span>Comboio</span></label>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="autocarro"><span>Autocarro</span></label>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="metro" checked><span>Metro e transportes públicos</span></label>
+            </div>
+          </div>
+
+          <div class="dropdown" id="dd-alojamento">
+            <button class="dd-btn" type="button"><span class="dd-ico">🏨</span><span class="dd-rotulo">Alojamento</span><span class="seta">▾</span></button>
+            <div class="painel">
+              <p class="painel-titulo">Tipos de alojamento:</p>
+              <label class="opcao-check"><input type="checkbox" name="alojamento" value="hotel" checked><span>Hotéis</span></label>
+              <label class="opcao-check"><input type="checkbox" name="alojamento" value="airbnb" checked><span>Airbnb e semelhantes</span></label>
+              <label class="opcao-check"><input type="checkbox" name="alojamento" value="hostel"><span>Hostels</span></label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- linha de campos (pesquisa simples) -->
+        <div class="linha-campos" id="linha-campos">
+          <div class="campo campo-texto" id="campo-origem">
+            <span class="campo-ico">◉</span>
+            <input type="text" id="input-origem" placeholder="De onde?" autocomplete="off" spellcheck="false">
+          </div>
+          <button class="btn-trocar" id="btn-trocar" type="button" title="Trocar origem e destino">⇄</button>
+          <div class="campo campo-texto" id="campo-destino">
+            <span class="campo-ico">📍</span>
+            <input type="text" id="input-destino" placeholder="Para onde?" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="grupo-datas" id="grupo-datas">
+            <div class="campo campo-data" id="campo-partida">
+              <span class="campo-ico">🗓</span>
+              <input type="text" id="input-partida" placeholder="Partida" readonly>
+            </div>
+            <div class="campo campo-data" id="campo-regresso">
+              <span class="campo-ico">🗓</span>
+              <input type="text" id="input-regresso" placeholder="Regresso" readonly>
+            </div>
+          </div>
+          <button class="btn-pesquisar" id="btn-pesquisar" type="button">🔍 Pesquisar</button>
+        </div>
+
+        <!-- zona de pesquisa "várias cidades" -->
+        <div id="zona-multi" hidden>
+          <div id="lista-trocos"></div>
+          <div class="multi-accoes">
+            <button type="button" class="btn-suave" id="btn-add-troco">＋ Adicionar destino</button>
+            <button class="btn-pesquisar" id="btn-pesquisar-multi" type="button">🔍 Pesquisar</button>
+          </div>
+        </div>
+
+        <p class="nota-cartao">💡 Os cupões disponíveis são aplicados automaticamente e os pacotes voo + hotel são comparados com as reservas em separado.</p>
+      </div>
+
+      <div class="hero-selos">
+        <span>✅ 24 sites comparados</span>
+        <span>🎟 Cupões automáticos</span>
+        <span>📦 Pacotes inteligentes</span>
+        <span>🗺 Mapas interactivos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- resultados da pesquisa (preenchido por JS) -->
+  <section id="resultados" class="seccao" hidden></section>
+
+  <!-- como funciona -->
+  <section id="como-funciona" class="seccao">
+    <h2>Como funciona</h2>
+    <div class="passos">
+      <div class="passo"><span class="passo-num">1</span><h3>Pesquisa uma vez</h3><p>Indique a origem, o destino e as datas. O TripNexus consulta em simultâneo mais de 24 sites de viagens — de voos a hostels.</p></div>
+      <div class="passo"><span class="passo-num">2</span><h3>Nós fazemos as contas</h3><p>Somamos voos, alojamento, carro e transportes públicos para o total real da viagem, já com cupões aplicados quando existem.</p></div>
+      <div class="passo"><span class="passo-num">3</span><h3>Reserve ao melhor preço</h3><p>Se um pacote ficar igual ou com pouca margem acima das reservas em separado, recomendamo-lo. Reserva sempre no site do parceiro.</p></div>
+    </div>
+  </section>
+</section>
+
+<!-- ══════════════════ VISTA: OFERTAS EM CONTA ══════════════════ -->
+<section id="vista-ofertas" class="vista" hidden>
+  <div class="seccao">
+    <h2>🔥 Ofertas em conta neste momento</h2>
+    <p class="sub-seccao">Destinos cujo preço actual está bastante abaixo do valor típico registado em datas anteriores. Preços de ida e volta por passageiro, com partida de
+      <select id="ofertas-origem"></select>
+    </p>
+    <div class="grelha-ofertas" id="grelha-ofertas"></div>
+    <h3 class="titulo-mapa">🗺 Veja as ofertas no mapa</h3>
+    <div id="mapa-ofertas" class="mapa"></div>
+  </div>
+</section>
+
+<!-- ══════════════════ VISTA: PARCEIROS ══════════════════ -->
+<section id="vista-parceiros" class="vista" hidden>
+  <div class="seccao">
+    <h2>Os nossos parceiros de comparação</h2>
+    <p class="sub-seccao">Em cada pesquisa consultamos, entre outros, estes sites — e mostramos sempre onde está o melhor preço.</p>
+    <div id="grelha-parceiros"></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="rodape">
+  <div class="rodape-inner">
+    <div>
+      <p class="logo-rodape">✈ TripNexus</p>
+      <p>Comparador independente de viagens. Não vendemos bilhetes nem reservas: encontramos o melhor preço e encaminhamo-lo para o site do parceiro para concluir a reserva.</p>
+    </div>
+    <div>
+      <p><strong>Nota sobre os preços</strong></p>
+      <p>Os valores apresentados são estimativas calculadas a partir de dados históricos e de referência dos parceiros, e destinam-se apenas a comparação. O preço final é sempre confirmado no site onde efectua a reserva.</p>
+    </div>
+  </div>
+  <p class="direitos">© <span id="ano"></span> TripNexus · Feito em Portugal · Os logótipos apresentados pertencem aos respectivos proprietários.</p>
+</footer>
+
+<!-- calendário de datas com preços (gerado por JS) -->
+<div class="cal-sombra" id="cal-sombra" hidden></div>
+<div class="calendario" id="calendario" hidden></div>
+
+<!-- lista de sugestões do autocomplete (partilhada) -->
+<div class="sugestoes" id="sugestoes" hidden></div>
+
+<!-- ecrã de carregamento da comparação -->
+<div class="carregando" id="carregando" hidden>
+  <div class="carregando-caixa">
+    <p class="carregando-titulo">A comparar preços em <strong>24 sites</strong>…</p>
+    <div class="carregando-icones" id="carregando-icones"></div>
+    <div class="barra"><div class="barra-interior" id="barra-progresso"></div></div>
+    <p class="carregando-passo" id="carregando-passo">A contactar parceiros…</p>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/engine.js"></script>
+<script src="assets/js/calendar.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
