@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=8">
+<link rel="stylesheet" href="assets/css/style.css?v=9">
 </head>
 <body>
 
@@ -33,6 +33,7 @@
       <button class="nav-btn activo" data-vista="pesquisa" type="button">Pesquisar</button>
       <button class="nav-btn" data-vista="ofertas" type="button">Ofertas em conta <span class="fogo">🔥</span></button>
       <button class="nav-btn" data-vista="parceiros" type="button">Parceiros</button>
+      <button class="nav-btn" id="btn-alertas" type="button" title="Alertas de preço">🔔<span id="alertas-badge" class="alertas-badge" hidden></span></button>
     </nav>
   </div>
 </header>
@@ -149,6 +150,8 @@
         <p class="nota-cartao">💡 Os cupões disponíveis são aplicados automaticamente e os pacotes voo + hotel são comparados com as reservas em separado.</p>
       </div>
 
+      <div id="zona-guardados" hidden></div>
+
       <div class="hero-selos">
         <span>✅ 24 sites comparados</span>
         <span>🎟 Cupões automáticos</span>
@@ -217,6 +220,10 @@
 <!-- lista de sugestões do autocomplete (partilhada) -->
 <div class="sugestoes" id="sugestoes" hidden></div>
 
+<!-- painel de alertas de preço e avisos (geridos por JS) -->
+<div class="painel-alertas" id="painel-alertas" hidden></div>
+<div class="avisos" id="avisos"></div>
+
 <!-- ecrã de carregamento da comparação -->
 <div class="carregando" id="carregando" hidden>
   <div class="carregando-caixa">
@@ -232,10 +239,11 @@
   /* Preços em tempo real: endereço do backend (ver backend/README.md). */
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
 </script>
-<script src="assets/js/data.js?v=8"></script>
-<script src="assets/js/engine.js?v=8"></script>
-<script src="assets/js/calendar.js?v=8"></script>
-<script src="assets/js/live.js?v=8"></script>
-<script src="assets/js/app.js?v=8"></script>
+<script src="assets/js/data.js?v=9"></script>
+<script src="assets/js/engine.js?v=9"></script>
+<script src="assets/js/calendar.js?v=9"></script>
+<script src="assets/js/live.js?v=9"></script>
+<script src="assets/js/alertas.js?v=9"></script>
+<script src="assets/js/app.js?v=9"></script>
 </body>
 </html>
