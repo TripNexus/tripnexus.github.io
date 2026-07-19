@@ -48,7 +48,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=13">
+<link rel="stylesheet" href="assets/css/style.css?v=14">
 </head>
 <body>
 
@@ -62,6 +62,7 @@
       <button class="nav-btn activo" data-vista="pesquisa" type="button">Pesquisar</button>
       <button class="nav-btn" data-vista="ofertas" type="button">Ofertas em conta <span class="fogo">🔥</span></button>
       <button class="nav-btn" data-vista="parceiros" type="button">Parceiros</button>
+      <select id="sel-moeda" class="sel-moeda" aria-label="Moeda"><option value="EUR">€ EUR</option><option value="USD">$ USD</option><option value="GBP">£ GBP</option><option value="BRL">R$ BRL</option></select>
       <button class="nav-btn" id="btn-alertas" type="button" title="Alertas de preço" aria-label="Alertas de preço">🔔<span id="alertas-badge" class="alertas-badge" hidden></span></button>
       <button class="nav-btn" id="btn-tema" type="button" title="Tema claro ou escuro" aria-label="Alternar tema claro ou escuro">🌙</button>
     </nav>
@@ -280,12 +281,12 @@
      Para usar outro Worker, altere a URL abaixo. */
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
 </script>
-<script src="assets/js/data.js?v=13"></script>
-<script src="assets/js/engine.js?v=13"></script>
-<script src="assets/js/calendar.js?v=13"></script>
-<script src="assets/js/live.js?v=13"></script>
-<script src="assets/js/alertas.js?v=13"></script>
-<script src="assets/js/app.js?v=13"></script>
+<script src="assets/js/data.js?v=14"></script>
+<script src="assets/js/engine.js?v=14"></script>
+<script src="assets/js/calendar.js?v=14"></script>
+<script src="assets/js/live.js?v=14"></script>
+<script src="assets/js/alertas.js?v=14"></script>
+<script src="assets/js/app.js?v=14"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
