@@ -57,9 +57,12 @@ img{max-width:100%}
 }
 .logo-icone{
   display:inline-flex;align-items:center;justify-content:center;
-  width:2rem;height:2rem;border-radius:.6rem;background:var(--indigo);font-size:1rem;
+  width:2.1rem;height:2.1rem;border-radius:.6rem;background:#fff;padding:.2rem;
 }
-.logo-nexus{color:#8ab4f8}
+.logo-icone img{width:100%;height:100%;display:block}
+.logo-texto{display:flex}
+.logo-trip{color:#4da3f5}
+.logo-nexus{color:#2cc9b4}
 .nav-principal{display:flex;gap:.35rem;flex-wrap:wrap}
 .nav-btn{
   background:transparent;border:0;color:#cfd3e8;font-weight:600;font-size:.95rem;
@@ -394,6 +397,9 @@ img{max-width:100%}
 /* alternativa terrestre */
 .alt-tag{background:#e9edff;color:var(--indigo-escuro);font-size:.72rem;font-weight:800;border-radius:6px;padding:.1rem .45rem}
 
+/* preços em tempo real */
+.tempo-real{color:var(--verde);font-weight:700}
+
 /* ── ofertas em conta ───────────────────────────────────────── */
 #ofertas-origem{
   border:1.5px solid #d5d9e8;border-radius:9px;padding:.3rem .5rem;font-size:.9rem;
@@ -445,7 +451,8 @@ img{max-width:100%}
   grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:2rem;font-size:.88rem;
 }
 .rodape strong{color:#fff}
-.logo-rodape{color:#fff;font-weight:800;font-size:1.15rem;margin-bottom:.5rem}
+.logo-rodape{color:#fff;font-weight:800;font-size:1.15rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.45rem}
+.logo-rodape-img{width:1.7rem;height:1.7rem;background:#fff;border-radius:7px;padding:.17rem}
 .direitos{max-width:1180px;margin:2rem auto 0;font-size:.8rem;color:#7d84ad;border-top:1px solid rgba(255,255,255,.1);padding-top:1.2rem}
 
 /* ── ecrã de carregamento ───────────────────────────────────── */
