@@ -21,6 +21,7 @@ async function actualizarVoosReais(ctx){
     if(!r.ok) return;
     const dados = await r.json();
     if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length) return;
+    dados.ofertas.sort((a, b) => a.preco - b.preco);
     const liga = ligacaoParceiro('skyscanner', {...ctx, seccao:'voo'});
     const notaClasse = (dados.classe === 'economica' && ctx.classe && ctx.classe !== 'economica')
       ? '<p class="bloco-sub">Nota: as tarifas reais disponíveis para esta rota são em classe económica.</p>' : '';
@@ -33,7 +34,11 @@ async function actualizarVoosReais(ctx){
           <span class="icone-parceiro"><span class="letra" style="display:flex">${(v.companhia || '?')[0]}</span></span>
           <div class="oferta-info">
             <div class="oferta-nome">${v.companhia || 'Companhia aérea'}${idx === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
-            <div class="oferta-detalhe">${v.escalas === 0 ? 'directo' : v.escalas + (v.escalas === 1 ? ' escala' : ' escalas')} · ${v.duracao || ''} · partida ${v.partida || ''}</div>
+            <div class="oferta-detalhe">${[
+              v.escalas === 0 ? 'directo' : v.escalas + (v.escalas === 1 ? ' escala' : ' escalas'),
+              v.duracao,
+              v.partida ? 'partida ' + v.partida : ''
+            ].filter(Boolean).join(' · ')}</div>
           </div>
           <div class="oferta-preco"><div class="preco-actual">${Math.round(v.preco)} €</div></div>
           <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Reservar</a>
