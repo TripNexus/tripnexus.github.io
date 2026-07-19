@@ -11,15 +11,41 @@
 
 const TP = 'https://api.travelpayouts.com';
 
-function resposta(corpo, estado){
+function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
     status: estado || 200,
     headers:{
       'Content-Type':'application/json; charset=utf-8',
       'Access-Control-Allow-Origin':'*',
-      'Cache-Control':'public, max-age=600'
+      'Cache-Control': semCache ? 'no-store' : 'public, max-age=600'
     }
   });
+}
+
+/* token limpo de espaços e quebras de linha acidentais */
+function obterToken(env){
+  return (env.TP_TOKEN || '').trim();
+}
+
+/* /estado: diagnóstico rápido, sem expor o token */
+async function estado(env){
+  const token = obterToken(env);
+  const info = {
+    token_definido: token.length > 0,
+    token_tamanho: token.length
+  };
+  if(token){
+    const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
+      {headers:{'X-Access-Token': token}});
+    info.travelpayouts_estado = r.status;
+    info.travelpayouts_aceita_o_token = r.ok;
+    if(!r.ok) info.sugestao = r.status === 401 || r.status === 403
+      ? 'O token não foi aceite: confirme que copiou o API token completo do perfil Travelpayouts e volte a correr wrangler secret put TP_TOKEN.'
+      : 'A Travelpayouts devolveu um erro temporário; tente outra vez daqui a um minuto.';
+  }else{
+    info.sugestao = 'Falta o token: corra wrangler secret put TP_TOKEN na pasta backend/ e cole o API token do perfil Travelpayouts.';
+  }
+  return resposta(info, 200, true);
 }
 
 /* nomes das companhias aéreas (ficheiro público da Travelpayouts, cache 24 h) */
@@ -44,14 +70,17 @@ async function voos(url, env){
   const q = url.searchParams;
   for(const p of ['origem','destino','ida'])
     if(!q.get(p)) return resposta({erro:'falta o parâmetro ' + p}, 400);
+  const token = obterToken(env);
+  if(!token) return resposta({erro:'TP_TOKEN não definido no Worker (ver /estado)'}, 500);
   const ps = new URLSearchParams({
     origin: q.get('origem'),
     destination: q.get('destino'),
     depart_date: q.get('ida'),
-    currency: 'eur'
+    currency: 'eur',
+    token
   });
   if(q.get('volta')) ps.set('return_date', q.get('volta'));
-  const r = await fetch(TP + '/v1/prices/cheap?' + ps, {headers:{'X-Access-Token': env.TP_TOKEN}});
+  const r = await fetch(TP + '/v1/prices/cheap?' + ps, {headers:{'X-Access-Token': token}});
   if(!r.ok) return resposta({erro:'Travelpayouts devolveu ' + r.status}, 502);
   const j = await r.json();
   const nomes = await nomesCompanhias();
@@ -81,7 +110,7 @@ async function hoteis(url, env){
     currency: 'eur',
     limit: '15'
   });
-  if(env.TP_TOKEN) ps.set('token', env.TP_TOKEN);
+  if(obterToken(env)) ps.set('token', obterToken(env));
   const r = await fetch('https://engine.hotellook.com/api/v2/cache.json?' + ps);
   if(!r.ok) return resposta({erro:'Hotellook devolveu ' + r.status}, 502);
   const j = await r.json();
@@ -104,7 +133,8 @@ export default {
     try{
       if(url.pathname === '/voos') return await voos(url, env);
       if(url.pathname === '/hoteis') return await hoteis(url, env);
-      return resposta({erro:'rotas disponíveis: /voos, /hoteis'}, 404);
+      if(url.pathname === '/estado') return await estado(env);
+      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }

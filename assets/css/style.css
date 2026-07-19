@@ -416,6 +416,7 @@ img{max-width:100%}
   color:#fff;font-weight:800;position:relative;
 }
 .oferta-bandeira{font-size:2.1rem;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+.oferta-topo.com-foto .oferta-bandeira{display:none}
 .oferta-cidade{font-size:1.15rem;text-shadow:0 2px 8px rgba(0,0,0,.35)}
 .desconto{
   position:absolute;top:.7rem;right:.7rem;background:var(--verde);color:#fff;
