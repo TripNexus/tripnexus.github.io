@@ -3,7 +3,8 @@
    Quando window.TRIPNEXUS_API aponta para o backend (ver
    backend/README.md), o bloco de voos passa a mostrar tarifas
    reais obtidas na hora; sem backend configurado, o site mantém
-   as estimativas do motor local.
+   as estimativas do motor local. Os filtros e a ordenação do
+   bloco de voos aplicam-se também às tarifas reais.
    ═══════════════════════════════════════════════════════════════ */
 
 async function actualizarVoosReais(ctx){
@@ -21,7 +22,13 @@ async function actualizarVoosReais(ctx){
     if(!r.ok) return;
     const dados = await r.json();
     if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length) return;
-    dados.ofertas.sort((a, b) => a.preco - b.preco);
+
+    const lista = dados.ofertas.map(v => Object.assign({}, v, {precoFinal: v.preco}));
+    const companhias = [...new Set(lista.map(v => v.companhia).filter(Boolean))].sort();
+    const haFiltros = typeof aplicarFiltrosVoos === 'function';
+    const visiveis = haFiltros ? aplicarFiltrosVoos(lista) : lista;
+    const melhor = visiveis.length ? visiveis.reduce((m, v) => v.precoFinal < m.precoFinal ? v : m) : null;
+
     const liga = ligacaoParceiro('skyscanner', {...ctx, seccao:'voo'});
     const notaClasse = (dados.classe === 'economica' && ctx.classe && ctx.classe !== 'economica')
       ? '<p class="bloco-sub">Nota: as tarifas reais disponíveis para esta rota são em classe económica.</p>' : '';
@@ -29,21 +36,23 @@ async function actualizarVoosReais(ctx){
       <div class="bloco-titulo">✈ Voos · tarifas reais</div>
       <p class="bloco-sub tempo-real">⚡ Tarifas reais registadas nas últimas horas (Aviasales/Travelpayouts). Total para todos os passageiros.</p>
       ${notaClasse}
-      ${dados.ofertas.slice(0, 8).map((v, idx) => `
-        <div class="linha-oferta ${idx === 0 ? 'melhor' : ''}">
+      ${typeof barraFiltros === 'function' ? barraFiltros(companhias) : ''}
+      ${visiveis.length ? visiveis.slice(0, 8).map(v => `
+        <div class="linha-oferta ${v === melhor ? 'melhor' : ''}">
           <span class="icone-parceiro"><span class="letra" style="display:flex">${(v.companhia || '?')[0]}</span></span>
           <div class="oferta-info">
-            <div class="oferta-nome">${v.companhia || 'Companhia aérea'}${idx === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
+            <div class="oferta-nome">${v.companhia || 'Companhia aérea'}${v === melhor ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${[
               v.escalas === 0 ? 'directo' : v.escalas + (v.escalas === 1 ? ' escala' : ' escalas'),
               v.duracao,
               v.partida ? 'partida ' + v.partida : ''
             ].filter(Boolean).join(' · ')}</div>
           </div>
-          <div class="oferta-preco"><div class="preco-actual">${Math.round(v.preco)} €</div></div>
+          <div class="oferta-preco"><div class="preco-actual">${Math.round(v.precoFinal)} €</div></div>
           <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Reservar</a>
-        </div>`).join('')}
+        </div>`).join('') : '<p class="bloco-sub">Nenhum voo cumpre os filtros escolhidos. <button type="button" class="btn-suave" id="repor-filtros">Repor filtros</button></p>'}
       <p class="bloco-sub">A reserva é concluída no site do parceiro, já com a rota e as datas preenchidas.</p>`;
+    if(typeof ligarFiltrosVoos === 'function') ligarFiltrosVoos(bloco, desenharResultados);
   }catch(e){
     /* sem rede ou backend indisponível: ficam as estimativas locais */
   }
