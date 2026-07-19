@@ -5,6 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TripNexus | Comparador de viagens: voos, alojamento, carros e transportes</title>
 <meta name="description" content="O TripNexus compara preços de viagens em mais de 24 sites (Google Voos, Skyscanner, Kayak, Momondo, Booking, Airbnb, Omio e muitos mais), aplica cupões automaticamente e recomenda pacotes quando compensam.">
+<link rel="canonical" href="https://tripnexus.github.io/">
+<meta name="theme-color" content="#161938">
+<meta name="robots" content="index, follow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TripNexus">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TripNexus">
+<meta property="og:locale" content="pt_PT">
+<meta property="og:title" content="TripNexus — Comparador de viagens">
+<meta property="og:description" content="Compare voos, alojamento, carros e transportes em mais de 24 sites e encontre a viagem mais barata, com cupões e pacotes inteligentes.">
+<meta property="og:url" content="https://tripnexus.github.io/">
+<meta property="og:image" content="https://tripnexus.github.io/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TripNexus — Comparador de viagens">
+<meta name="twitter:description" content="Compare voos, alojamento, carros e transportes em mais de 24 sites e encontre a viagem mais barata.">
+<meta name="twitter:image" content="https://tripnexus.github.io/assets/img/og.png">
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <!-- Travelpayouts Drive: afiliação automática das ligações para os parceiros -->
 <script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
@@ -256,5 +276,10 @@
 <script src="assets/js/live.js?v=12"></script>
 <script src="assets/js/alertas.js?v=12"></script>
 <script src="assets/js/app.js?v=12"></script>
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+</script>
 </body>
 </html>
