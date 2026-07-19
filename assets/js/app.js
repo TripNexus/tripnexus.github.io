@@ -288,6 +288,88 @@ document.getElementById('btn-add-troco').addEventListener('click', () => {
   desenharTrocos();
 });
 
+/* ── pesquisa partilhável por URL ────────────────────────────── */
+function fISO(d){
+  return d ? d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') : '';
+}
+function deISO(s){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+  return m ? new Date(+m[1], +m[2]-1, +m[3]) : null;
+}
+function urlDaPesquisa(){
+  const ps = new URLSearchParams();
+  ps.set('tipo', ESTADO.tipo);
+  ps.set('adultos', ESTADO.pax.adultos);
+  if(ESTADO.pax.criancas) ps.set('criancas', ESTADO.pax.criancas);
+  if(ESTADO.pax.bebes) ps.set('bebes', ESTADO.pax.bebes);
+  ps.set('classe', ESTADO.classe);
+  ps.set('transportes', ESTADO.transportes.join(','));
+  ps.set('alojamento', ESTADO.alojamento.join(','));
+  if(ESTADO.tipo === 'multi'){
+    ps.set('trocos', ESTADO.trocos.map(t => t.origem.i + '-' + t.destino.i + '-' + fISO(t.data)).join(','));
+  }else{
+    ps.set('de', ESTADO.origem.i);
+    ps.set('para', ESTADO.destino.i);
+    ps.set('ida', fISO(ESTADO.ida));
+    if(ESTADO.volta) ps.set('volta', fISO(ESTADO.volta));
+  }
+  return '?' + ps.toString();
+}
+/* lê a pesquisa a partir do URL; devolve true se houver uma pesquisa completa */
+function aplicarURL(){
+  const ps = new URLSearchParams(location.search);
+  if(!ps.get('de') && !ps.get('trocos')) return false;
+  const tipo = ['ida-volta','so-ida','multi'].includes(ps.get('tipo'))
+    ? ps.get('tipo')
+    : (ps.get('trocos') ? 'multi' : (ps.get('volta') ? 'ida-volta' : 'so-ida'));
+
+  ESTADO.pax.adultos = Math.min(9, Math.max(1, +ps.get('adultos') || 1));
+  ESTADO.pax.criancas = Math.min(8, Math.max(0, +ps.get('criancas') || 0));
+  ESTADO.pax.bebes = Math.min(4, Math.max(0, +ps.get('bebes') || 0));
+  document.querySelectorAll('#dd-passageiros .contador').forEach(c =>
+    c.querySelector('.valor').textContent = ESTADO.pax[c.dataset.tipo]);
+
+  if(NOME_CLASSE[ps.get('classe')]) ESTADO.classe = ps.get('classe');
+  const rClasse = document.querySelector(`input[name="classe"][value="${ESTADO.classe}"]`);
+  if(rClasse) rClasse.checked = true;
+
+  if(ps.has('transportes') || ps.has('alojamento')){
+    ESTADO.transportes = (ps.get('transportes') || '').split(',').filter(x => ['carro','comboio','autocarro','metro'].includes(x));
+    ESTADO.alojamento = (ps.get('alojamento') || '').split(',').filter(x => ['hotel','airbnb','hostel'].includes(x));
+    document.querySelectorAll('input[name="transporte"]').forEach(cb => cb.checked = ESTADO.transportes.includes(cb.value));
+    document.querySelectorAll('input[name="alojamento"]').forEach(cb => cb.checked = ESTADO.alojamento.includes(cb.value));
+  }
+
+  if(tipo === 'multi'){
+    const trocos = (ps.get('trocos') || '').split(',').map(x => {
+      const partes = x.split('-');
+      return {origem: cidadePorNome(partes[0]), destino: cidadePorNome(partes[1]), data: deISO(partes.slice(2).join('-'))};
+    }).filter(tr => tr.origem && tr.destino && tr.data);
+    if(trocos.length < 2) return false;
+    ESTADO.trocos = trocos;
+  }else{
+    const o = cidadePorNome(ps.get('de')), d = cidadePorNome(ps.get('para'));
+    const ida = deISO(ps.get('ida'));
+    if(!o || !d || !ida) return false;
+    ESTADO.origem = o; ESTADO.destino = d; ESTADO.ida = ida;
+    ESTADO.volta = tipo === 'so-ida' ? null : deISO(ps.get('volta'));
+    if(tipo === 'ida-volta' && !ESTADO.volta) return false;
+    inputOrigem.value = o.n; inputOrigem.dataset.cidade = o.n;
+    inputDestino.value = d.n; inputDestino.dataset.cidade = d.n;
+    document.getElementById('input-partida').value = formatarDataCurta(ida);
+    document.getElementById('input-regresso').value = formatarDataCurta(ESTADO.volta);
+  }
+
+  const rTipo = document.querySelector(`input[name="tipo-viagem"][value="${tipo}"]`);
+  if(rTipo && !rTipo.checked){ rTipo.checked = true; rTipo.dispatchEvent(new Event('change')); }
+  actualizarRotulos();
+  return true;
+}
+window.addEventListener('popstate', () => {
+  if(aplicarURL()) executarPesquisa();
+  else document.getElementById('resultados').hidden = true;
+});
+
 /* ── pesquisa ────────────────────────────────────────────────── */
 function marcarErro(el){ el.classList.add('erro'); setTimeout(() => el.classList.remove('erro'), 900); }
 
@@ -327,11 +409,13 @@ function validarPesquisaMulti(silencioso){
 function reactualizarResultados(){
   const sec = document.getElementById('resultados');
   if(!sec || sec.hidden) return;
+  let ok = false;
   if(ESTADO.tipo === 'multi'){
-    if(validarPesquisaMulti(true)) desenharResultadosMulti();
+    if(validarPesquisaMulti(true)){ desenharResultadosMulti(); ok = true; }
   }else if(validarPesquisaSimples(true)){
-    desenharResultados();
+    desenharResultados(); ok = true;
   }
+  if(ok){ try{ history.replaceState({}, '', urlDaPesquisa()); }catch(e){} }
 }
 
 document.getElementById('btn-pesquisar').addEventListener('click', () => {
@@ -343,6 +427,8 @@ document.getElementById('btn-pesquisar-multi').addEventListener('click', () => {
 
 /* ecrã de carregamento com os ícones dos parceiros */
 function executarPesquisa(){
+  /* o URL reflecte sempre a pesquisa apresentada, para partilhar e guardar */
+  try{ history.replaceState({}, '', urlDaPesquisa()); }catch(e){ /* file:// */ }
   const overlay = document.getElementById('carregando');
   const icones = ['google','skyscanner','kayak','momondo','booking','trivago','edreams','expedia','airbnb','omio','rentalcars','getyourguide'];
   document.getElementById('carregando-icones').innerHTML = icones.map(iconeParceiro).join('');
@@ -823,3 +909,4 @@ inputOrigem.dataset.cidade = 'Lisboa';
 ESTADO.origem = cidadePorNome('Lisboa');
 desenharParceiros();
 actualizarRotulos();
+if(aplicarURL()) executarPesquisa();
