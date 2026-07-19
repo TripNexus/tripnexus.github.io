@@ -499,6 +499,43 @@ function ligarFiltrosVoos(raiz, aoMudar){
   if(repor) repor.onclick = () => { reporFiltros(); aoMudar(); };
 }
 
+/* ── gráfico de evolução do preço (SVG, sem bibliotecas) ─────── */
+function graficoEvolucao(serie){
+  const n = serie.pontos.length;
+  const min = Math.min(...serie.pontos), max = Math.max(...serie.pontos);
+  const amp = Math.max(1, max - min);
+  const X = i => 8 + (i / (n - 1)) * 304;
+  const Y = p => 12 + (1 - (p - min) / amp) * 86;
+  const linha = serie.pontos.map((p, i) => `${X(i).toFixed(1)},${Y(p).toFixed(1)}`).join(' ');
+  const yTipico = Y(serie.tipico).toFixed(1);
+  const corPonto = serie.tipo === 'bom' ? '#0e9f6e' : (serie.tipo === 'alto' ? '#f59e0b' : '#4353ff');
+  return `<svg class="grafico-preco" viewBox="0 0 320 132" role="img" aria-label="Evolução estimada do preço do voo">
+    <polygon points="8,104 ${linha} 312,104" fill="rgba(67,83,255,.10)"/>
+    <line x1="8" y1="${yTipico}" x2="312" y2="${yTipico}" stroke="#a9b0c8" stroke-dasharray="4 4" stroke-width="1"/>
+    <text x="310" y="${(+yTipico - 4).toFixed(1)}" text-anchor="end" class="g-tipico">típico: ${serie.tipico} €</text>
+    <polyline points="${linha}" fill="none" stroke="#4353ff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${X(n - 1).toFixed(1)}" cy="${Y(serie.pontos[n - 1]).toFixed(1)}" r="4.2" fill="${corPonto}"/>
+    <text x="8" y="124" class="g-eixo">há 8 semanas</text>
+    <text x="160" y="124" text-anchor="middle" class="g-eixo">há 4 semanas</text>
+    <text x="312" y="124" text-anchor="end" class="g-eixo">hoje</text>
+  </svg>`;
+}
+function blocoEvolucao(o, d, ida, precoHoje){
+  const serie = serieHistoricaVoo(o, d, ida, precoHoje);
+  const texto = serie.tipo === 'bom'
+    ? `✅ Bom momento para comprar: o preço está ${-serie.dif} % abaixo do típico das últimas 8 semanas.`
+    : serie.tipo === 'alto'
+      ? `⚠️ Preço alto: está ${serie.dif} % acima do típico das últimas 8 semanas. Se puder, aguarde ou active um alerta de preço.`
+      : `➖ Preço dentro do típico das últimas 8 semanas.`;
+  return `
+        <div class="bloco" id="bloco-evolucao">
+          <div class="bloco-titulo">📈 Evolução do preço do voo</div>
+          <div class="veredicto ${serie.tipo}">${texto}</div>
+          ${graficoEvolucao(serie)}
+          <p class="bloco-sub" style="margin:.5rem 0 0">Evolução estimada para esta rota e datas, ancorada no melhor preço actual (${euros(precoHoje)}).</p>
+        </div>`;
+}
+
 /* ── resultados: pesquisa simples ────────────────────────────── */
 function desenharResultados(){
   const o = ESTADO.origem, d = ESTADO.destino;
@@ -622,6 +659,8 @@ function desenharResultados(){
           <p class="resumo-nota">Combinação mais barata encontrada, com cupões já descontados. Valores estimados, confirmados no site de cada parceiro.</p>
           <div class="accoes-resumo" id="accoes-resumo"></div>
         </div>
+
+        ${blocoEvolucao(o, d, ida, melhorVoo.precoFinal)}
 
         ${pacotes.length ? `
         <div class="bloco">
