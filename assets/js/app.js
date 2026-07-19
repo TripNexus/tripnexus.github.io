@@ -367,6 +367,51 @@ function executarPesquisa(){
   }, 320);
 }
 
+/* ── filtros e ordenação dos voos ────────────────────────────── */
+const FILTROS = {ordenar:'preco', escalas:'todas', partida:'qualquer', companhia:'todas'};
+function reporFiltros(){
+  Object.assign(FILTROS, {ordenar:'preco', escalas:'todas', partida:'qualquer', companhia:'todas'});
+}
+function minutosDuracao(d){
+  const m = /(\d+)h(\d+)/.exec(d || '');
+  return m ? (+m[1]) * 60 + (+m[2]) : 99999;
+}
+function faixaPartida(hhmm){
+  const h = +String(hhmm || '').slice(0, 2);
+  if(h >= 6 && h < 12) return 'manha';
+  if(h >= 12 && h < 18) return 'tarde';
+  if(h >= 18) return 'noite';
+  return 'madrugada';
+}
+function aplicarFiltrosVoos(lista){
+  const v = lista.filter(q =>
+    (FILTROS.escalas === 'todas' || (FILTROS.escalas === 'directos' ? q.escalas === 0 : q.escalas <= 1)) &&
+    (FILTROS.partida === 'qualquer' || faixaPartida(q.partida) === FILTROS.partida) &&
+    (FILTROS.companhia === 'todas' || q.companhia === FILTROS.companhia));
+  if(FILTROS.ordenar === 'duracao') v.sort((a, b) => minutosDuracao(a.duracao) - minutosDuracao(b.duracao));
+  else if(FILTROS.ordenar === 'partida') v.sort((a, b) => String(a.partida).localeCompare(String(b.partida)));
+  else v.sort((a, b) => a.precoFinal - b.precoFinal);
+  return v;
+}
+function barraFiltros(companhias){
+  /* mantém a companhia escolhida visível mesmo que não exista nesta vista */
+  if(FILTROS.companhia !== 'todas' && !companhias.includes(FILTROS.companhia))
+    companhias = [FILTROS.companhia, ...companhias];
+  const op = (v, txt, actual) => `<option value="${v}"${v === actual ? ' selected' : ''}>${txt}</option>`;
+  return `<div class="filtros-voos">
+    <label>Ordenar <select data-filtro="ordenar">${op('preco','Mais barato',FILTROS.ordenar)}${op('duracao','Mais rápido',FILTROS.ordenar)}${op('partida','Partida mais cedo',FILTROS.ordenar)}</select></label>
+    <label>Escalas <select data-filtro="escalas">${op('todas','Todas',FILTROS.escalas)}${op('directos','Só directos',FILTROS.escalas)}${op('ate1','Até 1 escala',FILTROS.escalas)}</select></label>
+    <label>Partida <select data-filtro="partida">${op('qualquer','Qualquer hora',FILTROS.partida)}${op('manha','Manhã (06h a 12h)',FILTROS.partida)}${op('tarde','Tarde (12h a 18h)',FILTROS.partida)}${op('noite','Noite (18h a 24h)',FILTROS.partida)}${op('madrugada','Madrugada (00h a 06h)',FILTROS.partida)}</select></label>
+    <label>Companhia <select data-filtro="companhia">${op('todas','Todas',FILTROS.companhia)}${companhias.map(c => op(c, c, FILTROS.companhia)).join('')}</select></label>
+  </div>`;
+}
+function ligarFiltrosVoos(raiz, aoMudar){
+  raiz.querySelectorAll('.filtros-voos select').forEach(s =>
+    s.onchange = () => { FILTROS[s.dataset.filtro] = s.value; aoMudar(); });
+  const repor = raiz.querySelector('#repor-filtros');
+  if(repor) repor.onclick = () => { reporFiltros(); aoMudar(); };
+}
+
 /* ── resultados: pesquisa simples ────────────────────────────── */
 function desenharResultados(){
   const o = ESTADO.origem, d = ESTADO.destino;
@@ -375,11 +420,13 @@ function desenharResultados(){
   const fimEstadia = volta || (() => { const x = new Date(ida); x.setDate(x.getDate() + 3); return x; })();
   const noites = Math.max(1, Math.round((fimEstadia - ida) / 86400000));
 
-  /* voos */
-  const voos = ['google','skyscanner','kayak','momondo','edreams','expedia','trip']
+  /* voos (com filtros e ordenação aplicados) */
+  const todosVoos = ['google','skyscanner','kayak','momondo','edreams','expedia','trip']
     .map(c => cotacaoVoo(c, o, d, ida, volta, ESTADO.classe, ESTADO.pax))
     .sort((a,b) => a.precoFinal - b.precoFinal);
-  const melhorVoo = voos[0];
+  const companhias = [...new Set(todosVoos.map(q => q.companhia))].sort();
+  const voos = aplicarFiltrosVoos(todosVoos);
+  const melhorVoo = voos.length ? voos.reduce((m, q) => q.precoFinal < m.precoFinal ? q : m) : todosVoos[0];
 
   /* alternativa terrestre (comboio / autocarro) */
   const meiosTerrestres = ESTADO.transportes.filter(t => t === 'comboio' || t === 'autocarro');
@@ -402,7 +449,7 @@ function desenharResultados(){
   const pacotes = (volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, !!melhorCarro) : [];
   const melhorPacote = pacotes[0] || null;
 
-  const nCupoes = [...voos, ...alojamentos, ...(carros || []), ...(terrestre && terrestre.viavel ? terrestre.linhas : []), ...pacotes]
+  const nCupoes = [...todosVoos, ...alojamentos, ...(carros || []), ...(terrestre && terrestre.viavel ? terrestre.linhas : []), ...pacotes]
     .filter(x => x.cupao).length;
 
   const tiposAloj = {hotel:'Hotel', casa:'Casa / apartamento', hostel:'Hostel'};
@@ -419,12 +466,13 @@ function desenharResultados(){
       <div class="res-coluna">
 
         <div class="bloco" id="bloco-voos">
-          <div class="bloco-titulo">✈ Voos · ${voos.length} sites comparados</div>
-          ${voos.map((q, idx) => linhaOferta(q, {
-            melhor: idx === 0,
+          <div class="bloco-titulo">✈ Voos · ${todosVoos.length} sites comparados</div>
+          ${barraFiltros(companhias)}
+          ${voos.length ? voos.map(q => linhaOferta(q, {
+            melhor: q === melhorVoo,
             detalhe: `${q.companhia} · ${q.escalas === 0 ? 'directo' : q.escalas + (q.escalas === 1 ? ' escala' : ' escalas')} · ${q.duracao} · partida ${q.partida}`,
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'voo'})
-          })).join('')}
+          })).join('') : '<p class="bloco-sub">Nenhum voo cumpre os filtros escolhidos. <button type="button" class="btn-suave" id="repor-filtros">Repor filtros</button></p>'}
         </div>
 
         ${terrestre ? `
@@ -524,6 +572,7 @@ function desenharResultados(){
   sec.innerHTML = html;
   sec.hidden = false;
   desenharMapaResultados([o, d]);
+  ligarFiltrosVoos(sec, desenharResultados);
   if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
 }
 
@@ -653,14 +702,17 @@ function aplicarBanner(cidade, el){
     };
     foto.src = url;
   };
-  const procurar = wiki =>
-    fetch('https://' + wiki + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(titulo))
+  /* bandeiras, brasões e mapas não servem de banner */
+  const imagemInutil = /flag|coat|bandeira|bras[aã]o|escudo|seal|locator|logo|_map/i;
+  const procurar = (wiki, t) =>
+    fetch('https://' + wiki + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t))
       .then(r => r.ok ? r.json() : null)
       .then(j => (j && j.thumbnail) ? j.thumbnail.source : null)
+      .then(u => (u && !imagemInutil.test(u)) ? u : null)
       .catch(() => null);
   if(titulo in cacheBanners){ aplicarFoto(cacheBanners[titulo]); return; }
-  procurar('pt')
-    .then(url => url || procurar('en'))
+  procurar('pt', titulo)
+    .then(url => url || procurar('en', (WIKI_EN[cidade.n] || cidade.w || cidade.n).replace(/ /g, '_')))
     .then(url => {
       cacheBanners[titulo] = url || null;
       if(!url) return;
