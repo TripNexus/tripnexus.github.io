@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem('tn_tema');
+      if(!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro';
+      document.documentElement.setAttribute('data-tema', t);
+    }catch(e){}
+  })();
+</script>
 <title>TripNexus | Comparador de viagens: voos, alojamento, carros e transportes</title>
 <meta name="description" content="O TripNexus compara preços de viagens em mais de 24 sites (Google Voos, Skyscanner, Kayak, Momondo, Booking, Airbnb, Omio e muitos mais), aplica cupões automaticamente e recomenda pacotes quando compensam.">
 <link rel="canonical" href="https://tripnexus.github.io/">
@@ -39,7 +48,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=12">
+<link rel="stylesheet" href="assets/css/style.css?v=13">
 </head>
 <body>
 
@@ -53,7 +62,8 @@
       <button class="nav-btn activo" data-vista="pesquisa" type="button">Pesquisar</button>
       <button class="nav-btn" data-vista="ofertas" type="button">Ofertas em conta <span class="fogo">🔥</span></button>
       <button class="nav-btn" data-vista="parceiros" type="button">Parceiros</button>
-      <button class="nav-btn" id="btn-alertas" type="button" title="Alertas de preço">🔔<span id="alertas-badge" class="alertas-badge" hidden></span></button>
+      <button class="nav-btn" id="btn-alertas" type="button" title="Alertas de preço" aria-label="Alertas de preço">🔔<span id="alertas-badge" class="alertas-badge" hidden></span></button>
+      <button class="nav-btn" id="btn-tema" type="button" title="Tema claro ou escuro" aria-label="Alternar tema claro ou escuro">🌙</button>
     </nav>
   </div>
 </header>
@@ -150,7 +160,7 @@
             <span class="campo-ico">◉</span>
             <input type="text" id="input-origem" placeholder="De onde?" autocomplete="off" spellcheck="false">
           </div>
-          <button class="btn-trocar" id="btn-trocar" type="button" title="Trocar origem e destino">⇄</button>
+          <button class="btn-trocar" id="btn-trocar" type="button" title="Trocar origem e destino" aria-label="Trocar origem e destino">⇄</button>
           <div class="campo campo-texto" id="campo-destino">
             <span class="campo-ico">📍</span>
             <input type="text" id="input-destino" placeholder="Para onde?" autocomplete="off" spellcheck="false">
@@ -269,12 +279,12 @@
   /* Preços em tempo real: endereço do backend (ver backend/README.md). */
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
 </script>
-<script src="assets/js/data.js?v=12"></script>
-<script src="assets/js/engine.js?v=12"></script>
-<script src="assets/js/calendar.js?v=12"></script>
-<script src="assets/js/live.js?v=12"></script>
-<script src="assets/js/alertas.js?v=12"></script>
-<script src="assets/js/app.js?v=12"></script>
+<script src="assets/js/data.js?v=13"></script>
+<script src="assets/js/engine.js?v=13"></script>
+<script src="assets/js/calendar.js?v=13"></script>
+<script src="assets/js/live.js?v=13"></script>
+<script src="assets/js/alertas.js?v=13"></script>
+<script src="assets/js/app.js?v=13"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

@@ -1093,3 +1093,21 @@ ESTADO.origem = cidadePorNome('Lisboa');
 desenharParceiros();
 actualizarRotulos();
 if(aplicarURL()){ if(ESTADO.explorar) executarExploracao(); else executarPesquisa(); }
+
+/* ── tema claro/escuro ───────────────────────────────────────── */
+(function(){
+  const btn = document.getElementById('btn-tema');
+  if(!btn) return;
+  const aplicar = tema => {
+    document.documentElement.setAttribute('data-tema', tema);
+    btn.textContent = tema === 'escuro' ? '☀️' : '🌙';
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute('content', tema === 'escuro' ? '#0e1020' : '#161938');
+  };
+  aplicar(document.documentElement.getAttribute('data-tema') || 'claro');
+  btn.addEventListener('click', () => {
+    const novo = document.documentElement.getAttribute('data-tema') === 'escuro' ? 'claro' : 'escuro';
+    try{ localStorage.setItem('tn_tema', novo); }catch(e){}
+    aplicar(novo);
+  });
+})();

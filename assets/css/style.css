@@ -560,3 +560,40 @@ img{max-width:100%}
   .oferta-preco{margin-left:auto}
   .troco{border-bottom:1px dashed #e2e5f0;padding-bottom:.6rem}
 }
+
+
+/* ═══ tema escuro (additivo; o tema claro fica intacto) ═══ */
+:root[data-tema="escuro"]{
+  --tinta:#e7e9f2;
+  --cinza:#9aa1bd;
+  --cinza-claro:#23273b;
+  --fundo:#0e1020;
+  --branco:#191c2e;
+  --verde-claro:#10281f;
+}
+[data-tema="escuro"] .bloco,
+[data-tema="escuro"] .cartao-oferta,
+[data-tema="escuro"] .parceiro-item,
+[data-tema="escuro"] .passo,
+[data-tema="escuro"] .sugestoes,
+[data-tema="escuro"] .painel-alertas,
+[data-tema="escuro"] .carregando-caixa{background:var(--branco)}
+[data-tema="escuro"] .campo{border-color:#333a55}
+[data-tema="escuro"] .dd-btn{background:#20243a;color:var(--tinta)}
+[data-tema="escuro"] .dd-btn:hover{background:#262b45;border-color:#3a4160}
+[data-tema="escuro"] .dropdown.aberto .dd-btn{background:#26305c;border-color:var(--indigo);color:#c7d2ff}
+[data-tema="escuro"] .contador-ctl button,
+[data-tema="escuro"] .btn-trocar,
+[data-tema="escuro"] .filtros-voos select{background:#20243a;border-color:#3a4160;color:#8ab4f8}
+[data-tema="escuro"] .filtros-voos{background:#20243a}
+[data-tema="escuro"] .filtros-voos select{color:var(--tinta)}
+[data-tema="escuro"] .linha-oferta:hover{background:#20243a}
+[data-tema="escuro"] .sugestao:hover,[data-tema="escuro"] .sugestao.activa{background:#20243a}
+[data-tema="escuro"] .sug-iata,[data-tema="escuro"] .icone-parceiro{background:#20243a}
+[data-tema="escuro"] .opcao-radio:hover,[data-tema="escuro"] .opcao-check:hover{background:#20243a}
+[data-tema="escuro"] .cupao{background:#2a2410;color:#e8c66a;border-color:#5a4a1e}
+[data-tema="escuro"] .pacote-compara{border-color:#333a55}
+[data-tema="escuro"] .alerta-item{border-color:#262b45}
+[data-tema="escuro"] .g-eixo,[data-tema="escuro"] .g-tipico{fill:var(--cinza)}
+[data-tema="escuro"] .campo input::placeholder{color:#6b7290}
+[data-tema="escuro"] .nav-btn#btn-tema{font-size:1rem}
