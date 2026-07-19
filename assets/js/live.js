@@ -22,9 +22,12 @@ async function actualizarVoosReais(ctx){
     const dados = await r.json();
     if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length) return;
     const liga = ligacaoParceiro('skyscanner', {...ctx, seccao:'voo'});
+    const notaClasse = (dados.classe === 'economica' && ctx.classe && ctx.classe !== 'economica')
+      ? '<p class="bloco-sub">Nota: as tarifas reais disponíveis para esta rota são em classe económica.</p>' : '';
     bloco.innerHTML = `
-      <div class="bloco-titulo">✈ Voos · tarifas em tempo real</div>
-      <p class="bloco-sub tempo-real">⚡ Preços obtidos agora mesmo através da API Amadeus. Total para todos os passageiros.</p>
+      <div class="bloco-titulo">✈ Voos · tarifas reais</div>
+      <p class="bloco-sub tempo-real">⚡ Tarifas reais registadas nas últimas horas (Aviasales/Travelpayouts). Total para todos os passageiros.</p>
+      ${notaClasse}
       ${dados.ofertas.slice(0, 8).map((v, idx) => `
         <div class="linha-oferta ${idx === 0 ? 'melhor' : ''}">
           <span class="icone-parceiro"><span class="letra" style="display:flex">${(v.companhia || '?')[0]}</span></span>
