@@ -470,7 +470,7 @@ function mostrarCarregamento(aoTerminar, passos){
   overlay.hidden = false;
   const barra = document.getElementById('barra-progresso');
   const passo = document.getElementById('carregando-passo');
-  passos = passos || ['A contactar 24 parceiros…','A recolher tarifas e disponibilidade…','A procurar cupões activos…','A calcular totais e pacotes…'];
+  passos = passos || ['A contactar mais de 60 parceiros…','A recolher tarifas e disponibilidade…','A procurar cupões activos…','A calcular totais e pacotes…'];
   let pct = 0, i = 0;
   barra.style.width = '0%';
   const intervalo = setInterval(() => {
@@ -498,7 +498,7 @@ function executarPesquisa(){
 /* ── explorar destinos («Para onde?» vazio) ──────────────────── */
 function melhorPrecoVoo(o, d, ida, volta, classe, pax){
   let melhor = Infinity;
-  for(const c of ['google','skyscanner','kayak','momondo','edreams','expedia','trip']){
+  for(const c of parceirosDe('voo')){
     const q = cotacaoVoo(c, o, d, ida, volta, classe, pax);
     if(q.precoFinal < melhor) melhor = q.precoFinal;
   }
@@ -701,9 +701,10 @@ function desenharResultados(){
   const ctx = {origem:o, destino:d, ida, volta, adultos:ESTADO.pax.adultos, criancas:ESTADO.pax.criancas, classe:ESTADO.classe};
   const fimEstadia = volta || (() => { const x = new Date(ida); x.setDate(x.getDate() + 3); return x; })();
   const noites = Math.max(1, Math.round((fimEstadia - ida) / 86400000));
+  ctx.fim = fimEstadia;
 
   /* voos (com filtros e ordenação aplicados) */
-  const todosVoos = ['google','skyscanner','kayak','momondo','edreams','expedia','trip']
+  const todosVoos = parceirosDe('voo')
     .map(c => cotacaoVoo(c, o, d, ida, volta, ESTADO.classe, ESTADO.pax))
     .sort((a,b) => a.precoFinal - b.precoFinal);
   const companhias = [...new Set(todosVoos.map(q => q.companhia))].sort();
@@ -752,7 +753,7 @@ function desenharResultados(){
         <div class="bloco" id="bloco-voos">
           <div class="bloco-titulo">✈ Voos · ${todosVoos.length} sites comparados</div>
           ${barraFiltros(companhias)}
-          ${voos.length ? voos.map(q => linhaOferta(q, {
+          ${voos.length ? voos.slice(0, 10).map(q => linhaOferta(q, {
             melhor: q === melhorVoo,
             detalhe: `${q.companhia} · ${q.escalas === 0 ? 'directo' : q.escalas + (q.escalas === 1 ? ' escala' : ' escalas')} · ${q.duracao} · partida ${q.partida}`,
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'voo'})
@@ -779,7 +780,7 @@ function desenharResultados(){
         </div>` : ''}
 
         ${alojamentos.length ? `
-        <div class="bloco">
+        <div class="bloco" id="bloco-alojamento">
           <div class="bloco-titulo">🏨 Alojamento em ${d.n} · ${noites} ${noites === 1 ? 'noite' : 'noites'}</div>
           ${alojamentos.slice(0,6).map((q, idx) => linhaOferta(q, {
             melhor: idx === 0, tag: tiposAloj[q.tipo],
@@ -791,7 +792,7 @@ function desenharResultados(){
         ${carros ? `
         <div class="bloco">
           <div class="bloco-titulo">🚗 Carro privado alugado · ${carros[0].dias} ${carros[0].dias === 1 ? 'dia' : 'dias'}</div>
-          ${carros.map((q, idx) => linhaOferta(q, {
+          ${carros.slice(0, 6).map((q, idx) => linhaOferta(q, {
             melhor: idx === 0,
             detalhe: `${q.descricao} · ${euros(q.porDia)}/dia`,
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'carro'})
@@ -864,6 +865,7 @@ function desenharResultados(){
   ligarFiltrosVoos(sec, desenharResultados);
   if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, melhorVoo);
   if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
+  if(typeof actualizarAlojamentoReal === 'function') actualizarAlojamentoReal(ctx);
 }
 
 /* ── resultados: várias cidades ──────────────────────────────── */
@@ -873,7 +875,7 @@ function desenharResultadosMulti(){
   const ctx = {origem:trocos[0].origem, destino:trocos[trocos.length-1].destino, ida:trocos[0].data, volta:null, adultos:ESTADO.pax.adultos, criancas:ESTADO.pax.criancas, classe:ESTADO.classe};
 
   /* por parceiro: soma das cotações de todos os trocos */
-  const voos = ['google','skyscanner','kayak','momondo','edreams','expedia','trip'].map(c => {
+  const voos = parceirosDe('voo').map(c => {
     let total = 0, cupoes = 0, detalhes = [];
     for(const t of trocos){
       const q = cotacaoVoo(c, t.origem, t.destino, t.data, null, ESTADO.classe, ESTADO.pax);
@@ -1005,6 +1007,7 @@ function aplicarBanner(cidade, el){
   if(titulo in cacheBanners){ aplicarFoto(cacheBanners[titulo]); return; }
   procurar('pt', titulo)
     .then(url => url || procurar('en', (WIKI_EN[cidade.n] || cidade.w || cidade.n).replace(/ /g, '_')))
+    .then(url => url || ('https://loremflickr.com/640/360/' + encodeURIComponent(cidade.n) + ',cidade,landmark'))
     .then(url => {
       cacheBanners[titulo] = url || null;
       if(!url) return;
@@ -1095,7 +1098,7 @@ function aplicarOferta(origem, of){
 function desenharParceiros(){
   const nomesCat = {voo:'Voos', hotel:'Hotéis', casa:'Casas e apartamentos', hostel:'Hostels',
                     carro:'Aluguer de carros', comboio:'Comboios', autocarro:'Autocarros',
-                    actividade:'Actividades', pacote:'Pacotes', planeador:'Planeador de rotas'};
+                    actividade:'Actividades', pacote:'Pacotes', planeador:'Planeador de rotas', ferry:'Ferries e barcos', organizador:'Organizador de viagem', corporativo:'Viagens de empresa'};
   document.getElementById('grelha-parceiros').innerHTML = Object.keys(PARCEIROS).map(chave => {
     const p = PARCEIROS[chave];
     return `<div class="parceiro-item">
