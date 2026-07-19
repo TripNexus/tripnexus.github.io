@@ -10,6 +10,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 const TP = 'https://api.travelpayouts.com';
+const TRAVELPAYOUTS_MARKER = '552141';   // marker de afiliado (atribui comissão)
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -97,28 +98,44 @@ async function voos(url, env){
   return resposta({ofertas, classe:'economica', fonte:'travelpayouts'});
 }
 
-/* /hoteis: preços reais de hotéis via Hotellook (cidade por nome). */
+/* /hoteis: preços reais de hotéis via Hotellook.
+   A Hotellook não reconhece bem a cidade por nome (devolve 404), por isso
+   resolvemos primeiro o nome num locationId e só depois pedimos os preços.
+   Falha sempre de forma graciosa (ofertas vazias) para o site cair nas
+   estimativas em vez de mostrar um erro. */
 async function hoteis(url, env){
   const q = url.searchParams;
-  if(!q.get('cidade') || !q.get('checkin') || !q.get('checkout'))
-    return resposta({erro:'parâmetros necessários: cidade (nome), checkin, checkout'}, 400);
-  const ps = new URLSearchParams({
-    location: q.get('cidade'),
-    checkIn: q.get('checkin'),
-    checkOut: q.get('checkout'),
-    adults: q.get('adultos') || '2',
-    currency: 'eur',
-    limit: '15'
-  });
-  if(obterToken(env)) ps.set('token', obterToken(env));
-  const r = await fetch('https://engine.hotellook.com/api/v2/cache.json?' + ps);
-  if(!r.ok) return resposta({erro:'Hotellook devolveu ' + r.status}, 502);
-  const j = await r.json();
-  const ofertas = (Array.isArray(j) ? j : [])
-    .filter(h => h.priceFrom > 0)
-    .map(h => ({nome: h.hotelName, preco: Math.round(+h.priceFrom), estrelas: h.stars || 0}))
-    .sort((a, b) => a.preco - b.preco);
-  return resposta({ofertas, fonte:'hotellook'});
+  const cidade = q.get('cidade'), checkin = q.get('checkin'), checkout = q.get('checkout');
+  if(!cidade || !checkin || !checkout)
+    return resposta({erro:'parâmetros necessários: cidade (nome), checkin, checkout (AAAA-MM-DD)'}, 400);
+  const token = obterToken(env);
+  try{
+    /* 1) resolver a cidade num locationId */
+    let locationId = null;
+    const lk = await fetch('https://engine.hotellook.com/api/v2/lookup.json?query=' +
+      encodeURIComponent(cidade) + '&lang=pt&lookFor=city&limit=1' + (token ? '&token=' + token : ''));
+    if(lk.ok){
+      const lj = await lk.json();
+      const loc = lj && lj.results && lj.results.locations && lj.results.locations[0];
+      if(loc) locationId = loc.id;
+    }
+    /* 2) preços em cache (por locationId; recurso ao nome) */
+    const ps = new URLSearchParams({checkIn: checkin, checkOut: checkout,
+      adults: q.get('adultos') || '2', currency: 'eur', limit: '20'});
+    if(locationId) ps.set('locationId', locationId); else ps.set('location', cidade);
+    if(token) ps.set('token', token);
+    if(TRAVELPAYOUTS_MARKER) ps.set('marker', TRAVELPAYOUTS_MARKER);
+    const r = await fetch('https://engine.hotellook.com/api/v2/cache.json?' + ps);
+    if(!r.ok) return resposta({ofertas:[], fonte:'hotellook', nota:'sem cache para estas datas (' + r.status + ')'});
+    const j = await r.json();
+    const ofertas = (Array.isArray(j) ? j : [])
+      .filter(h => h.priceFrom > 0)
+      .map(h => ({nome: h.hotelName, preco: Math.round(+h.priceFrom), estrelas: h.stars || 0}))
+      .sort((a, b) => a.preco - b.preco);
+    return resposta({ofertas, fonte:'hotellook'});
+  }catch(e){
+    return resposta({ofertas:[], fonte:'hotellook', erro:String(e.message || e)});
+  }
 }
 
 export default {
