@@ -9,10 +9,11 @@ const ESTADO = {
   transportes:['metro'],
   alojamento:['hotel','airbnb'],
   origem:null, destino:null, ida:null, volta:null,
-  trocos:[]                               // várias cidades
+  trocos:[],                              // várias cidades
+  explorar:false                          // modo «Para onde?» vazio
 };
 
-let mapaResultados = null, mapaOfertas = null, ofertasDesenhadas = false;
+let mapaResultados = null, mapaOfertas = null, mapaExplorar = null, ofertasDesenhadas = false;
 
 /* ── utilidades de interface ─────────────────────────────────── */
 function normalizar(t){
@@ -340,6 +341,23 @@ function aplicarURL(){
     document.querySelectorAll('input[name="alojamento"]').forEach(cb => cb.checked = ESTADO.alojamento.includes(cb.value));
   }
 
+  ESTADO.explorar = false;
+  if(ps.get('explorar') && ps.get('de') && !ps.get('para')){
+    const o = cidadePorNome(ps.get('de')); const ida = deISO(ps.get('ida'));
+    if(!o || !ida) return false;
+    ESTADO.origem = o; ESTADO.ida = ida;
+    ESTADO.volta = tipo === 'so-ida' ? null : deISO(ps.get('volta'));
+    ESTADO.destino = null; ESTADO.explorar = true;
+    inputOrigem.value = o.n; inputOrigem.dataset.cidade = o.n;
+    inputDestino.value = ''; inputDestino.dataset.cidade = '';
+    document.getElementById('input-partida').value = formatarDataCurta(ida);
+    document.getElementById('input-regresso').value = formatarDataCurta(ESTADO.volta);
+    const rt = document.querySelector(`input[name="tipo-viagem"][value="${tipo}"]`);
+    if(rt && !rt.checked){ rt.checked = true; rt.dispatchEvent(new Event('change')); }
+    actualizarRotulos();
+    return true;
+  }
+
   if(tipo === 'multi'){
     const trocos = (ps.get('trocos') || '').split(',').map(x => {
       const partes = x.split('-');
@@ -366,7 +384,7 @@ function aplicarURL(){
   return true;
 }
 window.addEventListener('popstate', () => {
-  if(aplicarURL()) executarPesquisa();
+  if(aplicarURL()){ if(ESTADO.explorar) executarExploracao(); else executarPesquisa(); }
   else document.getElementById('resultados').hidden = true;
 });
 
@@ -419,6 +437,13 @@ function reactualizarResultados(){
 }
 
 document.getElementById('btn-pesquisar').addEventListener('click', () => {
+  resolverCidades();
+  if(!inputDestino.value.trim() && ESTADO.origem){
+    if(!ESTADO.ida){ marcarErro(document.getElementById('campo-partida')); return; }
+    ESTADO.destino = null;
+    executarExploracao();
+    return;
+  }
   if(validarPesquisaSimples()) executarPesquisa();
 });
 document.getElementById('btn-pesquisar-multi').addEventListener('click', () => {
@@ -426,17 +451,14 @@ document.getElementById('btn-pesquisar-multi').addEventListener('click', () => {
 });
 
 /* ecrã de carregamento com os ícones dos parceiros */
-function executarPesquisa(){
-  /* o URL reflecte sempre a pesquisa apresentada, para partilhar e guardar */
-  try{ history.replaceState({}, '', urlDaPesquisa()); }catch(e){ /* file:// */ }
-  if(typeof registarHistorico === 'function'){ try{ registarHistorico(); }catch(e){} }
+function mostrarCarregamento(aoTerminar, passos){
   const overlay = document.getElementById('carregando');
   const icones = ['google','skyscanner','kayak','momondo','booking','trivago','edreams','expedia','airbnb','omio','rentalcars','getyourguide'];
   document.getElementById('carregando-icones').innerHTML = icones.map(iconeParceiro).join('');
   overlay.hidden = false;
   const barra = document.getElementById('barra-progresso');
   const passo = document.getElementById('carregando-passo');
-  const passos = ['A contactar 24 parceiros…','A recolher tarifas e disponibilidade…','A procurar cupões activos…','A calcular totais e pacotes…'];
+  passos = passos || ['A contactar 24 parceiros…','A recolher tarifas e disponibilidade…','A procurar cupões activos…','A calcular totais e pacotes…'];
   let pct = 0, i = 0;
   barra.style.width = '0%';
   const intervalo = setInterval(() => {
@@ -447,11 +469,113 @@ function executarPesquisa(){
       clearInterval(intervalo);
       setTimeout(() => {
         overlay.hidden = true;
-        if(ESTADO.tipo === 'multi') desenharResultadosMulti(); else desenharResultados();
+        aoTerminar();
         document.getElementById('resultados').scrollIntoView({behavior:'smooth'});
       }, 250);
     }
   }, 320);
+}
+function executarPesquisa(){
+  ESTADO.explorar = false;
+  /* o URL reflecte sempre a pesquisa apresentada, para partilhar e guardar */
+  try{ history.replaceState({}, '', urlDaPesquisa()); }catch(e){ /* file:// */ }
+  if(typeof registarHistorico === 'function'){ try{ registarHistorico(); }catch(e){} }
+  mostrarCarregamento(() => { if(ESTADO.tipo === 'multi') desenharResultadosMulti(); else desenharResultados(); });
+}
+
+/* ── explorar destinos («Para onde?» vazio) ──────────────────── */
+function melhorPrecoVoo(o, d, ida, volta, classe, pax){
+  let melhor = Infinity;
+  for(const c of ['google','skyscanner','kayak','momondo','edreams','expedia','trip']){
+    const q = cotacaoVoo(c, o, d, ida, volta, classe, pax);
+    if(q.precoFinal < melhor) melhor = q.precoFinal;
+  }
+  return melhor;
+}
+function urlDaExploracao(){
+  const ps = new URLSearchParams();
+  ps.set('tipo', ESTADO.tipo);
+  ps.set('de', ESTADO.origem.i);
+  ps.set('ida', fISO(ESTADO.ida));
+  if(ESTADO.volta && ESTADO.tipo !== 'so-ida') ps.set('volta', fISO(ESTADO.volta));
+  ps.set('adultos', ESTADO.pax.adultos);
+  if(ESTADO.pax.criancas) ps.set('criancas', ESTADO.pax.criancas);
+  ps.set('classe', ESTADO.classe);
+  ps.set('explorar', '1');
+  return '?' + ps.toString();
+}
+function executarExploracao(){
+  ESTADO.explorar = true;
+  try{ history.replaceState({}, '', urlDaExploracao()); }catch(e){}
+  mostrarCarregamento(() => desenharExploracao(),
+    ['A varrer destinos a partir da sua origem…','A recolher as tarifas mais baratas…','A ordenar os destinos por preço…']);
+}
+function escolherDestinoExplorado(d){
+  if(!d) return;
+  ESTADO.destino = d; ESTADO.explorar = false;
+  inputDestino.value = d.n; inputDestino.dataset.cidade = d.n;
+  actualizarRotulos();
+  executarPesquisa();
+}
+function desenharExploracao(){
+  const o = ESTADO.origem, ida = ESTADO.ida, volta = ESTADO.tipo === 'so-ida' ? null : ESTADO.volta;
+  const n = totalPax();
+  const idaVolta = !!volta;
+  const destinos = CIDADES.filter(c => c.i !== o.i).map((c, idx) => ({
+    cidade: c,
+    preco: Math.round(melhorPrecoVoo(o, c, ida, volta, ESTADO.classe, ESTADO.pax)),
+    gradiente: GRADIENTES[idx % GRADIENTES.length]
+  })).sort((a, b) => a.preco - b.preco);
+  const top = destinos.slice(0, 24);
+
+  const html = `
+    <div class="res-cabecalho">
+      <h2>🌍 Para onde ir a partir de ${o.f} ${o.n}?</h2>
+      <span class="res-detalhe">Voos ${idaVolta ? 'de ida e volta' : 'só de ida'} mais baratos · ${formatarDataCurta(ida)}${idaVolta ? ' - ' + formatarDataCurta(volta) : ''} · ${n} ${n === 1 ? 'passageiro' : 'passageiros'} · ${NOME_CLASSE[ESTADO.classe]}</span>
+    </div>
+    <div class="bloco" style="margin-top:1rem">
+      <div class="bloco-titulo">🗺 Destinos no mapa (preço por passageiro)</div>
+      <div id="mapa-explorar" class="mapa mapa-alto"></div>
+    </div>
+    <p class="sub-seccao" style="margin:1.2rem 0 .3rem">Os 24 destinos mais baratos. Carregue num para ver a viagem completa.</p>
+    <div class="grelha-ofertas" id="grelha-explorar">
+      ${top.map(x => `
+        <div class="cartao-oferta">
+          <div class="oferta-topo" style="background:${x.gradiente}">
+            <span class="oferta-bandeira">${x.cidade.f}</span>
+            <span class="oferta-cidade">${x.cidade.n}</span>
+          </div>
+          <div class="oferta-corpo">
+            <span class="oferta-datas">✈ ${o.n} → ${x.cidade.n} · ${x.cidade.p}</span>
+            <div class="oferta-precos"><span class="oferta-agora">${x.preco} €</span><span class="oferta-tipico" style="text-decoration:none">${idaVolta ? 'ida e volta' : 'só ida'}</span></div>
+            <button type="button" class="btn-oferta" data-iata="${x.cidade.i}">Ver esta viagem</button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  const sec = document.getElementById('resultados');
+  sec.innerHTML = html;
+  sec.hidden = false;
+  document.querySelectorAll('#grelha-explorar .oferta-topo').forEach((el, i) => aplicarBanner(top[i].cidade, el));
+  document.querySelectorAll('#grelha-explorar .btn-oferta').forEach(b =>
+    b.addEventListener('click', () => escolherDestinoExplorado(cidadePorNome(b.dataset.iata))));
+  desenharMapaExplorar(o, top, idaVolta);
+}
+function desenharMapaExplorar(o, destinos, idaVolta){
+  if(mapaExplorar){ mapaExplorar.remove(); mapaExplorar = null; }
+  mapaExplorar = criarMapa('mapa-explorar');
+  if(!mapaExplorar) return;
+  const pontos = [[o.la, o.lo]];
+  L.marker([o.la, o.lo]).addTo(mapaExplorar).bindPopup(`<strong>${o.f} ${o.n}</strong><br>Origem`);
+  destinos.forEach(x => {
+    pontos.push([x.cidade.la, x.cidade.lo]);
+    const m = L.marker([x.cidade.la, x.cidade.lo]).addTo(mapaExplorar);
+    m.bindTooltip(`${x.preco} €`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
+    m.bindPopup(`<strong>${x.cidade.f} ${x.cidade.n}</strong><br>${x.preco} € ${idaVolta ? 'ida e volta' : 'só ida'}<br><em>carregue para ver a viagem</em>`);
+    m.on('click', () => escolherDestinoExplorado(x.cidade));
+  });
+  mapaExplorar.fitBounds(L.latLngBounds(pontos).pad(0.15));
+  setTimeout(() => mapaExplorar.invalidateSize(), 150);
 }
 
 /* ── filtros e ordenação dos voos ────────────────────────────── */
@@ -953,4 +1077,4 @@ inputOrigem.dataset.cidade = 'Lisboa';
 ESTADO.origem = cidadePorNome('Lisboa');
 desenharParceiros();
 actualizarRotulos();
-if(aplicarURL()) executarPesquisa();
+if(aplicarURL()){ if(ESTADO.explorar) executarExploracao(); else executarPesquisa(); }
