@@ -127,8 +127,7 @@ const NOMES_ALOJ = {
 function cotacoesAlojamento(cidade, ida, volta, pax, tipos){
   const noites = Math.max(1, Math.round((volta - ida) / 86400000));
   const quartos = Math.max(1, Math.ceil((pax.adultos + pax.criancas) / 2));
-  const mapaTipo = {hotel:['booking','trivago','agoda','expedia','googleHoteis','kayak','trip','logitravel'],
-                    casa:['airbnb','vrbo'], hostel:['hostelworld']};
+  const mapaTipo = {hotel:parceirosDe('hotel'), casa:parceirosDe('casa'), hostel:parceirosDe('hostel')};
   const resultado = [];
   for(const tipo of tipos){
     for(const chave of mapaTipo[tipo]){
@@ -154,7 +153,7 @@ function cotacoesAlojamento(cidade, ida, volta, pax, tipos){
 /* ── carro alugado ────────────────────────────────────────────── */
 function cotacoesCarro(cidade, ida, volta){
   const dias = Math.max(1, Math.round((volta - ida) / 86400000));
-  return ['discovercars','rentalcars','autoeurope'].map(chave => {
+  return parceirosDe('carro').map(chave => {
     const p = PARCEIROS[chave];
     const r = semente('carro|' + chave + cidade.i + chaveData(ida));
     const dia = (24 + r() * 34) * (cidade.c * 0.6 + 0.4) * p.fx * (0.8 + factorEpoca(ida) * 0.35);
@@ -173,7 +172,7 @@ function cotacoesTerrestres(origem, destino, ida, pax, meios){
   const linhas = [];
   const mult = multPax(pax);
   if(meios.includes('comboio')){
-    for(const chave of ['omio','trainline','trip']){
+    for(const chave of parceirosDe('comboio')){
       const r = semente('comboio|' + chave + origem.i + destino.i + chaveData(ida));
       const preco = Math.max(9, km * 0.105 * PARCEIROS[chave].fx * (0.85 + r() * 0.3)) * mult;
       const cupao = procurarCupao(chave, 'comboio' + origem.i + destino.i, preco);
@@ -183,7 +182,7 @@ function cotacoesTerrestres(origem, destino, ida, pax, meios){
     }
   }
   if(meios.includes('autocarro')){
-    for(const chave of ['flixbus','omio','trainline']){
+    for(const chave of parceirosDe('autocarro')){
       const r = semente('bus|' + chave + origem.i + destino.i + chaveData(ida));
       const preco = Math.max(5, km * 0.055 * PARCEIROS[chave].fx * (0.85 + r() * 0.3)) * mult;
       const cupao = procurarCupao(chave, 'bus' + origem.i + destino.i, preco);
@@ -212,7 +211,7 @@ const NOMES_ACT = [
 ];
 function cotacoesActividades(cidade, pax){
   const pessoas = pax.adultos + pax.criancas;
-  return ['civitatis','getyourguide','viator'].map((chave, idx) => {
+  return parceirosDe('actividade').map((chave, idx) => {
     const r = semente('act|' + chave + cidade.i);
     const preco = (17 + r() * 46) * (cidade.c * 0.5 + 0.5) * PARCEIROS[chave].fx * pessoas;
     const cupao = procurarCupao(chave, 'act' + cidade.i, preco);
@@ -223,7 +222,7 @@ function cotacoesActividades(cidade, pax){
 
 /* ── pacotes (voo + hotel, opcionalmente + carro) ─────────────── */
 function cotacoesPacote(origem, destino, ida, volta, classe, pax, somaSeparado, incluiCarro){
-  return ['edreams','expedia','logitravel'].map(chave => {
+  return parceirosDe('pacote').map(chave => {
     const r = semente('pacote|' + chave + origem.i + destino.i + chaveData(ida));
     const factor = 0.86 + r() * 0.20;                    // 0.86 a 1.06 do preço em separado
     const preco = somaSeparado * factor * PARCEIROS[chave].fx;
