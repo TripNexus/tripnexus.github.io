@@ -639,8 +639,9 @@ function desenharMapaResultados(cidades){
    o gradiente colorido fica como recurso se a fotografia não carregar */
 const cacheBanners = {};
 function aplicarBanner(cidade, el){
-  const titulo = cidade.w || cidade.n;
-  const aplicar = url => {
+  /* a API REST da Wikipédia exige o título com «_» em vez de espaços */
+  const titulo = (cidade.w || cidade.n).replace(/ /g, '_');
+  const aplicarFoto = url => {
     if(!url) return;
     const foto = new Image();
     foto.onload = () => {
@@ -648,19 +649,32 @@ function aplicarBanner(cidade, el){
       el.style.backgroundImage = `linear-gradient(rgba(16,18,42,.28), rgba(16,18,42,.6)), url("${url}"), ${gradiente}`;
       el.style.backgroundSize = 'cover';
       el.style.backgroundPosition = 'center';
+      el.classList.add('com-foto');
     };
     foto.src = url;
   };
-  if(titulo in cacheBanners){ aplicar(cacheBanners[titulo]); return; }
-  fetch('https://pt.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(titulo))
-    .then(r => r.ok ? r.json() : null)
-    .then(j => {
-      let url = j && j.thumbnail ? j.thumbnail.source : null;
-      if(url) url = url.replace(/\/(\d+)px-/, '/640px-');
-      cacheBanners[titulo] = url;
-      aplicar(url);
-    })
-    .catch(() => { cacheBanners[titulo] = null; });
+  const procurar = wiki =>
+    fetch('https://' + wiki + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(titulo))
+      .then(r => r.ok ? r.json() : null)
+      .then(j => (j && j.thumbnail) ? j.thumbnail.source : null)
+      .catch(() => null);
+  if(titulo in cacheBanners){ aplicarFoto(cacheBanners[titulo]); return; }
+  procurar('pt')
+    .then(url => url || procurar('en'))
+    .then(url => {
+      cacheBanners[titulo] = url || null;
+      if(!url) return;
+      /* tenta a versão maior; se esse tamanho não existir, usa a miniatura original */
+      const grande = url.replace(/\/(\d+)px-/, '/640px-');
+      if(grande !== url){
+        const teste = new Image();
+        teste.onload = () => aplicarFoto(grande);
+        teste.onerror = () => aplicarFoto(url);
+        teste.src = grande;
+      } else {
+        aplicarFoto(url);
+      }
+    });
 }
 
 function desenharOfertas(){
