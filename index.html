@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=11">
+<link rel="stylesheet" href="assets/css/style.css?v=12">
 </head>
 <body>
 
@@ -109,6 +109,16 @@
               <label class="opcao-check"><input type="checkbox" name="alojamento" value="hotel" checked><span>Hotéis</span></label>
               <label class="opcao-check"><input type="checkbox" name="alojamento" value="airbnb" checked><span>Airbnb e semelhantes</span></label>
               <label class="opcao-check"><input type="checkbox" name="alojamento" value="hostel"><span>Hostels</span></label>
+            </div>
+          </div>
+
+          <div class="dropdown" id="dd-extras">
+            <button class="dd-btn" type="button"><span class="dd-ico">🧳</span><span class="dd-rotulo">Extras</span><span class="seta">▾</span></button>
+            <div class="painel">
+              <p class="painel-titulo">Somar ao total da viagem:</p>
+              <label class="opcao-check"><input type="checkbox" name="extra" value="porao"><span>Mala de porão (23 kg)</span></label>
+              <label class="opcao-check"><input type="checkbox" name="extra" value="cabina"><span>Bagagem de cabina extra</span></label>
+              <label class="opcao-check"><input type="checkbox" name="extra" value="seguro"><span>Seguro de viagem</span></label>
             </div>
           </div>
 
@@ -239,11 +249,11 @@
   /* Preços em tempo real: endereço do backend (ver backend/README.md). */
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
 </script>
-<script src="assets/js/data.js?v=11"></script>
-<script src="assets/js/engine.js?v=11"></script>
-<script src="assets/js/calendar.js?v=11"></script>
-<script src="assets/js/live.js?v=11"></script>
-<script src="assets/js/alertas.js?v=11"></script>
-<script src="assets/js/app.js?v=11"></script>
+<script src="assets/js/data.js?v=12"></script>
+<script src="assets/js/engine.js?v=12"></script>
+<script src="assets/js/calendar.js?v=12"></script>
+<script src="assets/js/live.js?v=12"></script>
+<script src="assets/js/alertas.js?v=12"></script>
+<script src="assets/js/app.js?v=12"></script>
 </body>
 </html>
