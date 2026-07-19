@@ -267,6 +267,16 @@ function ligacaoParceiro(chave, ctx){
 /* Companhias aéreas plausíveis para atribuir às cotações. */
 const COMPANHIAS = ['TAP Air Portugal','Ryanair','easyJet','Vueling','Iberia','Lufthansa','Air France','KLM','British Airways','SWISS','Emirates','Qatar Airways','LATAM','United','Delta'];
 
+/* Títulos na Wikipédia inglesa (recurso quando a portuguesa não tem
+   fotografia utilizável, por exemplo quando a imagem principal é a bandeira). */
+const WIKI_EN = {
+  'Praga':'Prague', 'Nova Iorque':'New York City', 'Londres':'London',
+  'Roma':'Rome', 'Atenas':'Athens', 'Budapeste':'Budapest',
+  'Marraquexe':'Marrakesh', 'Rio de Janeiro':'Rio de Janeiro',
+  'Barcelona':'Barcelona', 'Paris':'Paris', 'Funchal':'Funchal',
+  'Ponta Delgada':'Ponta Delgada'
+};
+
 /* Destinos considerados na aba «Ofertas em conta». */
 const DESTINOS_OFERTAS = ['Barcelona','Roma','Paris','Marraquexe','Praga','Ponta Delgada','Londres','Budapeste','Atenas','Funchal','Nova Iorque','Rio de Janeiro'];
 
