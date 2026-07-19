@@ -278,6 +278,24 @@ function serieHistoricaVoo(origem, destino, ida, precoHoje){
   return {pontos, tipico, dif, tipo};
 }
 
+/* ── extras: bagagem e seguro (somam ao total) ────────────────
+   Valores de referência por passageiro (adultos + crianças). */
+function custoExtras(extras, pax, temVolta, dias){
+  const p = pax.adultos + pax.criancas;
+  const legs = temVolta ? 2 : 1;
+  const linhas = [];
+  if(extras.includes('porao'))
+    linhas.push({chave:'porao', nome:'🧳 Mala de porão (23 kg)', total: arred(42 * p * legs),
+                 detalhe:`${p} ${p === 1 ? 'passageiro' : 'passageiros'} × ${legs} ${legs === 1 ? 'voo' : 'voos'}`});
+  if(extras.includes('cabina'))
+    linhas.push({chave:'cabina', nome:'🎒 Bagagem de cabina extra', total: arred(26 * p * legs),
+                 detalhe:`${p} ${p === 1 ? 'passageiro' : 'passageiros'} × ${legs} ${legs === 1 ? 'voo' : 'voos'}`});
+  if(extras.includes('seguro'))
+    linhas.push({chave:'seguro', nome:'🛡 Seguro de viagem', total: arred((9 + 4.2 * dias) * p),
+                 detalhe:`${p} ${p === 1 ? 'pessoa' : 'pessoas'} × ${dias} ${dias === 1 ? 'dia' : 'dias'}`});
+  return linhas;
+}
+
 function arred(v){ return Math.round(v); }
 function euros(v){
   return v.toLocaleString('pt-PT', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' €';

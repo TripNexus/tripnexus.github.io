@@ -8,6 +8,7 @@ const ESTADO = {
   classe:'economica',
   transportes:['metro'],
   alojamento:['hotel','airbnb'],
+  extras:[],                              // bagagem de porão, cabina, seguro
   origem:null, destino:null, ida:null, volta:null,
   trocos:[],                              // várias cidades
   explorar:false                          // modo «Para onde?» vazio
@@ -88,6 +89,8 @@ function actualizarRotulos(){
   document.querySelector('#dd-transportes .dd-rotulo').textContent = 'Transportes' + (nt ? ' (' + nt + ')' : '');
   const na = ESTADO.alojamento.length;
   document.querySelector('#dd-alojamento .dd-rotulo').textContent = 'Alojamento' + (na ? ' (' + na + ')' : '');
+  const ne = ESTADO.extras.length;
+  document.querySelector('#dd-extras .dd-rotulo').textContent = 'Extras' + (ne ? ' (' + ne + ')' : '');
 }
 
 /* tipo de viagem */
@@ -143,6 +146,12 @@ document.querySelectorAll('input[name="transporte"]').forEach(cb =>
 document.querySelectorAll('input[name="alojamento"]').forEach(cb =>
   cb.addEventListener('change', () => {
     ESTADO.alojamento = [...document.querySelectorAll('input[name="alojamento"]:checked')].map(x => x.value);
+    actualizarRotulos();
+    reactualizarResultados();
+  }));
+document.querySelectorAll('input[name="extra"]').forEach(cb =>
+  cb.addEventListener('change', () => {
+    ESTADO.extras = [...document.querySelectorAll('input[name="extra"]:checked')].map(x => x.value);
     actualizarRotulos();
     reactualizarResultados();
   }));
@@ -306,6 +315,7 @@ function urlDaPesquisa(){
   ps.set('classe', ESTADO.classe);
   ps.set('transportes', ESTADO.transportes.join(','));
   ps.set('alojamento', ESTADO.alojamento.join(','));
+  if(ESTADO.extras.length) ps.set('extras', ESTADO.extras.join(','));
   if(ESTADO.tipo === 'multi'){
     ps.set('trocos', ESTADO.trocos.map(t => t.origem.i + '-' + t.destino.i + '-' + fISO(t.data)).join(','));
   }else{
@@ -340,6 +350,8 @@ function aplicarURL(){
     document.querySelectorAll('input[name="transporte"]').forEach(cb => cb.checked = ESTADO.transportes.includes(cb.value));
     document.querySelectorAll('input[name="alojamento"]').forEach(cb => cb.checked = ESTADO.alojamento.includes(cb.value));
   }
+  ESTADO.extras = (ps.get('extras') || '').split(',').filter(x => ['porao','cabina','seguro'].includes(x));
+  document.querySelectorAll('input[name="extra"]').forEach(cb => cb.checked = ESTADO.extras.includes(cb.value));
 
   ESTADO.explorar = false;
   if(ps.get('explorar') && ps.get('de') && !ps.get('para')){
@@ -689,10 +701,12 @@ function desenharResultados(){
   const actividades = cotacoesActividades(d, ESTADO.pax);
 
   /* total e pacotes */
+  const extras = ESTADO.extras.length ? custoExtras(ESTADO.extras, ESTADO.pax, !!volta, noites) : [];
   let total = melhorVoo.precoFinal;
   if(melhorAloj) total += melhorAloj.precoFinal;
   if(melhorCarro) total += melhorCarro.precoFinal;
   if(tp) total += tp.total;
+  for(const x of extras) total += x.total;
   const somaPacote = melhorVoo.precoFinal + (melhorAloj ? melhorAloj.precoFinal : 0) + (melhorCarro ? melhorCarro.precoFinal : 0);
   const pacotes = (volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, !!melhorCarro) : [];
   const melhorPacote = pacotes[0] || null;
@@ -779,6 +793,7 @@ function desenharResultados(){
           ${melhorAloj ? `<div class="resumo-linha"><span>🏨 ${tiposAloj[melhorAloj.tipo]} (${PARCEIROS[melhorAloj.parceiro].nome})</span><strong>${euros(melhorAloj.precoFinal)}</strong></div>` : ''}
           ${melhorCarro ? `<div class="resumo-linha"><span>🚗 Carro (${PARCEIROS[melhorCarro.parceiro].nome})</span><strong>${euros(melhorCarro.precoFinal)}</strong></div>` : ''}
           ${tp ? `<div class="resumo-linha"><span>🚇 Transportes públicos (${tp.dias} dias × ${tp.pessoas} ${tp.pessoas === 1 ? 'pessoa' : 'pessoas'})</span><strong>${euros(tp.total)}</strong></div>` : ''}
+          ${extras.map(x => `<div class="resumo-linha"><span>${x.nome} (${x.detalhe})</span><strong>${euros(x.total)}</strong></div>`).join('')}
           <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${euros(total)}</span></div>
           <p class="resumo-nota">Combinação mais barata encontrada, com cupões já descontados. Valores estimados, confirmados no site de cada parceiro.</p>
           <div class="accoes-resumo" id="accoes-resumo"></div>
