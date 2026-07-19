@@ -126,15 +126,15 @@ async function hoteis(url, env){
     if(token) ps.set('token', token);
     if(TRAVELPAYOUTS_MARKER) ps.set('marker', TRAVELPAYOUTS_MARKER);
     const r = await fetch('https://engine.hotellook.com/api/v2/cache.json?' + ps);
-    if(!r.ok) return resposta({ofertas:[], fonte:'hotellook', nota:'sem cache para estas datas (' + r.status + ')'});
+    if(!r.ok) return resposta({ofertas:[], fonte:'hotellook', nota:'sem cache para estas datas (' + r.status + ')'}, 200, true);
     const j = await r.json();
     const ofertas = (Array.isArray(j) ? j : [])
       .filter(h => h.priceFrom > 0)
       .map(h => ({nome: h.hotelName, preco: Math.round(+h.priceFrom), estrelas: h.stars || 0}))
       .sort((a, b) => a.preco - b.preco);
-    return resposta({ofertas, fonte:'hotellook'});
+    return resposta({ofertas, fonte:'hotellook', locationId, versao:'v2-lookup'});
   }catch(e){
-    return resposta({ofertas:[], fonte:'hotellook', erro:String(e.message || e)});
+    return resposta({ofertas:[], fonte:'hotellook', erro:String(e.message || e)}, 200, true);
   }
 }
 
