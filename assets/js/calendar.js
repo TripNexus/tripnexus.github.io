@@ -118,7 +118,7 @@ function desenharCalendario(){
       if(preco !== undefined && preco === minimo) classes.push('mais-barato');
       html += `<button type="button" class="${classes.join(' ')}" data-dia="${chave}" ${passado ? 'disabled' : ''}>
         <span class="cal-dia-num">${d}</span>
-        ${preco !== undefined ? `<span class="cal-dia-preco">${preco} €</span>` : ''}
+        ${preco !== undefined ? `<span class="cal-dia-preco">${euros(preco)}</span>` : ''}
       </button>`;
     }
     html += '</div></div>';
