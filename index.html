@@ -13,7 +13,7 @@
   })();
 </script>
 <title>TripNexus | Comparador de viagens: voos, alojamento, carros e transportes</title>
-<meta name="description" content="O TripNexus compara preços de viagens em mais de 24 sites (Google Voos, Skyscanner, Kayak, Momondo, Booking, Airbnb, Omio e muitos mais), aplica cupões automaticamente e recomenda pacotes quando compensam.">
+<meta name="description" content="O TripNexus compara preços de viagens em mais de 60 sites (Google Voos, Skyscanner, Kayak, Momondo, Booking, Airbnb, Omio e muitos mais), aplica cupões automaticamente e recomenda pacotes quando compensam.">
 <link rel="canonical" href="https://tripnexus.github.io/">
 <meta name="theme-color" content="#161938">
 <meta name="robots" content="index, follow">
@@ -48,7 +48,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=14">
+<link rel="stylesheet" href="assets/css/style.css?v=15">
 </head>
 <body>
 
@@ -76,7 +76,7 @@
   <div class="hero">
     <div class="hero-inner">
       <h1>Encontre a viagem mais barata,<br>sem procurar site a site.</h1>
-      <p class="hero-sub">Comparamos voos, alojamento, carros e transportes em mais de <strong>24 sites</strong> em simultâneo,
+      <p class="hero-sub">Comparamos voos, alojamento, carros e transportes em mais de <strong>60 sites</strong> em simultâneo,
       aplicamos <strong>cupões</strong> automaticamente e recomendamos <strong>pacotes</strong> sempre que compensam.</p>
 
       <div class="cartao-pesquisa" id="cartao-pesquisa">
@@ -280,13 +280,14 @@
   /* Preços em tempo real: endereço do backend (ver backend/README.md).
      Para usar outro Worker, altere a URL abaixo. */
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
+  window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
 </script>
-<script src="assets/js/data.js?v=14"></script>
-<script src="assets/js/engine.js?v=14"></script>
-<script src="assets/js/calendar.js?v=14"></script>
-<script src="assets/js/live.js?v=14"></script>
-<script src="assets/js/alertas.js?v=14"></script>
-<script src="assets/js/app.js?v=14"></script>
+<script src="assets/js/data.js?v=15"></script>
+<script src="assets/js/engine.js?v=15"></script>
+<script src="assets/js/calendar.js?v=15"></script>
+<script src="assets/js/live.js?v=15"></script>
+<script src="assets/js/alertas.js?v=15"></script>
+<script src="assets/js/app.js?v=15"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
