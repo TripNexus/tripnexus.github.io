@@ -255,6 +255,29 @@ function calcularOfertas(origemNome){
 }
 
 /* arredondamento a euros inteiros: mantém os totais coerentes com as parcelas */
+/* ── evolução do preço (últimas 8 semanas) ────────────────────
+   Série estimada de observações diárias do preço do voo, ancorada
+   no preço actual para ser coerente com o que está no ecrã: os
+   preços tendem a subir nos ~45 dias antes da partida, com ruído
+   determinístico por rota e dia. */
+function serieHistoricaVoo(origem, destino, ida, precoHoje){
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const dppHoje = Math.max(1, Math.round((ida - hoje) / 86400000));
+  const tendencia = dpp => 1 + Math.max(0, 45 - dpp) * 0.005;
+  const bruto = [];
+  for(let i = 56; i >= 0; i--){
+    const r = semente('hist|' + origem.i + destino.i + chaveData(ida) + '|' + i);
+    bruto.push(tendencia(dppHoje + i) * (0.95 + r() * 0.10));
+  }
+  const escala = precoHoje / bruto[bruto.length - 1];
+  const pontos = bruto.map(v => Math.round(v * escala));
+  const ordenados = [...pontos].sort((a, b) => a - b);
+  const tipico = ordenados[Math.floor(ordenados.length / 2)];
+  const dif = Math.round((precoHoje / tipico - 1) * 100);
+  const tipo = dif <= -8 ? 'bom' : (dif >= 8 ? 'alto' : 'neutro');
+  return {pontos, tipico, dif, tipo};
+}
+
 function arred(v){ return Math.round(v); }
 function euros(v){
   return v.toLocaleString('pt-PT', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' €';
