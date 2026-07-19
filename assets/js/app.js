@@ -559,7 +559,7 @@ function desenharExploracao(){
           </div>
           <div class="oferta-corpo">
             <span class="oferta-datas">✈ ${o.n} → ${x.cidade.n} · ${x.cidade.p}</span>
-            <div class="oferta-precos"><span class="oferta-agora">${x.preco} €</span><span class="oferta-tipico" style="text-decoration:none">${idaVolta ? 'ida e volta' : 'só ida'}</span></div>
+            <div class="oferta-precos"><span class="oferta-agora">${euros(x.preco)}</span><span class="oferta-tipico" style="text-decoration:none">${idaVolta ? 'ida e volta' : 'só ida'}</span></div>
             <button type="button" class="btn-oferta" data-iata="${x.cidade.i}">Ver esta viagem</button>
           </div>
         </div>`).join('')}
@@ -582,8 +582,8 @@ function desenharMapaExplorar(o, destinos, idaVolta){
   destinos.forEach(x => {
     pontos.push([x.cidade.la, x.cidade.lo]);
     const m = L.marker([x.cidade.la, x.cidade.lo]).addTo(mapaExplorar);
-    m.bindTooltip(`${x.preco} €`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
-    m.bindPopup(`<strong>${x.cidade.f} ${x.cidade.n}</strong><br>${x.preco} € ${idaVolta ? 'ida e volta' : 'só ida'}<br><em>carregue para ver a viagem</em>`);
+    m.bindTooltip(`${euros(x.preco)}`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
+    m.bindPopup(`<strong>${x.cidade.f} ${x.cidade.n}</strong><br>${euros(x.preco)} ${idaVolta ? 'ida e volta' : 'só ida'}<br><em>carregue para ver a viagem</em>`);
     m.on('click', () => escolherDestinoExplorado(x.cidade));
   });
   mapaExplorar.fitBounds(L.latLngBounds(pontos).pad(0.15));
@@ -648,7 +648,7 @@ function graficoEvolucao(serie){
   return `<svg class="grafico-preco" viewBox="0 0 320 132" role="img" aria-label="Evolução estimada do preço do voo">
     <polygon points="8,104 ${linha} 312,104" fill="rgba(67,83,255,.10)"/>
     <line x1="8" y1="${yTipico}" x2="312" y2="${yTipico}" stroke="#a9b0c8" stroke-dasharray="4 4" stroke-width="1"/>
-    <text x="310" y="${(+yTipico - 4).toFixed(1)}" text-anchor="end" class="g-tipico">típico: ${serie.tipico} €</text>
+    <text x="310" y="${(+yTipico - 4).toFixed(1)}" text-anchor="end" class="g-tipico">típico: ${euros(serie.tipico)}</text>
     <polyline points="${linha}" fill="none" stroke="#4353ff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
     <circle cx="${X(n - 1).toFixed(1)}" cy="${Y(serie.pontos[n - 1]).toFixed(1)}" r="4.2" fill="${corPonto}"/>
     <text x="8" y="124" class="g-eixo">há 8 semanas</text>
@@ -670,6 +670,28 @@ function blocoEvolucao(o, d, ida, precoHoje){
           ${graficoEvolucao(serie)}
           <p class="bloco-sub" style="margin:.5rem 0 0">Evolução estimada para esta rota e datas, ancorada no melhor preço actual (${euros(precoHoje)}).</p>
         </div>`;
+}
+
+/* ── bloco «Sobre o destino» (clima, melhor altura, links) ───── */
+function blocoDestino(d){
+  const t = climaEstimado(d);
+  const bons = t.map((x, i) => ({x, i})).filter(o => o.x >= 16 && o.x <= 28).map(o => MESES[o.i]);
+  const min = Math.min(...t), max = Math.max(...t), amp = Math.max(1, max - min);
+  const barras = t.map((x, i) => {
+    const h = 8 + ((x - min) / amp) * 34;
+    const cor = x >= 28 ? '#f59e0b' : (x >= 16 ? '#0e9f6e' : '#4da3f5');
+    return `<div class="clima-col"><div class="clima-barra" style="height:${h.toFixed(0)}px;background:${cor}" title="${x}°C"></div><span>${MESES_INI[i]}</span></div>`;
+  }).join('');
+  const linkVisto = 'https://www.google.com/search?q=' + encodeURIComponent('requisitos de entrada e vistos ' + d.p + ' para cidadãos portugueses');
+  return `<div class="bloco">
+    <div class="bloco-titulo">🌡 Sobre ${d.n}</div>
+    <p class="bloco-sub">${d.p}. Clima típico estimado (máximas médias, °C):</p>
+    <div class="clima">${barras}</div>
+    ${bons.length ? `<p class="bloco-sub" style="margin-top:.6rem">🗓 Melhor altura para visitar: <strong>${bons.join(', ')}</strong>.</p>` : ''}
+    <a class="btn-ver" style="display:inline-block;margin-top:.5rem" href="${linkVisto}" target="_blank" rel="noopener">Requisitos de entrada e vistos ↗</a>
+    <a class="btn-ver" style="display:inline-block;margin:.5rem 0 0 .4rem;background:var(--verde)" href="${ligacaoParceiro('getyourguide', {destino:d})}" target="_blank" rel="noopener">Actividades e excursões ↗</a>
+    <p class="bloco-sub" style="margin:.5rem 0 0">Vistos e documentos: consulte sempre fontes oficiais para a sua nacionalidade.</p>
+  </div>`;
 }
 
 /* ── resultados: pesquisa simples ────────────────────────────── */
@@ -831,6 +853,7 @@ function desenharResultados(){
           <div class="bloco-titulo">🗺 Mapa da viagem</div>
           <div id="mapa-resultados" class="mapa"></div>
         </div>
+        ${blocoDestino(d)}
       </div>
     </div>`;
 
@@ -1024,8 +1047,8 @@ function desenharOfertas(){
       </div>
       <div class="oferta-corpo">
         <span class="oferta-datas">✈ ${origem.n} → ${of.destino.n} · ${formatarDataCurta(of.ida)} - ${formatarDataCurta(of.volta)}</span>
-        <div class="oferta-precos"><span class="oferta-agora">${of.agora} €</span><span class="oferta-tipico">${of.tipico} €</span></div>
-        <span class="oferta-poupanca">Poupa ${of.tipico - of.agora} € face ao valor típico em datas anteriores</span>
+        <div class="oferta-precos"><span class="oferta-agora">${euros(of.agora)}</span><span class="oferta-tipico">${euros(of.tipico)}</span></div>
+        <span class="oferta-poupanca">Poupa ${euros(of.tipico - of.agora)} face ao valor típico em datas anteriores</span>
         <button type="button" class="btn-oferta" data-i="${i}">Ver esta viagem</button>
       </div>
     </div>`).join('');
@@ -1045,8 +1068,8 @@ function desenharOfertas(){
     ofertas.forEach(of => {
       pontos.push([of.destino.la, of.destino.lo]);
       const m = L.marker([of.destino.la, of.destino.lo]).addTo(mapaOfertas);
-      m.bindTooltip(`${of.agora} €`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
-      m.bindPopup(`<strong>${of.destino.f} ${of.destino.n}</strong><br>${of.agora} € (antes ${of.tipico} €)`);
+      m.bindTooltip(`${euros(of.agora)}`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
+      m.bindPopup(`<strong>${of.destino.f} ${of.destino.n}</strong><br>${euros(of.agora)} (antes ${euros(of.tipico)})`);
       m.on('popupopen', () => {});
     });
     mapaOfertas.fitBounds(L.latLngBounds(pontos).pad(0.2));
@@ -1110,4 +1133,29 @@ if(aplicarURL()){ if(ESTADO.explorar) executarExploracao(); else executarPesquis
     try{ localStorage.setItem('tn_tema', novo); }catch(e){}
     aplicar(novo);
   });
+})();
+
+/* ── moeda (taxas de câmbio ao vivo) ─────────────────────────── */
+function reactualizarTudo(){
+  const sec = document.getElementById('resultados');
+  if(sec && !sec.hidden){
+    if(ESTADO.explorar) desenharExploracao();
+    else if(ESTADO.tipo === 'multi'){ if(validarPesquisaMulti(true)) desenharResultadosMulti(); }
+    else if(validarPesquisaSimples(true)) desenharResultados();
+  }
+  const vo = document.getElementById('vista-ofertas');
+  if(vo && !vo.hidden){ ofertasDesenhadas = false; desenharOfertas(); }
+}
+(function(){
+  const sel = document.getElementById('sel-moeda');
+  if(!sel) return;
+  try{ const m = localStorage.getItem('tn_moeda'); if(m && MOEDAS[m]){ MOEDA = m; sel.value = m; } }catch(e){}
+  sel.addEventListener('change', () => {
+    MOEDA = sel.value;
+    try{ localStorage.setItem('tn_moeda', MOEDA); }catch(e){}
+    reactualizarTudo();
+  });
+  fetch('https://open.er-api.com/v6/latest/EUR').then(r => r.ok ? r.json() : null).then(j => {
+    if(j && j.rates){ ['USD','GBP','BRL'].forEach(c => { if(j.rates[c]) TAXAS[c] = j.rates[c]; }); TAXAS.EUR = 1; if(MOEDA !== 'EUR') reactualizarTudo(); }
+  }).catch(() => {});
 })();

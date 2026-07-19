@@ -298,5 +298,22 @@ function custoExtras(extras, pax, temVolta, dias){
 
 function arred(v){ return Math.round(v); }
 function euros(v){
-  return v.toLocaleString('pt-PT', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' €';
+  const m = MOEDAS[MOEDA] || MOEDAS.EUR;
+  const n = Math.round(v * (TAXAS[MOEDA] || 1)).toLocaleString('pt-PT', {maximumFractionDigits:0});
+  return m.ap ? m.s + ' ' + n : n + ' ' + m.s;
+}
+const MOEDAS = {EUR:{s:'€',ap:false}, USD:{s:'$',ap:true}, GBP:{s:'£',ap:true}, BRL:{s:'R$',ap:true}};
+let MOEDA = 'EUR';
+let TAXAS = {EUR:1, USD:1.08, GBP:0.85, BRL:6.2};   // recurso; substituído por taxas ao vivo
+
+/* clima típico estimado (máximas médias por mês) a partir da latitude */
+const MESES_INI = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+function climaEstimado(cidade){
+  const absLat = Math.abs(cidade.la), sul = cidade.la < 0;
+  const base = 27 - absLat * 0.42, amp = 3 + absLat * 0.32, t = [];
+  for(let m = 0; m < 12; m++){
+    const faseN = Math.cos((m - 6.5) / 12 * 2 * Math.PI);
+    t.push(Math.round(base + amp * (sul ? -faseN : faseN)));
+  }
+  return t;
 }

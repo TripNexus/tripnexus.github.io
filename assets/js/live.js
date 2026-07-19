@@ -48,7 +48,7 @@ async function actualizarVoosReais(ctx){
               v.partida ? 'partida ' + v.partida : ''
             ].filter(Boolean).join(' · ')}</div>
           </div>
-          <div class="oferta-preco"><div class="preco-actual">${Math.round(v.precoFinal)} €</div></div>
+          <div class="oferta-preco"><div class="preco-actual">${euros(v.precoFinal)}</div></div>
           <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Reservar</a>
         </div>`).join('') : '<p class="bloco-sub">Nenhum voo cumpre os filtros escolhidos. <button type="button" class="btn-suave" id="repor-filtros">Repor filtros</button></p>'}
       <p class="bloco-sub">A reserva é concluída no site do parceiro, já com a rota e as datas preenchidas.</p>`;
