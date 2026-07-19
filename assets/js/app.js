@@ -429,6 +429,7 @@ document.getElementById('btn-pesquisar-multi').addEventListener('click', () => {
 function executarPesquisa(){
   /* o URL reflecte sempre a pesquisa apresentada, para partilhar e guardar */
   try{ history.replaceState({}, '', urlDaPesquisa()); }catch(e){ /* file:// */ }
+  if(typeof registarHistorico === 'function'){ try{ registarHistorico(); }catch(e){} }
   const overlay = document.getElementById('carregando');
   const icones = ['google','skyscanner','kayak','momondo','booking','trivago','edreams','expedia','airbnb','omio','rentalcars','getyourguide'];
   document.getElementById('carregando-icones').innerHTML = icones.map(iconeParceiro).join('');
@@ -619,6 +620,7 @@ function desenharResultados(){
           ${tp ? `<div class="resumo-linha"><span>🚇 Transportes públicos (${tp.dias} dias × ${tp.pessoas} ${tp.pessoas === 1 ? 'pessoa' : 'pessoas'})</span><strong>${euros(tp.total)}</strong></div>` : ''}
           <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${euros(total)}</span></div>
           <p class="resumo-nota">Combinação mais barata encontrada, com cupões já descontados. Valores estimados, confirmados no site de cada parceiro.</p>
+          <div class="accoes-resumo" id="accoes-resumo"></div>
         </div>
 
         ${pacotes.length ? `
@@ -659,6 +661,7 @@ function desenharResultados(){
   sec.hidden = false;
   desenharMapaResultados([o, d]);
   ligarFiltrosVoos(sec, desenharResultados);
+  if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, melhorVoo);
   if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
 }
 
@@ -730,6 +733,7 @@ function desenharResultadosMulti(){
           ${estadias.filter(e => e.melhor).map(e => `<div class="resumo-linha"><span>🏨 ${e.cidade.n} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} (${PARCEIROS[e.melhor.parceiro].nome})</span><strong>${euros(e.melhor.precoFinal)}</strong></div>`).join('')}
           <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${euros(total)}</span></div>
           <p class="resumo-nota">Os pacotes e o aluguer de carro estão disponíveis nas pesquisas de ida e volta. Valores estimados.</p>
+          <div class="accoes-resumo" id="accoes-resumo"></div>
         </div>
         <div class="bloco">
           <div class="bloco-titulo">🗺 Mapa da viagem</div>
@@ -742,6 +746,7 @@ function desenharResultadosMulti(){
   sec.innerHTML = html;
   sec.hidden = false;
   desenharMapaResultados([trocos[0].origem, ...trocos.map(t => t.destino)]);
+  if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, null);
 }
 
 /* ── mapas (Leaflet) ─────────────────────────────────────────── */
