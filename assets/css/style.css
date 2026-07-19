@@ -398,6 +398,7 @@ img{max-width:100%}
 .pacote-compara .acima{color:var(--ambar);font-weight:800}
 
 .mapa{height:22rem;border-radius:var(--raio);box-shadow:var(--sombra);z-index:1}
+.mapa-alto{height:28rem}
 .tooltip-preco{
   background:#fff;border:0;border-radius:8px;box-shadow:0 3px 10px rgba(20,25,60,.25);
   font-weight:800;color:var(--verde);font-size:.8rem;padding:.15rem .45rem;
