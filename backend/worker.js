@@ -3,8 +3,8 @@
    Intermediário seguro entre o site e a API Travelpayouts/Aviasales
    (voos): guarda o token no servidor, faz cache das respostas e
    devolve JSON simples que o site consome (assets/js/live.js).
-   Hotéis via Xotelo (dados do TripAdvisor, grátis e sem chave); se
-   indisponível, o site cai nas estimativas locais.
+   Hotéis via Makcorps (comparação de tarifas de vários sites, plano
+   gratuito com chave); se indisponível, o site cai nas estimativas locais.
    Nota: a Amadeus descontinuou o portal Self-Service a 17/07/2026,
    pelo que este Worker usa a Travelpayouts, de registo gratuito.
    Instruções de instalação: backend/README.md
@@ -33,7 +33,8 @@ async function estado(env){
   const token = obterToken(env);
   const info = {
     token_definido: token.length > 0,
-    token_tamanho: token.length
+    token_tamanho: token.length,
+    makcorps_token_definido: ((env.MAKCORPS_TOKEN || '').trim().length > 0)
   };
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
@@ -98,49 +99,88 @@ async function voos(url, env){
   return resposta({ofertas, classe:'economica', fonte:'travelpayouts'});
 }
 
-/* /hoteis: preços reais de hotéis via Xotelo (dados do TripAdvisor, grátis,
-   sem chave). Fluxo: /search resolve a cidade num location_key, /list
-   devolve os hotéis com faixas de preço para as datas. Falha sempre de
-   forma graciosa (ofertas vazias) para o site cair nas estimativas. */
+/* extrai um número de um preço que pode vir como "€120", "$1,299.00",
+   "1 299", etc. Devolve 0 se não houver número utilizável. */
+function precoNumero(v){
+  if(v == null) return 0;
+  let s = String(v).replace(/[^\d.,]/g, '');
+  if(!s) return 0;
+  /* remove separadores de milhar; mantém o último ponto/vírgula como decimal */
+  if(s.includes('.') && s.includes(',')){
+    s = s.lastIndexOf('.') > s.lastIndexOf(',')
+      ? s.replace(/,/g, '')
+      : s.replace(/\./g, '').replace(',', '.');
+  }else if((s.match(/,/g) || []).length === 1 && /,\d{1,2}$/.test(s)){
+    s = s.replace(',', '.');
+  }else{
+    s = s.replace(/[.,]/g, '');
+  }
+  const n = parseFloat(s);
+  return isFinite(n) && n > 0 ? n : 0;
+}
+
+/* /hoteis: preços reais de hotéis via Makcorps (comparação de tarifas de
+   vários sites, plano gratuito com chave). Fluxo: /mapping resolve a cidade
+   num cityid, /city devolve os hotéis com os preços de cada fornecedor.
+   Falha sempre de forma graciosa (ofertas vazias) para o site cair nas
+   estimativas locais, sem erro visível para o utilizador. */
 async function hoteis(url, env){
   const q = url.searchParams;
   const cidade = q.get('cidade'), checkin = q.get('checkin'), checkout = q.get('checkout');
+  const adultos = String(q.get('adultos') || 2);
   if(!cidade || !checkin || !checkout)
     return resposta({erro:'parâmetros necessários: cidade (nome), checkin, checkout (AAAA-MM-DD)'}, 400);
-  const X = 'https://data.xotelo.com/api';
-  const arr = x => Array.isArray(x) ? x : (x && (x.list || x.results || x.hotels || x.locations)) || [];
+  const chave = (env.MAKCORPS_TOKEN || '').trim();
+  if(!chave) return resposta({ofertas:[], fonte:'makcorps', nota:'MAKCORPS_TOKEN não definido no Worker (ver /estado)'}, 200, true);
+  const M = 'https://api.makcorps.com';
+  const lista = x => Array.isArray(x) ? x : (x && (x.details || x.result || x.data || x.hotels)) || [];
   try{
-    /* 1) location_key da cidade */
-    const s = await fetch(X + '/search?query=' + encodeURIComponent(cidade), {headers:{'Accept':'application/json'}});
-    if(!s.ok) return resposta({ofertas:[], fonte:'xotelo', nota:'pesquisa indisponível (' + s.status + ')'}, 200, true);
-    const sj = await s.json();
-    const itens = arr(sj && sj.result);
-    let locKey = null;
-    for(const it of itens){
-      const k = it.key || it.location_key || it.geo_id || '';
-      if(/^g\d+$/.test(k)){ locKey = k; break; }
+    /* 1) cidade -> cityid (Mapping API) */
+    const mp = await fetch(M + '/mapping?api_key=' + encodeURIComponent(chave) + '&name=' + encodeURIComponent(cidade), {headers:{'Accept':'application/json'}});
+    if(!mp.ok) return resposta({ofertas:[], fonte:'makcorps', nota:'mapping indisponível (' + mp.status + ')'}, 200, true);
+    const itens = lista(await mp.json());
+    let cityid = null;
+    for(const it of itens){                       /* preferir entradas de tipo cidade/GEO */
+      const tipo = String(it.type || it.category || '').toUpperCase();
+      if(tipo.includes('GEO') || tipo.includes('CITY')){ cityid = it.document_id || it.cityid || it.id; break; }
     }
-    if(!locKey) return resposta({ofertas:[], fonte:'xotelo', nota:'cidade não encontrada', _pesquisa: itens[0] || null}, 200, true);
-    /* 2) hotéis + preços */
-    const ps = new URLSearchParams({location_key: locKey, limit:'18', offset:'0', sort:'best_value', currency:'EUR', chk_in: checkin, chk_out: checkout});
-    const l = await fetch(X + '/list?' + ps, {headers:{'Accept':'application/json'}});
-    if(!l.ok) return resposta({ofertas:[], fonte:'xotelo', location_key: locKey, nota:'lista indisponível (' + l.status + ')'}, 200, true);
-    const lj = await l.json();
-    const hoteis = arr(lj && lj.result);
-    const precoDe = h => {
-      const pr = h.price_ranges || h.price_ranges_total || h.rates || {};
-      return +(pr.minimum || pr.min || h.min_price || h.price || 0) || 0;
-    };
-    const ofertas = hoteis.map(h => ({
-      nome: h.name || h.hotel_name || 'Hotel',
-      preco: Math.round(precoDe(h)),
-      estrelas: Math.round((h.review_summary && (h.review_summary.rating || h.review_summary.stars)) || h.rating || h.stars || 0)
-    })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
-    /* diagnóstico: se ficou vazio, devolve uma amostra crua para afinar o parser */
-    const extra = ofertas.length ? {} : {_amostra: hoteis[0] || null, _total_hoteis: hoteis.length};
-    return resposta(Object.assign({ofertas, fonte:'xotelo', location_key: locKey}, extra));
+    if(!cityid && itens.length){ const f = itens[0]; cityid = f.document_id || f.cityid || f.id; }
+    if(!cityid) return resposta({ofertas:[], fonte:'makcorps', nota:'cidade não encontrada', _amostra: itens[0] || null}, 200, true);
+    /* 2) hotéis + preços dos fornecedores (City API) */
+    const ps = new URLSearchParams({cityid: String(cityid), pagination:'0', cur:'EUR', rooms:'1', adults: adultos, checkin, checkout, api_key: chave});
+    const r = await fetch(M + '/city?' + ps, {headers:{'Accept':'application/json'}});
+    if(!r.ok) return resposta({ofertas:[], fonte:'makcorps', cityid, nota:'preços indisponíveis (' + r.status + ')'}, 200, true);
+    const hoteis = lista(await r.json());
+    const ofertas = [];
+    for(const h of hoteis){
+      if(!h || typeof h !== 'object') continue;
+      const nome = h.name || h.hotelName || h.hotel_name;
+      if(!nome) continue;                          /* ignora o rodapé de metadados da página */
+      let melhor = Infinity, vendedor = '';
+      for(const k of Object.keys(h)){              /* pares vendorN / priceN */
+        if(/^price\d+$/i.test(k)){
+          const p = precoNumero(h[k]);
+          if(p > 0 && p < melhor){ melhor = p; vendedor = h['vendor' + k.replace(/\D/g, '')] || ''; }
+        }
+      }
+      if(melhor === Infinity){                      /* variantes: campo único de preço */
+        const p = precoNumero(h.price || h.min_price || h.priceFrom);
+        if(p > 0) melhor = p;
+      }
+      if(melhor === Infinity) continue;
+      const rev = h.reviews || h.review_summary || {};
+      ofertas.push({
+        nome,
+        preco: Math.round(melhor),
+        estrelas: Math.round(parseFloat(rev.rating || h.rating || h.stars || 0) || 0),
+        vendedor: String(vendedor || '')
+      });
+    }
+    ofertas.sort((a, b) => a.preco - b.preco);
+    const extra = ofertas.length ? {} : {_amostra: hoteis[0] || null, _total: hoteis.length};
+    return resposta(Object.assign({ofertas: ofertas.slice(0, 8), fonte:'makcorps', cityid}, extra));
   }catch(e){
-    return resposta({ofertas:[], fonte:'xotelo', erro:String(e.message || e)}, 200, true);
+    return resposta({ofertas:[], fonte:'makcorps', erro:String(e.message || e)}, 200, true);
   }
 }
 

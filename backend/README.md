@@ -35,12 +35,26 @@ produção exige verificação da empresa; fica documentado como evolução futu
 
    ```
    wrangler login
-   wrangler secret put TP_TOKEN    (colar o token da Travelpayouts)
+   wrangler secret put TP_TOKEN         (colar o token da Travelpayouts, para voos)
+   wrangler secret put MAKCORPS_TOKEN   (colar a chave da Makcorps, para hotéis)
    wrangler deploy
    ```
 
 3. No fim, o `wrangler deploy` mostra o endereço do serviço, por exemplo
    `https://tripnexus-api.o-seu-subdominio.workers.dev`.
+
+### Chave da Makcorps (hotéis, gratuita)
+
+Os preços reais de hotéis vêm da **Makcorps**, que compara tarifas de vários
+sites de reserva. O plano gratuito chega bem para um comparador:
+
+1. Registe-se em https://www.makcorps.com (conta gratuita).
+2. No painel, copie a **API key**.
+3. Guarde-a no Worker: `wrangler secret put MAKCORPS_TOKEN` (colar a chave).
+
+Se a chave não estiver definida, o bloco de alojamento continua a mostrar as
+estimativas locais, sem erro para o utilizador. Confirme o estado da chave em
+`/estado` (campo `makcorps_token_definido`).
 
 ## Passo 3: ligar o site ao backend
 
@@ -60,8 +74,8 @@ utilizador.
 | Rota | Parâmetros | Devolve |
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas` | `{ofertas:[{preco, companhia, escalas, partida}], classe, fonte}` |
-| `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"xotelo"}` (dados do TripAdvisor via Xotelo, grátis) |
-| `/estado` | nenhum | diagnóstico: se o token está definido e se a Travelpayouts o aceita |
+| `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas, vendedor}], fonte:"makcorps"}` (comparação de tarifas de vários sites, via Makcorps) |
+| `/estado` | nenhum | diagnóstico: se os tokens (Travelpayouts e Makcorps) estão definidos e se a Travelpayouts aceita o seu |
 
 As respostas são guardadas em cache 10 minutos.
 
