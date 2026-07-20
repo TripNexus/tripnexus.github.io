@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="TripNexus">
 <meta property="og:locale" content="pt_PT">
 <meta property="og:title" content="TripNexus — Comparador de viagens">
-<meta property="og:description" content="Compare voos, alojamento, carros e transportes em mais de 24 sites e encontre a viagem mais barata, com cupões e pacotes inteligentes.">
+<meta property="og:description" content="Compare voos, alojamento, carros e transportes em mais de 60 sites e encontre a viagem mais barata, com cupões e pacotes inteligentes.">
 <meta property="og:url" content="https://tripnexus.github.io/">
 <meta property="og:image" content="https://tripnexus.github.io/assets/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TripNexus — Comparador de viagens">
-<meta name="twitter:description" content="Compare voos, alojamento, carros e transportes em mais de 24 sites e encontre a viagem mais barata.">
+<meta name="twitter:description" content="Compare voos, alojamento, carros e transportes em mais de 60 sites e encontre a viagem mais barata.">
 <meta name="twitter:image" content="https://tripnexus.github.io/assets/img/og.png">
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <!-- Travelpayouts Drive: afiliação automática das ligações para os parceiros -->
@@ -50,7 +50,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=17">
+<link rel="stylesheet" href="assets/css/style.css?v=19">
 </head>
 <body>
 
@@ -196,7 +196,7 @@
       <div id="zona-guardados" hidden></div>
 
       <div class="hero-selos">
-        <span>✅ 24 sites comparados</span>
+        <span>✅ 60 sites comparados</span>
         <span>🎟 Cupões automáticos</span>
         <span>📦 Pacotes inteligentes</span>
         <span>🗺 Mapas interactivos</span>
@@ -245,7 +245,7 @@
 <footer class="rodape">
   <div class="rodape-inner">
     <div>
-      <p class="logo-rodape"><img src="assets/img/logo.svg" alt="" class="logo-rodape-img" width="27" height="27"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></p>
+      <p class="logo-rodape"><img src="assets/img/logo.svg" alt="" class="logo-rodape-img" width="27" height="27"><span class="logo-texto"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></span></p>
       <p>Comparador independente de viagens: compara voos, alojamento, carros e transportes em mais de 60 sites parceiros. Não vendemos bilhetes nem reservas: encontramos o melhor preço e encaminhamo-lo para o site do parceiro para concluir a reserva.</p>
     </div>
     <div>
@@ -270,7 +270,7 @@
 <!-- ecrã de carregamento da comparação -->
 <div class="carregando" id="carregando" hidden>
   <div class="carregando-caixa">
-    <p class="carregando-titulo">A comparar preços em <strong>24 sites</strong>…</p>
+    <p class="carregando-titulo">A comparar preços em <strong>60 sites</strong>…</p>
     <div class="carregando-icones" id="carregando-icones"></div>
     <div class="barra"><div class="barra-interior" id="barra-progresso"></div></div>
     <p class="carregando-passo" id="carregando-passo">A contactar parceiros…</p>
@@ -283,12 +283,12 @@
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
 </script>
-<script src="assets/js/data.js?v=17"></script>
-<script src="assets/js/engine.js?v=17"></script>
-<script src="assets/js/calendar.js?v=17"></script>
-<script src="assets/js/live.js?v=17"></script>
-<script src="assets/js/alertas.js?v=17"></script>
-<script src="assets/js/app.js?v=17"></script>
+<script src="assets/js/data.js?v=19"></script>
+<script src="assets/js/engine.js?v=19"></script>
+<script src="assets/js/calendar.js?v=19"></script>
+<script src="assets/js/live.js?v=19"></script>
+<script src="assets/js/alertas.js?v=19"></script>
+<script src="assets/js/app.js?v=19"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
