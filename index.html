@@ -21,6 +21,8 @@
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="TripNexus">
+<meta name="author" content="NightmareFTW">
+<!-- TripNexus · Feito por NightmareFTW -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TripNexus">
 <meta property="og:locale" content="pt_PT">
@@ -48,7 +50,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=16">
+<link rel="stylesheet" href="assets/css/style.css?v=17">
 </head>
 <body>
 
@@ -209,7 +211,7 @@
   <section id="como-funciona" class="seccao">
     <h2>Como funciona</h2>
     <div class="passos">
-      <div class="passo"><span class="passo-num">1</span><h3>Pesquisa uma vez</h3><p>Indique a origem, o destino e as datas. O TripNexus consulta em simultâneo mais de 24 sites de viagens, de voos a hostels.</p></div>
+      <div class="passo"><span class="passo-num">1</span><h3>Pesquisa uma vez</h3><p>Indique a origem, o destino e as datas. O TripNexus consulta em simultâneo mais de 60 sites de viagens, de voos a hostels.</p></div>
       <div class="passo"><span class="passo-num">2</span><h3>Nós fazemos as contas</h3><p>Somamos voos, alojamento, carro e transportes públicos para o total real da viagem, já com cupões aplicados quando existem.</p></div>
       <div class="passo"><span class="passo-num">3</span><h3>Reserve ao melhor preço</h3><p>Se um pacote ficar igual ou com pouca margem acima das reservas em separado, recomendamo-lo. Reserva sempre no site do parceiro.</p></div>
     </div>
@@ -244,14 +246,14 @@
   <div class="rodape-inner">
     <div>
       <p class="logo-rodape"><img src="assets/img/logo.svg" alt="" class="logo-rodape-img" width="27" height="27"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></p>
-      <p>Comparador independente de viagens. Não vendemos bilhetes nem reservas: encontramos o melhor preço e encaminhamo-lo para o site do parceiro para concluir a reserva.</p>
+      <p>Comparador independente de viagens: compara voos, alojamento, carros e transportes em mais de 60 sites parceiros. Não vendemos bilhetes nem reservas: encontramos o melhor preço e encaminhamo-lo para o site do parceiro para concluir a reserva.</p>
     </div>
     <div>
       <p><strong>Nota sobre os preços</strong></p>
-      <p>Os valores apresentados são estimativas calculadas a partir de dados históricos e de referência dos parceiros, e destinam-se apenas a comparação. O preço final é sempre confirmado no site onde efectua a reserva.</p>
+      <p>Os preços de voos são obtidos em tempo real. Os restantes valores (alojamento, carros, transportes e actividades) são estimativas calculadas a partir de dados históricos e de referência dos parceiros, e destinam-se apenas a comparação. O preço final é sempre confirmado no site onde efectua a reserva.</p>
     </div>
   </div>
-  <p class="direitos">© <span id="ano"></span> TripNexus · Feito em Portugal · Os logótipos apresentados pertencem aos respectivos proprietários.</p>
+  <p class="direitos">© <span id="ano"></span> TripNexus · Feito em Portugal · Os logótipos apresentados pertencem aos respectivos proprietários. <span class="assinatura" title="Feito por NightmareFTW" aria-label="Feito por NightmareFTW">✦</span></p>
 </footer>
 
 <!-- calendário de datas com preços (gerado por JS) -->
@@ -281,12 +283,12 @@
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
 </script>
-<script src="assets/js/data.js?v=16"></script>
-<script src="assets/js/engine.js?v=16"></script>
-<script src="assets/js/calendar.js?v=16"></script>
-<script src="assets/js/live.js?v=16"></script>
-<script src="assets/js/alertas.js?v=16"></script>
-<script src="assets/js/app.js?v=16"></script>
+<script src="assets/js/data.js?v=17"></script>
+<script src="assets/js/engine.js?v=17"></script>
+<script src="assets/js/calendar.js?v=17"></script>
+<script src="assets/js/live.js?v=17"></script>
+<script src="assets/js/alertas.js?v=17"></script>
+<script src="assets/js/app.js?v=17"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

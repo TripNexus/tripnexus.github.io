@@ -1161,3 +1161,7 @@ function reactualizarTudo(){
     if(j && j.rates){ ['USD','GBP','BRL'].forEach(c => { if(j.rates[c]) TAXAS[c] = j.rates[c]; }); TAXAS.EUR = 1; if(MOEDA !== 'EUR') reactualizarTudo(); }
   }).catch(() => {});
 })();
+
+
+/* assinatura */
+try{ console.log('%c✦ TripNexus%c  Feito por NightmareFTW','font-weight:800;color:#4da3f5','color:#2cc9b4'); }catch(e){}
