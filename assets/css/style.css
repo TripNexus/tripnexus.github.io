@@ -605,3 +605,6 @@ img{max-width:100%}
 .clima-col{display:flex;flex-direction:column;align-items:center;gap:.2rem;flex:1}
 .clima-barra{width:100%;border-radius:3px;min-height:8px}
 .clima-col span{font-size:.62rem;color:var(--cinza);font-weight:700}
+
+.assinatura{opacity:.28;cursor:help;transition:opacity .2s}
+.assinatura:hover{opacity:.9}
