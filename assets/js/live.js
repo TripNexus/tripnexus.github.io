@@ -23,16 +23,16 @@ async function actualizarAlojamentoReal(ctx){
     const liga = ligacaoParceiro('booking', {...ctx, seccao:'hotel'});
     bloco.innerHTML = `
       <div class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</div>
-      <p class="bloco-sub tempo-real">⚡ Preços reais de hotéis (TripAdvisor, via Xotelo) para as suas datas.</p>
+      <p class="bloco-sub tempo-real">⚡ Preços reais de hotéis, comparados em vários sites (Makcorps), para as suas datas.</p>
       ${dados.ofertas.slice(0, 6).map((h, i) => `
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
           <span class="icone-parceiro"><span class="letra" style="display:flex">${(h.nome || 'H')[0]}</span></span>
           <div class="oferta-info"><div class="oferta-nome">${h.nome || 'Hotel'}${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
-          <div class="oferta-detalhe">${h.estrelas ? '★'.repeat(Math.min(5, Math.round(h.estrelas))) + ' · ' : ''}melhor tarifa encontrada</div></div>
+          <div class="oferta-detalhe">${h.estrelas ? '★'.repeat(Math.min(5, Math.round(h.estrelas))) + ' · ' : ''}${h.vendedor ? 'melhor tarifa: ' + h.vendedor : 'melhor tarifa encontrada'}</div></div>
           <div class="oferta-preco"><div class="preco-actual">${euros(h.preco)}</div></div>
           <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Reservar</a>
         </div>`).join('')}
-      <p class="bloco-sub">Tarifas do TripAdvisor; a reserva é concluída no site do parceiro. Casas e hostels continuam nas estimativas.</p>`;
+      <p class="bloco-sub">Tarifas comparadas em vários sites; a reserva é concluída no site do parceiro. Casas e hostels continuam nas estimativas.</p>`;
   }catch(e){ /* fica a estimativa */ }
 }
 
