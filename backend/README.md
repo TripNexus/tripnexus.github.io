@@ -35,26 +35,21 @@ produção exige verificação da empresa; fica documentado como evolução futu
 
    ```
    wrangler login
-   wrangler secret put TP_TOKEN         (colar o token da Travelpayouts, para voos)
-   wrangler secret put MAKCORPS_TOKEN   (colar a chave da Makcorps, para hotéis)
+   wrangler secret put TP_TOKEN    (colar o token da Travelpayouts, para voos)
    wrangler deploy
    ```
 
 3. No fim, o `wrangler deploy` mostra o endereço do serviço, por exemplo
    `https://tripnexus-api.o-seu-subdominio.workers.dev`.
 
-### Chave da Makcorps (hotéis, gratuita)
+### Hotéis: widget do Hotellook (preços reais, gratuito)
 
-Os preços reais de hotéis vêm da **Makcorps**, que compara tarifas de vários
-sites de reserva. O plano gratuito chega bem para um comparador:
-
-1. Registe-se em https://www.makcorps.com (conta gratuita).
-2. No painel, copie a **API key**.
-3. Guarde-a no Worker: `wrangler secret put MAKCORPS_TOKEN` (colar a chave).
-
-Se a chave não estiver definida, o bloco de alojamento continua a mostrar as
-estimativas locais, sem erro para o utilizador. Confirme o estado da chave em
-`/estado` (campo `makcorps_token_definido`).
+Os preços reais de hotéis **não** passam por este Worker: são mostrados no
+próprio site pelo **widget de hotéis do Hotellook** (Travelpayouts), que dá
+tarifas reais e monetiza via afiliação, sem chave nem custo. O endereço do
+widget está em `index.html` (`window.TRIPNEXUS_HOTEL_WIDGET_SRC`); para usar o
+seu próprio, gere um widget de hotéis no painel Travelpayouts e cole aí o `src`
+do `<script>` gerado. Sem widget, o alojamento fica nas estimativas locais.
 
 ## Passo 3: ligar o site ao backend
 
@@ -74,14 +69,13 @@ utilizador.
 | Rota | Parâmetros | Devolve |
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas` | `{ofertas:[{preco, companhia, escalas, partida}], classe, fonte}` |
-| `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas, vendedor}], fonte:"makcorps"}` (comparação de tarifas de vários sites, via Makcorps) |
-| `/estado` | nenhum | diagnóstico: se os tokens (Travelpayouts e Makcorps) estão definidos e se a Travelpayouts aceita o seu |
+| `/hoteis` | (nenhum) | `{ofertas:[]}` fixo: os hotéis são tratados pelo widget do Hotellook no lado do site |
+| `/estado` | nenhum | diagnóstico: se o token está definido e se a Travelpayouts o aceita |
 
 As respostas são guardadas em cache 10 minutos.
 
 ## Próximos passos naturais
 
-- Ligar `/hoteis` ao bloco de alojamento (como já se faz com `/voos`);
 - Usar o **marker** de afiliado nas ligações «Reservar» (comissões por reserva);
 - Guardar histórico de preços num KV do Cloudflare para alertas e gráficos;
 - Avaliar a **Duffel** para cotações ao segundo e reserva dentro do site.
