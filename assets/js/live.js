@@ -7,6 +7,35 @@
    bloco de voos aplicam-se também às tarifas reais.
    ═══════════════════════════════════════════════════════════════ */
 
+async function actualizarAlojamentoReal(ctx){
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
+  const bloco = document.getElementById('bloco-alojamento');
+  if(!base || !bloco || !ctx.destino || !ctx.ida || !ctx.fim) return;
+  const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+  /* nome mais reconhecível para a pesquisa (TripAdvisor é anglófono) */
+  const nomePesquisa = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
+  try{
+    const ps = new URLSearchParams({cidade: nomePesquisa, checkin: f(ctx.ida), checkout: f(ctx.fim), adultos: ctx.adultos || 2});
+    const r = await fetch(base + '/hoteis?' + ps);
+    if(!r.ok) return;
+    const dados = await r.json();
+    if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length) return;
+    const liga = ligacaoParceiro('booking', {...ctx, seccao:'hotel'});
+    bloco.innerHTML = `
+      <div class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</div>
+      <p class="bloco-sub tempo-real">⚡ Preços reais de hotéis (TripAdvisor, via Xotelo) para as suas datas.</p>
+      ${dados.ofertas.slice(0, 6).map((h, i) => `
+        <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
+          <span class="icone-parceiro"><span class="letra" style="display:flex">${(h.nome || 'H')[0]}</span></span>
+          <div class="oferta-info"><div class="oferta-nome">${h.nome || 'Hotel'}${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
+          <div class="oferta-detalhe">${h.estrelas ? '★'.repeat(Math.min(5, Math.round(h.estrelas))) + ' · ' : ''}melhor tarifa encontrada</div></div>
+          <div class="oferta-preco"><div class="preco-actual">${euros(h.preco)}</div></div>
+          <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Reservar</a>
+        </div>`).join('')}
+      <p class="bloco-sub">Tarifas do TripAdvisor; a reserva é concluída no site do parceiro. Casas e hostels continuam nas estimativas.</p>`;
+  }catch(e){ /* fica a estimativa */ }
+}
+
 async function actualizarVoosReais(ctx){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-voos');
