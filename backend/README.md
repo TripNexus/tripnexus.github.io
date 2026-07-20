@@ -60,6 +60,7 @@ utilizador.
 | Rota | Parâmetros | Devolve |
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas` | `{ofertas:[{preco, companhia, escalas, partida}], classe, fonte}` |
+| `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"xotelo"}` (dados do TripAdvisor via Xotelo, grátis) |
 | `/estado` | nenhum | diagnóstico: se o token está definido e se a Travelpayouts o aceita |
 
 As respostas são guardadas em cache 10 minutos.

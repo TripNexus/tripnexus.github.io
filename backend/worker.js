@@ -3,8 +3,8 @@
    Intermediário seguro entre o site e a API Travelpayouts/Aviasales
    (voos): guarda o token no servidor, faz cache das respostas e
    devolve JSON simples que o site consome (assets/js/live.js).
-   Nota: a API gratuita de hotéis da Hotellook (cache.json) foi
-   descontinuada, pelo que os hotéis usam estimativas locais.
+   Hotéis via Xotelo (dados do TripAdvisor, grátis e sem chave); se
+   indisponível, o site cai nas estimativas locais.
    Nota: a Amadeus descontinuou o portal Self-Service a 17/07/2026,
    pelo que este Worker usa a Travelpayouts, de registo gratuito.
    Instruções de instalação: backend/README.md
@@ -98,6 +98,52 @@ async function voos(url, env){
   return resposta({ofertas, classe:'economica', fonte:'travelpayouts'});
 }
 
+/* /hoteis: preços reais de hotéis via Xotelo (dados do TripAdvisor, grátis,
+   sem chave). Fluxo: /search resolve a cidade num location_key, /list
+   devolve os hotéis com faixas de preço para as datas. Falha sempre de
+   forma graciosa (ofertas vazias) para o site cair nas estimativas. */
+async function hoteis(url, env){
+  const q = url.searchParams;
+  const cidade = q.get('cidade'), checkin = q.get('checkin'), checkout = q.get('checkout');
+  if(!cidade || !checkin || !checkout)
+    return resposta({erro:'parâmetros necessários: cidade (nome), checkin, checkout (AAAA-MM-DD)'}, 400);
+  const X = 'https://data.xotelo.com/api';
+  const arr = x => Array.isArray(x) ? x : (x && (x.list || x.results || x.hotels || x.locations)) || [];
+  try{
+    /* 1) location_key da cidade */
+    const s = await fetch(X + '/search?query=' + encodeURIComponent(cidade), {headers:{'Accept':'application/json'}});
+    if(!s.ok) return resposta({ofertas:[], fonte:'xotelo', nota:'pesquisa indisponível (' + s.status + ')'}, 200, true);
+    const sj = await s.json();
+    const itens = arr(sj && sj.result);
+    let locKey = null;
+    for(const it of itens){
+      const k = it.key || it.location_key || it.geo_id || '';
+      if(/^g\d+$/.test(k)){ locKey = k; break; }
+    }
+    if(!locKey) return resposta({ofertas:[], fonte:'xotelo', nota:'cidade não encontrada', _pesquisa: itens[0] || null}, 200, true);
+    /* 2) hotéis + preços */
+    const ps = new URLSearchParams({location_key: locKey, limit:'18', offset:'0', sort:'best_value', currency:'EUR', chk_in: checkin, chk_out: checkout});
+    const l = await fetch(X + '/list?' + ps, {headers:{'Accept':'application/json'}});
+    if(!l.ok) return resposta({ofertas:[], fonte:'xotelo', location_key: locKey, nota:'lista indisponível (' + l.status + ')'}, 200, true);
+    const lj = await l.json();
+    const hoteis = arr(lj && lj.result);
+    const precoDe = h => {
+      const pr = h.price_ranges || h.price_ranges_total || h.rates || {};
+      return +(pr.minimum || pr.min || h.min_price || h.price || 0) || 0;
+    };
+    const ofertas = hoteis.map(h => ({
+      nome: h.name || h.hotel_name || 'Hotel',
+      preco: Math.round(precoDe(h)),
+      estrelas: Math.round((h.review_summary && (h.review_summary.rating || h.review_summary.stars)) || h.rating || h.stars || 0)
+    })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
+    /* diagnóstico: se ficou vazio, devolve uma amostra crua para afinar o parser */
+    const extra = ofertas.length ? {} : {_amostra: hoteis[0] || null, _total_hoteis: hoteis.length};
+    return resposta(Object.assign({ofertas, fonte:'xotelo', location_key: locKey}, extra));
+  }catch(e){
+    return resposta({ofertas:[], fonte:'xotelo', erro:String(e.message || e)}, 200, true);
+  }
+}
+
 export default {
   async fetch(pedido, env){
     if(pedido.method === 'OPTIONS')
@@ -109,8 +155,9 @@ export default {
     const url = new URL(pedido.url);
     try{
       if(url.pathname === '/voos') return await voos(url, env);
+      if(url.pathname === '/hoteis') return await hoteis(url, env);
       if(url.pathname === '/estado') return await estado(env);
-      return resposta({erro:'rotas disponíveis: /voos, /estado'}, 404);
+      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }
