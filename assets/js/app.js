@@ -865,6 +865,7 @@ function desenharResultados(){
   ligarFiltrosVoos(sec, desenharResultados);
   if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, melhorVoo);
   if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
+  if(typeof actualizarAlojamentoReal === 'function') actualizarAlojamentoReal(ctx);
 }
 
 /* ── resultados: várias cidades ──────────────────────────────── */
