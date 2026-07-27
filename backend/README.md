@@ -9,14 +9,14 @@ guardado no Worker, nunca no site.
 > Self-Service (gratuito) a 17 de Julho de 2026; o que resta é o portal
 > Enterprise, destinado a empresas com contrato comercial. A alternativa certa
 > para um comparador é a **Travelpayouts** (rede de afiliados da Aviasales):
-> registo gratuito e imediato, dados de preços reais de voos, hotéis via
-> Hotellook e, como bónus, **comissões de afiliado** por cada reserva
-> encaminhada.
+> registo gratuito e imediato, dados de preços reais de voos e, como bónus,
+> **comissões de afiliado** por cada reserva encaminhada. Os hotéis usam uma
+> fonte à parte (SerpApi), documentada abaixo.
 
 ## Passo 1: criar a conta Travelpayouts (gratuita)
 
 1. Registe-se em https://www.travelpayouts.com (conta de afiliado, gratuita).
-2. No painel, junte-se ao programa **Aviasales** (voos) e **Hotellook** (hotéis).
+2. No painel, junte-se ao programa **Aviasales** (voos).
 3. Em «Profile → API token» copie o **token**; aponte também o seu **marker**
    (identificador de afiliado, útil mais tarde para as ligações com comissão).
 
@@ -35,21 +35,33 @@ produção exige verificação da empresa; fica documentado como evolução futu
 
    ```
    wrangler login
-   wrangler secret put TP_TOKEN    (colar o token da Travelpayouts, para voos)
+   wrangler secret put TP_TOKEN      (colar o token da Travelpayouts, para voos)
+   wrangler secret put SERPAPI_KEY   (colar a chave da SerpApi, para hotéis)
    wrangler deploy
    ```
 
 3. No fim, o `wrangler deploy` mostra o endereço do serviço, por exemplo
    `https://tripnexus-api.o-seu-subdominio.workers.dev`.
 
-### Hotéis: widget do Hotellook (preços reais, gratuito)
+### Chave da SerpApi (hotéis, gratuita)
 
-Os preços reais de hotéis **não** passam por este Worker: são mostrados no
-próprio site pelo **widget de hotéis do Hotellook** (Travelpayouts), que dá
-tarifas reais e monetiza via afiliação, sem chave nem custo. O endereço do
-widget está em `index.html` (`window.TRIPNEXUS_HOTEL_WIDGET_SRC`); para usar o
-seu próprio, gere um widget de hotéis no painel Travelpayouts e cole aí o `src`
-do `<script>` gerado. Sem widget, o alojamento fica nas estimativas locais.
+Os preços reais de hotéis vêm da **SerpApi** (motor `google_hotels`, os
+mesmos preços que aparecem no Google Hotels). O plano gratuito dá **100
+pesquisas por mês**, suficiente para um site pessoal; acima disso, o
+alojamento volta às estimativas locais, sem erro para o utilizador.
+
+> **Nota:** já foram tentadas, por esta ordem, a Amadeus (self-service
+> descontinuado), a API de dados do Hotellook (removida), a Xotelo (endpoints
+> gratuitos trancados) e a Makcorps (é um trial de 30 dias/15 pesquisas, não
+> um plano gratuito), e confirmou-se que a conta Travelpayouts também não tem
+> nenhum widget de hotéis disponível. A SerpApi é a via que resta com
+> pesquisa por cidade e preços reais genuinamente gratuitos.
+
+1. Registe-se em https://serpapi.com (conta gratuita).
+2. No painel, copie a **API key** (a "Private API Key" do dashboard).
+3. Guarde-a no Worker: `wrangler secret put SERPAPI_KEY` (colar a chave).
+
+Confirme o estado da chave em `/estado` (campo `serpapi_key_definida`).
 
 ## Passo 3: ligar o site ao backend
 
@@ -69,8 +81,8 @@ utilizador.
 | Rota | Parâmetros | Devolve |
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas` | `{ofertas:[{preco, companhia, escalas, partida}], classe, fonte}` |
-| `/hoteis` | (nenhum) | `{ofertas:[]}` fixo: os hotéis são tratados pelo widget do Hotellook no lado do site |
-| `/estado` | nenhum | diagnóstico: se o token está definido e se a Travelpayouts o aceita |
+| `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
+| `/estado` | nenhum | diagnóstico: se o token da Travelpayouts e a chave da SerpApi estão definidos |
 
 As respostas são guardadas em cache 10 minutos.
 
