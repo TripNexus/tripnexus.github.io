@@ -26,7 +26,7 @@ function actualizarAlojamentoReal(ctx){
   bloco.innerHTML = `
     <div class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</div>
     <p class="bloco-sub tempo-real">⚡ Preços reais de hotéis (Hotellook) para ${ctx.destino.n}, nas suas datas. A reserva é concluída no parceiro.</p>
-    <div class="widget-hoteis" id="widget-hoteis" style="min-height:56px;margin:.5rem 0"></div>
+    <div class="widget-hoteis" id="widget-hoteis" style="margin:.4rem 0"></div>
     <div class="linha-oferta">
       <span class="icone-parceiro"><span class="letra" style="display:flex">🏨</span></span>
       <div class="oferta-info"><div class="oferta-nome">Ver todos os hotéis em ${ctx.destino.n}</div>
@@ -39,6 +39,12 @@ function actualizarAlojamentoReal(ctx){
     const s = document.createElement('script');
     s.async = true; s.charset = 'utf-8'; s.src = url;
     alvo.appendChild(s);
+    /* se o widget não renderizar (endereço por afinar ou script em baixo),
+       recolhe o espaço vazio para o bloco não parecer avariado */
+    setTimeout(() => {
+      const temConteudo = [...alvo.children].some(el => el.tagName !== 'SCRIPT');
+      if(!temConteudo) alvo.style.display = 'none';
+    }, 2500);
   }
 }
 
