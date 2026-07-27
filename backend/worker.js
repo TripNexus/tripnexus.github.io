@@ -3,8 +3,9 @@
    Intermediário seguro entre o site e a API Travelpayouts/Aviasales
    (voos): guarda o token no servidor, faz cache das respostas e
    devolve JSON simples que o site consome (assets/js/live.js).
-   Os hotéis são tratados no lado do site pelo widget do Hotellook
-   (preços reais, afiliação incluída), pelo que este Worker cuida só dos voos.
+   Hotéis via SerpApi (motor google_hotels), com chave gratuita (100
+   pesquisas/mês); acima disso, ou sem chave, o site cai nas estimativas
+   locais, sem erro visível.
    Nota: a Amadeus descontinuou o portal Self-Service a 17/07/2026,
    pelo que este Worker usa a Travelpayouts, de registo gratuito.
    Instruções de instalação: backend/README.md
@@ -33,7 +34,8 @@ async function estado(env){
   const token = obterToken(env);
   const info = {
     token_definido: token.length > 0,
-    token_tamanho: token.length
+    token_tamanho: token.length,
+    serpapi_key_definida: ((env.SERPAPI_KEY || '').trim().length > 0)
   };
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
@@ -98,12 +100,68 @@ async function voos(url, env){
   return resposta({ofertas, classe:'economica', fonte:'travelpayouts'});
 }
 
-/* /hoteis: mantido só por compatibilidade. Os preços reais de hotéis são
-   tratados no lado do site pelo widget do Hotellook (afiliação incluída),
-   pelo que esta rota devolve sempre uma lista vazia e o site usa o widget
-   ou, na falta dele, as estimativas locais. */
-async function hoteis(){
-  return resposta({ofertas:[], fonte:'hotellook-widget', nota:'os hotéis são tratados pelo widget no lado do site'}, 200, true);
+/* extrai um número de um preço que pode vir como "€120", "$1,299.00",
+   "1 299", etc. Devolve 0 se não houver número utilizável. */
+function precoNumero(v){
+  if(v == null) return 0;
+  let s = String(v).replace(/[^\d.,]/g, '');
+  if(!s) return 0;
+  if(s.includes('.') && s.includes(',')){
+    s = s.lastIndexOf('.') > s.lastIndexOf(',')
+      ? s.replace(/,/g, '')
+      : s.replace(/\./g, '').replace(',', '.');
+  }else if((s.match(/,/g) || []).length === 1 && /,\d{1,2}$/.test(s)){
+    s = s.replace(',', '.');
+  }else{
+    s = s.replace(/[.,]/g, '');
+  }
+  const n = parseFloat(s);
+  return isFinite(n) && n > 0 ? n : 0;
+}
+
+/* /hoteis: preços reais de hotéis via SerpApi (motor google_hotels), com
+   chave gratuita (100 pesquisas/mês). Falha sempre de forma graciosa
+   (ofertas vazias) para o site cair nas estimativas locais, sem erro
+   visível para o utilizador. */
+async function hoteis(url, env){
+  const q = url.searchParams;
+  const cidade = q.get('cidade'), checkin = q.get('checkin'), checkout = q.get('checkout');
+  const adultos = String(q.get('adultos') || 2);
+  if(!cidade || !checkin || !checkout)
+    return resposta({erro:'parâmetros necessários: cidade (nome), checkin, checkout (AAAA-MM-DD)'}, 400);
+  const chave = (env.SERPAPI_KEY || '').trim();
+  if(!chave) return resposta({ofertas:[], fonte:'serpapi', nota:'SERPAPI_KEY não definido no Worker (ver /estado)'}, 200, true);
+  const ps = new URLSearchParams({
+    engine: 'google_hotels',
+    q: cidade + ' hotels',
+    check_in_date: checkin,
+    check_out_date: checkout,
+    adults: adultos,
+    currency: 'EUR',
+    hl: 'pt',
+    gl: 'pt',
+    api_key: chave
+  });
+  try{
+    const r = await fetch('https://serpapi.com/search.json?' + ps);
+    if(!r.ok) return resposta({ofertas:[], fonte:'serpapi', nota:'preços indisponíveis (' + r.status + ')'}, 200, true);
+    const j = await r.json();
+    if(j.error) return resposta({ofertas:[], fonte:'serpapi', nota: String(j.error)}, 200, true);
+    const props = Array.isArray(j.properties) ? j.properties : [];
+    const precoDe = p => {
+      const rn = p.rate_per_night || {};
+      return (+rn.extracted_lowest) || precoNumero(rn.lowest) || precoNumero(p.total_rate && p.total_rate.lowest) || 0;
+    };
+    const ofertas = props.map(p => ({
+      nome: p.name || 'Hotel',
+      preco: Math.round(precoDe(p)),
+      estrelas: Math.round(+p.extracted_hotel_class || +p.hotel_class || 0)
+    })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
+    const extra = ofertas.length ? {} : {_amostra: props[0] || null, _total: props.length};
+    return resposta(Object.assign({ofertas, fonte:'serpapi'}, extra));
+  }catch(e){
+    return resposta({ofertas:[], fonte:'serpapi', erro:String(e.message || e)}, 200, true);
+  }
 }
 
 export default {

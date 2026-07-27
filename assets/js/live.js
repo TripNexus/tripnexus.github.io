@@ -7,45 +7,33 @@
    bloco de voos aplicam-se também às tarifas reais.
    ═══════════════════════════════════════════════════════════════ */
 
-/* Alojamento com preços reais: embebe o widget de hotéis do Hotellook
-   (Travelpayouts), que mostra tarifas reais e monetiza via afiliação, sem
-   custo e sem chave. O destino e as datas da pesquisa são passados ao
-   widget. Fica sempre uma ligação garantida a preços reais, caso o script
-   do widget demore ou não carregue. Sem widget configurado, o bloco mantém
-   as estimativas locais. */
-function actualizarAlojamentoReal(ctx){
+async function actualizarAlojamentoReal(ctx){
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-alojamento');
-  const src = (window.TRIPNEXUS_HOTEL_WIDGET_SRC || '').trim();
-  if(!bloco || !src || !ctx.destino || !ctx.ida || !ctx.fim) return;
+  if(!base || !bloco || !ctx.destino || !ctx.ida || !ctx.fim) return;
   const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
-  /* nome anglófono, mais reconhecível para os motores de hotéis */
-  const destino = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
-  const extra = new URLSearchParams({destination: destino, checkIn: f(ctx.ida), checkOut: f(ctx.fim), adults: String(ctx.adultos || 2), currency: 'eur', locale: 'pt'});
-  const url = src + (src.includes('?') ? '&' : '?') + extra.toString();
-  const liga = ligacaoParceiro('booking', {...ctx, seccao:'hotel'});
-  bloco.innerHTML = `
-    <div class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</div>
-    <p class="bloco-sub tempo-real">⚡ Preços reais de hotéis (Hotellook) para ${ctx.destino.n}, nas suas datas. A reserva é concluída no parceiro.</p>
-    <div class="widget-hoteis" id="widget-hoteis" style="margin:.4rem 0"></div>
-    <div class="linha-oferta">
-      <span class="icone-parceiro"><span class="letra" style="display:flex">🏨</span></span>
-      <div class="oferta-info"><div class="oferta-nome">Ver todos os hotéis em ${ctx.destino.n}</div>
-      <div class="oferta-detalhe">Comparação de tarifas reais em dezenas de sites</div></div>
-      <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Ver preços</a>
-    </div>
-    <p class="bloco-sub">Casas e hostels continuam nas estimativas locais.</p>`;
-  const alvo = bloco.querySelector('#widget-hoteis');
-  if(alvo){
-    const s = document.createElement('script');
-    s.async = true; s.charset = 'utf-8'; s.src = url;
-    alvo.appendChild(s);
-    /* se o widget não renderizar (endereço por afinar ou script em baixo),
-       recolhe o espaço vazio para o bloco não parecer avariado */
-    setTimeout(() => {
-      const temConteudo = [...alvo.children].some(el => el.tagName !== 'SCRIPT');
-      if(!temConteudo) alvo.style.display = 'none';
-    }, 2500);
-  }
+  /* nome mais reconhecível para a pesquisa (Google Hotels é anglófono) */
+  const nomePesquisa = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
+  try{
+    const ps = new URLSearchParams({cidade: nomePesquisa, checkin: f(ctx.ida), checkout: f(ctx.fim), adultos: ctx.adultos || 2});
+    const r = await fetch(base + '/hoteis?' + ps);
+    if(!r.ok) return;
+    const dados = await r.json();
+    if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length) return;
+    const liga = ligacaoParceiro('booking', {...ctx, seccao:'hotel'});
+    bloco.innerHTML = `
+      <div class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</div>
+      <p class="bloco-sub tempo-real">⚡ Preços reais de hotéis (Google Hotels) para as suas datas.</p>
+      ${dados.ofertas.slice(0, 6).map((h, i) => `
+        <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
+          <span class="icone-parceiro"><span class="letra" style="display:flex">${(h.nome || 'H')[0]}</span></span>
+          <div class="oferta-info"><div class="oferta-nome">${h.nome || 'Hotel'}${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
+          <div class="oferta-detalhe">${h.estrelas ? '★'.repeat(Math.min(5, Math.round(h.estrelas))) + ' · ' : ''}melhor tarifa encontrada</div></div>
+          <div class="oferta-preco"><div class="preco-actual">${euros(h.preco)}</div></div>
+          <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Reservar</a>
+        </div>`).join('')}
+      <p class="bloco-sub">Tarifas do Google Hotels; a reserva é concluída no site do parceiro. Casas e hostels continuam nas estimativas.</p>`;
+  }catch(e){ /* fica a estimativa */ }
 }
 
 async function actualizarVoosReais(ctx){
