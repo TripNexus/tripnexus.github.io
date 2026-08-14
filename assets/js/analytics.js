@@ -2,10 +2,10 @@
    TripNexus: estatísticas de visitas (Cloudflare Web Analytics)
 
    ┌─────────────────────────────────────────────────────────────┐
-   │ PARA ACTIVAR: cole aqui o token do painel da Cloudflare.    │
-   │ Analytics & Logs → Web Analytics → Add a site →             │
-   │ Manual setup → copiar o valor de "token".                   │
-   │ Enquanto estiver vazio, não é feito qualquer pedido.        │
+   │ O token vem do painel da Cloudflare: Analytics & Logs →     │
+   │ Web Analytics → Add a site → Manual setup → valor de        │
+   │ "token". Não é segredo: vai no HTML de qualquer site que    │
+   │ use este serviço. Se ficar vazio, não é feito pedido algum. │
    └─────────────────────────────────────────────────────────────┘
 
    Porquê aqui e não colado nas páginas: o token fica num sítio só,
@@ -20,7 +20,7 @@
    EXIGIR_CONSENTIMENTO a true.
    ═══════════════════════════════════════════════════════════════ */
 
-const ANALYTICS_TOKEN = '';
+const ANALYTICS_TOKEN = 'e2880b247f744557a62b4e50ca3d5eb9';
 const EXIGIR_CONSENTIMENTO = false;
 
 (function(){
@@ -32,7 +32,7 @@ const EXIGIR_CONSENTIMENTO = false;
     if(escolha !== 'sim') return;
   }
   const s = document.createElement('script');
-  s.defer = true;
+  s.type = 'module';   /* como no snippet actual da Cloudflare (módulos são diferidos) */
   s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
   s.setAttribute('data-cf-beacon', JSON.stringify({token}));
   document.head.appendChild(s);
