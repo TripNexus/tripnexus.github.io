@@ -174,20 +174,22 @@ async function hoteis(url, env){
    fica memorizado para os pedidos seguintes não repetirem as tentativas.
    A rota /modelos diz quais destes a conta aceita neste momento. */
 const MODELOS_IA = [
-  '@cf/zai-org/glm-4.7-flash',
+  /* confirmados pela rota /modelos; ordenados pela qualidade do português
+     de Portugal: o mistral tende a escorregar para formas brasileiras
+     («você»), por isso fica em último */
   '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
   '@cf/meta/llama-4-scout-17b-16e-instruct',
-  '@cf/mistralai/mistral-small-3.1-24b-instruct',
-  '@cf/openai/gpt-oss-20b',
-  '@cf/google/gemma-3-12b-it',
-  '@cf/qwen/qwen2.5-14b-instruct',
-  '@cf/meta/llama-3.1-8b-instruct'
+  '@cf/mistralai/mistral-small-3.1-24b-instruct'
 ];
 let modeloBom = null;   /* modelo que respondeu da última vez */
 const INSTRUCOES_IA = [
   'És o assistente do TripNexus, um comparador de viagens português.',
   'Respondes SEMPRE em português de Portugal, com a ortografia ANTIGA (anterior ao Acordo Ortográfico):',
   'escreve «actual», «óptimo», «directo», «selecção», «objectivo», «contacto», «facto».',
+  'NUNCA uses português do Brasil. Trata o utilizador por «tu» ou de forma impessoal, nunca por «você».',
+  'Usa as palavras de Portugal: «autocarro» (não «ônibus»), «comboio» (não «trem»),',
+  '«telemóvel» (não «celular»), «casa de banho» (não «banheiro»), «bilhete» (não «passagem»),',
+  '«apanhar o avião» (não «pegar o avião»). Evita gerúndios à brasileira: escreve «estou a ver», não «estou vendo».',
   'Ajudas com destinos, roteiros, melhor altura para viajar, transportes, vistos, orçamentos e dicas práticas.',
   'Sê concreto e conciso: no máximo 3 parágrafos curtos ou uma lista de 5 pontos.',
   'Não inventes preços, horários nem disponibilidade: para isso remete o utilizador para a pesquisa do site.',
