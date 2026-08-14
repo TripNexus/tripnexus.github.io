@@ -78,6 +78,20 @@ e voltar a correr `wrangler deploy`. Confirme em `/estado` (campo
 `workers_ai_ligado`). Se o binding faltar, o `/assistente` devolve 503 e o
 botão do assistente simplesmente não responde, sem afectar o resto do site.
 
+> **Importante:** faça `git pull` antes do `wrangler deploy`. O `wrangler`
+> envia o ficheiro que está no seu disco, não o que está no GitHub: se o
+> `worker.js` local estiver desactualizado, volta a pôr em produção a versão
+> antiga.
+
+**Sobre os modelos:** a Cloudflare acrescenta e retira modelos com frequência
+e sem aviso (o `llama-3.1-8b-instruct`, por exemplo, foi descontinuado a
+30/05/2026). Por isso o Worker não fixa um modelo: percorre uma lista de
+candidatos por ordem de preferência, usa o primeiro que responder e memoriza-o.
+Para saber quais funcionam na sua conta agora, abra **`/modelos`**: devolve a
+lista `funcionam` e, para cada candidato, o erro exacto. Se nenhum funcionar,
+copie os nomes actuais do catálogo da Cloudflare para a constante `MODELOS_IA`
+em `worker.js`.
+
 ## Passo 3: ligar o site ao backend
 
 No `index.html`, preencha a linha:
@@ -97,7 +111,8 @@ utilizador.
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas` | `{ofertas:[{preco, companhia, escalas, partida}], classe, fonte}` |
 | `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
-| `/assistente` | POST `{pergunta, contexto?, historico?}` | `{resposta, fonte:"workers-ai"}`: assistente de viagens (Cloudflare Workers AI) |
+| `/assistente` | POST `{pergunta, contexto?, historico?}` | `{resposta, fonte:"workers-ai", modelo}`: assistente de viagens (Cloudflare Workers AI) |
+| `/modelos` | nenhum | diagnóstico: quais dos modelos candidatos a conta aceita neste momento |
 | `/estado` | nenhum | diagnóstico: token da Travelpayouts, chave da SerpApi e se o Workers AI está ligado |
 
 As respostas são guardadas em cache 10 minutos.

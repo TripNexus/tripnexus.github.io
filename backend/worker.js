@@ -168,13 +168,22 @@ async function hoteis(url, env){
 /* /assistente: bot de viagens do TripNexus, com Workers AI (quota diária
    gratuita da Cloudflare, sem chave nem conta adicional). Responde só sobre
    viagens e em português de Portugal, com a ortografia antiga do site. */
-/* candidatos por ordem de preferência: se a Cloudflare retirar ou renomear
-   um modelo, passa-se automaticamente ao seguinte em vez de o bot morrer */
+/* A Cloudflare acrescenta e retira modelos com frequência (e sem aviso), por
+   isso não se fixa um: tenta-se uma lista por ordem de preferência, os
+   multilingues primeiro (o site é em português). O primeiro que responder
+   fica memorizado para os pedidos seguintes não repetirem as tentativas.
+   A rota /modelos diz quais destes a conta aceita neste momento. */
 const MODELOS_IA = [
+  '@cf/zai-org/glm-4.7-flash',
   '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-  '@cf/meta/llama-3.1-8b-instruct',
-  '@cf/mistral/mistral-7b-instruct-v0.2'
+  '@cf/meta/llama-4-scout-17b-16e-instruct',
+  '@cf/mistralai/mistral-small-3.1-24b-instruct',
+  '@cf/openai/gpt-oss-20b',
+  '@cf/google/gemma-3-12b-it',
+  '@cf/qwen/qwen2.5-14b-instruct',
+  '@cf/meta/llama-3.1-8b-instruct'
 ];
+let modeloBom = null;   /* modelo que respondeu da última vez */
 const INSTRUCOES_IA = [
   'És o assistente do TripNexus, um comparador de viagens português.',
   'Respondes SEMPRE em português de Portugal, com a ortografia ANTIGA (anterior ao Acordo Ortográfico):',
@@ -206,18 +215,45 @@ async function assistente(pedido, env){
     if(texto) mensagens.push({role: papel, content: texto});
   }
   mensagens.push({role:'user', content: pergunta});
-  let ultimoErro = '';
-  for(const modelo of MODELOS_IA){
+  /* o que funcionou da última vez vai à frente, para não repetir tentativas */
+  const candidatos = modeloBom ? [modeloBom, ...MODELOS_IA.filter(m => m !== modeloBom)] : MODELOS_IA;
+  const falhas = [];
+  for(const modelo of candidatos){
     try{
       const r = await env.AI.run(modelo, {messages: mensagens, max_tokens: 420, temperature: 0.6});
       const texto = String((r && (r.response || r.result)) || '').trim();
-      if(texto) return resposta({resposta: texto, fonte:'workers-ai', modelo}, 200, true);
-      ultimoErro = 'resposta vazia de ' + modelo;
+      if(texto){
+        modeloBom = modelo;
+        return resposta({resposta: texto, fonte:'workers-ai', modelo}, 200, true);
+      }
+      falhas.push(modelo + ': resposta vazia');
     }catch(e){
-      ultimoErro = String((e && e.message) || e) + ' (' + modelo + ')';
+      falhas.push(modelo + ': ' + String((e && e.message) || e));
     }
   }
-  return resposta({erro:'assistente indisponível: ' + ultimoErro}, 502, true);
+  modeloBom = null;
+  return resposta({erro:'nenhum modelo disponível para esta conta', tentativas: falhas}, 502, true);
+}
+
+/* /modelos: diagnóstico. Experimenta cada candidato com uma pergunta mínima
+   e diz quais funcionam nesta conta, para afinar a lista sem adivinhar. */
+async function modelos(env){
+  if(!env.AI) return resposta({erro:'Workers AI não está ligado (falta o binding [ai] no wrangler.toml)'}, 503, true);
+  const teste = [{role:'user', content:'Diz apenas: olá'}];
+  const resultados = [];
+  for(const modelo of MODELOS_IA){
+    try{
+      const r = await env.AI.run(modelo, {messages: teste, max_tokens: 16});
+      const texto = String((r && (r.response || r.result)) || '').trim();
+      resultados.push({modelo, funciona: !!texto, amostra: texto.slice(0, 60)});
+    }catch(e){
+      resultados.push({modelo, funciona: false, erro: String((e && e.message) || e).slice(0, 160)});
+    }
+  }
+  return resposta({
+    funcionam: resultados.filter(r => r.funciona).map(r => r.modelo),
+    detalhe: resultados
+  }, 200, true);
 }
 
 export default {
@@ -233,8 +269,9 @@ export default {
       if(url.pathname === '/voos') return await voos(url, env);
       if(url.pathname === '/hoteis') return await hoteis(url, env);
       if(url.pathname === '/assistente') return await assistente(pedido, env);
+      if(url.pathname === '/modelos') return await modelos(env);
       if(url.pathname === '/estado') return await estado(env);
-      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /assistente, /estado'}, 404);
+      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /assistente, /modelos, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }

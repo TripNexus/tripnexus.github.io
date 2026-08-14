@@ -6,18 +6,18 @@
    rede e nunca são servidos de cache obsoleta.
    ═══════════════════════════════════════════════════════════════ */
 
-const VERSAO = 'tripnexus-v26';
+const VERSAO = 'tripnexus-v27';
 const CASCA = [
   './',
   './index.html',
-  './assets/css/style.css?v=26',
-  './assets/js/data.js?v=26',
-  './assets/js/engine.js?v=26',
-  './assets/js/calendar.js?v=26',
-  './assets/js/live.js?v=26',
-  './assets/js/alertas.js?v=26',
-  './assets/js/roteiro.js?v=26',
-  './assets/js/app.js?v=26',
+  './assets/css/style.css?v=27',
+  './assets/js/data.js?v=27',
+  './assets/js/engine.js?v=27',
+  './assets/js/calendar.js?v=27',
+  './assets/js/live.js?v=27',
+  './assets/js/alertas.js?v=27',
+  './assets/js/roteiro.js?v=27',
+  './assets/js/app.js?v=27',
   './assets/img/logo.svg',
   './assets/img/favicon.svg',
   './assets/img/icon-192.png',
