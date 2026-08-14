@@ -149,7 +149,9 @@ async function perguntarAoAssistente(pergunta){
     }else{
       /* mostra a causa real: evita ficar às escuras quando falta o binding
          [ai] no Worker, a quota esgota ou o modelo devolve erro */
-      const causa = (dados && dados.erro) ? String(dados.erro) : ('o servidor respondeu ' + r.status);
+      let causa = (dados && dados.erro) ? String(dados.erro) : ('o servidor respondeu ' + r.status);
+      if(dados && Array.isArray(dados.tentativas) && dados.tentativas.length)
+        causa += '\n\n' + dados.tentativas.join('\n');
       CHAT.historico.push({papel:'bot', texto:'Não consegui responder: ' + causa});
     }
   }catch(e){
