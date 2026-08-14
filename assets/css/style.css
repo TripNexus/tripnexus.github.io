@@ -328,6 +328,32 @@ img{max-width:100%}
   font-size:.8rem;font-weight:600;color:var(--tinta);background:#fff;max-width:11rem;
 }
 
+/* filtros de escolha múltipla (períodos de partida, companhias) */
+.filtro-multi{position:relative;display:flex;align-items:center;gap:.35rem}
+.filtro-multi .fm-titulo{font-weight:700}
+.filtro-multi .fm-btn{
+  display:flex;align-items:center;gap:.3rem;
+  border:1.5px solid #d5d9e8;border-radius:8px;padding:.25rem .45rem;
+  font-size:.8rem;font-weight:600;color:var(--tinta);background:#fff;
+  max-width:11rem;cursor:pointer;
+}
+.filtro-multi .fm-btn .seta{font-size:.7rem;opacity:.7}
+.filtro-multi .fm-painel{
+  position:absolute;top:calc(100% + .3rem);left:0;z-index:60;min-width:13rem;
+  max-height:15rem;overflow-y:auto;background:#fff;border:1.5px solid #d5d9e8;
+  border-radius:10px;padding:.4rem;box-shadow:0 10px 26px rgba(20,25,60,.16);
+}
+.filtro-multi .fm-opcao{
+  display:flex;align-items:center;gap:.45rem;padding:.28rem .35rem;
+  border-radius:7px;font-weight:600;color:var(--tinta);cursor:pointer;
+}
+.filtro-multi .fm-opcao:hover{background:#f2f5ff}
+.filtro-multi .fm-opcao input{accent-color:var(--indigo);flex:none}
+.filtro-multi .fm-limpar{
+  width:100%;margin-top:.3rem;padding:.3rem;border:0;border-radius:7px;
+  background:#eef2ff;color:var(--indigo);font-weight:700;font-size:.78rem;cursor:pointer;
+}
+
 .linha-oferta{
   display:flex;align-items:center;gap:.8rem;padding:.65rem .55rem;border-radius:12px;
   border:1.5px solid transparent;
@@ -587,6 +613,11 @@ img{max-width:100%}
 [data-tema="escuro"] .filtros-voos select{background:#20243a;border-color:#3a4160;color:#8ab4f8}
 [data-tema="escuro"] .filtros-voos{background:#20243a}
 [data-tema="escuro"] .filtros-voos select{color:var(--tinta)}
+[data-tema="escuro"] .filtro-multi .fm-btn{background:#20243a;border-color:#3a4160;color:var(--tinta)}
+[data-tema="escuro"] .filtro-multi .fm-painel{background:#20243a;border-color:#3a4160}
+[data-tema="escuro"] .filtro-multi .fm-opcao{color:var(--tinta)}
+[data-tema="escuro"] .filtro-multi .fm-opcao:hover{background:#262b45}
+[data-tema="escuro"] .filtro-multi .fm-limpar{background:#262b45;color:#8ab4f8}
 [data-tema="escuro"] .linha-oferta:hover{background:#20243a}
 [data-tema="escuro"] .sugestao:hover,[data-tema="escuro"] .sugestao.activa{background:#20243a}
 [data-tema="escuro"] .sug-iata,[data-tema="escuro"] .icone-parceiro{background:#20243a}
@@ -608,3 +639,115 @@ img{max-width:100%}
 
 .assinatura{opacity:.28;cursor:help;transition:opacity .2s}
 .assinatura:hover{opacity:.9}
+
+/* ── páginas legais (termos, privacidade, afiliação) ─────────── */
+.pagina-legal{max-width:52rem;margin:0 auto;padding:2.4rem 1.25rem 3.5rem}
+.pagina-legal h1{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.35rem}
+.pagina-legal .actualizado{color:var(--cinza);font-size:.85rem;margin-bottom:1.8rem}
+.pagina-legal h2{font-size:1.12rem;font-weight:800;margin:1.9rem 0 .6rem;letter-spacing:-.01em}
+.pagina-legal p,.pagina-legal li{color:var(--cinza);margin-bottom:.7rem}
+.pagina-legal strong{color:var(--tinta)}
+.pagina-legal ul{padding-left:1.15rem;margin-bottom:.5rem}
+.pagina-legal a{color:var(--indigo);font-weight:600}
+.pagina-legal table{width:100%;border-collapse:collapse;margin:.5rem 0 1rem;font-size:.88rem}
+.pagina-legal th,.pagina-legal td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--cinza-claro);color:var(--cinza);vertical-align:top}
+.pagina-legal th{color:var(--tinta);font-weight:700}
+.caixa-aviso{
+  background:#fff8e6;border:1.5px solid #f5d78e;border-radius:12px;
+  padding:.9rem 1rem;margin:1.2rem 0;
+}
+.caixa-aviso p{color:#7a5b12;margin:0}
+.caixa-aviso strong{color:#5c4409}
+.voltar{display:inline-block;margin-bottom:1.4rem;color:var(--indigo);font-weight:700;text-decoration:none;font-size:.9rem}
+.voltar:hover{text-decoration:underline}
+.ligacoes-legais{display:flex;gap:.9rem;flex-wrap:wrap;margin-top:.5rem}
+.ligacoes-legais a{color:#c9cdf0;font-size:.85rem;text-decoration:none;font-weight:600}
+.ligacoes-legais a:hover{color:#fff;text-decoration:underline}
+[data-tema="escuro"] .caixa-aviso{background:#33290f;border-color:#6b5518}
+[data-tema="escuro"] .caixa-aviso p{color:#f0d597}
+[data-tema="escuro"] .caixa-aviso strong{color:#ffe9b8}
+
+/* ── aviso de cookies ───────────────────────────────────────── */
+.aviso-cookies{
+  position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:200;max-width:44rem;margin:0 auto;
+  background:var(--branco);border-radius:14px;box-shadow:var(--sombra-forte);
+  padding:1rem 1.1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;
+}
+.aviso-cookies p{font-size:.88rem;color:var(--cinza);flex:1 1 18rem;margin:0}
+.aviso-cookies a{color:var(--indigo);font-weight:600}
+.aviso-cookies .cookie-accoes{display:flex;gap:.5rem;flex-wrap:wrap}
+.aviso-cookies button{
+  border:0;border-radius:9px;padding:.5rem .95rem;font-weight:700;font-size:.87rem;
+}
+.btn-cookie-sim{background:var(--indigo);color:#fff}
+.btn-cookie-sim:hover{background:var(--indigo-escuro)}
+.btn-cookie-nao{background:var(--cinza-claro);color:var(--tinta)}
+.btn-cookie-nao:hover{background:#e0e4f0}
+
+/* ── roteiro sugerido ───────────────────────────────────────── */
+.roteiro-dia{margin-bottom:1rem}
+.roteiro-dia-titulo{
+  font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--indigo);margin-bottom:.45rem;
+}
+.roteiro-lugares{display:grid;grid-template-columns:repeat(auto-fill,minmax(13.5rem,1fr));gap:.6rem}
+.lugar{
+  display:flex;flex-direction:column;text-decoration:none;color:inherit;
+  border:1.5px solid var(--cinza-claro);border-radius:12px;overflow:hidden;
+  background:var(--branco);transition:.18s;
+}
+.lugar:hover{border-color:#c9cff0;transform:translateY(-2px);box-shadow:var(--sombra)}
+.lugar-foto{width:100%;height:7.5rem;object-fit:cover;display:block;background:var(--cinza-claro)}
+.lugar-info{padding:.55rem .65rem .7rem}
+.lugar-nome{font-weight:700;font-size:.9rem;line-height:1.3;margin-bottom:.2rem}
+.lugar-texto{font-size:.78rem;color:var(--cinza);line-height:1.4}
+[data-tema="escuro"] .lugar{background:#20243a;border-color:#333a55}
+[data-tema="escuro"] .lugar:hover{border-color:#4a5378}
+
+/* ── assistente de viagens ──────────────────────────────────── */
+.btn-chat{
+  position:fixed;right:1.1rem;bottom:1.1rem;z-index:150;
+  display:flex;align-items:center;gap:.45rem;
+  background:var(--indigo);color:#fff;border:0;border-radius:999px;
+  padding:.7rem 1.15rem;font-weight:700;font-size:.92rem;
+  box-shadow:0 10px 26px rgba(67,83,255,.42);transition:.18s;
+}
+.btn-chat:hover{background:var(--indigo-escuro);transform:translateY(-2px)}
+.chat-ico{font-size:1.05em}
+.painel-chat{
+  position:fixed;right:1.1rem;bottom:1.1rem;z-index:160;
+  width:min(23rem,calc(100vw - 2.2rem));height:min(30rem,calc(100vh - 4rem));
+  display:flex;flex-direction:column;
+  background:var(--branco);border-radius:16px;box-shadow:var(--sombra-forte);overflow:hidden;
+}
+.chat-topo{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.75rem .95rem;background:var(--indigo);color:#fff;flex:none;
+}
+.chat-fechar{background:transparent;border:0;color:#fff;font-size:1rem;opacity:.85}
+.chat-fechar:hover{opacity:1}
+.chat-corpo{flex:1;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.5rem}
+.chat-msg{
+  max-width:85%;padding:.55rem .75rem;border-radius:13px;
+  font-size:.88rem;line-height:1.45;white-space:pre-wrap;word-wrap:break-word;
+}
+.chat-msg.do-bot{background:var(--cinza-claro);color:var(--tinta);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.do-utilizador{background:var(--indigo);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-espera{opacity:.6;font-style:italic}
+.chat-form{display:flex;gap:.4rem;padding:.6rem;border-top:1px solid var(--cinza-claro);flex:none}
+.chat-form input{
+  flex:1;border:1.5px solid #d5d9e8;border-radius:9px;padding:.5rem .7rem;
+  font-size:.88rem;color:var(--tinta);background:var(--branco);outline:0;min-width:0;
+}
+.chat-form input:focus{border-color:var(--indigo)}
+.chat-form button{
+  border:0;border-radius:9px;background:var(--indigo);color:#fff;
+  padding:.5rem .85rem;font-size:.95rem;flex:none;
+}
+.chat-form button:hover{background:var(--indigo-escuro)}
+.chat-nota{font-size:.7rem;color:var(--cinza);padding:0 .7rem .6rem;text-align:center;flex:none}
+[data-tema="escuro"] .painel-chat{background:#20243a}
+[data-tema="escuro"] .chat-msg.do-bot{background:#2a3048;color:var(--tinta)}
+[data-tema="escuro"] .chat-form{border-top-color:#333a55}
+[data-tema="escuro"] .chat-form input{background:#262b45;border-color:#3a4160;color:var(--tinta)}
+@media(max-width:520px){ .chat-etiqueta{display:none} }
