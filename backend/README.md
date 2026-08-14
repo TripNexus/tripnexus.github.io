@@ -87,10 +87,19 @@ botão do assistente simplesmente não responde, sem afectar o resto do site.
 e sem aviso (o `llama-3.1-8b-instruct`, por exemplo, foi descontinuado a
 30/05/2026). Por isso o Worker não fixa um modelo: percorre uma lista de
 candidatos por ordem de preferência, usa o primeiro que responder e memoriza-o.
-Para saber quais funcionam na sua conta agora, abra **`/modelos`**: devolve a
-lista `funcionam` e, para cada candidato, o erro exacto. Se nenhum funcionar,
-copie os nomes actuais do catálogo da Cloudflare para a constante `MODELOS_IA`
-em `worker.js`.
+
+A lista actual (confirmada pela rota `/modelos` em Agosto de 2026) é:
+
+| Modelo | Nota |
+|---|---|
+| `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | preferido: o maior, e o que melhor segue o português de Portugal |
+| `@cf/meta/llama-4-scout-17b-16e-instruct` | alternativa rápida |
+| `@cf/mistralai/mistral-small-3.1-24b-instruct` | último recurso: tende a escorregar para formas brasileiras |
+
+Se o assistente deixar de responder, abra **`/modelos`**: experimenta cada
+candidato e devolve a lista `funcionam` e, para os restantes, o erro exacto
+(descontinuado, sem acesso na conta, nome inexistente). Copie então os nomes
+actuais do catálogo da Cloudflare para a constante `MODELOS_IA` em `worker.js`.
 
 ## Passo 3: ligar o site ao backend
 
