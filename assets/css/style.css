@@ -483,7 +483,8 @@ img{max-width:100%}
 .parceiro-desc{color:var(--cinza);font-size:.8rem}
 
 /* ── rodapé ─────────────────────────────────────────────────── */
-.rodape{background:#14162e;color:#aab0d0;margin-top:3rem;padding:2.5rem 1.25rem 1.5rem}
+/* a folga em baixo evita que o botão flutuante do assistente tape os direitos */
+.rodape{background:#14162e;color:#aab0d0;margin-top:3rem;padding:2.5rem 1.25rem 4.5rem}
 .rodape-inner{
   max-width:1180px;margin:0 auto;display:grid;
   grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:2rem;font-size:.88rem;
@@ -641,7 +642,15 @@ img{max-width:100%}
 .assinatura:hover{opacity:.9}
 
 /* ── páginas legais (termos, privacidade, afiliação) ─────────── */
-.pagina-legal{max-width:52rem;margin:0 auto;padding:2.4rem 1.25rem 3.5rem}
+/* o conteúdo legal vive num cartão, como os blocos de resultados, para não
+   destoar do resto do site */
+.pagina-legal{
+  max-width:52rem;margin:2.2rem auto 1rem;padding:2.2rem 2.4rem 2.6rem;
+  background:var(--branco);border-radius:var(--raio);box-shadow:var(--sombra);
+}
+@media(max-width:640px){ .pagina-legal{margin:1.1rem .9rem;padding:1.5rem 1.25rem 1.8rem} }
+/* as âncoras usadas como botões de navegação não devem parecer ligações */
+a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none}
 .pagina-legal h1{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.35rem}
 .pagina-legal .actualizado{color:var(--cinza);font-size:.85rem;margin-bottom:1.8rem}
 .pagina-legal h2{font-size:1.12rem;font-weight:800;margin:1.9rem 0 .6rem;letter-spacing:-.01em}
@@ -658,11 +667,20 @@ img{max-width:100%}
 }
 .caixa-aviso p{color:#7a5b12;margin:0}
 .caixa-aviso strong{color:#5c4409}
-.voltar{display:inline-block;margin-bottom:1.4rem;color:var(--indigo);font-weight:700;text-decoration:none;font-size:.9rem}
-.voltar:hover{text-decoration:underline}
-.ligacoes-legais{display:flex;gap:.9rem;flex-wrap:wrap;margin-top:.5rem}
-.ligacoes-legais a{color:#c9cdf0;font-size:.85rem;text-decoration:none;font-weight:600}
+/* trilho de navegação no topo das páginas legais */
+.trilho{
+  display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;
+  margin-bottom:1.3rem;font-size:.85rem;color:var(--cinza);font-weight:600;
+}
+.trilho a{color:var(--indigo);text-decoration:none}
+.trilho a:hover{text-decoration:underline}
+.trilho span[aria-hidden]{opacity:.5}
+
+/* coluna «Informação legal» do rodapé */
+.ligacoes-legais{list-style:none;padding:0;margin:.1rem 0 0;display:flex;flex-direction:column;gap:.35rem}
+.ligacoes-legais a{color:#c9cdf0;font-size:.86rem;text-decoration:none;font-weight:600}
 .ligacoes-legais a:hover{color:#fff;text-decoration:underline}
+.ligacoes-legais a.actual{color:#fff;text-decoration:underline}
 [data-tema="escuro"] .caixa-aviso{background:#33290f;border-color:#6b5518}
 [data-tema="escuro"] .caixa-aviso p{color:#f0d597}
 [data-tema="escuro"] .caixa-aviso strong{color:#ffe9b8}
@@ -751,3 +769,8 @@ img{max-width:100%}
 [data-tema="escuro"] .chat-form{border-top-color:#333a55}
 [data-tema="escuro"] .chat-form input{background:#262b45;border-color:#3a4160;color:var(--tinta)}
 @media(max-width:520px){ .chat-etiqueta{display:none} }
+
+/* tabelas das páginas legais: rolam dentro da própria caixa, para a página
+   nunca ganhar barra horizontal em ecrãs estreitos */
+.tabela-rolo{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.5rem 0 1rem}
+.tabela-rolo table{margin:0;min-width:26rem}

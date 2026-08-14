@@ -55,7 +55,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=27">
+<link rel="stylesheet" href="assets/css/style.css?v=28">
 </head>
 <body>
 
@@ -257,11 +257,14 @@
       <p><strong>Nota sobre os preços</strong></p>
       <p>Os preços de voos são obtidos em tempo real. Os restantes valores (alojamento, carros, transportes e actividades) são estimativas calculadas a partir de dados históricos e de referência dos parceiros, e destinam-se apenas a comparação. O preço final é sempre confirmado no site onde efectua a reserva.</p>
     </div>
-  </div>
-  <div class="ligacoes-legais">
-    <a href="termos.html">Termos e Condições</a>
-    <a href="privacidade.html">Política de Privacidade</a>
-    <a href="afiliacao.html">Divulgação de Afiliação</a>
+    <div>
+      <p><strong>Informação legal</strong></p>
+      <ul class="ligacoes-legais">
+        <li><a href="termos.html">Termos e Condições</a></li>
+        <li><a href="privacidade.html">Política de Privacidade</a></li>
+        <li><a href="afiliacao.html">Divulgação de Afiliação</a></li>
+      </ul>
+    </div>
   </div>
   <p class="direitos">© <span id="ano"></span> TripNexus · Feito em Portugal · Comparador independente: não vendemos viagens, encaminhamos para quem as vende. Os logótipos apresentados pertencem aos respectivos proprietários. <span class="assinatura" title="Feito por NightmareFTW" aria-label="Feito por NightmareFTW">✦</span></p>
 </footer>
@@ -322,13 +325,13 @@
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
 </script>
-<script src="assets/js/data.js?v=27"></script>
-<script src="assets/js/engine.js?v=27"></script>
-<script src="assets/js/calendar.js?v=27"></script>
-<script src="assets/js/live.js?v=27"></script>
-<script src="assets/js/alertas.js?v=27"></script>
-<script src="assets/js/roteiro.js?v=27"></script>
-<script src="assets/js/app.js?v=27"></script>
+<script src="assets/js/data.js?v=28"></script>
+<script src="assets/js/engine.js?v=28"></script>
+<script src="assets/js/calendar.js?v=28"></script>
+<script src="assets/js/live.js?v=28"></script>
+<script src="assets/js/alertas.js?v=28"></script>
+<script src="assets/js/roteiro.js?v=28"></script>
+<script src="assets/js/app.js?v=28"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

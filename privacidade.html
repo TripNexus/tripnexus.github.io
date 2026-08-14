@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=25">
+<link rel="stylesheet" href="assets/css/style.css?v=28">
 </head>
 <body>
 
@@ -30,11 +30,15 @@
       <span class="logo-icone"><img src="assets/img/logo.svg" alt="TripNexus" width="27" height="27"></span>
       <span class="logo-texto"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></span>
     </a>
+    <nav class="nav-principal">
+      <a class="nav-btn" href="index.html">Pesquisar</a>
+      <button class="nav-btn" id="btn-tema" type="button" title="Tema claro ou escuro" aria-label="Alternar tema claro ou escuro">🌙</button>
+    </nav>
   </div>
 </header>
 
 <main class="pagina-legal">
-  <a class="voltar" href="index.html">← Voltar ao comparador</a>
+  <nav class="trilho" aria-label="Percurso"><a href="index.html">TripNexus</a> <span aria-hidden="true">›</span> <span>Política de Privacidade</span></nav>
   <h1>Política de Privacidade</h1>
   <p class="actualizado">Última actualização: 14 de Agosto de 2026</p>
 
@@ -50,7 +54,7 @@
   2016/679 (RGPD) e a Lei n.º 58/2019.</p>
 
   <h2>2. Que dados são tratados</h2>
-  <table>
+  <div class="tabela-rolo"><table>
     <tr><th>Dados</th><th>Para quê</th><th>Onde ficam</th></tr>
     <tr>
       <td>Critérios de pesquisa (origem, destino, datas, número de passageiros, classe)</td>
@@ -72,7 +76,7 @@
       <td>Entregar as páginas, segurança e prevenção de abuso</td>
       <td>Registos temporários dos fornecedores (GitHub Pages, Cloudflare)</td>
     </tr>
-  </table>
+  </table></div>
   <p><strong>Não recolhemos</strong> nome, morada, data de nascimento, número de documento, dados de pagamento nem
   dados de saúde. Não lhe pedimos que crie conta. Não fazemos decisões automatizadas com efeitos jurídicos sobre si.</p>
 
@@ -98,14 +102,14 @@
   </ul>
 
   <h2>5. Quem mais trata os dados (subcontratantes e terceiros)</h2>
-  <table>
+  <div class="tabela-rolo"><table>
     <tr><th>Entidade</th><th>Função</th></tr>
     <tr><td>GitHub Pages (Microsoft)</td><td>Alojamento das páginas</td></tr>
     <tr><td>Cloudflare</td><td>Serviço intermediário de preços e modelo de linguagem do assistente</td></tr>
     <tr><td>Travelpayouts / Aviasales</td><td>Tarifas reais de voos e rede de afiliação</td></tr>
     <tr><td>SerpApi</td><td>Preços reais de hotéis</td></tr>
     <tr><td>Wikimedia, OpenStreetMap, Google Fonts, unpkg</td><td>Fotografias, mapas e tipos de letra</td></tr>
-  </table>
+  </table></div>
   <p>Ao seguir uma ligação para um parceiro, passa a estar no site desse parceiro, sujeito à política de
   privacidade dele. Não controlamos nem respondemos por esses tratamentos.</p>
 
@@ -141,11 +145,42 @@
 </main>
 
 <footer class="rodape">
-  <p class="direitos">© <span id="ano"></span> TripNexus · Comparador independente · Não vendemos viagens.</p>
+  <div class="rodape-inner">
+    <div>
+      <p class="logo-rodape"><img src="assets/img/logo.svg" alt="" class="logo-rodape-img" width="27" height="27"><span class="logo-texto"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></span></p>
+      <p>Comparador independente de viagens: compara voos, alojamento, carros e transportes em mais de 60 sites parceiros. Não vendemos bilhetes nem reservas: encontramos o melhor preço e encaminhamo-lo para o site do parceiro para concluir a reserva.</p>
+    </div>
+    <div>
+      <p><strong>Nota sobre os preços</strong></p>
+      <p>Os preços de voos são obtidos em tempo real. Os restantes valores (alojamento, carros, transportes e actividades) são estimativas calculadas a partir de dados históricos e de referência dos parceiros, e destinam-se apenas a comparação. O preço final é sempre confirmado no site onde efectua a reserva.</p>
+    </div>
+    <div>
+      <p><strong>Informação legal</strong></p>
+      <ul class="ligacoes-legais">
+        <li><a href="termos.html">Termos e Condições</a></li>
+        <li><a href="privacidade.html" class="actual" aria-current="page">Política de Privacidade</a></li>
+        <li><a href="afiliacao.html">Divulgação de Afiliação</a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="direitos">© <span id="ano"></span> TripNexus · Feito em Portugal · Comparador independente: não vendemos viagens, encaminhamos para quem as vende. <span class="assinatura" title="Feito por NightmareFTW" aria-label="Feito por NightmareFTW">✦</span></p>
 </footer>
 
 <script>
   document.getElementById('ano').textContent = new Date().getFullYear();
+  (function(){
+    var btn = document.getElementById('btn-tema');
+    if(!btn) return;
+    var aplicar = function(t){
+      document.documentElement.setAttribute('data-tema', t);
+      btn.textContent = t === 'escuro' ? '☀️' : '🌙';
+      try{ localStorage.setItem('tn_tema', t); }catch(e){}
+    };
+    aplicar(document.documentElement.getAttribute('data-tema') || 'claro');
+    btn.onclick = function(){
+      aplicar(document.documentElement.getAttribute('data-tema') === 'escuro' ? 'claro' : 'escuro');
+    };
+  })();
   document.getElementById('repor-cookies').onclick = function(){
     try{ localStorage.removeItem('tn_cookies'); }catch(e){}
     alert('Escolha reposta. O aviso de cookies volta a aparecer na página principal.');
