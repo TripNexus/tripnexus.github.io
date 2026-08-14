@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem('tn_tema');
+      if(!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro';
+      document.documentElement.setAttribute('data-tema', t);
+    }catch(e){}
+  })();
+</script>
+<title>Divulgação de Afiliação | TripNexus</title>
+<meta name="description" content="Como o TripNexus se sustenta: comissões de afiliado pagas pelos parceiros, sem qualquer custo acrescido para si e sem influência na ordenação dos resultados.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://tripnexus.github.io/afiliacao.html">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=25">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" href="index.html">
+      <span class="logo-icone"><img src="assets/img/logo.svg" alt="TripNexus" width="27" height="27"></span>
+      <span class="logo-texto"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></span>
+    </a>
+  </div>
+</header>
+
+<main class="pagina-legal">
+  <a class="voltar" href="index.html">← Voltar ao comparador</a>
+  <h1>Divulgação de Afiliação</h1>
+  <p class="actualizado">Última actualização: 14 de Agosto de 2026</p>
+
+  <div class="caixa-aviso">
+    <p><strong>Em resumo:</strong> o TripNexus é gratuito para si. Quando reserva num parceiro depois de sair
+    daqui, esse parceiro pode pagar-nos uma comissão. <strong>Não paga mais um cêntimo por isso</strong> e a
+    comissão não altera a ordem por que os resultados lhe são apresentados.</p>
+  </div>
+
+  <h2>Como nos sustentamos</h2>
+  <p>O TripNexus não cobra nada aos utilizadores, não vende dados e não mostra publicidade. Algumas das ligações
+  que encaminham para os sites parceiros são <strong>ligações de afiliado</strong>: contêm um identificador que
+  permite ao parceiro reconhecer que a visita partiu do TripNexus. Se dessa visita resultar uma reserva, o
+  parceiro paga-nos uma comissão sobre a venda que já fez.</p>
+
+  <h2>O que isto significa (e o que não significa)</h2>
+  <ul>
+    <li><strong>Não aumenta o seu preço.</strong> A comissão sai da margem do parceiro. O preço que paga é o
+    mesmo que pagaria se tivesse ido directamente ao site dele.</li>
+    <li><strong>Não influencia a ordenação.</strong> Os resultados são ordenados pelos critérios que escolhe
+    (preço, duração, hora de partida). Nunca colocamos um parceiro à frente por pagar mais comissão, e a oferta
+    marcada como «Mais barato» é sempre, de facto, a mais barata encontrada.</li>
+    <li><strong>Não condiciona os parceiros incluídos.</strong> Comparamos também sites com os quais não temos
+    qualquer relação de afiliação, sempre que isso beneficie a comparação.</li>
+    <li><strong>Não somos nós que vendemos.</strong> A reserva, o pagamento e o contrato são sempre com o
+    parceiro. Ver os <a href="termos.html">Termos e Condições</a>.</li>
+  </ul>
+
+  <h2>Com quem trabalhamos</h2>
+  <p>As comissões são intermediadas sobretudo pela rede <strong>Travelpayouts</strong> (rede de afiliados da
+  Aviasales), que agrega vários programas de companhias aéreas, agências em linha e plataformas de alojamento.
+  Alguns parceiros apresentados não têm programa de afiliação e, nesses casos, não recebemos nada por os incluir.</p>
+
+  <h2>O seu consentimento</h2>
+  <p>O reconhecimento da proveniência da visita depende de cookies de afiliação, que só são activados se os
+  aceitar no aviso apresentado na primeira visita. <strong>Se recusar, o site funciona exactamente da mesma
+  maneira</strong> e continua a ver todos os preços e todos os parceiros; apenas não nos é atribuída comissão.
+  Pode rever a sua escolha na <a href="privacidade.html">Política de Privacidade</a>.</p>
+
+  <h2>Transparência</h2>
+  <p>Esta divulgação existe para cumprir o dever de informação sobre comunicações comerciais previsto no
+  Decreto-Lei n.º 7/2004 e nas regras de práticas comerciais leais (Decreto-Lei n.º 57/2008), e porque nos parece
+  simplesmente o correcto: deve saber como é que um serviço gratuito se paga a si próprio. Se encontrar alguma
+  incoerência entre o que aqui está escrito e o que o site faz, escreva-nos para
+  <a href="mailto:jdiogopessoa@gmail.com">jdiogopessoa@gmail.com</a>.</p>
+
+  <p style="margin-top:2rem"><a href="termos.html">Termos e Condições</a> ·
+  <a href="privacidade.html">Política de Privacidade</a></p>
+</main>
+
+<footer class="rodape">
+  <p class="direitos">© <span id="ano"></span> TripNexus · Comparador independente · Não vendemos viagens.</p>
+</footer>
+
+<script>document.getElementById('ano').textContent = new Date().getFullYear();</script>
+</body>
+</html>

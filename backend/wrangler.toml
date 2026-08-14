@@ -1,3 +1,8 @@
 name = "tripnexus-api"
 main = "worker.js"
 compatibility_date = "2026-07-01"
+
+# Assistente de viagens: modelos da Cloudflare (quota diária gratuita).
+# Não precisa de chave nem de conta adicional.
+[ai]
+binding = "AI"

@@ -591,9 +591,17 @@ function desenharMapaExplorar(o, destinos, idaVolta){
 }
 
 /* ── filtros e ordenação dos voos ────────────────────────────── */
-const FILTROS = {ordenar:'preco', escalas:'todas', partida:'qualquer', companhia:'todas'};
+/* nomes de companhias vêm de uma API externa: escapar antes de os inserir */
+function escaparHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+/* «partidas» e «companhias» são listas: vazias significam «sem restrição»,
+   o que permite escolher vários períodos do dia e várias companhias. */
+const FILTROS = {ordenar:'preco', escalas:'todas', partidas:[], companhias:[]};
+let FILTRO_ABERTO = null;   /* qual o painel aberto, para o reabrir após redesenhar */
 function reporFiltros(){
-  Object.assign(FILTROS, {ordenar:'preco', escalas:'todas', partida:'qualquer', companhia:'todas'});
+  Object.assign(FILTROS, {ordenar:'preco', escalas:'todas', partidas:[], companhias:[]});
 }
 function minutosDuracao(d){
   const m = /(\d+)h(\d+)/.exec(d || '');
@@ -609,31 +617,81 @@ function faixaPartida(hhmm){
 function aplicarFiltrosVoos(lista){
   const v = lista.filter(q =>
     (FILTROS.escalas === 'todas' || (FILTROS.escalas === 'directos' ? q.escalas === 0 : q.escalas <= 1)) &&
-    (FILTROS.partida === 'qualquer' || faixaPartida(q.partida) === FILTROS.partida) &&
-    (FILTROS.companhia === 'todas' || q.companhia === FILTROS.companhia));
+    (!FILTROS.partidas.length || FILTROS.partidas.includes(faixaPartida(q.partida))) &&
+    (!FILTROS.companhias.length || FILTROS.companhias.includes(q.companhia)));
   if(FILTROS.ordenar === 'duracao') v.sort((a, b) => minutosDuracao(a.duracao) - minutosDuracao(b.duracao));
   else if(FILTROS.ordenar === 'partida') v.sort((a, b) => String(a.partida).localeCompare(String(b.partida)));
   else v.sort((a, b) => a.precoFinal - b.precoFinal);
   return v;
 }
+const FAIXAS_PARTIDA = [
+  ['manha','Manhã (06h a 12h)'], ['tarde','Tarde (12h a 18h)'],
+  ['noite','Noite (18h a 24h)'], ['madrugada','Madrugada (00h a 06h)']
+];
+/* rótulo do botão: nada escolhido, um só, ou uma contagem */
+function resumoEscolha(escolhidas, opcoes, vazio, plural){
+  if(!escolhidas.length) return vazio;
+  if(escolhidas.length === 1){
+    const o = opcoes.find(x => x[0] === escolhidas[0]);
+    return o ? o[1] : escolhidas[0];
+  }
+  return escolhidas.length + ' ' + plural;
+}
+function filtroMulti(chave, titulo, opcoes, escolhidas, vazio, plural){
+  return `<div class="filtro-multi" data-multi="${chave}">
+    <span class="fm-titulo">${titulo}</span>
+    <button type="button" class="fm-btn" aria-expanded="false">${escaparHtml(resumoEscolha(escolhidas, opcoes, vazio, plural))}<span class="seta">▾</span></button>
+    <div class="fm-painel" hidden>
+      ${opcoes.map(([v, txt]) => `<label class="fm-opcao"><input type="checkbox" value="${escaparHtml(v)}"${escolhidas.includes(v) ? ' checked' : ''}><span>${escaparHtml(txt)}</span></label>`).join('')}
+      ${escolhidas.length ? '<button type="button" class="fm-limpar">Limpar</button>' : ''}
+    </div>
+  </div>`;
+}
 function barraFiltros(companhias){
-  /* mantém a companhia escolhida visível mesmo que não exista nesta vista */
-  if(FILTROS.companhia !== 'todas' && !companhias.includes(FILTROS.companhia))
-    companhias = [FILTROS.companhia, ...companhias];
+  /* mantém as companhias escolhidas visíveis mesmo que não existam nesta vista */
+  const extra = FILTROS.companhias.filter(c => !companhias.includes(c));
+  const listaComp = [...extra, ...companhias].map(c => [c, c]);
   const op = (v, txt, actual) => `<option value="${v}"${v === actual ? ' selected' : ''}>${txt}</option>`;
   return `<div class="filtros-voos">
     <label>Ordenar <select data-filtro="ordenar">${op('preco','Mais barato',FILTROS.ordenar)}${op('duracao','Mais rápido',FILTROS.ordenar)}${op('partida','Partida mais cedo',FILTROS.ordenar)}</select></label>
     <label>Escalas <select data-filtro="escalas">${op('todas','Todas',FILTROS.escalas)}${op('directos','Só directos',FILTROS.escalas)}${op('ate1','Até 1 escala',FILTROS.escalas)}</select></label>
-    <label>Partida <select data-filtro="partida">${op('qualquer','Qualquer hora',FILTROS.partida)}${op('manha','Manhã (06h a 12h)',FILTROS.partida)}${op('tarde','Tarde (12h a 18h)',FILTROS.partida)}${op('noite','Noite (18h a 24h)',FILTROS.partida)}${op('madrugada','Madrugada (00h a 06h)',FILTROS.partida)}</select></label>
-    <label>Companhia <select data-filtro="companhia">${op('todas','Todas',FILTROS.companhia)}${companhias.map(c => op(c, c, FILTROS.companhia)).join('')}</select></label>
+    ${filtroMulti('partidas', 'Partida', FAIXAS_PARTIDA, FILTROS.partidas, 'Qualquer hora', 'períodos')}
+    ${filtroMulti('companhias', 'Companhia', listaComp, FILTROS.companhias, 'Todas', 'companhias')}
   </div>`;
 }
 function ligarFiltrosVoos(raiz, aoMudar){
   raiz.querySelectorAll('.filtros-voos select').forEach(s =>
-    s.onchange = () => { FILTROS[s.dataset.filtro] = s.value; aoMudar(); });
+    s.onchange = () => { FILTRO_ABERTO = null; FILTROS[s.dataset.filtro] = s.value; aoMudar(); });
+
+  raiz.querySelectorAll('.filtro-multi').forEach(caixa => {
+    const chave = caixa.dataset.multi;
+    const btn = caixa.querySelector('.fm-btn'), painel = caixa.querySelector('.fm-painel');
+    const abrir = ab => { painel.hidden = !ab; btn.setAttribute('aria-expanded', ab ? 'true' : 'false'); FILTRO_ABERTO = ab ? chave : null; };
+    btn.onclick = e => { e.stopPropagation(); abrir(painel.hidden); };
+    /* reabre o painel que estava aberto antes de a lista ser redesenhada */
+    if(FILTRO_ABERTO === chave) abrir(true);
+    painel.onclick = e => e.stopPropagation();
+    painel.querySelectorAll('input[type=checkbox]').forEach(cx => {
+      cx.onchange = () => {
+        const escolhidas = [...painel.querySelectorAll('input[type=checkbox]:checked')].map(x => x.value);
+        FILTROS[chave] = escolhidas;
+        aoMudar();
+      };
+    });
+    const limpar = painel.querySelector('.fm-limpar');
+    if(limpar) limpar.onclick = () => { FILTROS[chave] = []; aoMudar(); };
+  });
+
   const repor = raiz.querySelector('#repor-filtros');
-  if(repor) repor.onclick = () => { reporFiltros(); aoMudar(); };
+  if(repor) repor.onclick = () => { FILTRO_ABERTO = null; reporFiltros(); aoMudar(); };
 }
+/* um clique fora fecha o painel de filtros aberto */
+document.addEventListener('click', () => {
+  if(!FILTRO_ABERTO) return;
+  FILTRO_ABERTO = null;
+  document.querySelectorAll('.filtro-multi .fm-painel').forEach(p => { p.hidden = true; });
+  document.querySelectorAll('.filtro-multi .fm-btn').forEach(b => b.setAttribute('aria-expanded','false'));
+});
 
 /* ── gráfico de evolução do preço (SVG, sem bibliotecas) ─────── */
 function graficoEvolucao(serie){
@@ -799,6 +857,8 @@ function desenharResultados(){
           })).join('')}
         </div>` : ''}
 
+        <div class="bloco" id="bloco-roteiro" hidden></div>
+
         <div class="bloco">
           <div class="bloco-titulo">🎟 Actividades em ${d.n}</div>
           <p class="bloco-sub">Sugestões opcionais, não incluídas no total. Preços para ${actividades[0].pessoas} ${actividades[0].pessoas === 1 ? 'pessoa' : 'pessoas'}.</p>
@@ -866,6 +926,7 @@ function desenharResultados(){
   if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, melhorVoo);
   if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
   if(typeof actualizarAlojamentoReal === 'function') actualizarAlojamentoReal(ctx);
+  if(typeof desenharRoteiro === 'function') desenharRoteiro(d, noites);
 }
 
 /* ── resultados: várias cidades ──────────────────────────────── */
@@ -1119,6 +1180,22 @@ ESTADO.origem = cidadePorNome('Lisboa');
 desenharParceiros();
 actualizarRotulos();
 if(aplicarURL()){ if(ESTADO.explorar) executarExploracao(); else executarPesquisa(); }
+
+/* ── aviso de cookies (consentimento para a afiliação) ───────── */
+(function(){
+  const aviso = document.getElementById('aviso-cookies');
+  if(!aviso) return;
+  let escolha = null;
+  try{ escolha = localStorage.getItem('tn_cookies'); }catch(e){}
+  if(!escolha) aviso.hidden = false;
+  const decidir = valor => {
+    try{ localStorage.setItem('tn_cookies', valor); }catch(e){}
+    aviso.hidden = true;
+    if(valor === 'sim' && typeof window.carregarAfiliacao === 'function') window.carregarAfiliacao();
+  };
+  document.getElementById('cookies-sim').onclick = () => decidir('sim');
+  document.getElementById('cookies-nao').onclick = () => decidir('nao');
+})();
 
 /* ── tema claro/escuro ───────────────────────────────────────── */
 (function(){

@@ -35,7 +35,8 @@ async function estado(env){
   const info = {
     token_definido: token.length > 0,
     token_tamanho: token.length,
-    serpapi_key_definida: ((env.SERPAPI_KEY || '').trim().length > 0)
+    serpapi_key_definida: ((env.SERPAPI_KEY || '').trim().length > 0),
+    workers_ai_ligado: !!env.AI
   };
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
@@ -164,20 +165,66 @@ async function hoteis(url, env){
   }
 }
 
+/* /assistente: bot de viagens do TripNexus, com Workers AI (quota diária
+   gratuita da Cloudflare, sem chave nem conta adicional). Responde só sobre
+   viagens e em português de Portugal, com a ortografia antiga do site. */
+const MODELO_IA = '@cf/meta/llama-3.1-8b-instruct';
+const INSTRUCOES_IA = [
+  'És o assistente do TripNexus, um comparador de viagens português.',
+  'Respondes SEMPRE em português de Portugal, com a ortografia ANTIGA (anterior ao Acordo Ortográfico):',
+  'escreve «actual», «óptimo», «directo», «selecção», «objectivo», «contacto», «facto».',
+  'Ajudas com destinos, roteiros, melhor altura para viajar, transportes, vistos, orçamentos e dicas práticas.',
+  'Sê concreto e conciso: no máximo 3 parágrafos curtos ou uma lista de 5 pontos.',
+  'Não inventes preços, horários nem disponibilidade: para isso remete o utilizador para a pesquisa do site.',
+  'Se a pergunta não tiver nada a ver com viagens, diz educadamente que só ajudas com viagens.',
+  'Nunca peças nem guardes dados pessoais. Não és vendedor: o TripNexus só compara e encaminha para os parceiros.'
+].join(' ');
+
+async function assistente(pedido, env){
+  if(pedido.method !== 'POST')
+    return resposta({erro:'use POST com {pergunta, contexto?, historico?}'}, 405, true);
+  if(!env.AI)
+    return resposta({erro:'Workers AI não está ligado neste Worker: acrescente o binding [ai] ao wrangler.toml e volte a fazer wrangler deploy.'}, 503, true);
+  let corpo;
+  try{ corpo = await pedido.json(); }catch(e){ return resposta({erro:'corpo inválido'}, 400, true); }
+  const pergunta = String((corpo && corpo.pergunta) || '').trim().slice(0, 600);
+  if(!pergunta) return resposta({erro:'falta a pergunta'}, 400, true);
+  /* contexto da pesquisa actual (destino, datas), se o site o enviar */
+  const contexto = String((corpo && corpo.contexto) || '').trim().slice(0, 300);
+  const mensagens = [{role:'system', content: INSTRUCOES_IA + (contexto ? ' Contexto da pesquisa actual do utilizador: ' + contexto : '')}];
+  /* últimas trocas, para o bot manter o fio à meada */
+  const hist = Array.isArray(corpo && corpo.historico) ? corpo.historico.slice(-6) : [];
+  for(const m of hist){
+    const papel = m && m.papel === 'bot' ? 'assistant' : 'user';
+    const texto = String((m && m.texto) || '').trim().slice(0, 600);
+    if(texto) mensagens.push({role: papel, content: texto});
+  }
+  mensagens.push({role:'user', content: pergunta});
+  try{
+    const r = await env.AI.run(MODELO_IA, {messages: mensagens, max_tokens: 420, temperature: 0.6});
+    const texto = String((r && (r.response || r.result)) || '').trim();
+    if(!texto) return resposta({erro:'sem resposta do modelo'}, 502, true);
+    return resposta({resposta: texto, fonte:'workers-ai'}, 200, true);
+  }catch(e){
+    return resposta({erro:'assistente indisponível: ' + String(e.message || e)}, 502, true);
+  }
+}
+
 export default {
   async fetch(pedido, env){
     if(pedido.method === 'OPTIONS')
       return new Response(null, {headers:{
         'Access-Control-Allow-Origin':'*',
-        'Access-Control-Allow-Methods':'GET, OPTIONS',
+        'Access-Control-Allow-Methods':'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers':'*'
       }});
     const url = new URL(pedido.url);
     try{
       if(url.pathname === '/voos') return await voos(url, env);
       if(url.pathname === '/hoteis') return await hoteis(url, env);
+      if(url.pathname === '/assistente') return await assistente(pedido, env);
       if(url.pathname === '/estado') return await estado(env);
-      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /estado'}, 404);
+      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /assistente, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }
