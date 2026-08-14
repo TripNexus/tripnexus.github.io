@@ -168,7 +168,13 @@ async function hoteis(url, env){
 /* /assistente: bot de viagens do TripNexus, com Workers AI (quota diária
    gratuita da Cloudflare, sem chave nem conta adicional). Responde só sobre
    viagens e em português de Portugal, com a ortografia antiga do site. */
-const MODELO_IA = '@cf/meta/llama-3.1-8b-instruct';
+/* candidatos por ordem de preferência: se a Cloudflare retirar ou renomear
+   um modelo, passa-se automaticamente ao seguinte em vez de o bot morrer */
+const MODELOS_IA = [
+  '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+  '@cf/meta/llama-3.1-8b-instruct',
+  '@cf/mistral/mistral-7b-instruct-v0.2'
+];
 const INSTRUCOES_IA = [
   'És o assistente do TripNexus, um comparador de viagens português.',
   'Respondes SEMPRE em português de Portugal, com a ortografia ANTIGA (anterior ao Acordo Ortográfico):',
@@ -200,14 +206,18 @@ async function assistente(pedido, env){
     if(texto) mensagens.push({role: papel, content: texto});
   }
   mensagens.push({role:'user', content: pergunta});
-  try{
-    const r = await env.AI.run(MODELO_IA, {messages: mensagens, max_tokens: 420, temperature: 0.6});
-    const texto = String((r && (r.response || r.result)) || '').trim();
-    if(!texto) return resposta({erro:'sem resposta do modelo'}, 502, true);
-    return resposta({resposta: texto, fonte:'workers-ai'}, 200, true);
-  }catch(e){
-    return resposta({erro:'assistente indisponível: ' + String(e.message || e)}, 502, true);
+  let ultimoErro = '';
+  for(const modelo of MODELOS_IA){
+    try{
+      const r = await env.AI.run(modelo, {messages: mensagens, max_tokens: 420, temperature: 0.6});
+      const texto = String((r && (r.response || r.result)) || '').trim();
+      if(texto) return resposta({resposta: texto, fonte:'workers-ai', modelo}, 200, true);
+      ultimoErro = 'resposta vazia de ' + modelo;
+    }catch(e){
+      ultimoErro = String((e && e.message) || e) + ' (' + modelo + ')';
+    }
   }
+  return resposta({erro:'assistente indisponível: ' + ultimoErro}, 502, true);
 }
 
 export default {
