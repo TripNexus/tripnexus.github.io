@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=28">
+<link rel="stylesheet" href="assets/css/style.css?v=29">
 </head>
 <body>
 
@@ -76,6 +76,11 @@
       <td>Entregar as páginas, segurança e prevenção de abuso</td>
       <td>Registos temporários dos fornecedores (GitHub Pages, Cloudflare)</td>
     </tr>
+    <tr>
+      <td>Estatísticas de visitas: página vista, referenciador, país, tipo de dispositivo e tempos de carregamento</td>
+      <td>Saber quantas pessoas usam o site e quais as páginas mais vistas</td>
+      <td>Cloudflare Web Analytics, de forma agregada e sem cookies; não permite identificá-lo nem segui-lo entre sites</td>
+    </tr>
   </table></div>
   <p><strong>Não recolhemos</strong> nome, morada, data de nascimento, número de documento, dados de pagamento nem
   dados de saúde. Não lhe pedimos que crie conta. Não fazemos decisões automatizadas com efeitos jurídicos sobre si.</p>
@@ -99,13 +104,18 @@
     <li><strong>Cookies de afiliação (opcionais, dependem do seu consentimento):</strong> se aceitar, é carregado
     um script da rede de afiliação Travelpayouts que regista que a visita ao parceiro partiu daqui, para efeitos
     de atribuição de comissão. Se recusar, esse script não é carregado e o site funciona na mesma.</li>
+    <li><strong>Estatísticas de visitas (sem cookies):</strong> usamos o Cloudflare Web Analytics para saber
+    quantas pessoas visitam o site e que páginas vêem. Este serviço <strong>não usa cookies, não lê nem escreve
+    nada no seu dispositivo e não o segue entre sites</strong>: limita-se a registar, de forma agregada e
+    anónima, a página visitada, o referenciador, o país, o tipo de dispositivo e tempos de carregamento. Por não
+    aceder a informação guardada no seu equipamento, não depende de consentimento prévio.</li>
   </ul>
 
   <h2>5. Quem mais trata os dados (subcontratantes e terceiros)</h2>
   <div class="tabela-rolo"><table>
     <tr><th>Entidade</th><th>Função</th></tr>
     <tr><td>GitHub Pages (Microsoft)</td><td>Alojamento das páginas</td></tr>
-    <tr><td>Cloudflare</td><td>Serviço intermediário de preços e modelo de linguagem do assistente</td></tr>
+    <tr><td>Cloudflare</td><td>Serviço intermediário de preços, modelo de linguagem do assistente e estatísticas de visitas (sem cookies)</td></tr>
     <tr><td>Travelpayouts / Aviasales</td><td>Tarifas reais de voos e rede de afiliação</td></tr>
     <tr><td>SerpApi</td><td>Preços reais de hotéis</td></tr>
     <tr><td>Wikimedia, OpenStreetMap, Google Fonts, unpkg</td><td>Fotografias, mapas e tipos de letra</td></tr>
@@ -186,5 +196,6 @@
     alert('Escolha reposta. O aviso de cookies volta a aparecer na página principal.');
   };
 </script>
+<script src="assets/js/analytics.js?v=29"></script>
 </body>
 </html>
