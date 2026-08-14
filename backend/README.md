@@ -63,6 +63,21 @@ alojamento volta às estimativas locais, sem erro para o utilizador.
 
 Confirme o estado da chave em `/estado` (campo `serpapi_key_definida`).
 
+### Assistente de viagens (Workers AI, gratuito e sem chave)
+
+O bot de viagens do site usa os modelos da própria Cloudflare (**Workers AI**),
+que têm uma quota diária gratuita. **Não é preciso conta nova nem chave**: basta
+o binding já declarado no `wrangler.toml`
+
+```toml
+[ai]
+binding = "AI"
+```
+
+e voltar a correr `wrangler deploy`. Confirme em `/estado` (campo
+`workers_ai_ligado`). Se o binding faltar, o `/assistente` devolve 503 e o
+botão do assistente simplesmente não responde, sem afectar o resto do site.
+
 ## Passo 3: ligar o site ao backend
 
 No `index.html`, preencha a linha:
@@ -82,7 +97,8 @@ utilizador.
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas` | `{ofertas:[{preco, companhia, escalas, partida}], classe, fonte}` |
 | `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
-| `/estado` | nenhum | diagnóstico: se o token da Travelpayouts e a chave da SerpApi estão definidos |
+| `/assistente` | POST `{pergunta, contexto?, historico?}` | `{resposta, fonte:"workers-ai"}`: assistente de viagens (Cloudflare Workers AI) |
+| `/estado` | nenhum | diagnóstico: token da Travelpayouts, chave da SerpApi e se o Workers AI está ligado |
 
 As respostas são guardadas em cache 10 minutos.
 

@@ -37,20 +37,25 @@
 <meta name="twitter:description" content="Compare voos, alojamento, carros e transportes em mais de 60 sites e encontre a viagem mais barata.">
 <meta name="twitter:image" content="https://tripnexus.github.io/assets/img/og.png">
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
-<!-- Travelpayouts Drive: afiliação automática das ligações para os parceiros -->
+<!-- Travelpayouts Drive: afiliação automática das ligações para os parceiros.
+     Só é carregado com consentimento explícito (RGPD/ePrivacy): ver o aviso
+     de cookies e a Política de Privacidade. -->
 <script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
-  (function () {
+  window.carregarAfiliacao = function(){
+    if(window.__afiliacaoCarregada) return;
+    window.__afiliacaoCarregada = true;
     var script = document.createElement("script");
     script.async = 1;
     script.src = 'https://emrldtp.cc/NTUyMTQx.js?t=552141';
     document.head.appendChild(script);
-  })();
+  };
+  try{ if(localStorage.getItem('tn_cookies') === 'sim') window.carregarAfiliacao(); }catch(e){}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=24">
+<link rel="stylesheet" href="assets/css/style.css?v=25">
 </head>
 <body>
 
@@ -253,8 +258,41 @@
       <p>Os preços de voos são obtidos em tempo real. Os restantes valores (alojamento, carros, transportes e actividades) são estimativas calculadas a partir de dados históricos e de referência dos parceiros, e destinam-se apenas a comparação. O preço final é sempre confirmado no site onde efectua a reserva.</p>
     </div>
   </div>
-  <p class="direitos">© <span id="ano"></span> TripNexus · Feito em Portugal · Os logótipos apresentados pertencem aos respectivos proprietários. <span class="assinatura" title="Feito por NightmareFTW" aria-label="Feito por NightmareFTW">✦</span></p>
+  <div class="ligacoes-legais">
+    <a href="termos.html">Termos e Condições</a>
+    <a href="privacidade.html">Política de Privacidade</a>
+    <a href="afiliacao.html">Divulgação de Afiliação</a>
+  </div>
+  <p class="direitos">© <span id="ano"></span> TripNexus · Feito em Portugal · Comparador independente: não vendemos viagens, encaminhamos para quem as vende. Os logótipos apresentados pertencem aos respectivos proprietários. <span class="assinatura" title="Feito por NightmareFTW" aria-label="Feito por NightmareFTW">✦</span></p>
 </footer>
+
+<!-- assistente de viagens (Workers AI, através do backend) -->
+<button class="btn-chat" id="btn-chat" type="button" aria-expanded="false" title="Assistente de viagens" hidden>
+  <span class="chat-ico">💬</span><span class="chat-etiqueta">Assistente</span>
+</button>
+<div class="painel-chat" id="painel-chat" hidden>
+  <div class="chat-topo">
+    <strong>Assistente TripNexus</strong>
+    <button type="button" id="chat-fechar" class="chat-fechar" aria-label="Fechar assistente">✕</button>
+  </div>
+  <div class="chat-corpo" id="chat-corpo"></div>
+  <form class="chat-form" id="chat-form">
+    <input id="chat-campo" type="text" autocomplete="off" placeholder="Onde ir em Setembro com 500 €?" aria-label="Pergunta ao assistente">
+    <button type="submit" aria-label="Enviar">➤</button>
+  </form>
+  <p class="chat-nota">Respostas geradas por IA: podem conter erros. Não indica preços nem disponibilidade.</p>
+</div>
+
+<!-- aviso de cookies (consentimento para a afiliação) -->
+<div class="aviso-cookies" id="aviso-cookies" hidden>
+  <p>Usamos apenas o necessário para o site funcionar. Com a sua autorização, activamos também cookies de
+  <strong>afiliação</strong>, que permitem que nos seja atribuída uma comissão paga pelo parceiro, sem qualquer
+  custo para si. <a href="privacidade.html">Saber mais</a></p>
+  <div class="cookie-accoes">
+    <button type="button" class="btn-cookie-nao" id="cookies-nao">Só o necessário</button>
+    <button type="button" class="btn-cookie-sim" id="cookies-sim">Aceitar</button>
+  </div>
+</div>
 
 <!-- calendário de datas com preços (gerado por JS) -->
 <div class="cal-sombra" id="cal-sombra" hidden></div>
@@ -284,12 +322,13 @@
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
 </script>
-<script src="assets/js/data.js?v=24"></script>
-<script src="assets/js/engine.js?v=24"></script>
-<script src="assets/js/calendar.js?v=24"></script>
-<script src="assets/js/live.js?v=24"></script>
-<script src="assets/js/alertas.js?v=24"></script>
-<script src="assets/js/app.js?v=24"></script>
+<script src="assets/js/data.js?v=25"></script>
+<script src="assets/js/engine.js?v=25"></script>
+<script src="assets/js/calendar.js?v=25"></script>
+<script src="assets/js/live.js?v=25"></script>
+<script src="assets/js/alertas.js?v=25"></script>
+<script src="assets/js/roteiro.js?v=25"></script>
+<script src="assets/js/app.js?v=25"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
