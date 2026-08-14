@@ -144,11 +144,17 @@ async function perguntarAoAssistente(pergunta){
     });
     const dados = await r.json().catch(() => null);
     CHAT.ocupado = false;
-    if(dados && dados.resposta) CHAT.historico.push({papel:'bot', texto: dados.resposta});
-    else CHAT.historico.push({papel:'bot', texto:'Não consegui responder agora. Tente outra vez daqui a pouco.'});
+    if(dados && dados.resposta){
+      CHAT.historico.push({papel:'bot', texto: dados.resposta});
+    }else{
+      /* mostra a causa real: evita ficar às escuras quando falta o binding
+         [ai] no Worker, a quota esgota ou o modelo devolve erro */
+      const causa = (dados && dados.erro) ? String(dados.erro) : ('o servidor respondeu ' + r.status);
+      CHAT.historico.push({papel:'bot', texto:'Não consegui responder: ' + causa});
+    }
   }catch(e){
     CHAT.ocupado = false;
-    CHAT.historico.push({papel:'bot', texto:'Não consegui contactar o assistente. Verifique a ligação à Internet.'});
+    CHAT.historico.push({papel:'bot', texto:'Não consegui contactar o assistente (' + String(e.message || e) + '). Verifique a ligação à Internet.'});
   }
   desenharChat();
 }
