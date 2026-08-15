@@ -910,7 +910,7 @@ function desenharResultados(){
         </div>` : ''}
 
         ${carros ? `
-        <div class="bloco">
+        <div class="bloco" id="bloco-carro">
           <h3 class="bloco-titulo">🚗 Carro privado alugado · ${carros[0].dias} ${carros[0].dias === 1 ? 'dia' : 'dias'}</h3>
           <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação, calculados a partir de dados históricos. O preço real é confirmado no site do parceiro.</span></p>
           ${carros.slice(0, 6).map((q, idx) => linhaOferta(q, {
@@ -922,7 +922,7 @@ function desenharResultados(){
 
         <div class="bloco" id="bloco-roteiro" hidden></div>
 
-        <div class="bloco">
+        <div class="bloco" id="bloco-actividades">
           <h3 class="bloco-titulo">🎟 Actividades em ${d.n}</h3>
           <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação, calculados a partir de dados históricos. O preço real é confirmado no site do parceiro.</span></p>
           <p class="bloco-sub">Sugestões opcionais, não incluídas no total. Preços para ${actividades[0].pessoas} ${actividades[0].pessoas === 1 ? 'pessoa' : 'pessoas'}.</p>
@@ -991,6 +991,8 @@ function desenharResultados(){
   if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, melhorVoo);
   if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
   if(typeof actualizarAlojamentoReal === 'function') actualizarAlojamentoReal(ctx);
+  if(typeof actualizarActividadesReais === 'function') actualizarActividadesReais(ctx);
+  if(typeof actualizarCarrosReais === 'function') actualizarCarrosReais(ctx);
   if(typeof desenharRoteiro === 'function') desenharRoteiro(d, noites);
 }
 

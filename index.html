@@ -55,7 +55,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=32">
+<link rel="stylesheet" href="assets/css/style.css?v=33">
 </head>
 <body>
 
@@ -257,7 +257,7 @@
     </div>
     <div>
       <p><strong>Nota sobre os preços</strong></p>
-      <p>Os preços de voos são obtidos em tempo real. Os restantes valores (alojamento, carros, transportes e actividades) são estimativas calculadas a partir de dados históricos e de referência dos parceiros, e destinam-se apenas a comparação. O preço final é sempre confirmado no site onde efectua a reserva.</p>
+      <p>Os preços de voos, alojamento (hotéis e casas) e actividades são obtidos em tempo real. Os valores de aluguer de viaturas e transportes terrestres são estimativas, sempre assinaladas como tal com o sinal «≈». O preço final é confirmado no site onde efectua a reserva.</p>
     </div>
     <div>
       <p><strong>Informação legal</strong></p>
@@ -326,15 +326,20 @@
      Para usar outro Worker, altere a URL abaixo. */
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
+  /* Widget de aluguer de viaturas (preços reais). Gere-se no painel
+     Travelpayouts (Ferramentas → Widgets → Aluguer de carros) e cola-se aqui
+     o endereço do <script> gerado. Vazio: o bloco de carros mantém-se como
+     está. A origem e as datas são acrescentadas automaticamente. */
+  window.TRIPNEXUS_CARRO_WIDGET_SRC = '';
 </script>
-<script src="assets/js/analytics.js?v=32"></script>
-<script src="assets/js/data.js?v=32"></script>
-<script src="assets/js/engine.js?v=32"></script>
-<script src="assets/js/calendar.js?v=32"></script>
-<script src="assets/js/live.js?v=32"></script>
-<script src="assets/js/alertas.js?v=32"></script>
-<script src="assets/js/roteiro.js?v=32"></script>
-<script src="assets/js/app.js?v=32"></script>
+<script src="assets/js/analytics.js?v=33"></script>
+<script src="assets/js/data.js?v=33"></script>
+<script src="assets/js/engine.js?v=33"></script>
+<script src="assets/js/calendar.js?v=33"></script>
+<script src="assets/js/live.js?v=33"></script>
+<script src="assets/js/alertas.js?v=33"></script>
+<script src="assets/js/roteiro.js?v=33"></script>
+<script src="assets/js/app.js?v=33"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
