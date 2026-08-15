@@ -32,13 +32,31 @@ function obterToken(env){
 /* /estado: diagnóstico rápido, sem expor o token */
 async function estado(env){
   const token = obterToken(env);
+  const chaveSerp = (env.SERPAPI_KEY || '').trim();
   const info = {
     token_definido: token.length > 0,
     token_tamanho: token.length,
-    serpapi_key_definida: ((env.SERPAPI_KEY || '').trim().length > 0),
+    serpapi_key_definida: chaveSerp.length > 0,
     getyourguide_key_definida: ((env.GETYOURGUIDE_KEY || '').trim().length > 0),
     workers_ai_ligado: !!env.AI
   };
+  /* pesquisas que restam no plano gratuito da SerpApi: é a causa mais
+     provável de o alojamento voltar às estimativas sem erro visível */
+  if(chaveSerp){
+    try{
+      const c = await fetch('https://serpapi.com/account?api_key=' + encodeURIComponent(chaveSerp));
+      if(c.ok){
+        const j = await c.json();
+        info.serpapi_pesquisas_restantes = j.total_searches_left ?? j.plan_searches_left ?? null;
+        info.serpapi_usadas_este_mes = j.this_month_usage ?? null;
+        if(info.serpapi_pesquisas_restantes === 0)
+          info.sugestao_alojamento = 'A quota gratuita da SerpApi esgotou-se este mês: o alojamento volta às estimativas até renovar.';
+      }else{
+        info.serpapi_estado = c.status;
+        info.sugestao_alojamento = 'A SerpApi não aceitou a chave (' + c.status + '): confirme SERPAPI_KEY com wrangler secret put SERPAPI_KEY.';
+      }
+    }catch(e){ info.serpapi_erro = String(e.message || e); }
+  }
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
       {headers:{'X-Access-Token': token}});
@@ -85,7 +103,8 @@ async function voos(url, env){
     token
   });
   if(q.get('volta')) ps.set('return_date', q.get('volta'));
-  const r = await fetch(TP + '/v1/prices/cheap?' + ps, {headers:{'X-Access-Token': token}});
+  const r = await fetch(TP + '/v1/prices/cheap?' + ps,
+    {headers:{'X-Access-Token': token}, cf:{cacheTtl: 1800, cacheEverything: true}});
   if(!r.ok) return resposta({erro:'Travelpayouts devolveu ' + r.status}, 502);
   const j = await r.json();
   const nomes = await nomesCompanhias();
@@ -99,7 +118,12 @@ async function voos(url, env){
     duracao: '',
     partida: (v.departure_at || '').slice(11, 16)
   })).sort((a, b) => a.preco - b.preco);
-  return resposta({ofertas, classe:'economica', fonte:'travelpayouts'});
+  /* a Travelpayouts só devolve tarifas de pesquisas reais recentes: em rotas
+     ou datas sem procura, vem vazio. Convém dizê-lo, em vez de o site ficar
+     silenciosamente nas estimativas sem se perceber porquê. */
+  const nota = ofertas.length ? undefined
+    : 'sem tarifas registadas para esta rota e data (a Travelpayouts só tem as de pesquisas reais recentes)';
+  return resposta({ofertas, classe:'economica', fonte:'travelpayouts', nota});
 }
 
 /* extrai um número de um preço que pode vir como "€120", "$1,299.00",
@@ -149,7 +173,13 @@ async function alojamento(url, env, casas){
   });
   if(casas) ps.set('vacation_rentals', 'true');
   try{
-    const r = await fetch('https://serpapi.com/search.json?' + ps);
+    /* A conta gratuita dá 100 pesquisas por mês e cada pesquisa do site gasta
+       duas (hotéis + casas). Guardar a resposta na cache da Cloudflare durante
+       6 h faz com que repetir a mesma cidade e as mesmas datas não gaste nada:
+       sem isto, a quota esgota-se em dezenas de pesquisas e o alojamento cai
+       nas estimativas. */
+    const r = await fetch('https://serpapi.com/search.json?' + ps,
+      {cf:{cacheTtl: 21600, cacheEverything: true}});
     if(!r.ok) return resposta({ofertas:[], fonte:'serpapi', nota:'preços indisponíveis (' + r.status + ')'}, 200, true);
     const j = await r.json();
     if(j.error) return resposta({ofertas:[], fonte:'serpapi', nota: String(j.error)}, 200, true);

@@ -7,6 +7,48 @@
    bloco de voos aplicam-se também às tarifas reais.
    ═══════════════════════════════════════════════════════════════ */
 
+/* ── diagnóstico das fontes de preço ──────────────────────────
+   As estimativas são o último recurso: só aparecem quando a fonte real
+   falha. Sem registo, essa falha é indistinguível de uma opção de
+   desenho e fica sem explicação. Cada fonte regista aqui o que
+   aconteceu; o resultado está sempre em window.TRIPNEXUS_DIAG e, com
+   «?diag=1» no endereço, num painel no fim dos resultados. */
+const DIAG = (window.TRIPNEXUS_DIAG = {});
+function registarFonte(fonte, estado, detalhe){
+  DIAG[fonte] = {estado, detalhe: detalhe || '', hora: new Date().toTimeString().slice(0, 8)};
+  if(estado !== 'reais') console.info('[TripNexus] ' + fonte + ': ' + estado + (detalhe ? ' — ' + detalhe : ''));
+  desenharDiagnostico();
+}
+function desenharDiagnostico(){
+  if(!/[?&]diag=1/.test(location.search)) return;
+  const zona = document.getElementById('zona-larga');
+  if(!zona) return;
+  let cx = document.getElementById('diagnostico-precos');
+  if(!cx){
+    cx = document.createElement('div');
+    cx.id = 'diagnostico-precos';
+    cx.className = 'bloco';
+    zona.appendChild(cx);
+  }
+  const linhas = Object.keys(DIAG).sort().map(k => {
+    const d = DIAG[k];
+    return `<div class="resumo-linha"><span>${escaparHtml(k)}${d.detalhe ? ' · <span class="oferta-detalhe">' + escaparHtml(d.detalhe) + '</span>' : ''}</span>
+      <strong>${d.estado === 'reais' ? '✅ preços reais' : '⚠ ' + escaparHtml(d.estado)}</strong></div>`;
+  }).join('');
+  cx.innerHTML = `<h3 class="bloco-titulo">🔎 Diagnóstico das fontes de preço</h3>
+    <p class="bloco-sub">Visível apenas com <code>?diag=1</code> no endereço. Tudo o que não estiver a verde está a mostrar estimativas.</p>
+    ${linhas}`;
+}
+
+/* Substitui o aviso genérico de estimativa pelo motivo real da queda, para
+   o utilizador perceber que é uma falha da fonte e não uma opção. */
+function explicarEstimativa(idBloco, motivo){
+  const nota = document.querySelector('#' + idBloco + ' .nota-estimativa span:last-child');
+  if(!nota) return;
+  nota.innerHTML = '<strong>Valores estimados</strong> — não foi possível obter preços reais para esta pesquisa'
+    + (motivo ? ' (' + escaparHtml(motivo) + ')' : '') + '. O preço real é confirmado no site do parceiro.';
+}
+
 /* Alojamento com preços reais: hotéis e alojamento local vêm do mesmo motor
    (Google Hotels, via SerpApi) em dois pedidos paralelos, e são apresentados
    na mesma lista, ordenados por preço e com o tipo assinalado. */
@@ -21,23 +63,35 @@ async function actualizarAlojamentoReal(ctx){
 
   /* respeita os tipos de alojamento escolhidos na pesquisa */
   const tipos = (typeof tiposAlojamento === 'function') ? tiposAlojamento() : ['hotel','casa'];
-  const buscar = async rota => {
+  /* cada pedido devolve também o motivo de não ter trazido nada, para o
+     diagnóstico não depender da ordem por que as duas promessas resolvem */
+  const buscar = async (rota, nome) => {
     try{
       const r = await fetch(base + rota + '?' + ps);
-      if(!r.ok) return [];
+      if(!r.ok) return {ofertas:[], nota: nome + ': backend devolveu ' + r.status};
       const d = await r.json();
-      return (d && Array.isArray(d.ofertas)) ? d.ofertas : [];
-    }catch(e){ return []; }
+      const ofertas = (d && Array.isArray(d.ofertas)) ? d.ofertas : [];
+      return {ofertas, nota: ofertas.length ? '' : nome + ': ' + ((d && (d.nota || d.erro)) || 'sem resultados')};
+    }catch(e){ return {ofertas:[], nota: nome + ': sem ligação ao backend'}; }
   };
-  const [hoteis, casas] = await Promise.all([
-    tipos.includes('hotel') ? buscar('/hoteis') : Promise.resolve([]),
-    tipos.includes('casa')  ? buscar('/casas')  : Promise.resolve([])
+  const vazio = Promise.resolve({ofertas:[], nota:''});
+  const [rh, rc] = await Promise.all([
+    tipos.includes('hotel') ? buscar('/hoteis', 'hotéis') : vazio,
+    tipos.includes('casa')  ? buscar('/casas', 'casas')   : vazio
   ]);
+  const hoteis = rh.ofertas, casas = rc.ofertas;
+  const notas = [rh.nota, rc.nota].filter(Boolean);
   const lista = [
     ...hoteis.map(h => ({...h, cat:'hotel'})),
     ...casas.map(h => ({...h, cat:'casa'}))
   ].sort((a, b) => a.preco - b.preco);
-  if(!lista.length) return;   /* sem dados reais, ficam as estimativas */
+  if(!lista.length){   /* sem dados reais, ficam as estimativas */
+    registarFonte('Alojamento (SerpApi)', 'estimativas', notas.join(' · '));
+    explicarEstimativa('bloco-alojamento', notas.join(' · '));
+    return;
+  }
+  registarFonte('Alojamento (SerpApi)', 'reais',
+    hoteis.length + ' hotéis · ' + casas.length + ' casas' + (notas.length ? ' · ' + notas.join(' · ') : ''));
 
   const rotulo = {hotel:'Hotel', casa:'Casa / apartamento'};
   const temCasas = casas.length > 0;
@@ -74,9 +128,15 @@ async function actualizarActividadesReais(ctx){
   const nomePesquisa = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
   try{
     const r = await fetch(base + '/actividades?' + new URLSearchParams({cidade: nomePesquisa}));
-    if(!r.ok) return;
+    if(!r.ok){ registarFonte('Actividades', 'estimativas', 'backend devolveu ' + r.status); return; }
     const d = await r.json();
-    if(!d || !Array.isArray(d.ofertas) || !d.ofertas.length) return;
+    if(!d || !Array.isArray(d.ofertas) || !d.ofertas.length){
+      const motivo = (d && (d.nota || d.erro)) || 'sem resultados';
+      registarFonte('Actividades', 'estimativas', motivo);
+      explicarEstimativa('bloco-actividades', motivo);
+      return;
+    }
+    registarFonte('Actividades', 'reais', d.ofertas.length + ' actividades');
     bloco.innerHTML = `
       <h3 class="bloco-titulo">🎟 Actividades em ${ctx.destino.n} · preços reais</h3>
       <p class="bloco-sub tempo-real">⚡ Preços reais por pessoa (GetYourGuide). Não incluídas no total da viagem.</p>
@@ -89,7 +149,7 @@ async function actualizarActividadesReais(ctx){
           <a class="btn-ver" href="${escaparHtml(a.url || ligacaoParceiro('getyourguide', {...ctx, seccao:'actividade'}))}" target="_blank" rel="noopener">Reservar</a>
         </div>`).join('')}
       <p class="bloco-sub">A reserva é concluída no site do parceiro.</p>`;
-  }catch(e){ /* fica o bloco anterior */ }
+  }catch(e){ registarFonte('Actividades', 'estimativas', 'sem ligação ao backend'); }
 }
 
 async function actualizarVoosReais(ctx){
@@ -104,9 +164,13 @@ async function actualizarVoosReais(ctx){
     });
     if(ctx.volta) ps.set('volta', f(ctx.volta));
     const r = await fetch(base + '/voos?' + ps);
-    if(!r.ok) return;
+    if(!r.ok){ registarFonte('Voos (Travelpayouts)', 'estimativas', 'backend devolveu ' + r.status); return; }
     const dados = await r.json();
-    if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length) return;
+    if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length){
+      registarFonte('Voos (Travelpayouts)', 'estimativas', (dados && (dados.nota || dados.erro)) || 'sem tarifas para esta rota');
+      return;
+    }
+    registarFonte('Voos (Travelpayouts)', 'reais', dados.ofertas.length + ' tarifas');
 
     const lista = dados.ofertas.map(v => Object.assign({}, v, {precoFinal: v.preco}));
     const companhias = [...new Set(lista.map(v => v.companhia).filter(Boolean))].sort();
@@ -140,6 +204,7 @@ async function actualizarVoosReais(ctx){
     if(typeof ligarFiltrosVoos === 'function') ligarFiltrosVoos(bloco, desenharResultados);
   }catch(e){
     /* sem rede ou backend indisponível: ficam as estimativas locais */
+    registarFonte('Voos (Travelpayouts)', 'estimativas', 'sem ligação ao backend');
   }
 }
 
@@ -248,18 +313,50 @@ const CARROS_LOCALRENT = {
 
 function actualizarCarrosReais(ctx){
   const src = (window.TRIPNEXUS_CARRO_WIDGET_SRC || '').trim();
-  if(!src || !ctx.destino) return;
+  const bloco = document.getElementById('bloco-carro');
+  if(!src || !bloco || !ctx.destino) return;
   const local = CARROS_LOCALRENT[ctx.destino.n];
-  if(!local) return;   /* cidade sem correspondência: fica a estimativa */
+  if(!local){   /* cidade sem correspondência: fica a estimativa */
+    const motivo = ctx.destino.n + ' ainda não está na tabela do Localrent';
+    registarFonte('Carros (Localrent)', 'estimativas', motivo);
+    explicarEstimativa('bloco-carro', motivo);
+    return;
+  }
   let url;
   try{
     url = new URL(src.startsWith('//') ? location.protocol + src : src, location.href);
   }catch(e){ return; }
+  registarFonte('Carros (Localrent)', 'reais', 'widget do parceiro (abre a pedido)');
   url.searchParams.set('country', String(local.pais));
   url.searchParams.set('city', String(local.cidade));
-  embeberWidget('bloco-carro', url.toString(),
-    '🚗 Aluguer de viatura em ' + escaparHtml(ctx.destino.n) + ' · preços reais',
-    'Preços reais de aluguer. Confirme as datas dentro do quadro.', {}, true);
+
+  /* O quadro do parceiro é grande e cria ruído se estiver sempre aberto.
+     Fica fechado por omissão, numa barra estreita, e só carrega quando o
+     utilizador o abre: assim não se pede nada à rede sem ser preciso. */
+  const zona = document.getElementById('zona-larga');
+  if(zona) zona.appendChild(bloco);
+  bloco.innerHTML = `
+    <details class="dobra-widget">
+      <summary>
+        <span class="dobra-titulo">🚗 Aluguer de viatura em ${escaparHtml(ctx.destino.n)}</span>
+        <span class="dobra-sub">preços reais · ver viaturas disponíveis</span>
+        <span class="dobra-seta" aria-hidden="true">▾</span>
+      </summary>
+      <div class="widget-parceiro"></div>
+    </details>`;
+  const dobra = bloco.querySelector('details');
+  const alvo = bloco.querySelector('.widget-parceiro');
+  dobra.addEventListener('toggle', () => {
+    if(!dobra.open || alvo.dataset.carregado) return;
+    alvo.dataset.carregado = '1';
+    const s = document.createElement('script');
+    s.async = true; s.charset = 'utf-8'; s.src = url.toString();
+    alvo.appendChild(s);
+    setTimeout(() => {
+      const rendeu = [...alvo.children].some(el => el.tagName !== 'SCRIPT');
+      if(!rendeu) alvo.innerHTML = '<p class="bloco-sub">Não foi possível carregar as viaturas agora. Tente recarregar a página.</p>';
+    }, 4000);
+  });
 }
 
 /* Actividades: widget do parceiro (Klook e afins), por cidade. */
