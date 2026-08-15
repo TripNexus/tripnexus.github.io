@@ -190,7 +190,11 @@ async function actualizarVoosReais(ctx){
       registarFonte('Voos (Travelpayouts)', 'estimativas', (dados && (dados.nota || dados.erro)) || 'sem tarifas para esta rota');
       return;
     }
-    registarFonte('Voos (Travelpayouts)', 'reais', dados.ofertas.length + ' tarifas');
+    /* tarifas de dias vizinhos: são reais, mas não são as datas pedidas.
+       Tem de se dizer, e cada linha leva a sua data. */
+    const outrasDatas = dados.datas === 'proximas';
+    registarFonte('Voos (Travelpayouts)', 'reais',
+      dados.ofertas.length + ' tarifas' + (outrasDatas ? ' (datas próximas, não as pedidas)' : ''));
 
     const lista = dados.ofertas.map(v => Object.assign({}, v, {precoFinal: v.preco}));
     const companhias = [...new Set(lista.map(v => v.companhia).filter(Boolean))].sort();
@@ -204,6 +208,7 @@ async function actualizarVoosReais(ctx){
     bloco.innerHTML = `
       <h3 class="bloco-titulo">✈ Voos · tarifas reais</h3>
       <p class="bloco-sub tempo-real">⚡ Tarifas reais registadas nas últimas horas (Aviasales/Travelpayouts). Total para todos os passageiros.</p>
+      ${outrasDatas ? '<p class="aviso-datas">📅 Não há tarifas registadas para as datas exactas que indicou. Estas são tarifas <strong>reais</strong> de dias próximos: a data de partida de cada uma está indicada na linha.</p>' : ''}
       ${notaClasse}
       ${typeof barraFiltros === 'function' ? barraFiltros(companhias) : ''}
       ${visiveis.length ? visiveis.slice(0, 8).map(v => `
@@ -211,16 +216,17 @@ async function actualizarVoosReais(ctx){
           <span class="icone-parceiro"><span class="letra" style="display:flex">${escaparHtml((v.companhia || '?')[0])}</span></span>
           <div class="oferta-info">
             <div class="oferta-nome">${escaparHtml(v.companhia || 'Companhia aérea')}${v === melhor ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
-            <div class="oferta-detalhe">${[
+            <div class="oferta-detalhe">${escaparHtml([
+              outrasDatas && v.data ? '📅 ' + diaCurto(v.data) : '',
               v.escalas === 0 ? 'directo' : v.escalas + (v.escalas === 1 ? ' escala' : ' escalas'),
               v.duracao,
               v.partida ? 'partida ' + v.partida : ''
-            ].filter(Boolean).join(' · ')}</div>
+            ].filter(Boolean).join(' · '))}</div>
           </div>
           <div class="oferta-preco"><div class="preco-actual">${euros(v.precoFinal)}</div></div>
           <a class="btn-ver" href="${escaparHtml(v.url || liga)}" target="_blank" rel="noopener">Reservar</a>
         </div>`).join('') : '<p class="bloco-sub">Nenhum voo cumpre os filtros escolhidos. <button type="button" class="btn-suave" id="repor-filtros">Repor filtros</button></p>'}
-      <p class="bloco-sub">A reserva é concluída no site do parceiro, já com a rota e as datas preenchidas.</p>`;
+      <p class="bloco-sub">A reserva é concluída no site do parceiro, já com a rota e ${outrasDatas ? 'a data desta tarifa' : 'as datas'} preenchidas.</p>`;
     if(typeof ligarFiltrosVoos === 'function') ligarFiltrosVoos(bloco, desenharResultados);
   }catch(e){
     /* sem rede ou backend indisponível: ficam as estimativas locais */
@@ -264,6 +270,15 @@ function embeberWidget(idBloco, src, titulo, subtitulo, extra, largo){
 }
 
 const dataISO = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+
+/* «2026-09-11» → «Sex, 11 Set», para a data da tarifa se ler de relance */
+function diaCurto(iso){
+  const d = new Date(iso + 'T12:00:00');
+  if(isNaN(d)) return iso;
+  const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return dias[d.getDay()] + ', ' + d.getDate() + ' ' + meses[d.getMonth()];
+}
 
 /* ── Carros: widget do Localrent, por cidade ──────────────────
    O widget gerado no painel traz o país e a cidade fixos nos

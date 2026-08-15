@@ -843,6 +843,15 @@ a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none
 .dobra-widget[open] .widget-parceiro{margin-top:.8rem;min-height:34rem}
 .dobra-widget summary:hover .dobra-titulo{color:var(--indigo)}
 
+/* tarifas reais, mas de dias vizinhos: o aviso tem de saltar à vista, senão
+   o utilizador julga que o preço é para as datas que pediu */
+.aviso-datas{
+  margin:.6rem 0;padding:.6rem .8rem;border-radius:10px;
+  background:var(--verde-claro);color:var(--tinta);
+  border-left:3px solid var(--ambar);font-size:.87rem;line-height:1.45;
+}
+:root[data-tema="escuro"] .aviso-datas{background:rgba(245,158,11,.12)}
+
 /* quadro de diagnóstico (?diag=1): o motivo da falha é longo e tem de caber
    inteiro, por isso passa para uma linha própria, por baixo do estado */
 #diagnostico-precos{border:2px dashed var(--ambar)}
