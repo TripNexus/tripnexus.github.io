@@ -824,4 +824,8 @@ a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none
 .widget-parceiro iframe{max-width:100%;border:0;border-radius:10px}
 /* o widget de carros é alto: limita-se a altura e deixa-se rolar dentro
    da própria caixa, para não empurrar o resto dos resultados */
-#bloco-carro .widget-parceiro{max-height:32rem;overflow-y:auto;border-radius:10px}
+/* na zona de largura total o widget tem o espaço de que precisa: sem
+   barras de deslocamento e sem cortar conteúdo */
+#zona-larga{margin-top:1.1rem}
+#zona-larga .bloco{width:100%}
+#zona-larga .widget-parceiro{min-height:34rem;overflow:visible}

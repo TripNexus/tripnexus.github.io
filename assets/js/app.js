@@ -980,7 +980,8 @@ function desenharResultados(){
         </div>
         ${blocoDestino(d)}
       </div>
-    </div>`;
+    </div>
+    <div id="zona-larga"></div>`;
 
   const sec = document.getElementById('resultados');
   sec.innerHTML = html;

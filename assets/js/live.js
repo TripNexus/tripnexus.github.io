@@ -148,11 +148,18 @@ async function actualizarVoosReais(ctx){
    mostra preços reais. Injecta-se o script do parceiro no bloco; se
    nada renderizar em 3 s, repõe-se o conteúdo anterior, para nunca
    ficar um espaço vazio no lugar do bloco. */
-function embeberWidget(idBloco, src, titulo, subtitulo, extra){
+function embeberWidget(idBloco, src, titulo, subtitulo, extra, largo){
   const bloco = document.getElementById(idBloco);
   src = (src || '').trim();
   if(!bloco || !src) return;
   const anterior = bloco.innerHTML;
+  const paiOriginal = bloco.parentNode;
+  const irmaoOriginal = bloco.nextSibling;
+  /* estes widgets são desenhados para ecrã inteiro: numa coluna estreita
+     ficam com barras de deslocamento nos dois eixos. Passam para a zona de
+     largura total antes de arrancar, para se medirem já com o espaço certo. */
+  const zona = largo ? document.getElementById('zona-larga') : null;
+  if(zona) zona.appendChild(bloco);
   const url = src + (src.includes('?') ? '&' : '?') + new URLSearchParams(extra || {}).toString();
   bloco.innerHTML = `
     <h3 class="bloco-titulo">${titulo}</h3>
@@ -164,7 +171,10 @@ function embeberWidget(idBloco, src, titulo, subtitulo, extra){
   alvo.appendChild(s);
   setTimeout(() => {
     const rendeu = [...alvo.children].some(el => el.tagName !== 'SCRIPT');
-    if(!rendeu) bloco.innerHTML = anterior;
+    if(rendeu) return;
+    /* falhou: devolve o bloco ao sítio e ao conteúdo que tinha */
+    if(zona && paiOriginal) paiOriginal.insertBefore(bloco, irmaoOriginal);
+    bloco.innerHTML = anterior;
   }, 3000);
 }
 
@@ -232,7 +242,7 @@ function actualizarCarrosReais(ctx){
   url.searchParams.set('city', String(local.cidade));
   embeberWidget('bloco-carro', url.toString(),
     '🚗 Aluguer de viatura em ' + escaparHtml(ctx.destino.n) + ' · preços reais',
-    'Preços reais de aluguer. Confirme as datas dentro do quadro.');
+    'Preços reais de aluguer. Confirme as datas dentro do quadro.', {}, true);
 }
 
 /* Actividades: widget do parceiro (Klook e afins), por cidade. */
