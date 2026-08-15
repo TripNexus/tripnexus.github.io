@@ -828,4 +828,17 @@ a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none
    barras de deslocamento e sem cortar conteúdo */
 #zona-larga{margin-top:1.1rem}
 #zona-larga .bloco{width:100%}
-#zona-larga .widget-parceiro{min-height:34rem;overflow:visible}
+#zona-larga .widget-parceiro{overflow:visible}
+
+/* quadro do parceiro dobrável: fechado é só uma barra estreita */
+.dobra-widget summary{
+  display:flex;align-items:center;gap:.6rem;cursor:pointer;list-style:none;
+  padding:.15rem 0;
+}
+.dobra-widget summary::-webkit-details-marker{display:none}
+.dobra-titulo{font-size:1.02rem;font-weight:800}
+.dobra-sub{color:var(--verde);font-weight:700;font-size:.82rem}
+.dobra-seta{margin-left:auto;color:var(--cinza);transition:transform .2s}
+.dobra-widget[open] .dobra-seta{transform:rotate(180deg)}
+.dobra-widget[open] .widget-parceiro{margin-top:.8rem;min-height:34rem}
+.dobra-widget summary:hover .dobra-titulo{color:var(--indigo)}

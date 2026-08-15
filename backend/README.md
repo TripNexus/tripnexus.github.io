@@ -142,9 +142,30 @@ utilizador.
 | `/actividades` | `cidade` | `{ofertas:[{nome, preco, url}], fonte:"getyourguide"}`; sem `GETYOURGUIDE_KEY`, devolve lista vazia |
 | `/assistente` | POST `{pergunta, contexto?, historico?}` | `{resposta, fonte:"workers-ai", modelo}`: assistente de viagens (Cloudflare Workers AI) |
 | `/modelos` | nenhum | diagnóstico: quais dos modelos candidatos a conta aceita neste momento |
-| `/estado` | nenhum | diagnóstico: token da Travelpayouts, chave da SerpApi e se o Workers AI está ligado |
+| `/estado` | nenhum | diagnóstico: token da Travelpayouts, **pesquisas que restam na SerpApi**, chave do GetYourGuide e se o Workers AI está ligado |
 
-As respostas são guardadas em cache 10 minutos.
+As respostas são guardadas em cache 10 minutos no navegador. Os pedidos à
+SerpApi ficam 6 h na cache da Cloudflare e os da Travelpayouts 30 minutos: sem
+isto, repetir a mesma pesquisa gastava duas das 100 pesquisas mensais gratuitas
+de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas.
+
+## Porque é que o site mostra «estimativa»
+
+As estimativas são o último recurso: só aparecem quando a fonte real não
+devolve nada. Para saber qual falhou e porquê, abra o site com `?diag=1` no
+endereço (por exemplo `https://tripnexus.github.io/?diag=1`), faça uma
+pesquisa e leia o quadro «Diagnóstico das fontes de preço» no fim da página. O
+mesmo aparece na consola do navegador e em `window.TRIPNEXUS_DIAG`.
+
+Motivos mais frequentes:
+
+| O que aparece no diagnóstico | O que fazer |
+|---|---|
+| `Your account has run out of searches` | quota mensal da SerpApi esgotada; confirme em `/estado` o campo `serpapi_pesquisas_restantes` |
+| `backend devolveu 404` em `casas` | o Worker está desactualizado: faça `git pull` e `wrangler deploy` na pasta `backend/` |
+| `SERPAPI_KEY não definido` | corra `wrangler secret put SERPAPI_KEY` |
+| `sem tarifas registadas para esta rota` | a Travelpayouts só tem tarifas de pesquisas reais recentes; é normal em rotas pouco procuradas |
+| `sem ligação ao backend` | o Worker não respondeu: confirme o endereço em `window.TRIPNEXUS_API` |
 
 ## Próximos passos naturais
 
