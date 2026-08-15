@@ -63,6 +63,24 @@ alojamento volta às estimativas locais, sem erro para o utilizador.
 
 Confirme o estado da chave em `/estado` (campo `serpapi_key_definida`).
 
+O **alojamento local** (casas e apartamentos) usa o mesmo motor e a mesma
+chave: a rota `/casas` acrescenta `vacation_rentals=true`. Não é preciso
+configurar nada além da `SERPAPI_KEY`. Note que cada pesquisa passa a gastar
+**duas** consultas do plano (hotéis + casas).
+
+### Chave da GetYourGuide (actividades)
+
+Os preços reais de passeios e bilhetes vêm da **GetYourGuide Partner API**.
+Registo gratuito em <https://partner.getyourguide.com>; a aprovação costuma
+demorar alguns dias e exige que o site já esteja publicado.
+
+```
+wrangler secret put GETYOURGUIDE_KEY
+```
+
+Sem a chave, o bloco de actividades mantém-se com as estimativas locais, que
+estão assinaladas como tal. Confirme em `/estado` (`getyourguide_key_definida`).
+
 ### Assistente de viagens (Workers AI, gratuito e sem chave)
 
 O bot de viagens do site usa os modelos da própria Cloudflare (**Workers AI**),
@@ -120,6 +138,8 @@ utilizador.
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas` | `{ofertas:[{preco, companhia, escalas, partida}], classe, fonte}` |
 | `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
+| `/casas` | os mesmos de `/hoteis` | alojamento local: mesmo motor e **mesma chave**, com `vacation_rentals=true` |
+| `/actividades` | `cidade` | `{ofertas:[{nome, preco, url}], fonte:"getyourguide"}`; sem `GETYOURGUIDE_KEY`, devolve lista vazia |
 | `/assistente` | POST `{pergunta, contexto?, historico?}` | `{resposta, fonte:"workers-ai", modelo}`: assistente de viagens (Cloudflare Workers AI) |
 | `/modelos` | nenhum | diagnóstico: quais dos modelos candidatos a conta aceita neste momento |
 | `/estado` | nenhum | diagnóstico: token da Travelpayouts, chave da SerpApi e se o Workers AI está ligado |

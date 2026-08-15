@@ -36,6 +36,7 @@ async function estado(env){
     token_definido: token.length > 0,
     token_tamanho: token.length,
     serpapi_key_definida: ((env.SERPAPI_KEY || '').trim().length > 0),
+    getyourguide_key_definida: ((env.GETYOURGUIDE_KEY || '').trim().length > 0),
     workers_ai_ligado: !!env.AI
   };
   if(token){
@@ -124,7 +125,10 @@ function precoNumero(v){
    chave gratuita (100 pesquisas/mês). Falha sempre de forma graciosa
    (ofertas vazias) para o site cair nas estimativas locais, sem erro
    visível para o utilizador. */
-async function hoteis(url, env){
+/* Consulta a SerpApi (motor Google Hotels) para hotéis ou para alojamento
+   local. O «vacation_rentals» é o mesmo motor e a mesma chave: muda só o
+   tipo de alojamento devolvido. */
+async function alojamento(url, env, casas){
   const q = url.searchParams;
   const cidade = q.get('cidade'), checkin = q.get('checkin'), checkout = q.get('checkout');
   const adultos = String(q.get('adultos') || 2);
@@ -134,7 +138,7 @@ async function hoteis(url, env){
   if(!chave) return resposta({ofertas:[], fonte:'serpapi', nota:'SERPAPI_KEY não definido no Worker (ver /estado)'}, 200, true);
   const ps = new URLSearchParams({
     engine: 'google_hotels',
-    q: cidade + ' hotels',
+    q: cidade + (casas ? ' vacation rentals' : ' hotels'),
     check_in_date: checkin,
     check_out_date: checkout,
     adults: adultos,
@@ -143,6 +147,7 @@ async function hoteis(url, env){
     gl: 'pt',
     api_key: chave
   });
+  if(casas) ps.set('vacation_rentals', 'true');
   try{
     const r = await fetch('https://serpapi.com/search.json?' + ps);
     if(!r.ok) return resposta({ofertas:[], fonte:'serpapi', nota:'preços indisponíveis (' + r.status + ')'}, 200, true);
@@ -154,14 +159,48 @@ async function hoteis(url, env){
       return (+rn.extracted_lowest) || precoNumero(rn.lowest) || precoNumero(p.total_rate && p.total_rate.lowest) || 0;
     };
     const ofertas = props.map(p => ({
-      nome: p.name || 'Hotel',
+      nome: p.name || (casas ? 'Alojamento' : 'Hotel'),
       preco: Math.round(precoDe(p)),
-      estrelas: Math.round(+p.extracted_hotel_class || +p.hotel_class || 0)
+      estrelas: Math.round(+p.extracted_hotel_class || +p.hotel_class || 0),
+      /* só o alojamento local tem tipologia e capacidade úteis para mostrar */
+      quartos: casas ? (+p.bedrooms || 0) : 0,
+      tipo: casas ? String(p.property_type || p.type || '') : ''
     })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
     const extra = ofertas.length ? {} : {_amostra: props[0] || null, _total: props.length};
-    return resposta(Object.assign({ofertas, fonte:'serpapi'}, extra));
+    return resposta(Object.assign({ofertas, fonte:'serpapi', categoria: casas ? 'casas' : 'hoteis'}, extra));
   }catch(e){
     return resposta({ofertas:[], fonte:'serpapi', erro:String(e.message || e)}, 200, true);
+  }
+}
+const hoteis = (url, env) => alojamento(url, env, false);
+const casas  = (url, env) => alojamento(url, env, true);
+
+/* /actividades: preços reais de passeios e bilhetes via GetYourGuide
+   Partner API. Sem chave definida, devolve lista vazia e o site mostra
+   apenas a ligação ao parceiro, sem inventar preços. */
+async function actividades(url, env){
+  const q = url.searchParams;
+  const cidade = q.get('cidade');
+  if(!cidade) return resposta({erro:'parâmetro necessário: cidade'}, 400);
+  const chave = (env.GETYOURGUIDE_KEY || '').trim();
+  if(!chave) return resposta({ofertas:[], fonte:'getyourguide', nota:'GETYOURGUIDE_KEY não definido no Worker (ver /estado)'}, 200, true);
+  try{
+    const ps = new URLSearchParams({q: cidade, cnt: '8', currency: 'EUR', lang: 'pt'});
+    const r = await fetch('https://api.getyourguide.com/1/tours?' + ps, {
+      headers:{'Accept':'application/json', 'X-ACCESS-TOKEN': chave}
+    });
+    if(!r.ok) return resposta({ofertas:[], fonte:'getyourguide', nota:'indisponível (' + r.status + ')'}, 200, true);
+    const j = await r.json();
+    const itens = (j && (j.data && j.data.tours || j.tours)) || [];
+    const ofertas = itens.map(t => ({
+      nome: t.title || t.name || 'Actividade',
+      preco: Math.round(precoNumero(t.price && (t.price.values && t.price.values.amount || t.price.amount)) || 0),
+      url: t.url || t.deeplink || ''
+    })).filter(o => o.preco > 0).slice(0, 6);
+    const extra = ofertas.length ? {} : {_amostra: itens[0] || null, _total: itens.length};
+    return resposta(Object.assign({ofertas, fonte:'getyourguide'}, extra));
+  }catch(e){
+    return resposta({ofertas:[], fonte:'getyourguide', erro:String(e.message || e)}, 200, true);
   }
 }
 
@@ -276,10 +315,12 @@ export default {
     try{
       if(url.pathname === '/voos') return await voos(url, env);
       if(url.pathname === '/hoteis') return await hoteis(url, env);
+      if(url.pathname === '/casas') return await casas(url, env);
+      if(url.pathname === '/actividades') return await actividades(url, env);
       if(url.pathname === '/assistente') return await assistente(pedido, env);
       if(url.pathname === '/modelos') return await modelos(env);
       if(url.pathname === '/estado') return await estado(env);
-      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /assistente, /modelos, /estado'}, 404);
+      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /casas, /actividades, /assistente, /modelos, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }
