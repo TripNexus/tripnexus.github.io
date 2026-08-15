@@ -637,8 +637,11 @@ function resumoEscolha(escolhidas, opcoes, vazio, plural){
   }
   return escolhidas.length + ' ' + plural;
 }
-function filtroMulti(chave, titulo, opcoes, escolhidas, vazio, plural){
-  return `<div class="filtro-multi" data-multi="${chave}">
+/* «grupo» distingue os filtros dos voos dos do alojamento, para que os
+   painéis abertos e as ligações de um bloco não interfiram com o outro */
+function filtroMulti(chave, titulo, opcoes, escolhidas, vazio, plural, grupo){
+  grupo = grupo || 'voo';
+  return `<div class="filtro-multi" data-multi="${chave}" data-grupo="${grupo}">
     <span class="fm-titulo">${titulo}</span>
     <button type="button" class="fm-btn" aria-expanded="false">${escaparHtml(resumoEscolha(escolhidas, opcoes, vazio, plural))}<span class="seta">▾</span></button>
     <div class="fm-painel" hidden>
@@ -646,6 +649,26 @@ function filtroMulti(chave, titulo, opcoes, escolhidas, vazio, plural){
       ${escolhidas.length ? '<button type="button" class="fm-limpar">Limpar</button>' : ''}
     </div>
   </div>`;
+}
+/* liga um conjunto de painéis de escolha múltipla ao objecto de filtros */
+function ligarMultis(caixas, alvo, aoMudar){
+  caixas.forEach(caixa => {
+    const chave = caixa.dataset.multi, id = caixa.dataset.grupo + ':' + chave;
+    const btn = caixa.querySelector('.fm-btn'), painel = caixa.querySelector('.fm-painel');
+    const abrir = ab => { painel.hidden = !ab; btn.setAttribute('aria-expanded', ab ? 'true' : 'false'); FILTRO_ABERTO = ab ? id : null; };
+    btn.onclick = e => { e.stopPropagation(); abrir(painel.hidden); };
+    /* reabre o painel que estava aberto antes de a lista ser redesenhada */
+    if(FILTRO_ABERTO === id) abrir(true);
+    painel.onclick = e => e.stopPropagation();
+    painel.querySelectorAll('input[type=checkbox]').forEach(cx => {
+      cx.onchange = () => {
+        alvo[chave] = [...painel.querySelectorAll('input[type=checkbox]:checked')].map(x => x.value);
+        aoMudar();
+      };
+    });
+    const limpar = painel.querySelector('.fm-limpar');
+    if(limpar) limpar.onclick = () => { alvo[chave] = []; aoMudar(); };
+  });
 }
 function barraFiltros(companhias){
   /* mantém as companhias escolhidas visíveis mesmo que não existam nesta vista */
@@ -660,31 +683,57 @@ function barraFiltros(companhias){
   </div>`;
 }
 function ligarFiltrosVoos(raiz, aoMudar){
-  raiz.querySelectorAll('.filtros-voos select').forEach(s =>
+  raiz.querySelectorAll('.filtros-voos:not(.filtros-aloj) select[data-filtro]').forEach(s =>
     s.onchange = () => { FILTRO_ABERTO = null; FILTROS[s.dataset.filtro] = s.value; aoMudar(); });
-
-  raiz.querySelectorAll('.filtro-multi').forEach(caixa => {
-    const chave = caixa.dataset.multi;
-    const btn = caixa.querySelector('.fm-btn'), painel = caixa.querySelector('.fm-painel');
-    const abrir = ab => { painel.hidden = !ab; btn.setAttribute('aria-expanded', ab ? 'true' : 'false'); FILTRO_ABERTO = ab ? chave : null; };
-    btn.onclick = e => { e.stopPropagation(); abrir(painel.hidden); };
-    /* reabre o painel que estava aberto antes de a lista ser redesenhada */
-    if(FILTRO_ABERTO === chave) abrir(true);
-    painel.onclick = e => e.stopPropagation();
-    painel.querySelectorAll('input[type=checkbox]').forEach(cx => {
-      cx.onchange = () => {
-        const escolhidas = [...painel.querySelectorAll('input[type=checkbox]:checked')].map(x => x.value);
-        FILTROS[chave] = escolhidas;
-        aoMudar();
-      };
-    });
-    const limpar = painel.querySelector('.fm-limpar');
-    if(limpar) limpar.onclick = () => { FILTROS[chave] = []; aoMudar(); };
-  });
-
+  ligarMultis(raiz.querySelectorAll('.filtro-multi[data-grupo="voo"]'), FILTROS, aoMudar);
   const repor = raiz.querySelector('#repor-filtros');
   if(repor) repor.onclick = () => { FILTRO_ABERTO = null; reporFiltros(); aoMudar(); };
 }
+/* ── filtros do alojamento ───────────────────────────────────── */
+/* mesma mecânica dos voos: listas vazias significam «sem restrição» */
+const FILTROS_ALOJ = {ordenar:'preco', tipos:[], faixas:[], cupao:'todos'};
+function reporFiltrosAloj(){
+  Object.assign(FILTROS_ALOJ, {ordenar:'preco', tipos:[], faixas:[], cupao:'todos'});
+}
+const TIPOS_ALOJ_FILTRO = [['hotel','Hotel'], ['casa','Casa / apartamento'], ['hostel','Hostel']];
+/* faixas de preço por noite, em euros base (antes da conversão de moeda) */
+const FAIXAS_NOITE = [
+  ['ate60',   'Até 60 € / noite',   q => q.porNoite < 60],
+  ['60a100',  '60 € a 100 €',       q => q.porNoite >= 60 && q.porNoite < 100],
+  ['100a180', '100 € a 180 €',      q => q.porNoite >= 100 && q.porNoite < 180],
+  ['mais180', 'Mais de 180 €',      q => q.porNoite >= 180]
+];
+function aplicarFiltrosAloj(lista){
+  const v = lista.filter(q =>
+    (!FILTROS_ALOJ.tipos.length || FILTROS_ALOJ.tipos.includes(q.tipo)) &&
+    (!FILTROS_ALOJ.faixas.length || FAIXAS_NOITE.some(f => FILTROS_ALOJ.faixas.includes(f[0]) && f[2](q))) &&
+    (FILTROS_ALOJ.cupao !== 'com' || !!q.cupao));
+  if(FILTROS_ALOJ.ordenar === 'noite') v.sort((a, b) => a.porNoite - b.porNoite);
+  else v.sort((a, b) => a.precoFinal - b.precoFinal);
+  return v;
+}
+function barraFiltrosAloj(lista){
+  /* só faz sentido oferecer os tipos que a pesquisa devolveu: escolher um
+     tipo que não foi pesquisado daria sempre zero resultados. Mantém-se à
+     vista o que já estiver escolhido, para se poder desmarcar. */
+  const presentes = new Set((lista || []).map(q => q.tipo));
+  const tipos = TIPOS_ALOJ_FILTRO.filter(([v]) => presentes.has(v) || FILTROS_ALOJ.tipos.includes(v));
+  const op = (val, txt, actual) => `<option value="${val}"${val === actual ? ' selected' : ''}>${txt}</option>`;
+  return `<div class="filtros-voos filtros-aloj">
+    <label>Ordenar <select data-filtro-aloj="ordenar">${op('preco','Total mais barato',FILTROS_ALOJ.ordenar)}${op('noite','Preço por noite',FILTROS_ALOJ.ordenar)}</select></label>
+    ${tipos.length > 1 ? filtroMulti('tipos', 'Tipo', tipos, FILTROS_ALOJ.tipos, 'Todos', 'tipos', 'aloj') : ''}
+    ${filtroMulti('faixas', 'Por noite', FAIXAS_NOITE.map(f => [f[0], f[1]]), FILTROS_ALOJ.faixas, 'Qualquer preço', 'faixas', 'aloj')}
+    <label>Cupões <select data-filtro-aloj="cupao">${op('todos','Todos',FILTROS_ALOJ.cupao)}${op('com','Só com cupão',FILTROS_ALOJ.cupao)}</select></label>
+  </div>`;
+}
+function ligarFiltrosAloj(raiz, aoMudar){
+  raiz.querySelectorAll('.filtros-aloj select').forEach(s =>
+    s.onchange = () => { FILTRO_ABERTO = null; FILTROS_ALOJ[s.dataset.filtroAloj] = s.value; aoMudar(); });
+  ligarMultis(raiz.querySelectorAll('.filtro-multi[data-grupo="aloj"]'), FILTROS_ALOJ, aoMudar);
+  const repor = raiz.querySelector('#repor-filtros-aloj');
+  if(repor) repor.onclick = () => { FILTRO_ABERTO = null; reporFiltrosAloj(); aoMudar(); };
+}
+
 /* um clique fora fecha o painel de filtros aberto */
 document.addEventListener('click', () => {
   if(!FILTRO_ABERTO) return;
@@ -774,8 +823,14 @@ function desenharResultados(){
   const terrestre = meiosTerrestres.length ? cotacoesTerrestres(o, d, ida, ESTADO.pax, meiosTerrestres) : null;
 
   /* alojamento, carro, transportes públicos, actividades */
-  const alojamentos = ESTADO.alojamento.length ? cotacoesAlojamento(d, ida, fimEstadia, ESTADO.pax, tiposAlojamento()) : [];
+  const todosAloj = ESTADO.alojamento.length ? cotacoesAlojamento(d, ida, fimEstadia, ESTADO.pax, tiposAlojamento()) : [];
+  const alojamentos = aplicarFiltrosAloj(todosAloj);
   const melhorAloj = alojamentos[0] || null;
+
+  /* se uma escolha esvaziou a lista, fecha o painel: aberto, taparia a
+     mensagem e o botão de repor, deixando o utilizador sem saída */
+  if(FILTRO_ABERTO && FILTRO_ABERTO.startsWith('voo:') && !voos.length) FILTRO_ABERTO = null;
+  if(FILTRO_ABERTO && FILTRO_ABERTO.startsWith('aloj:') && !alojamentos.length) FILTRO_ABERTO = null;
   const carros = ESTADO.transportes.includes('carro') ? cotacoesCarro(d, ida, fimEstadia) : null;
   const melhorCarro = carros ? carros[0] : null;
   const tp = ESTADO.transportes.includes('metro') ? estimativaTransportesPublicos(d, noites + 1, ESTADO.pax) : null;
@@ -792,7 +847,7 @@ function desenharResultados(){
   const pacotes = (volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, !!melhorCarro) : [];
   const melhorPacote = pacotes[0] || null;
 
-  const nCupoes = [...todosVoos, ...alojamentos, ...(carros || []), ...(terrestre && terrestre.viavel ? terrestre.linhas : []), ...pacotes]
+  const nCupoes = [...todosVoos, ...todosAloj, ...(carros || []), ...(terrestre && terrestre.viavel ? terrestre.linhas : []), ...pacotes]
     .filter(x => x.cupao).length;
 
   const tiposAloj = {hotel:'Hotel', casa:'Casa / apartamento', hostel:'Hostel'};
@@ -837,14 +892,15 @@ function desenharResultados(){
             </div>`}
         </div>` : ''}
 
-        ${alojamentos.length ? `
+        ${todosAloj.length ? `
         <div class="bloco" id="bloco-alojamento">
           <div class="bloco-titulo">🏨 Alojamento em ${d.n} · ${noites} ${noites === 1 ? 'noite' : 'noites'}</div>
-          ${alojamentos.slice(0,6).map((q, idx) => linhaOferta(q, {
+          ${barraFiltrosAloj(todosAloj)}
+          ${alojamentos.length ? alojamentos.slice(0,6).map((q, idx) => linhaOferta(q, {
             melhor: idx === 0, tag: tiposAloj[q.tipo],
             detalhe: `${q.descricao} · ${euros(q.porNoite)}/noite × ${q.noites} ${q.noites === 1 ? 'noite' : 'noites'}${q.tipo === 'hostel' ? ' × ' + q.quartos + ' camas' : (q.quartos > 1 ? ' × ' + q.quartos + ' quartos' : '')}`,
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'hotel'})
-          })).join('')}
+          })).join('') : '<p class="bloco-sub">Nenhum alojamento cumpre os filtros escolhidos. <button type="button" class="btn-suave" id="repor-filtros-aloj">Repor filtros</button></p>'}
         </div>` : ''}
 
         ${carros ? `
@@ -923,6 +979,7 @@ function desenharResultados(){
   sec.hidden = false;
   desenharMapaResultados([o, d]);
   ligarFiltrosVoos(sec, desenharResultados);
+  ligarFiltrosAloj(sec, desenharResultados);
   if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, melhorVoo);
   if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
   if(typeof actualizarAlojamentoReal === 'function') actualizarAlojamentoReal(ctx);
@@ -1156,19 +1213,45 @@ function aplicarOferta(origem, of){
 }
 
 /* ── grelha de parceiros ─────────────────────────────────────── */
+const NOMES_CAT = {voo:'Voos', hotel:'Hotéis', casa:'Casas e apartamentos', hostel:'Hostels',
+                   carro:'Aluguer de carros', comboio:'Comboios', autocarro:'Autocarros',
+                   actividade:'Actividades', pacote:'Pacotes e viagens organizadas',
+                   planeador:'Planeador de rotas', ferry:'Ferries e barcos',
+                   organizador:'Organizador de viagem', corporativo:'Viagens de empresa'};
+/* ordem por que as secções aparecem; o ícone dá identidade a cada uma */
+const ORDEM_CAT = [['voo','✈'], ['hotel','🏨'], ['casa','🏠'], ['hostel','🛏'], ['pacote','🧳'],
+                   ['carro','🚗'], ['comboio','🚆'], ['autocarro','🚌'], ['ferry','⛴'],
+                   ['actividade','🎟'], ['planeador','🗺'], ['organizador','📋'], ['corporativo','💼']];
+
 function desenharParceiros(){
-  const nomesCat = {voo:'Voos', hotel:'Hotéis', casa:'Casas e apartamentos', hostel:'Hostels',
-                    carro:'Aluguer de carros', comboio:'Comboios', autocarro:'Autocarros',
-                    actividade:'Actividades', pacote:'Pacotes', planeador:'Planeador de rotas', ferry:'Ferries e barcos', organizador:'Organizador de viagem', corporativo:'Viagens de empresa'};
-  document.getElementById('grelha-parceiros').innerHTML = Object.keys(PARCEIROS).map(chave => {
-    const p = PARCEIROS[chave];
-    return `<div class="parceiro-item">
-      ${iconeParceiro(chave)}
-      <div>
-        <div class="parceiro-nome">${p.nome}</div>
-        <div class="parceiro-desc">${p.cat.map(c => nomesCat[c]).join(' · ')}: ${p.desc}</div>
+  /* cada parceiro entra na secção da sua categoria principal (a primeira que
+     declara), para não aparecer repetido; as restantes ficam listadas na
+     descrição */
+  const porCat = {};
+  for(const chave of Object.keys(PARCEIROS)){
+    const principal = PARCEIROS[chave].cat[0];
+    (porCat[principal] = porCat[principal] || []).push(chave);
+  }
+  const seccoes = ORDEM_CAT.filter(([c]) => porCat[c] && porCat[c].length);
+  document.getElementById('grelha-parceiros').innerHTML = seccoes.map(([cat, ico]) => {
+    const lista = porCat[cat].sort((a, b) => PARCEIROS[a].nome.localeCompare(PARCEIROS[b].nome, 'pt'));
+    return `<section class="parceiros-grupo">
+      <h3 class="parceiros-cat">${ico} ${NOMES_CAT[cat]} <span class="parceiros-conta">${lista.length}</span></h3>
+      <div class="parceiros-lista">
+        ${lista.map(chave => {
+          const p = PARCEIROS[chave];
+          const outras = p.cat.slice(1).map(c => NOMES_CAT[c]).filter(Boolean);
+          return `<div class="parceiro-item">
+            ${iconeParceiro(chave)}
+            <div>
+              <div class="parceiro-nome">${escaparHtml(p.nome)}</div>
+              <div class="parceiro-desc">${escaparHtml(p.desc)}</div>
+              ${outras.length ? `<div class="parceiro-tags">${outras.map(t => `<span class="parceiro-tag">${escaparHtml(t)}</span>`).join('')}</div>` : ''}
+            </div>
+          </div>`;
+        }).join('')}
       </div>
-    </div>`;
+    </section>`;
   }).join('');
 }
 
