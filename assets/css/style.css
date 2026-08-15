@@ -818,3 +818,7 @@ a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none
   font-weight:700;text-decoration:none;
 }
 .saltar:focus{left:0}
+
+/* widgets de parceiro embebidos (carros, actividades) */
+.widget-parceiro{margin:.4rem 0;min-height:0}
+.widget-parceiro iframe{max-width:100%;border:0;border-radius:10px}

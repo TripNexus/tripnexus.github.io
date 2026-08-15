@@ -993,6 +993,7 @@ function desenharResultados(){
   if(typeof actualizarAlojamentoReal === 'function') actualizarAlojamentoReal(ctx);
   if(typeof actualizarActividadesReais === 'function') actualizarActividadesReais(ctx);
   if(typeof actualizarCarrosReais === 'function') actualizarCarrosReais(ctx);
+  if(typeof actualizarActividadesWidget === 'function') actualizarActividadesWidget(ctx);
   if(typeof desenharRoteiro === 'function') desenharRoteiro(d, noites);
 }
 
