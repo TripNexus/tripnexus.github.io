@@ -31,14 +31,27 @@ produção exige verificação da empresa; fica documentado como evolução futu
 
 1. Crie uma conta em https://dash.cloudflare.com e instale a ferramenta:
    `npm install -g wrangler`
-2. Nesta pasta (`backend/`):
+2. **Todos os comandos correm dentro da pasta `backend/`**, que é onde está o
+   `wrangler.toml`. Corridos na raiz do repositório, o wrangler queixa-se de
+   `Required Worker name missing` — e o `wrangler deploy` chega a propor
+   publicar o site inteiro como um Worker novo, o que não é o que se quer.
 
    ```
+   cd backend
    wrangler login
-   wrangler secret put TP_TOKEN      (colar o token da Travelpayouts, para voos)
-   wrangler secret put SERPAPI_KEY   (colar a chave da SerpApi, para hotéis)
+   wrangler secret put TP_TOKEN      (nome do segredo, não o valor)
+   wrangler secret put SERPAPI_KEY
    wrangler deploy
    ```
+
+   > O `secret put` recebe o **nome** do segredo. O valor é pedido a seguir,
+   > no prompt `Enter a secret value:`, e não fica escrito no ecrã nem no
+   > histórico da linha de comandos. Escrever a chave no próprio comando
+   > (`wrangler secret put a1b2c3…`) cria um segredo com o nome errado **e**
+   > deixa a chave no histórico: nesse caso, revogue-a e gere outra.
+
+   Um `wrangler deploy` bem sucedido diz `Uploaded tripnexus-api`. Se disser
+   outro nome, está na pasta errada.
 
 3. No fim, o `wrangler deploy` mostra o endereço do serviço, por exemplo
    `https://tripnexus-api.o-seu-subdominio.workers.dev`.
@@ -46,8 +59,9 @@ produção exige verificação da empresa; fica documentado como evolução futu
 ### Chave da SerpApi (hotéis, gratuita)
 
 Os preços reais de hotéis vêm da **SerpApi** (motor `google_hotels`, os
-mesmos preços que aparecem no Google Hotels). O plano gratuito dá **100
-pesquisas por mês**, suficiente para um site pessoal; acima disso, o
+mesmos preços que aparecem no Google Hotels). O plano gratuito tem um limite
+mensal de pesquisas (250, no plano actual) — o número exacto que resta vem em
+`/estado`, no campo `serpapi_pesquisas_restantes`. Esgotado o limite, o
 alojamento volta às estimativas locais, sem erro para o utilizador.
 
 > **Nota:** já foram tentadas, por esta ordem, a Amadeus (self-service
@@ -59,7 +73,8 @@ alojamento volta às estimativas locais, sem erro para o utilizador.
 
 1. Registe-se em https://serpapi.com (conta gratuita).
 2. No painel, copie a **API key** (a "Private API Key" do dashboard).
-3. Guarde-a no Worker: `wrangler secret put SERPAPI_KEY` (colar a chave).
+3. Guarde-a no Worker, **dentro da pasta `backend/`**: `wrangler secret put SERPAPI_KEY`,
+   e cole a chave no prompt `Enter a secret value:` (não no próprio comando).
 
 Confirme o estado da chave em `/estado` (campo `serpapi_key_definida`).
 
@@ -146,7 +161,7 @@ utilizador.
 
 As respostas são guardadas em cache 10 minutos no navegador. Os pedidos à
 SerpApi ficam 6 h na cache da Cloudflare e os da Travelpayouts 30 minutos: sem
-isto, repetir a mesma pesquisa gastava duas das 100 pesquisas mensais gratuitas
+isto, repetir a mesma pesquisa gastava duas das pesquisas mensais gratuitas
 de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas.
 
 ### De onde vêm as tarifas de voo

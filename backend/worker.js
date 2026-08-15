@@ -3,9 +3,9 @@
    Intermediário seguro entre o site e a API Travelpayouts/Aviasales
    (voos): guarda o token no servidor, faz cache das respostas e
    devolve JSON simples que o site consome (assets/js/live.js).
-   Hotéis via SerpApi (motor google_hotels), com chave gratuita (100
-   pesquisas/mês); acima disso, ou sem chave, o site cai nas estimativas
-   locais, sem erro visível.
+   Hotéis via SerpApi (motor google_hotels), com chave gratuita e um limite
+   mensal de pesquisas (ver /estado); esgotado o limite, ou sem chave, o site
+   cai nas estimativas locais, sem erro visível.
    Nota: a Amadeus descontinuou o portal Self-Service a 17/07/2026,
    pelo que este Worker usa a Travelpayouts, de registo gratuito.
    Instruções de instalação: backend/README.md
@@ -216,7 +216,8 @@ function precoNumero(v){
 }
 
 /* /hoteis: preços reais de hotéis via SerpApi (motor google_hotels), com
-   chave gratuita (100 pesquisas/mês). Falha sempre de forma graciosa
+   chave gratuita (o plano actual dá 250 pesquisas/mês; o número exacto
+   que resta vem em /estado). Falha sempre de forma graciosa
    (ofertas vazias) para o site cair nas estimativas locais, sem erro
    visível para o utilizador. */
 /* Consulta a SerpApi (motor Google Hotels) para hotéis ou para alojamento
@@ -243,7 +244,7 @@ async function alojamento(url, env, casas){
   });
   if(casas) ps.set('vacation_rentals', 'true');
   try{
-    /* A conta gratuita dá 100 pesquisas por mês e cada pesquisa do site gasta
+    /* A conta gratuita tem um limite mensal de pesquisas e cada pesquisa do site gasta
        duas (hotéis + casas). Guardar a resposta na cache da Cloudflare durante
        6 h faz com que repetir a mesma cidade e as mesmas datas não gaste nada:
        sem isto, a quota esgota-se em dezenas de pesquisas e o alojamento cai
