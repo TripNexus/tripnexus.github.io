@@ -842,3 +842,16 @@ a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none
 .dobra-widget[open] .dobra-seta{transform:rotate(180deg)}
 .dobra-widget[open] .widget-parceiro{margin-top:.8rem;min-height:34rem}
 .dobra-widget summary:hover .dobra-titulo{color:var(--indigo)}
+
+/* quadro de diagnóstico (?diag=1): o motivo da falha é longo e tem de caber
+   inteiro, por isso passa para uma linha própria, por baixo do estado */
+#diagnostico-precos{border:2px dashed var(--ambar)}
+.diag-linha{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem;
+  padding:.5rem 0;border-top:1px solid var(--cinza-claro);
+}
+.diag-fonte{font-weight:700}
+.diag-estado{margin-left:auto;font-weight:700;white-space:nowrap;color:var(--coral)}
+.diag-linha.bom .diag-estado{color:var(--verde)}
+.diag-motivo{flex:1 1 100%;color:var(--cinza);font-size:.85rem;overflow-wrap:anywhere}
+.diag-rodape{margin-top:.8rem;color:var(--cinza);font-size:.82rem;overflow-wrap:anywhere}

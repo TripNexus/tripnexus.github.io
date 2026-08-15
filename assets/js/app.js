@@ -329,6 +329,9 @@ function urlDaPesquisa(){
     ps.set('ida', fISO(ESTADO.ida));
     if(ESTADO.volta) ps.set('volta', fISO(ESTADO.volta));
   }
+  /* o modo de diagnóstico tem de sobreviver à reescrita do endereço, senão
+     apaga-se a si próprio mal se carrega em «Pesquisar» */
+  if(/[?&]diag=1/.test(location.search)) ps.set('diag', '1');
   return '?' + ps.toString();
 }
 /* lê a pesquisa a partir do URL; devolve true se houver uma pesquisa completa */
