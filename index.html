@@ -13,7 +13,7 @@
   })();
 </script>
 <title>TripNexus | Comparador de viagens: voos, alojamento, carros e transportes</title>
-<meta name="description" content="O TripNexus compara preços de viagens em mais de 60 sites (Google Voos, Skyscanner, Kayak, Momondo, Booking, Airbnb, Omio e muitos mais), aplica cupões automaticamente e recomenda pacotes quando compensam.">
+<meta name="description" content="O TripNexus compara preços de viagens em mais de 70 sites (Google Voos, Skyscanner, Kayak, Momondo, Booking, Airbnb, Omio e muitos mais), aplica cupões automaticamente e recomenda pacotes quando compensam.">
 <link rel="canonical" href="https://tripnexus.github.io/">
 <meta name="theme-color" content="#161938">
 <meta name="robots" content="index, follow">
@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="TripNexus">
 <meta property="og:locale" content="pt_PT">
 <meta property="og:title" content="TripNexus — Comparador de viagens">
-<meta property="og:description" content="Compare voos, alojamento, carros e transportes em mais de 60 sites e encontre a viagem mais barata, com cupões e pacotes inteligentes.">
+<meta property="og:description" content="Compare voos, alojamento, carros e transportes em mais de 70 sites e encontre a viagem mais barata, com cupões e pacotes inteligentes.">
 <meta property="og:url" content="https://tripnexus.github.io/">
-<meta property="og:image" content="https://tripnexus.github.io/assets/img/og.png">
+<meta property="og:image" content="https://tripnexus.github.io/assets/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TripNexus — Comparador de viagens">
-<meta name="twitter:description" content="Compare voos, alojamento, carros e transportes em mais de 60 sites e encontre a viagem mais barata.">
-<meta name="twitter:image" content="https://tripnexus.github.io/assets/img/og.png">
+<meta name="twitter:description" content="Compare voos, alojamento, carros e transportes em mais de 70 sites e encontre a viagem mais barata.">
+<meta name="twitter:image" content="https://tripnexus.github.io/assets/img/og.jpg">
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <!-- Travelpayouts Drive: afiliação automática das ligações para os parceiros.
      Só é carregado com consentimento explícito (RGPD/ePrivacy): ver o aviso
@@ -55,9 +55,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=31">
+<link rel="stylesheet" href="assets/css/style.css?v=32">
 </head>
 <body>
+
+<a class="saltar" href="#conteudo">Saltar para o conteúdo</a>
 
 <header class="topbar" id="topo">
   <div class="topbar-inner">
@@ -76,14 +78,14 @@
   </div>
 </header>
 
-<main>
+<main id="conteudo">
 
 <!-- ══════════════════ VISTA: PESQUISA ══════════════════ -->
 <section id="vista-pesquisa" class="vista">
   <div class="hero">
     <div class="hero-inner">
       <h1>Encontre a viagem mais barata,<br>sem procurar site a site.</h1>
-      <p class="hero-sub">Comparamos voos, alojamento, carros e transportes em mais de <strong>60 sites</strong> em simultâneo,
+      <p class="hero-sub">Comparamos voos, alojamento, carros e transportes em mais de <strong>70 sites</strong> em simultâneo,
       aplicamos <strong>cupões</strong> automaticamente e recomendamos <strong>pacotes</strong> sempre que compensam.</p>
 
       <div class="cartao-pesquisa" id="cartao-pesquisa">
@@ -201,7 +203,7 @@
       <div id="zona-guardados" hidden></div>
 
       <div class="hero-selos">
-        <span>✅ 60 sites comparados</span>
+        <span>✅ 76 sites comparados</span>
         <span>🎟 Cupões automáticos</span>
         <span>📦 Pacotes inteligentes</span>
         <span>🗺 Mapas interactivos</span>
@@ -216,7 +218,7 @@
   <section id="como-funciona" class="seccao">
     <h2>Como funciona</h2>
     <div class="passos">
-      <div class="passo"><span class="passo-num">1</span><h3>Pesquisa uma vez</h3><p>Indique a origem, o destino e as datas. O TripNexus consulta em simultâneo mais de 60 sites de viagens, de voos a hostels.</p></div>
+      <div class="passo"><span class="passo-num">1</span><h3>Pesquisa uma vez</h3><p>Indique a origem, o destino e as datas. O TripNexus consulta em simultâneo mais de 70 sites de viagens, de voos a hostels.</p></div>
       <div class="passo"><span class="passo-num">2</span><h3>Nós fazemos as contas</h3><p>Somamos voos, alojamento, carro e transportes públicos para o total real da viagem, já com cupões aplicados quando existem.</p></div>
       <div class="passo"><span class="passo-num">3</span><h3>Reserve ao melhor preço</h3><p>Se um pacote ficar igual ou com pouca margem acima das reservas em separado, recomendamo-lo. Reserva sempre no site do parceiro.</p></div>
     </div>
@@ -228,7 +230,7 @@
   <div class="seccao">
     <h2>🔥 Ofertas em conta neste momento</h2>
     <p class="sub-seccao">Destinos cujo preço actual está bastante abaixo do valor típico registado em datas anteriores. Preços de ida e volta por passageiro, com partida de
-      <select id="ofertas-origem"></select>
+      <select id="ofertas-origem" aria-label="Cidade de origem das ofertas"></select>
     </p>
     <div class="grelha-ofertas" id="grelha-ofertas"></div>
     <h3 class="titulo-mapa">🗺 Veja as ofertas no mapa</h3>
@@ -251,7 +253,7 @@
   <div class="rodape-inner">
     <div>
       <p class="logo-rodape"><img src="assets/img/logo.svg" alt="" class="logo-rodape-img" width="27" height="27"><span class="logo-texto"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></span></p>
-      <p>Comparador independente de viagens: compara voos, alojamento, carros e transportes em mais de 60 sites parceiros. Não vendemos bilhetes nem reservas: encontramos o melhor preço e encaminhamo-lo para o site do parceiro para concluir a reserva.</p>
+      <p>Comparador independente de viagens: compara voos, alojamento, carros e transportes em mais de 70 sites parceiros. Não vendemos bilhetes nem reservas: encontramos o melhor preço e encaminhamo-lo para o site do parceiro para concluir a reserva.</p>
     </div>
     <div>
       <p><strong>Nota sobre os preços</strong></p>
@@ -311,7 +313,7 @@
 <!-- ecrã de carregamento da comparação -->
 <div class="carregando" id="carregando" hidden>
   <div class="carregando-caixa">
-    <p class="carregando-titulo">A comparar preços em <strong>60 sites</strong>…</p>
+    <p class="carregando-titulo">A comparar preços em <strong>76 sites</strong>…</p>
     <div class="carregando-icones" id="carregando-icones"></div>
     <div class="barra"><div class="barra-interior" id="barra-progresso"></div></div>
     <p class="carregando-passo" id="carregando-passo">A contactar parceiros…</p>
@@ -325,14 +327,14 @@
   window.TRIPNEXUS_API = 'https://tripnexus-api.nightmareftw.workers.dev';
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
 </script>
-<script src="assets/js/analytics.js?v=31"></script>
-<script src="assets/js/data.js?v=31"></script>
-<script src="assets/js/engine.js?v=31"></script>
-<script src="assets/js/calendar.js?v=31"></script>
-<script src="assets/js/live.js?v=31"></script>
-<script src="assets/js/alertas.js?v=31"></script>
-<script src="assets/js/roteiro.js?v=31"></script>
-<script src="assets/js/app.js?v=31"></script>
+<script src="assets/js/analytics.js?v=32"></script>
+<script src="assets/js/data.js?v=32"></script>
+<script src="assets/js/engine.js?v=32"></script>
+<script src="assets/js/calendar.js?v=32"></script>
+<script src="assets/js/live.js?v=32"></script>
+<script src="assets/js/alertas.js?v=32"></script>
+<script src="assets/js/roteiro.js?v=32"></script>
+<script src="assets/js/app.js?v=32"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

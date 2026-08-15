@@ -22,7 +22,7 @@ async function actualizarAlojamentoReal(ctx){
     if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length) return;
     const liga = ligacaoParceiro('booking', {...ctx, seccao:'hotel'});
     bloco.innerHTML = `
-      <div class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</div>
+      <h3 class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</h3>
       <p class="bloco-sub tempo-real">⚡ Preços reais de hotéis (Google Hotels) para as suas datas.</p>
       ${dados.ofertas.slice(0, 6).map((h, i) => `
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
@@ -62,7 +62,7 @@ async function actualizarVoosReais(ctx){
     const notaClasse = (dados.classe === 'economica' && ctx.classe && ctx.classe !== 'economica')
       ? '<p class="bloco-sub">Nota: as tarifas reais disponíveis para esta rota são em classe económica.</p>' : '';
     bloco.innerHTML = `
-      <div class="bloco-titulo">✈ Voos · tarifas reais</div>
+      <h3 class="bloco-titulo">✈ Voos · tarifas reais</h3>
       <p class="bloco-sub tempo-real">⚡ Tarifas reais registadas nas últimas horas (Aviasales/Travelpayouts). Total para todos os passageiros.</p>
       ${notaClasse}
       ${typeof barraFiltros === 'function' ? barraFiltros(companhias) : ''}

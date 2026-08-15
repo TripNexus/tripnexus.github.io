@@ -31,9 +31,13 @@ function etiquetaCupao(cupao){
   if(!cupao) return '';
   return `<span class="cupao" title="${cupao.nota || ''}">🎟 ${cupao.codigo} ${cupao.texto}</span>`;
 }
+/* Distingue claramente um preço estimado de um preço real: o valor leva o
+   sinal «≈», um selo explicativo e o botão convida a ver o preço real no
+   parceiro, em vez de sugerir que esta é a oferta definitiva. */
 function linhaOferta(q, opts){
   const p = PARCEIROS[q.parceiro];
   const o = opts || {};
+  const est = o.estimativa !== false;   /* por omissão, é estimativa */
   return `<div class="linha-oferta ${o.melhor ? 'melhor' : ''}">
     ${iconeParceiro(q.parceiro)}
     <div class="oferta-info">
@@ -43,9 +47,10 @@ function linhaOferta(q, opts){
     </div>
     <div class="oferta-preco">
       ${q.cupao ? `<div class="preco-antes">${euros(q.preco)}</div>` : ''}
-      <div class="preco-actual">${euros(q.precoFinal)}</div>
+      <div class="preco-actual${est ? ' preco-estimado' : ''}">${est ? '≈ ' : ''}${euros(q.precoFinal)}</div>
+      ${est ? '<div class="selo-estimativa" title="Valor calculado para comparação. O preço real é confirmado no site do parceiro.">estimativa</div>' : ''}
     </div>
-    <a class="btn-ver" href="${o.url || '#'}" target="_blank" rel="noopener">Ver oferta</a>
+    <a class="btn-ver" href="${o.url || '#'}" target="_blank" rel="noopener">${est ? 'Ver preço real' : 'Ver oferta'}</a>
   </div>`;
 }
 function totalPax(){ return ESTADO.pax.adultos + ESTADO.pax.criancas + ESTADO.pax.bebes; }
@@ -546,7 +551,7 @@ function desenharExploracao(){
       <span class="res-detalhe">Voos ${idaVolta ? 'de ida e volta' : 'só de ida'} mais baratos · ${formatarDataCurta(ida)}${idaVolta ? ' - ' + formatarDataCurta(volta) : ''} · ${n} ${n === 1 ? 'passageiro' : 'passageiros'} · ${NOME_CLASSE[ESTADO.classe]}</span>
     </div>
     <div class="bloco" style="margin-top:1rem">
-      <div class="bloco-titulo">🗺 Destinos no mapa (preço por passageiro)</div>
+      <h3 class="bloco-titulo">🗺 Destinos no mapa (preço por passageiro)</h3>
       <div id="mapa-explorar" class="mapa mapa-alto"></div>
     </div>
     <p class="sub-seccao" style="margin:1.2rem 0 .3rem">Os 24 destinos mais baratos. Carregue num para ver a viagem completa.</p>
@@ -772,7 +777,7 @@ function blocoEvolucao(o, d, ida, precoHoje){
       : `➖ Preço dentro do típico das últimas 8 semanas.`;
   return `
         <div class="bloco" id="bloco-evolucao">
-          <div class="bloco-titulo">📈 Evolução do preço do voo</div>
+          <h3 class="bloco-titulo">📈 Evolução do preço do voo</h3>
           <div class="veredicto ${serie.tipo}">${texto}</div>
           ${graficoEvolucao(serie)}
           <p class="bloco-sub" style="margin:.5rem 0 0">Evolução estimada para esta rota e datas, ancorada no melhor preço actual (${euros(precoHoje)}).</p>
@@ -791,7 +796,7 @@ function blocoDestino(d){
   }).join('');
   const linkVisto = 'https://www.google.com/search?q=' + encodeURIComponent('requisitos de entrada e vistos ' + d.p + ' para cidadãos portugueses');
   return `<div class="bloco">
-    <div class="bloco-titulo">🌡 Sobre ${d.n}</div>
+    <h3 class="bloco-titulo">🌡 Sobre ${d.n}</h3>
     <p class="bloco-sub">${d.p}. Clima típico estimado (máximas médias, °C):</p>
     <div class="clima">${barras}</div>
     ${bons.length ? `<p class="bloco-sub" style="margin-top:.6rem">🗓 Melhor altura para visitar: <strong>${bons.join(', ')}</strong>.</p>` : ''}
@@ -864,7 +869,7 @@ function desenharResultados(){
       <div class="res-coluna">
 
         <div class="bloco" id="bloco-voos">
-          <div class="bloco-titulo">✈ Voos · ${todosVoos.length} sites comparados</div>
+          <h3 class="bloco-titulo">✈ Voos · ${todosVoos.length} sites comparados</h3>
           ${barraFiltros(companhias)}
           ${voos.length ? voos.slice(0, 10).map(q => linhaOferta(q, {
             melhor: q === melhorVoo,
@@ -875,7 +880,7 @@ function desenharResultados(){
 
         ${terrestre ? `
         <div class="bloco">
-          <div class="bloco-titulo">🚆 Alternativa terrestre (comboio / autocarro)</div>
+          <h3 class="bloco-titulo">🚆 Alternativa terrestre (comboio / autocarro)</h3>
           ${terrestre.viavel ? `
             <p class="bloco-sub">Distância aproximada: ${terrestre.km} km. Preços totais para ${n} ${n === 1 ? 'passageiro' : 'passageiros'}.</p>
             ${terrestre.linhas.slice(0,4).map((q, idx) => linhaOferta(q, {
@@ -894,7 +899,8 @@ function desenharResultados(){
 
         ${todosAloj.length ? `
         <div class="bloco" id="bloco-alojamento">
-          <div class="bloco-titulo">🏨 Alojamento em ${d.n} · ${noites} ${noites === 1 ? 'noite' : 'noites'}</div>
+          <h3 class="bloco-titulo">🏨 Alojamento em ${d.n} · ${noites} ${noites === 1 ? 'noite' : 'noites'}</h3>
+          <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação, calculados a partir de dados históricos. O preço real é confirmado no site do parceiro.</span></p>
           ${barraFiltrosAloj(todosAloj)}
           ${alojamentos.length ? alojamentos.slice(0,6).map((q, idx) => linhaOferta(q, {
             melhor: idx === 0, tag: tiposAloj[q.tipo],
@@ -905,7 +911,8 @@ function desenharResultados(){
 
         ${carros ? `
         <div class="bloco">
-          <div class="bloco-titulo">🚗 Carro privado alugado · ${carros[0].dias} ${carros[0].dias === 1 ? 'dia' : 'dias'}</div>
+          <h3 class="bloco-titulo">🚗 Carro privado alugado · ${carros[0].dias} ${carros[0].dias === 1 ? 'dia' : 'dias'}</h3>
+          <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação, calculados a partir de dados históricos. O preço real é confirmado no site do parceiro.</span></p>
           ${carros.slice(0, 6).map((q, idx) => linhaOferta(q, {
             melhor: idx === 0,
             detalhe: `${q.descricao} · ${euros(q.porDia)}/dia`,
@@ -916,7 +923,8 @@ function desenharResultados(){
         <div class="bloco" id="bloco-roteiro" hidden></div>
 
         <div class="bloco">
-          <div class="bloco-titulo">🎟 Actividades em ${d.n}</div>
+          <h3 class="bloco-titulo">🎟 Actividades em ${d.n}</h3>
+          <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação, calculados a partir de dados históricos. O preço real é confirmado no site do parceiro.</span></p>
           <p class="bloco-sub">Sugestões opcionais, não incluídas no total. Preços para ${actividades[0].pessoas} ${actividades[0].pessoas === 1 ? 'pessoa' : 'pessoas'}.</p>
           ${actividades.map((q, idx) => linhaOferta(q, {
             melhor: idx === 0, detalhe: q.descricao,
@@ -927,7 +935,7 @@ function desenharResultados(){
 
       <div class="res-coluna">
         <div class="bloco resumo">
-          <div class="bloco-titulo">🧾 Total estimado da viagem</div>
+          <h3 class="bloco-titulo">🧾 Total estimado da viagem</h3>
           <div class="resumo-linha"><span>✈ Voo (${PARCEIROS[melhorVoo.parceiro].nome})</span><strong>${euros(melhorVoo.precoFinal)}</strong></div>
           ${melhorAloj ? `<div class="resumo-linha"><span>🏨 ${tiposAloj[melhorAloj.tipo]} (${PARCEIROS[melhorAloj.parceiro].nome})</span><strong>${euros(melhorAloj.precoFinal)}</strong></div>` : ''}
           ${melhorCarro ? `<div class="resumo-linha"><span>🚗 Carro (${PARCEIROS[melhorCarro.parceiro].nome})</span><strong>${euros(melhorCarro.precoFinal)}</strong></div>` : ''}
@@ -942,7 +950,7 @@ function desenharResultados(){
 
         ${pacotes.length ? `
         <div class="bloco">
-          <div class="bloco-titulo">📦 Pacotes (voo + alojamento${melhorCarro ? ' + carro' : ''})</div>
+          <h3 class="bloco-titulo">📦 Pacotes (voo + alojamento${melhorCarro ? ' + carro' : ''})</h3>
           <p class="bloco-sub">Comparados com a reserva em separado: ${euros(somaPacote)}.</p>
           ${pacotes.map((q, idx) => {
             const dif = q.precoFinal - somaPacote;
@@ -967,7 +975,7 @@ function desenharResultados(){
         </div>` : ''}
 
         <div class="bloco">
-          <div class="bloco-titulo">🗺 Mapa da viagem</div>
+          <h3 class="bloco-titulo">🗺 Mapa da viagem</h3>
           <div id="mapa-resultados" class="mapa"></div>
         </div>
         ${blocoDestino(d)}
@@ -1034,12 +1042,12 @@ function desenharResultadosMulti(){
     <div class="res-grelha">
       <div class="res-coluna">
         <div class="bloco">
-          <div class="bloco-titulo">✈ Voos (todos os trocos) · ${voos.length} sites comparados</div>
+          <h3 class="bloco-titulo">✈ Voos (todos os trocos) · ${voos.length} sites comparados</h3>
           ${voos.map((q, idx) => linhaOferta(q, {melhor: idx === 0, detalhe: q.detalhe, url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'voo'})})).join('')}
         </div>
         ${ESTADO.alojamento.length ? `
         <div class="bloco">
-          <div class="bloco-titulo">🏨 Alojamento por cidade</div>
+          <h3 class="bloco-titulo">🏨 Alojamento por cidade</h3>
           ${estadias.map(e => e.melhor ? linhaOferta(e.melhor, {
             tag: e.cidade.n,
             detalhe: `${e.melhor.descricao} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} desde ${formatarDataCurta(e.inicio)}`,
@@ -1049,7 +1057,7 @@ function desenharResultadosMulti(){
       </div>
       <div class="res-coluna">
         <div class="bloco resumo">
-          <div class="bloco-titulo">🧾 Total estimado da viagem</div>
+          <h3 class="bloco-titulo">🧾 Total estimado da viagem</h3>
           <div class="resumo-linha"><span>✈ Voos · ${trocos.length} trocos (${PARCEIROS[melhorVoo.parceiro].nome})</span><strong>${euros(melhorVoo.precoFinal)}</strong></div>
           ${estadias.filter(e => e.melhor).map(e => `<div class="resumo-linha"><span>🏨 ${e.cidade.n} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} (${PARCEIROS[e.melhor.parceiro].nome})</span><strong>${euros(e.melhor.precoFinal)}</strong></div>`).join('')}
           <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${euros(total)}</span></div>
@@ -1057,7 +1065,7 @@ function desenharResultadosMulti(){
           <div class="accoes-resumo" id="accoes-resumo"></div>
         </div>
         <div class="bloco">
-          <div class="bloco-titulo">🗺 Mapa da viagem</div>
+          <h3 class="bloco-titulo">🗺 Mapa da viagem</h3>
           <div id="mapa-resultados" class="mapa"></div>
         </div>
       </div>

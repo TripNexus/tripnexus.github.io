@@ -1,7 +1,7 @@
 {
   "name": "TripNexus — Comparador de viagens",
   "short_name": "TripNexus",
-  "description": "Compare voos, alojamento, carros e transportes em mais de 24 sites e encontre a viagem mais barata.",
+  "description": "Compare voos, alojamento, carros e transportes em mais de 70 sites e encontre a viagem mais barata.",
   "lang": "pt-PT",
   "start_url": "./",
   "scope": "./",
