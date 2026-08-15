@@ -140,15 +140,22 @@ async function actualizarActividadesReais(ctx){
   if(!base){ registarFonte('Actividades', 'estimativas', 'TRIPNEXUS_API não está configurado no index.html'); return; }
   if(!bloco || !ctx.destino) return;
   registarFonte('Actividades', 'a consultar');
+  /* o widget do Klook corre em paralelo e é síncrono, por isso chega aqui
+     primeiro; se já tiver assumido o bloco com preços reais, esta falha não
+     o pode despromover a «estimativas» */
+  const widgetAssumiu = () => !!bloco.querySelector('.dobra-widget');
+  const desistir = motivo => {
+    if(widgetAssumiu()) return;
+    registarFonte('Actividades', 'estimativas', motivo);
+    explicarEstimativa('bloco-actividades', motivo);
+  };
   const nomePesquisa = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
   try{
     const r = await fetch(base + '/actividades?' + new URLSearchParams({cidade: nomePesquisa}));
-    if(!r.ok){ registarFonte('Actividades', 'estimativas', 'backend devolveu ' + r.status); return; }
+    if(!r.ok){ desistir('backend devolveu ' + r.status); return; }
     const d = await r.json();
     if(!d || !Array.isArray(d.ofertas) || !d.ofertas.length){
-      const motivo = (d && (d.nota || d.erro)) || 'sem resultados';
-      registarFonte('Actividades', 'estimativas', motivo);
-      explicarEstimativa('bloco-actividades', motivo);
+      desistir((d && (d.nota || d.erro)) || 'sem resultados');
       return;
     }
     registarFonte('Actividades', 'reais', d.ofertas.length + ' actividades');
@@ -164,7 +171,7 @@ async function actualizarActividadesReais(ctx){
           <a class="btn-ver" href="${escaparHtml(a.url || ligacaoParceiro('getyourguide', {...ctx, seccao:'actividade'}))}" target="_blank" rel="noopener">Reservar</a>
         </div>`).join('')}
       <p class="bloco-sub">A reserva é concluída no site do parceiro.</p>`;
-  }catch(e){ registarFonte('Actividades', 'estimativas', 'sem ligação ao backend'); }
+  }catch(e){ desistir('sem ligação ao backend'); }
 }
 
 async function actualizarVoosReais(ctx){
@@ -208,7 +215,7 @@ async function actualizarVoosReais(ctx){
     bloco.innerHTML = `
       <h3 class="bloco-titulo">✈ Voos · tarifas reais</h3>
       <p class="bloco-sub tempo-real">⚡ Tarifas reais registadas nas últimas horas (Aviasales/Travelpayouts). Total para todos os passageiros.</p>
-      ${outrasDatas ? '<p class="aviso-datas">📅 Não há tarifas registadas para as datas exactas que indicou. Estas são tarifas <strong>reais</strong> de dias próximos: a data de partida de cada uma está indicada na linha.</p>' : ''}
+      ${outrasDatas ? '<p class="aviso-datas">📅 Não há tarifas registadas para as datas exactas que indicou. Estas são tarifas <strong>reais</strong> de dias próximos: as datas de ida e de regresso de cada uma estão indicadas na linha.</p>' : ''}
       ${notaClasse}
       ${typeof barraFiltros === 'function' ? barraFiltros(companhias) : ''}
       ${visiveis.length ? visiveis.slice(0, 8).map(v => `
@@ -217,7 +224,9 @@ async function actualizarVoosReais(ctx){
           <div class="oferta-info">
             <div class="oferta-nome">${escaparHtml(v.companhia || 'Companhia aérea')}${v === melhor ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${escaparHtml([
-              outrasDatas && v.data ? '📅 ' + diaCurto(v.data) : '',
+              outrasDatas && v.data
+                ? '📅 ' + diaCurto(v.data) + (v.regresso ? ' – ' + diaCurto(v.regresso) : '')
+                : '',
               v.escalas === 0 ? 'directo' : v.escalas + (v.escalas === 1 ? ' escala' : ' escalas'),
               v.duracao,
               v.partida ? 'partida ' + v.partida : ''
@@ -395,12 +404,65 @@ function actualizarCarrosReais(ctx){
   });
 }
 
-/* Actividades: widget do parceiro (Klook e afins), por cidade. */
+/* ── Actividades: widget do Klook, por cidade ──────────────────
+   Mesmo padrão do Localrent: o widget gerado no painel traz a cidade
+   fixa no parâmetro «city_id» (identificador interno do Klook).
+   Comparando dois widgets gerados para cidades diferentes (Lisboa e
+   Atlanta), confirmou-se que só esse valor muda, pelo que basta
+   trocá-lo para o widget seguir o destino da pesquisa.
+
+   PARA ACRESCENTAR UMA CIDADE: no painel Travelpayouts, gere o
+   «Specific City/Category Tours Widget» escolhendo essa cidade e copie
+   o número de «city_id» do endereço para a tabela abaixo. As cidades
+   que não estiverem aqui mantêm o bloco de estimativa, em vez de
+   mostrarem actividades de outra cidade. */
+const ACTIVIDADES_KLOOK = {
+  'Lisboa': 705748
+};
+
 function actualizarActividadesWidget(ctx){
-  if(!ctx.destino) return;
-  const local = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
-  embeberWidget('bloco-actividades', window.TRIPNEXUS_ACTIVIDADES_WIDGET_SRC,
-    '🎟 Actividades em ' + escaparHtml(ctx.destino.n) + ' · preços reais',
-    'Preços reais por pessoa. Não incluídas no total da viagem.',
-    {city: local, currency:'eur', locale:'pt'});
+  const src = (window.TRIPNEXUS_ACTIVIDADES_WIDGET_SRC || '').trim();
+  const bloco = document.getElementById('bloco-actividades');
+  if(!bloco || !ctx.destino) return;
+  /* se as actividades já vieram com preços reais da API, não se sobrepõe */
+  if(DIAG['Actividades'] && DIAG['Actividades'].estado === 'reais') return;
+  if(!src) return;
+  const cidade = ACTIVIDADES_KLOOK[ctx.destino.n];
+  if(!cidade){
+    const motivo = ctx.destino.n + ' ainda não está na tabela do Klook';
+    registarFonte('Actividades', 'estimativas', motivo);
+    explicarEstimativa('bloco-actividades', motivo);
+    return;
+  }
+  let url;
+  try{
+    url = new URL(src.startsWith('//') ? location.protocol + src : src, location.href);
+  }catch(e){ return; }
+  url.searchParams.set('city_id', String(cidade));
+  registarFonte('Actividades', 'reais', 'widget Klook (abre a pedido)');
+
+  const zona = document.getElementById('zona-larga');
+  if(zona) zona.appendChild(bloco);
+  bloco.innerHTML = `
+    <details class="dobra-widget">
+      <summary>
+        <span class="dobra-titulo">🎟 Actividades e passeios em ${escaparHtml(ctx.destino.n)}</span>
+        <span class="dobra-sub">preços reais · ver o que há para fazer</span>
+        <span class="dobra-seta" aria-hidden="true">▾</span>
+      </summary>
+      <div class="widget-parceiro"></div>
+    </details>`;
+  const dobra = bloco.querySelector('details');
+  const alvo = bloco.querySelector('.widget-parceiro');
+  dobra.addEventListener('toggle', () => {
+    if(!dobra.open || alvo.dataset.carregado) return;
+    alvo.dataset.carregado = '1';
+    const s = document.createElement('script');
+    s.async = true; s.charset = 'utf-8'; s.src = url.toString();
+    alvo.appendChild(s);
+    setTimeout(() => {
+      const rendeu = [...alvo.children].some(el => el.tagName !== 'SCRIPT');
+      if(!rendeu) alvo.innerHTML = '<p class="bloco-sub">Não foi possível carregar as actividades agora. Tente recarregar a página.</p>';
+    }, 4000);
+  });
 }

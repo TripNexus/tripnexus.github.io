@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v42';
+const VERSAO_WORKER = 'v43';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -178,6 +178,9 @@ async function voos(url, env){
         duracao: duracaoTexto(v.duration),
         partida: String(v.departure_at || '').slice(11, 16),
         data: String(v.departure_at || '').slice(0, 10),
+        /* na pesquisa alargada o regresso também sai da data pedida, e sem
+           isto o utilizador via a ida corrigida mas não a volta */
+        regresso: String(v.return_at || '').slice(0, 10),
         url: ligacao(v.link)
       })).filter(o => o.preco > 0);
     }catch(e){ tentativas.push(etiqueta + ': ' + String(e.message || e)); return []; }
