@@ -86,7 +86,7 @@ function cartaoLugar(l){
 async function desenharRoteiro(destino, noites){
   const bloco = document.getElementById('bloco-roteiro');
   if(!bloco || !destino || destino.la == null) return;
-  bloco.innerHTML = `<div class="bloco-titulo">🗺 Roteiro sugerido para ${escaparHtml(destino.n)}</div>
+  bloco.innerHTML = `<h3 class="bloco-titulo">🗺 Roteiro sugerido para ${escaparHtml(destino.n)}</h3>
     <p class="bloco-sub">A preparar sugestões de sítios a visitar…</p>`;
   let lugares = [];
   try{ lugares = await lugaresPerto(destino); }catch(e){ lugares = []; }
@@ -94,7 +94,7 @@ async function desenharRoteiro(destino, noites){
   const blocos = distribuirPorDias(lugares, noites);
   bloco.hidden = false;
   bloco.innerHTML = `
-    <div class="bloco-titulo">🗺 Roteiro sugerido para ${escaparHtml(destino.n)}</div>
+    <h3 class="bloco-titulo">🗺 Roteiro sugerido para ${escaparHtml(destino.n)}</h3>
     <p class="bloco-sub">Sugestão de percurso para ${blocos.length} ${blocos.length === 1 ? 'dia' : 'dias'},
     com os sítios mais conhecidos perto do centro. Fotografias e descrições da Wikipédia.</p>
     ${blocos.map((dia, i) => `

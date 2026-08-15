@@ -793,3 +793,28 @@ a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none
    nunca ganhar barra horizontal em ecrãs estreitos */
 .tabela-rolo{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:.5rem 0 1rem}
 .tabela-rolo table{margin:0;min-width:26rem}
+
+/* ── distinguir estimativas de preços reais ─────────────────── */
+.preco-actual.preco-estimado{color:var(--cinza)}
+.selo-estimativa{
+  font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
+  color:#8a6d1f;background:#fdf3d7;border-radius:999px;padding:.05rem .4rem;
+  margin-top:.15rem;display:inline-block;cursor:help;
+}
+.nota-estimativa{
+  display:flex;gap:.45rem;align-items:flex-start;
+  background:#fdf8ea;border-left:3px solid #e8c765;border-radius:8px;
+  padding:.5rem .65rem;margin:0 0 .7rem;font-size:.78rem;color:#7a5b12;
+}
+.nota-estimativa strong{color:#5c4409}
+[data-tema="escuro"] .selo-estimativa{background:#3a2f12;color:#e3c169}
+[data-tema="escuro"] .nota-estimativa{background:#2b2411;border-left-color:#6b5518;color:#e0c384}
+[data-tema="escuro"] .nota-estimativa strong{color:#f5dfa8}
+
+/* ── saltar para o conteúdo (navegação por teclado) ─────────── */
+.saltar{
+  position:absolute;left:-9999px;top:0;z-index:200;
+  background:var(--indigo);color:#fff;padding:.7rem 1.1rem;border-radius:0 0 10px 0;
+  font-weight:700;text-decoration:none;
+}
+.saltar:focus{left:0}
