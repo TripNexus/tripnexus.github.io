@@ -179,6 +179,9 @@ async function actualizarVoosReais(ctx){
       origem: ctx.origem.i, destino: ctx.destino.i, ida: f(ctx.ida),
       adultos: ctx.adultos || 1, criancas: ctx.criancas || 0, classe: ctx.classe || 'economica'
     });
+    /* o marker vai no pedido para o backend o colar na ligação de cada
+       tarifa: assim a reserva abre já naquele voo, e com a nossa afiliação */
+    if(window.TRIPNEXUS_MARKER) ps.set('marker', window.TRIPNEXUS_MARKER);
     if(ctx.volta) ps.set('volta', f(ctx.volta));
     const r = await fetch(base + '/voos?' + ps);
     if(!r.ok){ registarFonte('Voos (Travelpayouts)', 'estimativas', 'backend devolveu ' + r.status); return; }
@@ -205,9 +208,9 @@ async function actualizarVoosReais(ctx){
       ${typeof barraFiltros === 'function' ? barraFiltros(companhias) : ''}
       ${visiveis.length ? visiveis.slice(0, 8).map(v => `
         <div class="linha-oferta ${v === melhor ? 'melhor' : ''}">
-          <span class="icone-parceiro"><span class="letra" style="display:flex">${(v.companhia || '?')[0]}</span></span>
+          <span class="icone-parceiro"><span class="letra" style="display:flex">${escaparHtml((v.companhia || '?')[0])}</span></span>
           <div class="oferta-info">
-            <div class="oferta-nome">${v.companhia || 'Companhia aérea'}${v === melhor ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
+            <div class="oferta-nome">${escaparHtml(v.companhia || 'Companhia aérea')}${v === melhor ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${[
               v.escalas === 0 ? 'directo' : v.escalas + (v.escalas === 1 ? ' escala' : ' escalas'),
               v.duracao,
@@ -215,7 +218,7 @@ async function actualizarVoosReais(ctx){
             ].filter(Boolean).join(' · ')}</div>
           </div>
           <div class="oferta-preco"><div class="preco-actual">${euros(v.precoFinal)}</div></div>
-          <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Reservar</a>
+          <a class="btn-ver" href="${escaparHtml(v.url || liga)}" target="_blank" rel="noopener">Reservar</a>
         </div>`).join('') : '<p class="bloco-sub">Nenhum voo cumpre os filtros escolhidos. <button type="button" class="btn-suave" id="repor-filtros">Repor filtros</button></p>'}
       <p class="bloco-sub">A reserva é concluída no site do parceiro, já com a rota e as datas preenchidas.</p>`;
     if(typeof ligarFiltrosVoos === 'function') ligarFiltrosVoos(bloco, desenharResultados);

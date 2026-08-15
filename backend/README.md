@@ -136,7 +136,7 @@ utilizador.
 
 | Rota | Parâmetros | Devolve |
 |---|---|---|
-| `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas` | `{ofertas:[{preco, companhia, escalas, partida}], classe, fonte}` |
+| `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas`, `marker` | `{ofertas:[{preco, companhia, escalas, duracao, partida, url}], classe, fonte}` |
 | `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
 | `/casas` | os mesmos de `/hoteis` | alojamento local: mesmo motor e **mesma chave**, com `vacation_rentals=true` |
 | `/actividades` | `cidade` | `{ofertas:[{nome, preco, url}], fonte:"getyourguide"}`; sem `GETYOURGUIDE_KEY`, devolve lista vazia |
@@ -148,6 +148,14 @@ As respostas são guardadas em cache 10 minutos no navegador. Os pedidos à
 SerpApi ficam 6 h na cache da Cloudflare e os da Travelpayouts 30 minutos: sem
 isto, repetir a mesma pesquisa gastava duas das 100 pesquisas mensais gratuitas
 de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas.
+
+### De onde vêm as tarifas de voo
+
+A rota `/voos` usa o **`aviasales/v3/prices_for_dates`** da Travelpayouts, que
+devolve uma lista de tarifas para as datas pedidas, cada uma com companhia,
+escalas, duração e **ligação directa à reserva** (com o nosso marker). Se essa
+lista vier vazia, tenta-se o antigo `v1/prices/cheap`, que só dá a mais barata
+por número de escalas — no máximo três linhas, e vazio em muitas rotas.
 
 ## Porque é que o site mostra «estimativa»
 
@@ -166,6 +174,14 @@ Motivos mais frequentes:
 | `SERPAPI_KEY não definido` | corra `wrangler secret put SERPAPI_KEY` |
 | `sem tarifas registadas para esta rota` | a Travelpayouts só tem tarifas de pesquisas reais recentes; é normal em rotas pouco procuradas |
 | `sem ligação ao backend` | o Worker não respondeu: confirme o endereço em `window.TRIPNEXUS_API` |
+
+### O Worker publicado é o do repositório?
+
+O `/estado` devolve um campo **`versao`**. Compare-o com a constante
+`VERSAO_WORKER` no topo de `backend/worker.js`: se forem diferentes, o que está
+publicado é código antigo e falta correr `git pull && wrangler deploy` na pasta
+`backend/`. Um `/estado` sem esse campo é, ele próprio, sinal de que o Worker
+publicado é anterior a esta versão.
 
 ## Próximos passos naturais
 

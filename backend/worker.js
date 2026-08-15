@@ -12,6 +12,9 @@
    ═══════════════════════════════════════════════════════════════ */
 
 const TP = 'https://api.travelpayouts.com';
+/* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
+   assim que se percebe, de fora, se o Worker publicado é o do repositório. */
+const VERSAO_WORKER = 'v41';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -34,6 +37,9 @@ async function estado(env){
   const token = obterToken(env);
   const chaveSerp = (env.SERPAPI_KEY || '').trim();
   const info = {
+    /* muda a cada alteração do Worker: se este número não bater certo com o
+       do repositório, o que está publicado está desactualizado */
+    versao: VERSAO_WORKER,
     token_definido: token.length > 0,
     token_tamanho: token.length,
     serpapi_key_definida: chaveSerp.length > 0,
@@ -56,6 +62,8 @@ async function estado(env){
         info.sugestao_alojamento = 'A SerpApi não aceitou a chave (' + c.status + '): confirme SERPAPI_KEY com wrangler secret put SERPAPI_KEY.';
       }
     }catch(e){ info.serpapi_erro = String(e.message || e); }
+  }else{
+    info.sugestao_alojamento = 'Sem SERPAPI_KEY não há preços reais de alojamento: corra wrangler secret put SERPAPI_KEY na pasta backend/ e cole a chave de serpapi.com.';
   }
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
@@ -87,14 +95,74 @@ async function nomesCompanhias(){
   return cacheCompanhias.valor || {};
 }
 
+/* duração em minutos → «2h35» */
+function duracaoTexto(min){
+  const m = +min;
+  if(!isFinite(m) || m <= 0) return '';
+  return Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0');
+}
+
 /* /voos: tarifas reais registadas pela Aviasales para datas exactas.
-   Os dados são de pesquisas reais recentes (até 48 h), em classe económica. */
+   Usa-se «prices_for_dates» (v3), que devolve uma lista de tarifas com
+   companhia, escalas, duração e ligação directa à reserva. O antigo
+   «prices/cheap» só devolvia a mais barata por número de escalas (no
+   máximo três linhas) e vinha vazio em muitas rotas, o que fazia o site
+   cair nas estimativas sem se perceber porquê; fica como recurso, para
+   nunca se perder o que ele ainda apanhe. */
 async function voos(url, env){
   const q = url.searchParams;
   for(const p of ['origem','destino','ida'])
     if(!q.get(p)) return resposta({erro:'falta o parâmetro ' + p}, 400);
   const token = obterToken(env);
   if(!token) return resposta({erro:'TP_TOKEN não definido no Worker (ver /estado)'}, 500);
+  const nomes = await nomesCompanhias();
+  /* total para o grupo: adultos por inteiro, crianças a 75 % */
+  const pax = Math.max(1, (+q.get('adultos') || 1) + (+q.get('criancas') || 0) * 0.75);
+  const marker = (q.get('marker') || '').replace(/[^\w.]/g, '');
+  const ligacao = caminho => {
+    if(!caminho) return '';
+    const u = 'https://www.aviasales.com' + caminho;
+    return marker ? u + (u.includes('?') ? '&' : '?') + 'marker=' + marker : u;
+  };
+
+  const tentativas = [];
+
+  /* 1.ª escolha: lista completa de tarifas para as datas pedidas */
+  const psV3 = new URLSearchParams({
+    origin: q.get('origem'),
+    destination: q.get('destino'),
+    departure_at: q.get('ida'),
+    currency: 'eur',
+    sorting: 'price',
+    unique: 'false',
+    limit: '30',
+    one_way: q.get('volta') ? 'false' : 'true',
+    token
+  });
+  if(q.get('volta')) psV3.set('return_at', q.get('volta'));
+  try{
+    const r = await fetch(TP + '/aviasales/v3/prices_for_dates?' + psV3,
+      {headers:{'X-Access-Token': token}, cf:{cacheTtl: 1800, cacheEverything: true}});
+    if(!r.ok){
+      tentativas.push('prices_for_dates: ' + r.status);
+    }else{
+      const j = await r.json();
+      const dados = Array.isArray(j.data) ? j.data : [];
+      const ofertas = dados.map(v => ({
+        preco: Math.round(v.price * pax),
+        companhia: nomes[v.airline] || v.airline || '',
+        escalas: +v.transfers || 0,
+        duracao: duracaoTexto(v.duration),
+        partida: String(v.departure_at || '').slice(11, 16),
+        url: ligacao(v.link)
+      })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco);
+      if(ofertas.length)
+        return resposta({ofertas, classe:'economica', fonte:'travelpayouts/prices_for_dates'});
+      tentativas.push('prices_for_dates: sem tarifas');
+    }
+  }catch(e){ tentativas.push('prices_for_dates: ' + String(e.message || e)); }
+
+  /* recurso: a tarifa mais barata por número de escalas */
   const ps = new URLSearchParams({
     origin: q.get('origem'),
     destination: q.get('destino'),
@@ -105,25 +173,27 @@ async function voos(url, env){
   if(q.get('volta')) ps.set('return_date', q.get('volta'));
   const r = await fetch(TP + '/v1/prices/cheap?' + ps,
     {headers:{'X-Access-Token': token}, cf:{cacheTtl: 1800, cacheEverything: true}});
-  if(!r.ok) return resposta({erro:'Travelpayouts devolveu ' + r.status}, 502);
+  if(!r.ok){
+    tentativas.push('prices/cheap: ' + r.status);
+    return resposta({ofertas:[], fonte:'travelpayouts', nota: tentativas.join(' · ')}, 200, true);
+  }
   const j = await r.json();
-  const nomes = await nomesCompanhias();
   const porDestino = (j.data && j.data[q.get('destino')]) || {};
-  /* total para o grupo: adultos por inteiro, crianças a 75 % */
-  const pax = Math.max(1, (+q.get('adultos') || 1) + (+q.get('criancas') || 0) * 0.75);
   const ofertas = Object.entries(porDestino).map(([escalas, v]) => ({
     preco: Math.round(v.price * pax),
     companhia: nomes[v.airline] || v.airline,
     escalas: +escalas,
     duracao: '',
-    partida: (v.departure_at || '').slice(11, 16)
+    partida: (v.departure_at || '').slice(11, 16),
+    url: ''
   })).sort((a, b) => a.preco - b.preco);
   /* a Travelpayouts só devolve tarifas de pesquisas reais recentes: em rotas
      ou datas sem procura, vem vazio. Convém dizê-lo, em vez de o site ficar
      silenciosamente nas estimativas sem se perceber porquê. */
+  if(!ofertas.length) tentativas.push('prices/cheap: sem tarifas');
   const nota = ofertas.length ? undefined
-    : 'sem tarifas registadas para esta rota e data (a Travelpayouts só tem as de pesquisas reais recentes)';
-  return resposta({ofertas, classe:'economica', fonte:'travelpayouts', nota});
+    : tentativas.join(' · ') + ' — a Travelpayouts só tem tarifas de pesquisas reais recentes';
+  return resposta({ofertas, classe:'economica', fonte:'travelpayouts/cheap', nota});
 }
 
 /* extrai um número de um preço que pode vir como "€120", "$1,299.00",
