@@ -472,15 +472,34 @@ img{max-width:100%}
 .btn-oferta:hover{background:var(--indigo-escuro)}
 
 /* ── parceiros ──────────────────────────────────────────────── */
-#grelha-parceiros{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:.9rem}
-.parceiro-item{
-  background:#fff;border-radius:14px;box-shadow:var(--sombra);padding:.9rem 1rem;
-  display:flex;align-items:center;gap:.8rem;
+/* os parceiros são agrupados por categoria: cada grupo tem cabeçalho com
+   contagem e a sua própria grelha */
+.parceiros-grupo{margin-bottom:1.8rem}
+.parceiros-cat{
+  display:flex;align-items:center;gap:.5rem;
+  font-size:1rem;font-weight:800;letter-spacing:-.01em;margin:0 0 .7rem;
+  padding-bottom:.45rem;border-bottom:1.5px solid var(--cinza-claro);
 }
-.parceiro-item .icone-parceiro{width:2.6rem;height:2.6rem}
+.parceiros-conta{
+  font-size:.72rem;font-weight:800;color:var(--indigo);
+  background:#e9edff;border-radius:999px;padding:.1rem .5rem;
+}
+.parceiros-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:.9rem}
+.parceiro-item{
+  background:var(--branco);border-radius:14px;box-shadow:var(--sombra);padding:.9rem 1rem;
+  display:flex;align-items:flex-start;gap:.8rem;
+}
+.parceiro-item .icone-parceiro{width:2.6rem;height:2.6rem;flex:none}
 .parceiro-item .icone-parceiro img{width:1.7rem;height:1.7rem}
 .parceiro-nome{font-weight:800;font-size:.95rem}
 .parceiro-desc{color:var(--cinza);font-size:.8rem}
+.parceiro-tags{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.35rem}
+.parceiro-tag{
+  font-size:.68rem;font-weight:700;color:var(--cinza);
+  background:var(--cinza-claro);border-radius:999px;padding:.08rem .45rem;
+}
+[data-tema="escuro"] .parceiros-conta{background:#26305c;color:#c7d2ff}
+[data-tema="escuro"] .parceiros-cat{border-bottom-color:#333a55}
 
 /* ── rodapé ─────────────────────────────────────────────────── */
 /* a folga em baixo evita que o botão flutuante do assistente tape os direitos */

@@ -188,7 +188,18 @@ const PARCEIROS = {
   checkmybus:     {nome:'CheckMyBus',      dom:'checkmybus.com',      cat:['autocarro'],      fx:0.90, desc:'Compara a viagem de autocarro mais barata entre cidades.'},
   directferries:  {nome:'Direct Ferries',  dom:'directferries.com',   cat:['ferry'],          fx:0.97, tp:true, desc:'Rotas e preços de quase todas as companhias de ferry.'},
   ferryhopper:    {nome:'Ferryhopper',     dom:'ferryhopper.com',     cat:['ferry'],          fx:0.96, desc:'Viagens de barco entre ilhas no Mediterrâneo.'},
-  raileurope:     {nome:'Rail Europe',     dom:'raileurope.com',      cat:['comboio'],        fx:0.97, tp:true, desc:'Passes de comboio na Europa (Eurail / Interrail).'}
+  raileurope:     {nome:'Rail Europe',     dom:'raileurope.com',      cat:['comboio'],        fx:0.97, tp:true, desc:'Passes de comboio na Europa (Eurail / Interrail).'},
+
+  /* ── agências e companhias portuguesas ────────────────────────
+     Rede de balcões em Portugal e apoio em português, útil para
+     viagens organizadas e para quem prefere atendimento local. */
+  tap:            {nome:'TAP Air Portugal', dom:'flytap.com',         cat:['voo','pacote'],   fx:1.03, desc:'Companhia aérea de bandeira portuguesa; venda directa de voos e pacotes.'},
+  abreu:          {nome:'Abreu Viagens',    dom:'abreu.pt',           cat:['pacote','voo','hotel'], fx:1.04, desc:'A agência de viagens mais antiga do mundo, fundada no Porto em 1840.'},
+  topatlantico:   {nome:'Top Atlântico',    dom:'topatlantico.pt',    cat:['pacote','voo','hotel'], fx:1.03, desc:'Rede portuguesa com forte oferta de férias e viagens organizadas.'},
+  geostar:        {nome:'GeoStar',          dom:'geostar.pt',         cat:['pacote','voo','hotel'], fx:1.02, desc:'Agência portuguesa com balcões por todo o país e apoio presencial.'},
+  pintolopes:     {nome:'Pinto Lopes Viagens', dom:'pintolopesviagens.com', cat:['pacote','voo'], fx:1.01, desc:'Operador português especializado em circuitos e viagens em grupo.'},
+  elcorteingles:  {nome:'Viagens El Corte Inglés', dom:'viagenselcorteingles.pt', cat:['pacote','voo','hotel'], fx:1.03, desc:'Agência do grupo El Corte Inglés, forte em pacotes e cruzeiros.'},
+  besttravel:     {nome:'Best Travel',      dom:'besttravel.pt',      cat:['pacote','voo'],   fx:1.02, desc:'Operador português de viagens organizadas e circuitos guiados.'}
 };
 
 /* Marker de afiliado Travelpayouts (o script Drive, instalado no index.html,
