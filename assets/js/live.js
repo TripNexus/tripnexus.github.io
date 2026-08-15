@@ -143,29 +143,49 @@ async function actualizarVoosReais(ctx){
   }
 }
 
-/* Carros com preços reais: embebe o widget do parceiro, quando configurado
-   em window.TRIPNEXUS_CARRO_WIDGET_SRC. Não havendo widget, o bloco fica
-   como está — nunca se inventa um preço aqui. */
-function actualizarCarrosReais(ctx){
-  const bloco = document.getElementById('bloco-carro');
-  const src = (window.TRIPNEXUS_CARRO_WIDGET_SRC || '').trim();
-  if(!bloco || !src || !ctx.destino || !ctx.ida || !ctx.fim) return;
-  const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
-  const local = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
-  const extra = new URLSearchParams({location: local, pickup: f(ctx.ida), dropoff: f(ctx.fim), currency: 'eur', locale: 'pt'});
+/* ── widgets de parceiro (preços reais embebidos) ─────────────
+   Alguns fornecedores não têm API aberta, mas oferecem um widget que
+   mostra preços reais. Injecta-se o script do parceiro no bloco; se
+   nada renderizar em 3 s, repõe-se o conteúdo anterior, para nunca
+   ficar um espaço vazio no lugar do bloco. */
+function embeberWidget(idBloco, src, titulo, subtitulo, extra){
+  const bloco = document.getElementById(idBloco);
+  src = (src || '').trim();
+  if(!bloco || !src) return;
+  const anterior = bloco.innerHTML;
+  const url = src + (src.includes('?') ? '&' : '?') + new URLSearchParams(extra || {}).toString();
   bloco.innerHTML = `
-    <h3 class="bloco-titulo">🚗 Aluguer de viatura em ${ctx.destino.n} · preços reais</h3>
-    <p class="bloco-sub tempo-real">⚡ Preços reais de aluguer para as suas datas.</p>
-    <div class="widget-carro" id="widget-carro"></div>`;
-  const alvo = bloco.querySelector('#widget-carro');
+    <h3 class="bloco-titulo">${titulo}</h3>
+    <p class="bloco-sub tempo-real">⚡ ${subtitulo}</p>
+    <div class="widget-parceiro"></div>`;
+  const alvo = bloco.querySelector('.widget-parceiro');
   const s = document.createElement('script');
-  s.async = true; s.charset = 'utf-8';
-  s.src = src + (src.includes('?') ? '&' : '?') + extra.toString();
+  s.async = true; s.charset = 'utf-8'; s.src = url;
   alvo.appendChild(s);
-  /* se o widget não renderizar, repõe o bloco anterior em vez de deixar um vazio */
-  const antes = bloco.dataset.anterior;
   setTimeout(() => {
-    const temConteudo = [...alvo.children].some(el => el.tagName !== 'SCRIPT');
-    if(!temConteudo && antes) bloco.innerHTML = antes;
+    const rendeu = [...alvo.children].some(el => el.tagName !== 'SCRIPT');
+    if(!rendeu) bloco.innerHTML = anterior;
   }, 3000);
+}
+
+const dataISO = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+
+/* Carros: widget do parceiro (Localrent e afins), com local e datas. */
+function actualizarCarrosReais(ctx){
+  if(!ctx.destino || !ctx.ida || !ctx.fim) return;
+  const local = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
+  embeberWidget('bloco-carro', window.TRIPNEXUS_CARRO_WIDGET_SRC,
+    '🚗 Aluguer de viatura em ' + escaparHtml(ctx.destino.n) + ' · preços reais',
+    'Preços reais de aluguer para as suas datas.',
+    {location: local, pickup: dataISO(ctx.ida), dropoff: dataISO(ctx.fim), currency:'eur', locale:'pt'});
+}
+
+/* Actividades: widget do parceiro (Klook e afins), por cidade. */
+function actualizarActividadesWidget(ctx){
+  if(!ctx.destino) return;
+  const local = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
+  embeberWidget('bloco-actividades', window.TRIPNEXUS_ACTIVIDADES_WIDGET_SRC,
+    '🎟 Actividades em ' + escaparHtml(ctx.destino.n) + ' · preços reais',
+    'Preços reais por pessoa. Não incluídas no total da viagem.',
+    {city: local, currency:'eur', locale:'pt'});
 }
