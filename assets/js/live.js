@@ -170,14 +170,37 @@ function embeberWidget(idBloco, src, titulo, subtitulo, extra){
 
 const dataISO = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
 
-/* Carros: widget do parceiro (Localrent e afins), com local e datas. */
+/* ── Carros: widget do Localrent, por cidade ──────────────────
+   O widget gerado no painel traz o país e a cidade fixos nos
+   parâmetros «country» e «city» (identificadores internos do
+   Localrent). Comparando dois widgets gerados para cidades
+   diferentes, confirmou-se que só esses dois valores mudam, pelo
+   que basta trocá-los para o widget seguir o destino da pesquisa.
+
+   PARA ACRESCENTAR UMA CIDADE: no painel Travelpayouts, gere o
+   mesmo widget escolhendo esse país e cidade, e copie os números
+   de «country» e «city» do endereço para a tabela abaixo. As
+   cidades que não estiverem aqui mantêm o bloco de estimativa, em
+   vez de mostrarem preços de outra cidade. */
+const CARROS_LOCALRENT = {
+  'Lisboa':    {pais: 17, cidade: 67671},
+  'Barcelona': {pais: 35, cidade: 60691}
+};
+
 function actualizarCarrosReais(ctx){
-  if(!ctx.destino || !ctx.ida || !ctx.fim) return;
-  const local = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
-  embeberWidget('bloco-carro', window.TRIPNEXUS_CARRO_WIDGET_SRC,
+  const src = (window.TRIPNEXUS_CARRO_WIDGET_SRC || '').trim();
+  if(!src || !ctx.destino) return;
+  const local = CARROS_LOCALRENT[ctx.destino.n];
+  if(!local) return;   /* cidade sem correspondência: fica a estimativa */
+  let url;
+  try{
+    url = new URL(src.startsWith('//') ? location.protocol + src : src, location.href);
+  }catch(e){ return; }
+  url.searchParams.set('country', String(local.pais));
+  url.searchParams.set('city', String(local.cidade));
+  embeberWidget('bloco-carro', url.toString(),
     '🚗 Aluguer de viatura em ' + escaparHtml(ctx.destino.n) + ' · preços reais',
-    'Preços reais de aluguer para as suas datas.',
-    {location: local, pickup: dataISO(ctx.ida), dropoff: dataISO(ctx.fim), currency:'eur', locale:'pt'});
+    'Preços reais de aluguer. Confirme as datas dentro do quadro.');
 }
 
 /* Actividades: widget do parceiro (Klook e afins), por cidade. */

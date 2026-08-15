@@ -822,3 +822,6 @@ a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none
 /* widgets de parceiro embebidos (carros, actividades) */
 .widget-parceiro{margin:.4rem 0;min-height:0}
 .widget-parceiro iframe{max-width:100%;border:0;border-radius:10px}
+/* o widget de carros é alto: limita-se a altura e deixa-se rolar dentro
+   da própria caixa, para não empurrar o resto dos resultados */
+#bloco-carro .widget-parceiro{max-height:32rem;overflow-y:auto;border-radius:10px}
