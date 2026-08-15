@@ -14,30 +14,41 @@
    aconteceu; o resultado está sempre em window.TRIPNEXUS_DIAG e, com
    «?diag=1» no endereço, num painel no fim dos resultados. */
 const DIAG = (window.TRIPNEXUS_DIAG = {});
+/* lido uma única vez, no arranque: a pesquisa reescreve o endereço e o
+   diagnóstico corre depois disso, quando o sinalizador já lá não estaria */
+const MODO_DIAG = /[?&]diag=1/.test(location.search);
 function registarFonte(fonte, estado, detalhe){
   DIAG[fonte] = {estado, detalhe: detalhe || '', hora: new Date().toTimeString().slice(0, 8)};
-  if(estado !== 'reais') console.info('[TripNexus] ' + fonte + ': ' + estado + (detalhe ? ' — ' + detalhe : ''));
+  if(estado !== 'a consultar')
+    console.info('[TripNexus] ' + fonte + ': ' + estado + (detalhe ? ' — ' + detalhe : ''));
   desenharDiagnostico();
 }
 function desenharDiagnostico(){
-  if(!/[?&]diag=1/.test(location.search)) return;
-  const zona = document.getElementById('zona-larga');
-  if(!zona) return;
+  if(!MODO_DIAG) return;
+  const res = document.getElementById('resultados');
+  if(!res) return;
   let cx = document.getElementById('diagnostico-precos');
-  if(!cx){
+  if(!cx || !cx.isConnected){
     cx = document.createElement('div');
     cx.id = 'diagnostico-precos';
     cx.className = 'bloco';
-    zona.appendChild(cx);
+    /* no topo dos resultados: se ficasse no fim, era preciso saber que existe */
+    res.insertBefore(cx, res.firstChild);
   }
   const linhas = Object.keys(DIAG).sort().map(k => {
     const d = DIAG[k];
-    return `<div class="resumo-linha"><span>${escaparHtml(k)}${d.detalhe ? ' · <span class="oferta-detalhe">' + escaparHtml(d.detalhe) + '</span>' : ''}</span>
-      <strong>${d.estado === 'reais' ? '✅ preços reais' : '⚠ ' + escaparHtml(d.estado)}</strong></div>`;
+    const bom = d.estado === 'reais';
+    const simbolo = bom ? '✅' : (d.estado === 'a consultar' ? '⏳' : '⚠');
+    return `<div class="diag-linha${bom ? ' bom' : ''}">
+      <span class="diag-fonte">${escaparHtml(k)}</span>
+      <span class="diag-estado">${simbolo} ${escaparHtml(bom ? 'preços reais' : d.estado)}</span>
+      ${d.detalhe ? `<span class="diag-motivo">${escaparHtml(d.detalhe)}</span>` : ''}
+    </div>`;
   }).join('');
   cx.innerHTML = `<h3 class="bloco-titulo">🔎 Diagnóstico das fontes de preço</h3>
     <p class="bloco-sub">Visível apenas com <code>?diag=1</code> no endereço. Tudo o que não estiver a verde está a mostrar estimativas.</p>
-    ${linhas}`;
+    ${linhas || '<p class="bloco-sub">Nenhuma fonte se chegou a anunciar: o ficheiro live.js não correu.</p>'}
+    <p class="diag-rodape">Backend: <code>${escaparHtml(window.TRIPNEXUS_API || '(não configurado)')}</code> · versão do site: <code>${escaparHtml(window.TRIPNEXUS_VERSAO || '?')}</code></p>`;
 }
 
 /* Substitui o aviso genérico de estimativa pelo motivo real da queda, para
@@ -55,7 +66,9 @@ function explicarEstimativa(idBloco, motivo){
 async function actualizarAlojamentoReal(ctx){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-alojamento');
-  if(!base || !bloco || !ctx.destino || !ctx.ida || !ctx.fim) return;
+  if(!base){ registarFonte('Alojamento (SerpApi)', 'estimativas', 'TRIPNEXUS_API não está configurado no index.html'); return; }
+  if(!bloco || !ctx.destino || !ctx.ida || !ctx.fim) return;
+  registarFonte('Alojamento (SerpApi)', 'a consultar');
   const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
   /* nome mais reconhecível para a pesquisa (Google Hotels é anglófono) */
   const nomePesquisa = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
@@ -124,7 +137,9 @@ async function actualizarAlojamentoReal(ctx){
 async function actualizarActividadesReais(ctx){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-actividades');
-  if(!base || !bloco || !ctx.destino) return;
+  if(!base){ registarFonte('Actividades', 'estimativas', 'TRIPNEXUS_API não está configurado no index.html'); return; }
+  if(!bloco || !ctx.destino) return;
+  registarFonte('Actividades', 'a consultar');
   const nomePesquisa = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
   try{
     const r = await fetch(base + '/actividades?' + new URLSearchParams({cidade: nomePesquisa}));
@@ -155,7 +170,9 @@ async function actualizarActividadesReais(ctx){
 async function actualizarVoosReais(ctx){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-voos');
-  if(!base || !bloco || !ctx.origem || !ctx.destino || !ctx.ida) return;
+  if(!base){ registarFonte('Voos (Travelpayouts)', 'estimativas', 'TRIPNEXUS_API não está configurado no index.html'); return; }
+  if(!bloco || !ctx.origem || !ctx.destino || !ctx.ida) return;
+  registarFonte('Voos (Travelpayouts)', 'a consultar');
   const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
   try{
     const ps = new URLSearchParams({
@@ -314,7 +331,8 @@ const CARROS_LOCALRENT = {
 function actualizarCarrosReais(ctx){
   const src = (window.TRIPNEXUS_CARRO_WIDGET_SRC || '').trim();
   const bloco = document.getElementById('bloco-carro');
-  if(!src || !bloco || !ctx.destino) return;
+  if(!bloco || !ctx.destino) return;   /* o utilizador não pediu carro */
+  if(!src){ registarFonte('Carros (Localrent)', 'estimativas', 'TRIPNEXUS_CARRO_WIDGET_SRC vazio no index.html'); return; }
   const local = CARROS_LOCALRENT[ctx.destino.n];
   if(!local){   /* cidade sem correspondência: fica a estimativa */
     const motivo = ctx.destino.n + ' ainda não está na tabela do Localrent';
