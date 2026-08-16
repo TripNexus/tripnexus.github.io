@@ -68,6 +68,82 @@ function linhaSemPreco(chave, opts){
     <a class="btn-ver" href="${o.url || '#'}" target="_blank" rel="noopener">Ver preços</a>
   </div>`;
 }
+/* ── resumo da viagem ─────────────────────────────────────────
+   O total tem de acompanhar os preços reais: até aqui somava sempre as
+   estimativas do motor local, mesmo com os blocos ao lado já a mostrar
+   valores reais, o que dava dois números diferentes no mesmo ecrã.
+   Guarda-se aqui o que a última pesquisa calculou; o live.js deposita os
+   preços reais em PRECOS_REAIS e manda redesenhar. */
+let RESUMO = null;
+const PRECOS_REAIS = {voo: null, alojamento: null, carro: null};
+
+function limparPrecosReais(){
+  PRECOS_REAIS.voo = PRECOS_REAIS.alojamento = PRECOS_REAIS.carro = null;
+}
+/* chamada pelo live.js sempre que uma fonte real responde */
+function registarPrecoReal(seccao, preco, nome){
+  /* «widget» é o caso do carro: há preços reais, mas só dentro do quadro do
+     parceiro, que não nos diz o valor */
+  if(preco !== 'widget' && !(preco > 0)) return;
+  PRECOS_REAIS[seccao] = preco === 'widget' ? 'widget' : {preco, nome: nome || ''};
+  const cx = document.getElementById('bloco-resumo');
+  if(cx) cx.innerHTML = blocoResumo();
+  if(RESUMO && typeof montarAccoesResumo === 'function'){
+    try{ montarAccoesResumo(document, RESUMO.ctx, RESUMO.melhorVoo); }catch(e){}
+  }
+}
+
+function blocoResumo(){
+  const R = RESUMO;
+  if(!R) return '';
+  /* cada parcela usa o preço real quando existe, e diz-se qual é qual */
+  const linha = (icone, rotulo, estimado, real) => {
+    if(estimado == null && !real) return {html:'', valor:0, real:false};
+    const usaReal = !!real;
+    const valor = usaReal ? real.preco : estimado.preco;
+    const quem = usaReal ? (real.nome || 'preço real') : estimado.nome;
+    return {
+      valor, real: usaReal,
+      html: `<div class="resumo-linha">
+        <span>${icone} ${rotulo} <span class="resumo-fonte ${usaReal ? 'real' : ''}">${escaparHtml(quem)}</span></span>
+        <strong>${usaReal ? '' : '≈ '}${euros(valor)}</strong></div>`
+    };
+  };
+  /* o widget do parceiro mostra preços reais mas não no-los diz: pôr aqui a
+     estimativa ao lado de um quadro com valores verdadeiros seria contradizer-se,
+     por isso a linha fica sem valor e fora da soma */
+  const carro = PRECOS_REAIS.carro === 'widget'
+    ? {valor: 0, real: true, html: `<div class="resumo-linha">
+        <span>🚗 Carro <span class="resumo-fonte real">preços reais no quadro do parceiro</span></span>
+        <strong>—</strong></div>`}
+    : linha('🚗', 'Carro', R.carro, PRECOS_REAIS.carro);
+  const partes = [
+    linha('✈', 'Voo', R.voo, PRECOS_REAIS.voo),
+    /* com preço real o tipo pode não ser o que o motor local escolheu */
+    linha('🏨', PRECOS_REAIS.alojamento ? 'Alojamento' : (R.alojRotulo || 'Alojamento'),
+          R.aloj, PRECOS_REAIS.alojamento),
+    carro,
+    linha('🚇', 'Transportes públicos', R.tp, null)
+  ].filter(p => p.html);
+  const extras = R.extras.map(x => ({
+    valor: x.total, real: false,
+    html: `<div class="resumo-linha"><span>${x.nome} <span class="resumo-fonte">${x.detalhe}</span></span><strong>≈ ${euros(x.total)}</strong></div>`
+  }));
+  const todas = [...partes, ...extras];
+  const total = todas.reduce((s, p) => s + p.valor, 0);
+  const porEstimar = todas.filter(p => !p.real).length;
+  const n = R.pax;
+  return `
+    <h3 class="bloco-titulo">🧾 Total da viagem</h3>
+    ${todas.map(p => p.html).join('')}
+    <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span>
+      <span class="valor-total">${porEstimar ? '≈ ' : ''}${euros(total)}</span></div>
+    <p class="resumo-nota">${porEstimar
+      ? 'Combinação mais barata encontrada. As parcelas marcadas com «≈» ainda são estimativas; as restantes são preços reais.'
+      : '<strong>Todas as parcelas são preços reais.</strong> Combinação mais barata encontrada, com cupões já descontados.'}</p>
+    <div class="accoes-resumo" id="accoes-resumo"></div>`;
+}
+
 function totalPax(){ return ESTADO.pax.adultos + ESTADO.pax.criancas + ESTADO.pax.bebes; }
 /* as caixas de selecção usam «airbnb»; o motor usa o tipo «casa» */
 function tiposAlojamento(){ return ESTADO.alojamento.map(t => t === 'airbnb' ? 'casa' : t); }
@@ -863,11 +939,6 @@ function desenharResultados(){
 
   /* total e pacotes */
   const extras = ESTADO.extras.length ? custoExtras(ESTADO.extras, ESTADO.pax, !!volta, noites) : [];
-  let total = melhorVoo.precoFinal;
-  if(melhorAloj) total += melhorAloj.precoFinal;
-  if(melhorCarro) total += melhorCarro.precoFinal;
-  if(tp) total += tp.total;
-  for(const x of extras) total += x.total;
   const somaPacote = melhorVoo.precoFinal + (melhorAloj ? melhorAloj.precoFinal : 0) + (melhorCarro ? melhorCarro.precoFinal : 0);
   const pacotes = (volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, !!melhorCarro) : [];
   const melhorPacote = pacotes[0] || null;
@@ -877,6 +948,16 @@ function desenharResultados(){
 
   const tiposAloj = {hotel:'Hotel', casa:'Casa / apartamento', hostel:'Hostel'};
   const n = totalPax();
+
+  /* o que o resumo precisa de saber; o live.js acrescenta-lhe os preços reais */
+  RESUMO = {
+    ctx, melhorVoo, pax: n, extras,
+    voo:  {preco: melhorVoo.precoFinal, nome: PARCEIROS[melhorVoo.parceiro].nome},
+    aloj: melhorAloj ? {preco: melhorAloj.precoFinal, nome: PARCEIROS[melhorAloj.parceiro].nome} : null,
+    alojRotulo: melhorAloj ? tiposAloj[melhorAloj.tipo] : 'Alojamento',
+    carro: melhorCarro ? {preco: melhorCarro.precoFinal, nome: PARCEIROS[melhorCarro.parceiro].nome} : null,
+    tp: tp ? {preco: tp.total, nome: tp.dias + ' dias × ' + tp.pessoas + (tp.pessoas === 1 ? ' pessoa' : ' pessoas')} : null
+  };
 
   let html = `
     <div class="res-cabecalho">
@@ -953,17 +1034,7 @@ function desenharResultados(){
       </div>
 
       <div class="res-coluna">
-        <div class="bloco resumo">
-          <h3 class="bloco-titulo">🧾 Total estimado da viagem</h3>
-          <div class="resumo-linha"><span>✈ Voo (${PARCEIROS[melhorVoo.parceiro].nome})</span><strong>${euros(melhorVoo.precoFinal)}</strong></div>
-          ${melhorAloj ? `<div class="resumo-linha"><span>🏨 ${tiposAloj[melhorAloj.tipo]} (${PARCEIROS[melhorAloj.parceiro].nome})</span><strong>${euros(melhorAloj.precoFinal)}</strong></div>` : ''}
-          ${melhorCarro ? `<div class="resumo-linha"><span>🚗 Carro (${PARCEIROS[melhorCarro.parceiro].nome})</span><strong>${euros(melhorCarro.precoFinal)}</strong></div>` : ''}
-          ${tp ? `<div class="resumo-linha"><span>🚇 Transportes públicos (${tp.dias} dias × ${tp.pessoas} ${tp.pessoas === 1 ? 'pessoa' : 'pessoas'})</span><strong>${euros(tp.total)}</strong></div>` : ''}
-          ${extras.map(x => `<div class="resumo-linha"><span>${x.nome} (${x.detalhe})</span><strong>${euros(x.total)}</strong></div>`).join('')}
-          <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${euros(total)}</span></div>
-          <p class="resumo-nota">Combinação mais barata encontrada, com cupões já descontados. Valores estimados, confirmados no site de cada parceiro.</p>
-          <div class="accoes-resumo" id="accoes-resumo"></div>
-        </div>
+        <div class="bloco resumo" id="bloco-resumo">${blocoResumo()}</div>
 
         ${blocoEvolucao(o, d, ida, melhorVoo.precoFinal)}
 
