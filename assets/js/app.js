@@ -53,6 +53,21 @@ function linhaOferta(q, opts){
     <a class="btn-ver" href="${o.url || '#'}" target="_blank" rel="noopener">${est ? 'Ver preço real' : 'Ver oferta'}</a>
   </div>`;
 }
+/* Linha de parceiro sem preço nenhum. Serve para as secções em que não há
+   fonte de preços reais: mostrar um valor inventado seria pior do que não
+   mostrar valor, porque dá ao utilizador uma confiança que não é devida. */
+function linhaSemPreco(chave, opts){
+  const p = PARCEIROS[chave];
+  const o = opts || {};
+  return `<div class="linha-oferta">
+    ${iconeParceiro(chave)}
+    <div class="oferta-info">
+      <div class="oferta-nome">${p.nome}</div>
+      ${o.detalhe ? `<div class="oferta-detalhe">${o.detalhe}</div>` : ''}
+    </div>
+    <a class="btn-ver" href="${o.url || '#'}" target="_blank" rel="noopener">Ver preços</a>
+  </div>`;
+}
 function totalPax(){ return ESTADO.pax.adultos + ESTADO.pax.criancas + ESTADO.pax.bebes; }
 /* as caixas de selecção usam «airbnb»; o motor usa o tipo «casa» */
 function tiposAlojamento(){ return ESTADO.alojamento.map(t => t === 'airbnb' ? 'casa' : t); }
@@ -842,7 +857,9 @@ function desenharResultados(){
   const carros = ESTADO.transportes.includes('carro') ? cotacoesCarro(d, ida, fimEstadia) : null;
   const melhorCarro = carros ? carros[0] : null;
   const tp = ESTADO.transportes.includes('metro') ? estimativaTransportesPublicos(d, noites + 1, ESTADO.pax) : null;
-  const actividades = cotacoesActividades(d, ESTADO.pax);
+  /* actividades: só a lista de quem as vende. Os preços vinham de um gerador
+     aleatório com semente, o que é indefensável num comparador. */
+  const actividades = parceirosDe('actividade').map(parceiro => ({parceiro}));
 
   /* total e pacotes */
   const extras = ESTADO.extras.length ? custoExtras(ESTADO.extras, ESTADO.pax, !!volta, noites) : [];
@@ -927,10 +944,9 @@ function desenharResultados(){
 
         <div class="bloco" id="bloco-actividades">
           <h3 class="bloco-titulo">🎟 Actividades em ${d.n}</h3>
-          <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação, calculados a partir de dados históricos. O preço real é confirmado no site do parceiro.</span></p>
-          <p class="bloco-sub">Sugestões opcionais, não incluídas no total. Preços para ${actividades[0].pessoas} ${actividades[0].pessoas === 1 ? 'pessoa' : 'pessoas'}.</p>
-          ${actividades.map((q, idx) => linhaOferta(q, {
-            melhor: idx === 0, detalhe: q.descricao,
+          <p class="bloco-sub">Não há fonte de preços reais de actividades para este destino, por isso não mostramos nenhum: um valor inventado seria pior do que valor nenhum. Veja directamente em quem as vende.</p>
+          ${actividades.map(q => linhaSemPreco(q.parceiro, {
+            detalhe: 'Passeios, visitas guiadas e bilhetes em ' + d.n,
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'actividade'})
           })).join('')}
         </div>

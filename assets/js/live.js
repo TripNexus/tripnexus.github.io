@@ -137,17 +137,18 @@ async function actualizarAlojamentoReal(ctx){
 async function actualizarActividadesReais(ctx){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-actividades');
-  if(!base){ registarFonte('Actividades', 'estimativas', 'TRIPNEXUS_API não está configurado no index.html'); return; }
+  if(!base){ registarFonte('Actividades', 'sem preços', 'TRIPNEXUS_API não está configurado no index.html'); return; }
   if(!bloco || !ctx.destino) return;
   registarFonte('Actividades', 'a consultar');
   /* o widget do Klook corre em paralelo e é síncrono, por isso chega aqui
      primeiro; se já tiver assumido o bloco com preços reais, esta falha não
      o pode despromover a «estimativas» */
   const widgetAssumiu = () => !!bloco.querySelector('.dobra-widget');
+  /* sem fonte real, o bloco fica só com as ligações aos parceiros: não há
+     estimativa nenhuma para despromover, apenas ausência de preço */
   const desistir = motivo => {
     if(widgetAssumiu()) return;
-    registarFonte('Actividades', 'estimativas', motivo);
-    explicarEstimativa('bloco-actividades', motivo);
+    registarFonte('Actividades', 'sem preços', motivo);
   };
   const nomePesquisa = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
   try{
@@ -429,9 +430,8 @@ function actualizarActividadesWidget(ctx){
   if(!src) return;
   const cidade = ACTIVIDADES_KLOOK[ctx.destino.n];
   if(!cidade){
-    const motivo = ctx.destino.n + ' ainda não está na tabela do Klook';
-    registarFonte('Actividades', 'estimativas', motivo);
-    explicarEstimativa('bloco-actividades', motivo);
+    /* sem widget para esta cidade ficam as ligações aos parceiros, sem preço */
+    registarFonte('Actividades', 'sem preços', ctx.destino.n + ' não está na tabela do Klook');
     return;
   }
   let url;
