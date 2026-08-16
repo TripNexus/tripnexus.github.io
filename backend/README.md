@@ -110,7 +110,21 @@ inventados.
 > fornecedor é uma alteração contida ao `rapid()` e aos dois caminhos.
 
 Ambas as rotas aceitam `debug=1`, que devolve a resposta em bruto do
-fornecedor: é assim que se confirmam os nomes dos campos sem adivinhar.
+fornecedor, **o pedido exacto e o estado HTTP**: sem isso, uma resposta 200
+com `status:false` é indistinguível de um parâmetro mal escrito.
+
+Para afinar a integração sem publicar o Worker a cada tentativa, `/carros`
+aceita ainda:
+
+| Parâmetro | Efeito |
+|---|---|
+| `caminho` | outro endpoint do mesmo fornecedor (tem de começar por `/api/v1/`) |
+| `extra` | `chave:valor,chave:valor` — acrescenta ou substitui parâmetros |
+
+Exemplo: `/carros?lat=38.7&lon=-9.1&ida=2026-09-20&volta=2026-09-24&debug=1&caminho=/api/v1/cars/searchDestination&extra=query:Lisbon`
+
+Cada tentativa gasta um pedido da quota, por isso convém confirmar primeiro os
+nomes na documentação do fornecedor e só depois experimentar.
 
 ### Assistente de viagens (Workers AI, gratuito e sem chave)
 
