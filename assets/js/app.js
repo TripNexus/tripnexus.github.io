@@ -930,8 +930,11 @@ function desenharResultados(){
      mensagem e o botão de repor, deixando o utilizador sem saída */
   if(FILTRO_ABERTO && FILTRO_ABERTO.startsWith('voo:') && !voos.length) FILTRO_ABERTO = null;
   if(FILTRO_ABERTO && FILTRO_ABERTO.startsWith('aloj:') && !alojamentos.length) FILTRO_ABERTO = null;
-  const carros = ESTADO.transportes.includes('carro') ? cotacoesCarro(d, ida, fimEstadia) : null;
-  const melhorCarro = carros ? carros[0] : null;
+  /* aluguer: só a lista de quem aluga. Os preços vinham do mesmo gerador
+     aleatório das actividades — e até o modelo do carro era sorteado. */
+  const diasCarro = Math.max(1, Math.round((fimEstadia - ida) / 86400000));
+  const carros = ESTADO.transportes.includes('carro')
+    ? parceirosDe('carro').map(parceiro => ({parceiro})) : null;
   const tp = ESTADO.transportes.includes('metro') ? estimativaTransportesPublicos(d, noites + 1, ESTADO.pax) : null;
   /* actividades: só a lista de quem as vende. Os preços vinham de um gerador
      aleatório com semente, o que é indefensável num comparador. */
@@ -939,8 +942,9 @@ function desenharResultados(){
 
   /* total e pacotes */
   const extras = ESTADO.extras.length ? custoExtras(ESTADO.extras, ESTADO.pax, !!volta, noites) : [];
-  const somaPacote = melhorVoo.precoFinal + (melhorAloj ? melhorAloj.precoFinal : 0) + (melhorCarro ? melhorCarro.precoFinal : 0);
-  const pacotes = (volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, !!melhorCarro) : [];
+  /* o pacote compara-se com voo + alojamento; o carro deixou de ter preço */
+  const somaPacote = melhorVoo.precoFinal + (melhorAloj ? melhorAloj.precoFinal : 0);
+  const pacotes = (volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, false) : [];
   const melhorPacote = pacotes[0] || null;
 
   const nCupoes = [...todosVoos, ...todosAloj, ...(carros || []), ...(terrestre && terrestre.viavel ? terrestre.linhas : []), ...pacotes]
@@ -955,7 +959,7 @@ function desenharResultados(){
     voo:  {preco: melhorVoo.precoFinal, nome: PARCEIROS[melhorVoo.parceiro].nome},
     aloj: melhorAloj ? {preco: melhorAloj.precoFinal, nome: PARCEIROS[melhorAloj.parceiro].nome} : null,
     alojRotulo: melhorAloj ? tiposAloj[melhorAloj.tipo] : 'Alojamento',
-    carro: melhorCarro ? {preco: melhorCarro.precoFinal, nome: PARCEIROS[melhorCarro.parceiro].nome} : null,
+    carro: null,   /* sem fonte de preço: só entra se o widget o assumir */
     tp: tp ? {preco: tp.total, nome: tp.dias + ' dias × ' + tp.pessoas + (tp.pessoas === 1 ? ' pessoa' : ' pessoas')} : null
   };
 
@@ -1012,11 +1016,10 @@ function desenharResultados(){
 
         ${carros ? `
         <div class="bloco" id="bloco-carro">
-          <h3 class="bloco-titulo">🚗 Carro privado alugado · ${carros[0].dias} ${carros[0].dias === 1 ? 'dia' : 'dias'}</h3>
-          <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação, calculados a partir de dados históricos. O preço real é confirmado no site do parceiro.</span></p>
-          ${carros.slice(0, 6).map((q, idx) => linhaOferta(q, {
-            melhor: idx === 0,
-            detalhe: `${q.descricao} · ${euros(q.porDia)}/dia`,
+          <h3 class="bloco-titulo">🚗 Aluguer de viatura · ${diasCarro} ${diasCarro === 1 ? 'dia' : 'dias'}</h3>
+          <p class="bloco-sub">Ainda não temos preços reais de aluguer para ${d.n}, por isso não mostramos nenhum. Veja directamente em quem aluga.</p>
+          ${carros.map(q => linhaSemPreco(q.parceiro, {
+            detalhe: 'Viaturas em ' + d.n + ' para ' + diasCarro + (diasCarro === 1 ? ' dia' : ' dias'),
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'carro'})
           })).join('')}
         </div>` : ''}
@@ -1040,7 +1043,7 @@ function desenharResultados(){
 
         ${pacotes.length ? `
         <div class="bloco">
-          <h3 class="bloco-titulo">📦 Pacotes (voo + alojamento${melhorCarro ? ' + carro' : ''})</h3>
+          <h3 class="bloco-titulo">📦 Pacotes (voo + alojamento)</h3>
           <p class="bloco-sub">Comparados com a reserva em separado: ${euros(somaPacote)}.</p>
           ${pacotes.map((q, idx) => {
             const dif = q.precoFinal - somaPacote;
