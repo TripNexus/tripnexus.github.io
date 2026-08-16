@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v43';
+const VERSAO_WORKER = 'v47';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -43,7 +43,7 @@ async function estado(env){
     token_definido: token.length > 0,
     token_tamanho: token.length,
     serpapi_key_definida: chaveSerp.length > 0,
-    getyourguide_key_definida: ((env.GETYOURGUIDE_KEY || '').trim().length > 0),
+    rapidapi_key_definida: ((env.RAPIDAPI_KEY || '').trim().length > 0),
     workers_ai_ligado: !!env.AI
   };
   /* pesquisas que restam no plano gratuito da SerpApi: é a causa mais
@@ -65,6 +65,8 @@ async function estado(env){
   }else{
     info.sugestao_alojamento = 'Sem SERPAPI_KEY não há preços reais de alojamento: corra wrangler secret put SERPAPI_KEY na pasta backend/ e cole a chave de serpapi.com.';
   }
+  if(!info.rapidapi_key_definida)
+    info.sugestao_carros = 'Sem RAPIDAPI_KEY não há preços reais de aluguer nem de actividades: corra wrangler secret put RAPIDAPI_KEY na pasta backend/.';
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
       {headers:{'X-Access-Token': token}});
@@ -257,6 +259,115 @@ async function voos(url, env){
   return resposta({ofertas:[], fonte:'travelpayouts', nota: tentativas.join(' · ')}, 200, true);
 }
 
+/* ── Aluguer de viaturas e atracções (Booking.com via RapidAPI) ─────
+   Os widgets do Localrent e do Klook fixam a cidade num identificador
+   interno deles, o que os prendia a uma lista de cidades e, pior, nunca
+   nos dizia o preço — logo, nunca podiam entrar no total da viagem.
+   Esta API aceita coordenadas (viaturas) e o nome da cidade (atracções),
+   que temos para os 95 destinos, e devolve o valor.
+
+   As respostas ficam 6 h na cache da Cloudflare: a camada gratuita é
+   limitada e repetir a mesma pesquisa não deve gastar pedidos. */
+const RAPID_HOST = 'booking-com15.p.rapidapi.com';
+
+async function rapid(caminho, params, env){
+  const chave = (env.RAPIDAPI_KEY || '').trim();
+  if(!chave) return {_erro:'RAPIDAPI_KEY não definido no Worker (ver /estado)'};
+  try{
+    const r = await fetch('https://' + RAPID_HOST + caminho + '?' + new URLSearchParams(params), {
+      headers:{'x-rapidapi-key': chave, 'x-rapidapi-host': RAPID_HOST},
+      cf:{cacheTtl: 21600, cacheEverything: true}
+    });
+    const bruto = await r.text();
+    if(!r.ok) return {_erro:'Booking devolveu ' + r.status, _bruto: bruto.slice(0, 300)};
+    try{ return JSON.parse(bruto); }
+    catch(e){ return {_erro:'resposta ilegível', _bruto: bruto.slice(0, 300)}; }
+  }catch(e){ return {_erro: String(e.message || e)}; }
+}
+
+/* Os nomes dos campos desta API mudam entre versões, por isso não se fixa
+   um caminho: procura-se, em cada oferta, a primeira chave com ar de preço
+   e a primeira com ar de nome. Assim uma renomeação não parte o bloco. */
+function colher(obj, padraoChave, transformar){
+  let achado = null;
+  const anda = (v, prof) => {
+    if(achado !== null || !v || typeof v !== 'object' || prof > 4) return;
+    for(const k of Object.keys(v)){
+      let x; try{ x = v[k]; }catch(e){ continue; }
+      if(padraoChave.test(k)){
+        const t = transformar(x);
+        if(t){ achado = t; return; }
+      }
+      if(x && typeof x === 'object') anda(x, prof + 1);
+    }
+  };
+  anda(obj, 0);
+  return achado;
+}
+const CHAVE_PRECO = /^(price|amount|total|chargeAmount|drive_away_price|base_price|value)$/i;
+const CHAVE_NOME  = /^(name|title|v_name|vehicle_name|productName)$/i;
+
+/* /carros: preços reais de aluguer por coordenadas, em qualquer destino */
+async function carros(url, env){
+  const q = url.searchParams;
+  for(const p of ['lat','lon','ida','volta'])
+    if(!q.get(p)) return resposta({erro:'parâmetros necessários: lat, lon, ida, volta'}, 400);
+  const j = await rapid('/api/v1/cars/searchCarRentals', {
+    pick_up_latitude: q.get('lat'),   pick_up_longitude: q.get('lon'),
+    drop_off_latitude: q.get('lat'),  drop_off_longitude: q.get('lon'),
+    pick_up_date: q.get('ida'),       drop_off_date: q.get('volta'),
+    pick_up_time: '10:00',            drop_off_time: '10:00',
+    driver_age: '30', currency_code: 'EUR'
+  }, env);
+  if(q.get('debug') === '1') return resposta({resposta: j}, 200, true);
+  if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
+  const itens = (j.data && (j.data.search_results || j.data.results)) || [];
+  const ofertas = itens.map(v => ({
+    nome: colher(v, CHAVE_NOME, x => typeof x === 'string' && x.length < 80 ? x : null) || 'Viatura',
+    preco: Math.round(colher(v, CHAVE_PRECO, x => precoNumero(x && x.amount != null ? x.amount : x)) || 0),
+    fornecedor: (v.supplier_info && v.supplier_info.name) || '',
+    detalhe: [
+      v.vehicle_info && v.vehicle_info.transmission,
+      v.vehicle_info && v.vehicle_info.seats ? v.vehicle_info.seats + ' lugares' : '',
+      v.vehicle_info && v.vehicle_info.fuel_type
+    ].filter(Boolean).join(' · ')
+  })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
+  /* sem ofertas, devolve-se uma amostra do que veio, para se perceber porquê */
+  const extra = ofertas.length ? {} : {_amostra: itens[0] || null, _total: itens.length};
+  return resposta(Object.assign({ofertas, fonte:'booking', total: itens.length}, extra));
+}
+
+/* /actividades: atracções com preço real, pelo nome da cidade.
+   São dois pedidos: o primeiro traduz a cidade no identificador interno
+   da Booking, o segundo traz as atracções. */
+async function actividades(url, env){
+  const q = url.searchParams;
+  const cidade = q.get('cidade');
+  if(!cidade) return resposta({erro:'parâmetro necessário: cidade'}, 400);
+  const depurar = q.get('debug') === '1';
+  const local = await rapid('/api/v1/attraction/searchLocation',
+    {query: cidade, languagecode: 'pt'}, env);
+  if(local._erro) return resposta({ofertas:[], fonte:'booking', nota: local._erro}, 200, true);
+  const destinos = (local.data && (local.data.destinations || local.data.products)) || [];
+  const id = destinos.length ? (destinos[0].id || destinos[0].productId) : null;
+  if(!id){
+    if(depurar) return resposta({passo:'searchLocation', resposta: local}, 200, true);
+    return resposta({ofertas:[], fonte:'booking', nota:'a Booking não reconheceu «' + cidade + '»'}, 200, true);
+  }
+  const j = await rapid('/api/v1/attraction/searchAttractions',
+    {id, currency_code:'EUR', languagecode:'pt', sortBy:'trending', page:'1'}, env);
+  if(depurar) return resposta({passo:'searchAttractions', id, resposta: j}, 200, true);
+  if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
+  const itens = (j.data && (j.data.products || j.data.results)) || [];
+  const ofertas = itens.map(a => ({
+    nome: colher(a, CHAVE_NOME, x => typeof x === 'string' && x.length < 120 ? x : null) || 'Actividade',
+    preco: Math.round(colher(a, CHAVE_PRECO, x => precoNumero(x && x.amount != null ? x.amount : x)) || 0),
+    url: a.slug ? 'https://www.booking.com/attractions/' + a.slug + '.html' : ''
+  })).filter(o => o.preco > 0).slice(0, 6);
+  const extra = ofertas.length ? {} : {_amostra: itens[0] || null, _total: itens.length};
+  return resposta(Object.assign({ofertas, fonte:'booking'}, extra));
+}
+
 /* extrai um número de um preço que pode vir como "€120", "$1,299.00",
    "1 299", etc. Devolve 0 se não houver número utilizável. */
 function precoNumero(v){
@@ -336,35 +447,6 @@ async function alojamento(url, env, casas){
 }
 const hoteis = (url, env) => alojamento(url, env, false);
 const casas  = (url, env) => alojamento(url, env, true);
-
-/* /actividades: preços reais de passeios e bilhetes via GetYourGuide
-   Partner API. Sem chave definida, devolve lista vazia e o site mostra
-   apenas a ligação ao parceiro, sem inventar preços. */
-async function actividades(url, env){
-  const q = url.searchParams;
-  const cidade = q.get('cidade');
-  if(!cidade) return resposta({erro:'parâmetro necessário: cidade'}, 400);
-  const chave = (env.GETYOURGUIDE_KEY || '').trim();
-  if(!chave) return resposta({ofertas:[], fonte:'getyourguide', nota:'GETYOURGUIDE_KEY não definido no Worker (ver /estado)'}, 200, true);
-  try{
-    const ps = new URLSearchParams({q: cidade, cnt: '8', currency: 'EUR', lang: 'pt'});
-    const r = await fetch('https://api.getyourguide.com/1/tours?' + ps, {
-      headers:{'Accept':'application/json', 'X-ACCESS-TOKEN': chave}
-    });
-    if(!r.ok) return resposta({ofertas:[], fonte:'getyourguide', nota:'indisponível (' + r.status + ')'}, 200, true);
-    const j = await r.json();
-    const itens = (j && (j.data && j.data.tours || j.tours)) || [];
-    const ofertas = itens.map(t => ({
-      nome: t.title || t.name || 'Actividade',
-      preco: Math.round(precoNumero(t.price && (t.price.values && t.price.values.amount || t.price.amount)) || 0),
-      url: t.url || t.deeplink || ''
-    })).filter(o => o.preco > 0).slice(0, 6);
-    const extra = ofertas.length ? {} : {_amostra: itens[0] || null, _total: itens.length};
-    return resposta(Object.assign({ofertas, fonte:'getyourguide'}, extra));
-  }catch(e){
-    return resposta({ofertas:[], fonte:'getyourguide', erro:String(e.message || e)}, 200, true);
-  }
-}
 
 /* /assistente: bot de viagens do TripNexus, com Workers AI (quota diária
    gratuita da Cloudflare, sem chave nem conta adicional). Responde só sobre
@@ -478,11 +560,12 @@ export default {
       if(url.pathname === '/voos') return await voos(url, env);
       if(url.pathname === '/hoteis') return await hoteis(url, env);
       if(url.pathname === '/casas') return await casas(url, env);
+      if(url.pathname === '/carros') return await carros(url, env);
       if(url.pathname === '/actividades') return await actividades(url, env);
       if(url.pathname === '/assistente') return await assistente(pedido, env);
       if(url.pathname === '/modelos') return await modelos(env);
       if(url.pathname === '/estado') return await estado(env);
-      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /casas, /actividades, /assistente, /modelos, /estado'}, 404);
+      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /casas, /carros, /actividades, /assistente, /modelos, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }
