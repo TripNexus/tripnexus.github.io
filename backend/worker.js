@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v47';
+const VERSAO_WORKER = 'v48';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -273,16 +273,21 @@ const RAPID_HOST = 'booking-com15.p.rapidapi.com';
 async function rapid(caminho, params, env){
   const chave = (env.RAPIDAPI_KEY || '').trim();
   if(!chave) return {_erro:'RAPIDAPI_KEY não definido no Worker (ver /estado)'};
+  const endereco = 'https://' + RAPID_HOST + caminho + '?' + new URLSearchParams(params);
   try{
-    const r = await fetch('https://' + RAPID_HOST + caminho + '?' + new URLSearchParams(params), {
+    const r = await fetch(endereco, {
       headers:{'x-rapidapi-key': chave, 'x-rapidapi-host': RAPID_HOST},
       cf:{cacheTtl: 21600, cacheEverything: true}
     });
     const bruto = await r.text();
-    if(!r.ok) return {_erro:'Booking devolveu ' + r.status, _bruto: bruto.slice(0, 300)};
-    try{ return JSON.parse(bruto); }
-    catch(e){ return {_erro:'resposta ilegível', _bruto: bruto.slice(0, 300)}; }
-  }catch(e){ return {_erro: String(e.message || e)}; }
+    /* o pedido e o estado vão sempre no resultado: esta API responde 200 com
+       «status:false» e uma mensagem genérica, e sem ver o pedido exacto não
+       se distingue um parâmetro errado de uma falha do fornecedor */
+    const meta = {_pedido: endereco, _estado: r.status};
+    if(!r.ok) return Object.assign({_erro:'Booking devolveu ' + r.status, _bruto: bruto.slice(0, 500)}, meta);
+    try{ return Object.assign(JSON.parse(bruto), meta); }
+    catch(e){ return Object.assign({_erro:'resposta ilegível', _bruto: bruto.slice(0, 500)}, meta); }
+  }catch(e){ return {_erro: String(e.message || e), _pedido: endereco}; }
 }
 
 /* Os nomes dos campos desta API mudam entre versões, por isso não se fixa
@@ -312,13 +317,24 @@ async function carros(url, env){
   const q = url.searchParams;
   for(const p of ['lat','lon','ida','volta'])
     if(!q.get(p)) return resposta({erro:'parâmetros necessários: lat, lon, ida, volta'}, 400);
-  const j = await rapid('/api/v1/cars/searchCarRentals', {
+  /* «caminho» e «extra» só existem para afinar a integração: deixam
+     experimentar outro endpoint ou outros nomes de parâmetro sem publicar o
+     Worker de novo. Ficam presos ao mesmo fornecedor, nunca a um host livre. */
+  let caminho = q.get('caminho') || '/api/v1/cars/searchCarRentals';
+  if(!caminho.startsWith('/api/v1/')) caminho = '/api/v1/cars/searchCarRentals';
+  const params = {
     pick_up_latitude: q.get('lat'),   pick_up_longitude: q.get('lon'),
     drop_off_latitude: q.get('lat'),  drop_off_longitude: q.get('lon'),
     pick_up_date: q.get('ida'),       drop_off_date: q.get('volta'),
     pick_up_time: '10:00',            drop_off_time: '10:00',
     driver_age: '30', currency_code: 'EUR'
-  }, env);
+  };
+  /* extra=chave:valor,chave:valor — acrescenta ou substitui parâmetros */
+  for(const par of (q.get('extra') || '').split(',')){
+    const i = par.indexOf(':');
+    if(i > 0) params[par.slice(0, i).trim()] = par.slice(i + 1).trim();
+  }
+  const j = await rapid(caminho, params, env);
   if(q.get('debug') === '1') return resposta({resposta: j}, 200, true);
   if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
   const itens = (j.data && (j.data.search_results || j.data.results)) || [];
