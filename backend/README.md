@@ -83,18 +83,34 @@ chave: a rota `/casas` acrescenta `vacation_rentals=true`. Não é preciso
 configurar nada além da `SERPAPI_KEY`. Note que cada pesquisa passa a gastar
 **duas** consultas do plano (hotéis + casas).
 
-### Chave da GetYourGuide (actividades)
+### Chave para aluguer de viaturas e actividades
 
-Os preços reais de passeios e bilhetes vêm da **GetYourGuide Partner API**.
-Registo gratuito em <https://partner.getyourguide.com>; a aprovação costuma
-demorar alguns dias e exige que o site já esteja publicado.
+O aluguer e as actividades vêm da **Booking.com**, que aceita coordenadas
+(viaturas) e o nome da cidade (atracções) — ao contrário dos widgets do
+Localrent e do Klook, que fixam a cidade num identificador interno e por isso
+só serviam uma lista fechada de cidades. E, ao contrário dos widgets, a API
+devolve o valor, o que permite somá-lo no total da viagem.
 
 ```
-wrangler secret put GETYOURGUIDE_KEY
+cd backend
+wrangler secret put RAPIDAPI_KEY
 ```
 
-Sem a chave, o bloco de actividades mantém-se com as estimativas locais, que
-estão assinaladas como tal. Confirme em `/estado` (`getyourguide_key_definida`).
+Confirme em `/estado` (campo `rapidapi_key_definida`). Sem a chave, os dois
+blocos ficam com as ligações aos parceiros e sem preço — nunca com valores
+inventados.
+
+> **Quotas.** A camada gratuita do RapidAPI é curta (dezenas de pedidos por
+> mês), o que serve para validar a integração mas não para um site aberto ao
+> público. O destino natural é a **Booking.com Demand API**
+> (<https://developers.booking.com/demand>), que não cobra pela utilização —
+> o modelo é por comissão — e cobre os mesmos produtos. Exige aprovação como
+> parceiro afiliado. As rotas `/carros` e `/actividades` foram escritas com os
+> nomes dos campos procurados por padrão (ver `colher()`), pelo que a troca de
+> fornecedor é uma alteração contida ao `rapid()` e aos dois caminhos.
+
+Ambas as rotas aceitam `debug=1`, que devolve a resposta em bruto do
+fornecedor: é assim que se confirmam os nomes dos campos sem adivinhar.
 
 ### Assistente de viagens (Workers AI, gratuito e sem chave)
 
@@ -154,10 +170,11 @@ utilizador.
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas`, `marker` | `{ofertas:[{preco, companhia, escalas, duracao, partida, url}], classe, fonte}` |
 | `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
 | `/casas` | os mesmos de `/hoteis` | alojamento local: mesmo motor e **mesma chave**, com `vacation_rentals=true` |
-| `/actividades` | `cidade` | `{ofertas:[{nome, preco, url}], fonte:"getyourguide"}`; sem `GETYOURGUIDE_KEY`, devolve lista vazia |
+| `/carros` | `lat`, `lon`, `ida`, `volta` (AAAA-MM-DD), `debug` | `{ofertas:[{nome, preco, fornecedor, detalhe}], fonte:"booking"}` |
+| `/actividades` | `cidade`, `debug` | `{ofertas:[{nome, preco, url}], fonte:"booking"}`; sem `RAPIDAPI_KEY`, devolve lista vazia |
 | `/assistente` | POST `{pergunta, contexto?, historico?}` | `{resposta, fonte:"workers-ai", modelo}`: assistente de viagens (Cloudflare Workers AI) |
 | `/modelos` | nenhum | diagnóstico: quais dos modelos candidatos a conta aceita neste momento |
-| `/estado` | nenhum | diagnóstico: token da Travelpayouts, **pesquisas que restam na SerpApi**, chave do GetYourGuide e se o Workers AI está ligado |
+| `/estado` | nenhum | diagnóstico: token da Travelpayouts, **pesquisas que restam na SerpApi**, chave do RapidAPI e se o Workers AI está ligado |
 
 As respostas são guardadas em cache 10 minutos no navegador. Os pedidos à
 SerpApi ficam 6 h na cache da Cloudflare e os da Travelpayouts 30 minutos: sem

@@ -138,8 +138,8 @@ async function actualizarAlojamentoReal(ctx){
     <p class="bloco-sub">Tarifas do Google Hotels; a reserva é concluída no site do parceiro.</p>`;
 }
 
-/* Actividades com preços reais (GetYourGuide). Sem chave configurada, o
-   bloco mantém-se como está, em vez de mostrar preços inventados. */
+/* Actividades com preços reais. Sem fonte configurada, o bloco fica com as
+   ligações aos parceiros e sem preço, em vez de mostrar valores inventados. */
 async function actualizarActividadesReais(ctx){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-actividades');
@@ -168,7 +168,7 @@ async function actualizarActividadesReais(ctx){
     registarFonte('Actividades', 'reais', d.ofertas.length + ' actividades');
     bloco.innerHTML = `
       <h3 class="bloco-titulo">🎟 Actividades em ${ctx.destino.n} · preços reais</h3>
-      <p class="bloco-sub tempo-real">⚡ Preços reais por pessoa (GetYourGuide). Não incluídas no total da viagem.</p>
+      <p class="bloco-sub tempo-real">⚡ Preços reais por pessoa. Não incluídas no total da viagem.</p>
       ${d.ofertas.slice(0, 6).map((a, i) => `
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
           <span class="icone-parceiro"><span class="letra" style="display:flex">🎟</span></span>
@@ -367,24 +367,61 @@ const CARROS_LOCALRENT = {
   'Zagreb':           {pais: 202, cidade: 78041}
 };
 
-function actualizarCarrosReais(ctx){
-  const src = (window.TRIPNEXUS_CARRO_WIDGET_SRC || '').trim();
+/* Aluguer de viaturas com preços reais, por coordenadas — serve os 95
+   destinos, ao contrário do widget, que ficava preso a uma lista de
+   cidades e nunca nos dizia o valor. Se a API não responder, o widget do
+   Localrent continua a servir de recurso nas cidades que cobre. */
+async function actualizarCarrosReais(ctx){
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-carro');
-  if(!bloco || !ctx.destino) return;   /* o utilizador não pediu carro */
-  if(!src){ registarFonte('Carros (Localrent)', 'estimativas', 'TRIPNEXUS_CARRO_WIDGET_SRC vazio no index.html'); return; }
-  const local = CARROS_LOCALRENT[ctx.destino.n];
-  if(!local){   /* cidade sem correspondência: fica a estimativa */
-    const motivo = ctx.destino.n + ' ainda não está na tabela do Localrent';
-    registarFonte('Carros (Localrent)', 'estimativas', motivo);
-    explicarEstimativa('bloco-carro', motivo);
+  if(!bloco || !ctx.destino || !ctx.ida || !ctx.fim) return;   /* não pediu carro */
+  registarFonte('Aluguer de viaturas', 'a consultar');
+  const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+  const dias = Math.max(1, Math.round((ctx.fim - ctx.ida) / 86400000));
+
+  let ofertas = [];
+  if(base && ctx.destino.la != null){
+    try{
+      const ps = new URLSearchParams({lat: ctx.destino.la, lon: ctx.destino.lo, ida: f(ctx.ida), volta: f(ctx.fim)});
+      const r = await fetch(base + '/carros?' + ps);
+      const d = r.ok ? await r.json() : null;
+      ofertas = (d && Array.isArray(d.ofertas)) ? d.ofertas : [];
+      if(!ofertas.length) registarFonte('Aluguer de viaturas', 'sem preços',
+        (d && (d.nota || d.erro)) || (r.ok ? 'sem viaturas para estas datas' : 'backend devolveu ' + r.status));
+    }catch(e){ registarFonte('Aluguer de viaturas', 'sem preços', 'sem ligação ao backend'); }
+  }
+
+  if(ofertas.length){
+    registarFonte('Aluguer de viaturas', 'reais', ofertas.length + ' viaturas');
+    if(typeof registarPrecoReal === 'function')
+      registarPrecoReal('carro', ofertas[0].preco, (ofertas[0].nome || 'viatura') + ' · ' + dias + (dias === 1 ? ' dia' : ' dias'));
+    const liga = ligacaoParceiro('discovercars', {...ctx, seccao:'carro'});
+    bloco.innerHTML = `
+      <h3 class="bloco-titulo">🚗 Aluguer de viatura em ${escaparHtml(ctx.destino.n)} · preços reais</h3>
+      <p class="bloco-sub tempo-real">⚡ Preços reais para ${dias} ${dias === 1 ? 'dia' : 'dias'} (Booking.com). Total do aluguer.</p>
+      ${ofertas.slice(0, 6).map((v, i) => `
+        <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
+          <span class="icone-parceiro"><span class="letra" style="display:flex">🚗</span></span>
+          <div class="oferta-info">
+            <div class="oferta-nome">${escaparHtml(v.nome || 'Viatura')}${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
+            <div class="oferta-detalhe">${escaparHtml([v.fornecedor, v.detalhe].filter(Boolean).join(' · ') || 'aluguer completo')}</div>
+          </div>
+          <div class="oferta-preco"><div class="preco-actual">${euros(v.preco)}</div></div>
+          <a class="btn-ver" href="${escaparHtml(v.url || liga)}" target="_blank" rel="noopener">Reservar</a>
+        </div>`).join('')}
+      <p class="bloco-sub">A reserva é concluída no site do parceiro.</p>`;
     return;
   }
+
+  /* recurso: o widget do Localrent, nas cidades que cobre */
+  const src = (window.TRIPNEXUS_CARRO_WIDGET_SRC || '').trim();
+  const local = CARROS_LOCALRENT[ctx.destino.n];
+  if(!src || !local) return;   /* fica o bloco com as ligações, sem preço */
   let url;
   try{
     url = new URL(src.startsWith('//') ? location.protocol + src : src, location.href);
   }catch(e){ return; }
-  registarFonte('Carros (Localrent)', 'reais', 'widget do parceiro (abre a pedido)');
-  /* o total deixa de contar a estimativa do carro: contradizia o quadro */
+  registarFonte('Aluguer de viaturas', 'reais', 'widget Localrent (abre a pedido)');
   if(typeof registarPrecoReal === 'function') registarPrecoReal('carro', 'widget');
   url.searchParams.set('country', String(local.pais));
   url.searchParams.set('city', String(local.cidade));
