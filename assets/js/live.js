@@ -105,6 +105,12 @@ async function actualizarAlojamentoReal(ctx){
   }
   registarFonte('Alojamento (SerpApi)', 'reais',
     hoteis.length + ' hotéis · ' + casas.length + ' casas' + (notas.length ? ' · ' + notas.join(' · ') : ''));
+  /* o alojamento vem por noite; o total da viagem conta a estadia inteira */
+  if(typeof registarPrecoReal === 'function'){
+    const noites = Math.max(1, Math.round((ctx.fim - ctx.ida) / 86400000));
+    registarPrecoReal('alojamento', Math.round(lista[0].preco * noites),
+      (lista[0].nome || 'alojamento') + ' · ' + noites + (noites === 1 ? ' noite' : ' noites'));
+  }
 
   const rotulo = {hotel:'Hotel', casa:'Casa / apartamento'};
   const temCasas = casas.length > 0;
@@ -205,6 +211,11 @@ async function actualizarVoosReais(ctx){
       dados.ofertas.length + ' tarifas' + (outrasDatas ? ' (datas próximas, não as pedidas)' : ''));
 
     const lista = dados.ofertas.map(v => Object.assign({}, v, {precoFinal: v.preco}));
+    /* o total da viagem passa a contar com este preço, em vez da estimativa */
+    if(typeof registarPrecoReal === 'function' && lista.length){
+      const maisBarato = lista.reduce((m, v) => v.precoFinal < m.precoFinal ? v : m);
+      registarPrecoReal('voo', maisBarato.precoFinal, maisBarato.companhia || 'tarifa real');
+    }
     const companhias = [...new Set(lista.map(v => v.companhia).filter(Boolean))].sort();
     const haFiltros = typeof aplicarFiltrosVoos === 'function';
     const visiveis = haFiltros ? aplicarFiltrosVoos(lista) : lista;
@@ -373,6 +384,8 @@ function actualizarCarrosReais(ctx){
     url = new URL(src.startsWith('//') ? location.protocol + src : src, location.href);
   }catch(e){ return; }
   registarFonte('Carros (Localrent)', 'reais', 'widget do parceiro (abre a pedido)');
+  /* o total deixa de contar a estimativa do carro: contradizia o quadro */
+  if(typeof registarPrecoReal === 'function') registarPrecoReal('carro', 'widget');
   url.searchParams.set('country', String(local.pais));
   url.searchParams.set('city', String(local.cidade));
 

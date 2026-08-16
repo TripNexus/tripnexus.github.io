@@ -843,6 +843,11 @@ a.nav-btn{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none
 .dobra-widget[open] .widget-parceiro{margin-top:.8rem;min-height:34rem}
 .dobra-widget summary:hover .dobra-titulo{color:var(--indigo)}
 
+/* no resumo, cada parcela diz de onde vem o valor: sem isto, um total
+   metade real e metade estimado não se distingue de um total todo real */
+.resumo-fonte{display:block;font-size:.76rem;color:var(--cinza);font-weight:500}
+.resumo-fonte.real{color:var(--verde);font-weight:700}
+
 /* tarifas reais, mas de dias vizinhos: o aviso tem de saltar à vista, senão
    o utilizador julga que o preço é para as datas que pediu */
 .aviso-datas{
