@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v51';
+const VERSAO_WORKER = 'v52';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -368,23 +368,56 @@ async function carros(url, env){
   const j = await rapid(c2, params, env);
   if(depurar) return resposta({passo:'searchCarRentals', local, resposta: j}, 200, true);
   if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
-  const itens = (j.data && (j.data.search_results || j.data.results)) || [];
-  const moeda = (j.data && (j.data.search_context && j.data.search_context.currency))
-    || colher(j.data || {}, /^(currency|currency_code)$/i, x => typeof x === 'string' && x.length === 3 ? x : null)
-    || '';
-  const ofertas = itens.map(v => ({
-    nome: colher(v, CHAVE_NOME, x => typeof x === 'string' && x.length < 80 ? x : null) || 'Viatura',
-    preco: Math.round(colher(v, CHAVE_PRECO, x => precoNumero(x && x.amount != null ? x.amount : x)) || 0),
-    fornecedor: (v.supplier_info && v.supplier_info.name) || '',
-    detalhe: [
-      v.vehicle_info && v.vehicle_info.transmission,
-      v.vehicle_info && v.vehicle_info.seats ? v.vehicle_info.seats + ' lugares' : '',
-      v.vehicle_info && v.vehicle_info.fuel_type
-    ].filter(Boolean).join(' · ')
-  })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
+  /* «search_results» vem sempre vazio: as viaturas estão em content.items,
+     misturadas com bandeiras, contagens e outros cartões da interface, e
+     distinguem-se pelo type. */
+  const cartoes = ((j.data && j.data.content && j.data.content.items) || [])
+    .filter(x => x && x.type === 'CAR_CARD' && x.content)
+    .map(x => x.content);
+  const moeda = (j.data && j.data.metadata && j.data.metadata.lowestVehiclePrice
+                 && j.data.metadata.lowestVehiclePrice.currency) || 'EUR';
+  /* as características vêm em inglês; o site é em português */
+  const traduzir = t => String(t || '')
+    .replace(/\b(\d+) seats?\b/gi, '$1 lugares')
+    .replace(/\b(\d+) doors?\b/gi, '$1 portas')
+    .replace(/\bUnlimited (km|mileage)\b/gi, 'quilómetros ilimitados')
+    .replace(/\bLimited (km|mileage)\b/gi, 'quilómetros limitados')
+    .replace(/\bAutomatic\b/gi, 'automático')
+    .replace(/\bManual\b/gi, 'manual')
+    .replace(/\bOnline check-in\b/gi, 'check-in em linha')
+    .replace(/\bFully electric\b/gi, 'eléctrico')
+    .replace(/\bHybrid\b/gi, 'híbrido')
+    .replace(/\bor similar small car\b/gi, 'ou similar, citadino')
+    .replace(/\bor similar medium car\b/gi, 'ou similar, médio')
+    .replace(/\bor similar large car\b/gi, 'ou similar, grande')
+    .replace(/\bor similar SUV\b/gi, 'ou similar, SUV')
+    .replace(/\bor similar\b/gi, 'ou similar')
+    .replace(/\s*\|\s*/g, ' · ');
+
+  /* os preços vêm formatados («€ 18»), não como número */
+  const ofertas = cartoes.map(c => {
+    const p = c.pricing || {};
+    const antes = precoNumero(p.originalPriceDisplay);
+    const agora = precoNumero(p.finalPriceDisplay);
+    return {
+      /* o modelo sozinho; o «ou similar» é detalhe e alongaria o resumo */
+      nome: c.title || 'Viatura',
+      preco: Math.round(agora),
+      precoAntes: antes > agora ? Math.round(antes) : 0,
+      fornecedor: (c.supplier && c.supplier.name) || '',
+      nota: (c.supplier && c.supplier.rating && c.supplier.rating.score) || '',
+      detalhe: [
+        traduzir(c.subtitle),
+        traduzir(c.specs),
+        traduzir((c.vehicleSpecs || []).map(v => v && v.text).filter(Boolean).join(' · ')),
+        c.location && c.location.pickup && c.location.pickup.location   /* nome próprio */
+      ].filter(Boolean).join(' · ')
+    };
+  }).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
   /* sem ofertas, devolve-se uma amostra do que veio, para se perceber porquê */
-  const extra = ofertas.length ? {} : {_amostra: itens[0] || null, _total: itens.length};
-  return resposta(Object.assign({ofertas, fonte:'booking', moeda, total: itens.length}, extra));
+  const extra = ofertas.length ? {} : {_amostra: cartoes[0] || null,
+    _tipos: [...new Set(((j.data && j.data.content && j.data.content.items) || []).map(x => x && x.type))]};
+  return resposta(Object.assign({ofertas, fonte:'booking', moeda, total: cartoes.length}, extra));
 }
 
 /* /actividades: atracções com preço real, pelo nome da cidade.
