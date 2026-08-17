@@ -177,7 +177,10 @@ function blocoResumo(){
     linha('🏨', PRECOS_REAIS.alojamento ? 'Alojamento' : (R.alojRotulo || 'Alojamento'),
           R.aloj, PRECOS_REAIS.alojamento),
     carro,
-    linha('🚇', 'Transportes públicos', R.tp, null)
+    /* com tarifário publicado da cidade o valor é real e não leva «≈» */
+    linha('🚇', 'Transportes públicos',
+          R.tp && !R.tp.real ? R.tp : null,
+          R.tp && R.tp.real ? R.tp : null)
   ].filter(p => p.html);
   const extras = R.extras.map(x => ({
     valor: x.total, real: false,
@@ -1061,7 +1064,8 @@ function desenharResultados(){
     aloj: melhorAloj ? {preco: melhorAloj.precoFinal, nome: PARCEIROS[melhorAloj.parceiro].nome} : null,
     alojRotulo: melhorAloj ? tiposAloj[melhorAloj.tipo] : 'Alojamento',
     carro: null,   /* sem fonte de preço: só entra se o widget o assumir */
-    tp: tp ? {preco: tp.total, nome: tp.dias + ' dias × ' + tp.pessoas + (tp.pessoas === 1 ? ' pessoa' : ' pessoas')} : null
+    tp: tp ? {preco: tp.total, real: !!tp.real,
+              nome: tp.nome || (tp.dias + ' dias × ' + tp.pessoas + (tp.pessoas === 1 ? ' pessoa' : ' pessoas'))} : null
   };
 
   let html = `

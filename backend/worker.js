@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v69';
+const VERSAO_WORKER = 'v70';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -899,21 +899,22 @@ async function calendario(url, env){
      posso confirmar contra a API a partir daqui, por isso entra como
      acréscimo: se responder, junta-se; se falhar, não se perde nada. O
      «debug=1» diz se contribuiu. */
-  const pedirCalendario = async () => {
+  const pedirCalendario = async (comDuracao) => {
     if(idaFixa) return [];
     const ps = new URLSearchParams({
       origin: q.get('origem'), destination: q.get('destino'),
       depart_date: mes, calendar_type: 'departure_date', currency: 'eur', token
     });
-    if(!soIda && dias) ps.set('trip_duration', String(dias));
+    if(!soIda && dias && comDuracao) ps.set('trip_duration', String(dias));
+    const marca = comDuracao ? dias + ' noites' : 'qualquer duração';
     try{
       const r = await fetch(TP + '/v1/prices/calendar?' + ps,
         {headers:{'X-Access-Token': token}, cf:{cacheTtl: 3600, cacheEverything: true}});
-      if(!r.ok){ diag.consultas.push({tipo:'prices/calendar', estado: r.status}); return []; }
+      if(!r.ok){ diag.consultas.push({tipo:'prices/calendar', filtro: marca, estado: r.status}); return []; }
       const j = await r.json();
       const dados = (j && j.data) || {};
       const linhas = Object.values(dados).filter(v => v && v.price > 0);
-      diag.consultas.push({tipo:'prices/calendar', linhas: linhas.length,
+      diag.consultas.push({tipo:'prices/calendar', filtro: marca, linhas: linhas.length,
                            sucesso: j && j.success !== false});
       return linhas;
     }catch(e){
@@ -933,12 +934,18 @@ async function calendario(url, env){
   if(idaFixa){
     linhas = (await Promise.all([pedir(idaFixa, mes, 1), pedir(idaFixa, mes, 2)])).flat();
   }else if(soIda){
-    linhas = (await Promise.all([pedir(mes, '', 1), pedir(mes, '', 2), pedirCalendario()])).flat();
+    linhas = (await Promise.all([pedir(mes, '', 1), pedir(mes, '', 2), pedirCalendario(false)])).flat();
   }else{
     linhas = (await Promise.all([
       pedir(mes, mes, 1), pedir(mes, mes, 2),
       pedir(mes, seguinte, 1), pedir(mes, seguinte, 2),
-      pedirCalendario()
+      /* Duas passagens: uma com a duração pedida, outra sem filtro nenhum. A
+         primeira dá o melhor preço para a viagem que se quer; a segunda enche
+         os dias em que não existe viagem dessa duração mas existe alguma — e
+         eram esses que ficavam em branco. Como a duração de cada tarifa vai no
+         resultado e aparece ao lado do preço, nenhum desses dias se disfarça
+         do que não é. */
+      pedirCalendario(true), pedirCalendario(false)
     ])).flat();
   }
   diag.linhas_totais = linhas.length;

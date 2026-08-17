@@ -55,7 +55,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=64">
+<link rel="stylesheet" href="assets/css/style.css?v=65">
 </head>
 <body>
 
@@ -134,11 +134,16 @@
           <div class="dropdown" id="dd-transportes">
             <button class="dd-btn" type="button"><span class="dd-ico">🚆</span><span class="dd-rotulo">Transportes</span><span class="seta">▾</span></button>
             <div class="painel">
-              <p class="painel-titulo">Incluir nos cálculos:</p>
-              <label class="opcao-check"><input type="checkbox" name="transporte" value="carro"><span>Carro privado alugado</span></label>
-              <label class="opcao-check"><input type="checkbox" name="transporte" value="comboio"><span>Comboio</span></label>
-              <label class="opcao-check"><input type="checkbox" name="transporte" value="autocarro"><span>Autocarro</span></label>
-              <label class="opcao-check"><input type="checkbox" name="transporte" value="metro" checked><span>Metro e transportes públicos</span></label>
+              <!-- Estas quatro opções respondiam a duas perguntas diferentes sob o
+                   mesmo título, e não havia como adivinhar qual era qual: o comboio
+                   é uma alternativa ao voo, o metro é o que se anda depois de lá
+                   chegar. Ficam separadas. -->
+              <p class="painel-titulo">Como chegar (em vez de voar)</p>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="comboio"><span>Comboio<small>Compara a viagem de comboio com o voo</small></span></label>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="autocarro"><span>Autocarro<small>Compara a viagem de autocarro com o voo</small></span></label>
+              <p class="painel-titulo">Como andar no destino</p>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="carro"><span>Carro alugado<small>Preços reais de aluguer na cidade, somados ao total</small></span></label>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="metro" checked><span>Metro e transportes públicos<small>Passes para os dias da estadia, somados ao total</small></span></label>
             </div>
           </div>
 
@@ -333,20 +338,20 @@
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
   /* mesma versão dos ?v= dos ficheiros: no diagnóstico, denuncia um
      navegador a servir ficheiros antigos de cache */
-  window.TRIPNEXUS_VERSAO = 'v64';
+  window.TRIPNEXUS_VERSAO = 'v65';
   /* Widget de actividades do Klook: mesma ideia. O «city_id» é trocado pelo
      da cidade pesquisada (tabela ACTIVIDADES_KLOOK em live.js). Vazio:
      mantém-se o bloco anterior. */
   window.TRIPNEXUS_ACTIVIDADES_WIDGET_SRC = 'https://tpwdgt.com/content?currency=EUR&trs=552141&shmarker=752935.actividades&locale=en&city_id=705748&category=2&amount=3&powered_by=true&campaign_id=137&promo_id=4497';
 </script>
-<script src="assets/js/analytics.js?v=64"></script>
-<script src="assets/js/data.js?v=64"></script>
-<script src="assets/js/engine.js?v=64"></script>
-<script src="assets/js/calendar.js?v=64"></script>
-<script src="assets/js/live.js?v=64"></script>
-<script src="assets/js/alertas.js?v=64"></script>
-<script src="assets/js/roteiro.js?v=64"></script>
-<script src="assets/js/app.js?v=64"></script>
+<script src="assets/js/analytics.js?v=65"></script>
+<script src="assets/js/data.js?v=65"></script>
+<script src="assets/js/engine.js?v=65"></script>
+<script src="assets/js/calendar.js?v=65"></script>
+<script src="assets/js/live.js?v=65"></script>
+<script src="assets/js/alertas.js?v=65"></script>
+<script src="assets/js/roteiro.js?v=65"></script>
+<script src="assets/js/app.js?v=65"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
