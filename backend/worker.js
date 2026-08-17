@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v50';
+const VERSAO_WORKER = 'v51';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -320,11 +320,18 @@ const CHAVE_PRECO = /^(price|amount|total|chargeAmount|drive_away_price|base_pri
 const CHAVE_NOME  = /^(name|title|v_name|vehicle_name|productName)$/i;
 
 /* /carros: preços reais de aluguer, em qualquer destino.
-   Passo 1 — «searchDestination» traduz as coordenadas (ou o nome) no
-   identificador de local do fornecedor. Passo 2 — «searchCarRentals» com
-   esse identificador e as datas. Sem o passo 1, o fornecedor recusa.
-   «debug=1» devolve os dois passos em bruto; «caminho1», «caminho2» e
-   «extra» deixam afinar sem publicar o Worker outra vez. */
+   Dois passos, como o fornecedor exige:
+     1. «searchDestination» (term + countryOfResidence) devolve locais, cada
+        um com coordinates.latitude/longitude e um title;
+     2. «searchCarRentals» recebe essas coordenadas — não um identificador —
+        mais as datas e as horas, que são todas obrigatórias.
+   O title vai como pick_up_location_name: a documentação diz que melhora a
+   correspondência do local, sem ser obrigatório.
+   Nota: este endpoint não aceita moeda, por isso o preço vem na moeda que o
+   fornecedor escolher; ela é devolvida em «moeda» para o site não afirmar
+   euros quando não são.
+   «debug=1» devolve os dois passos em bruto; «caminho1» e «caminho2»
+   permitem acertar a versão sem publicar o Worker outra vez. */
 async function carros(url, env){
   const q = url.searchParams;
   for(const p of ['lat','lon','ida','volta'])
@@ -334,27 +341,26 @@ async function carros(url, env){
   const c1 = seguro(q.get('caminho1'), CAMINHO_CARROS_DESTINO);
   const c2 = seguro(q.get('caminho2'), CAMINHO_CARROS);
 
-  /* passo 1: identificador do local */
-  /* o parâmetro chama-se «term», não «query»: foi isso, mais o caminho da
-     versão antiga, que fazia o fornecedor recusar sem dizer porquê */
-  const busca = q.get('cidade') || (q.get('lat') + ',' + q.get('lon'));
-  const destino = await rapid(c1, {term: busca, countryOfResidence: 'pt'}, env);
-  const cand = (destino.data && (Array.isArray(destino.data) ? destino.data : destino.data.destinations)) || [];
-  const local = cand[0] || null;
-  const idLocal = local && (local.dest_id || local.id || local.city_id || local.value);
-  if(depurar && !idLocal) return resposta({passo:'searchDestination', resposta: destino}, 200, true);
-  if(!idLocal)
-    return resposta({ofertas:[], fonte:'booking',
-      nota: destino._erro || 'o fornecedor não reconheceu o local'}, 200, true);
+  /* passo 1: o local, para obter as coordenadas que o fornecedor reconhece */
+  const destino = await rapid(c1, {term: q.get('cidade') || (q.get('lat') + ',' + q.get('lon')),
+                                   countryOfResidence: 'pt'}, env);
+  const lista1 = (destino.data && (Array.isArray(destino.data) ? destino.data : destino.data.destinations)) || [];
+  const local = lista1[0] || null;
+  const coord = local && (local.coordinates || local);
+  /* se o fornecedor não reconhecer o local, servem as nossas coordenadas */
+  const lat = (coord && (coord.latitude ?? coord.lat)) ?? q.get('lat');
+  const lon = (coord && (coord.longitude ?? coord.lon)) ?? q.get('lon');
+  if(depurar && !lista1.length) return resposta({passo:'searchDestination', resposta: destino}, 200, true);
 
-  /* passo 2: viaturas para esse local e datas */
+  /* passo 2: viaturas nessas coordenadas e nessas datas */
   const params = {
-    pick_up_id: idLocal, drop_off_id: idLocal,
-    pick_up_date: q.get('ida'), drop_off_date: q.get('volta'),
-    pick_up_time: '10:00', drop_off_time: '10:00',
-    driver_age: '30', currency_code: 'EUR'
+    pick_up_latitude: String(lat),   pick_up_longitude: String(lon),
+    drop_off_latitude: String(lat),  drop_off_longitude: String(lon),
+    pick_up_date: q.get('ida'),      drop_off_date: q.get('volta'),
+    pick_up_time: '10:00',           drop_off_time: '10:00',
+    driver_age: '30', countryOfResidence: 'pt'
   };
-  if(local && local.type){ params.pick_up_type = local.type; params.drop_off_type = local.type; }
+  if(local && local.title) params.pick_up_location_name = local.title;
   for(const par of (q.get('extra') || '').split(',')){
     const k = par.indexOf(':');
     if(k > 0) params[par.slice(0, k).trim()] = par.slice(k + 1).trim();
@@ -363,6 +369,9 @@ async function carros(url, env){
   if(depurar) return resposta({passo:'searchCarRentals', local, resposta: j}, 200, true);
   if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
   const itens = (j.data && (j.data.search_results || j.data.results)) || [];
+  const moeda = (j.data && (j.data.search_context && j.data.search_context.currency))
+    || colher(j.data || {}, /^(currency|currency_code)$/i, x => typeof x === 'string' && x.length === 3 ? x : null)
+    || '';
   const ofertas = itens.map(v => ({
     nome: colher(v, CHAVE_NOME, x => typeof x === 'string' && x.length < 80 ? x : null) || 'Viatura',
     preco: Math.round(colher(v, CHAVE_PRECO, x => precoNumero(x && x.amount != null ? x.amount : x)) || 0),
@@ -375,7 +384,7 @@ async function carros(url, env){
   })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
   /* sem ofertas, devolve-se uma amostra do que veio, para se perceber porquê */
   const extra = ofertas.length ? {} : {_amostra: itens[0] || null, _total: itens.length};
-  return resposta(Object.assign({ofertas, fonte:'booking', total: itens.length}, extra));
+  return resposta(Object.assign({ofertas, fonte:'booking', moeda, total: itens.length}, extra));
 }
 
 /* /actividades: atracções com preço real, pelo nome da cidade.

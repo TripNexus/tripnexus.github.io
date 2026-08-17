@@ -379,7 +379,7 @@ async function actualizarCarrosReais(ctx){
   const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
   const dias = Math.max(1, Math.round((ctx.fim - ctx.ida) / 86400000));
 
-  let ofertas = [];
+  let ofertas = [], moeda = '';
   if(base && ctx.destino.la != null){
     try{
       /* o nome em inglês ajuda o fornecedor a reconhecer o local; as
@@ -390,6 +390,9 @@ async function actualizarCarrosReais(ctx){
       const r = await fetch(base + '/carros?' + ps);
       const d = r.ok ? await r.json() : null;
       ofertas = (d && Array.isArray(d.ofertas)) ? d.ofertas : [];
+      /* este fornecedor não aceita moeda no pedido: se o preço não vier em
+         euros, mostra-se o código em vez de fingir que é € */
+      moeda = (d && d.moeda) || '';
       if(!ofertas.length) registarFonte('Aluguer de viaturas', 'sem preços',
         (d && (d.nota || d.erro)) || (r.ok ? 'sem viaturas para estas datas' : 'backend devolveu ' + r.status));
     }catch(e){ registarFonte('Aluguer de viaturas', 'sem preços', 'sem ligação ao backend'); }
@@ -397,7 +400,10 @@ async function actualizarCarrosReais(ctx){
 
   if(ofertas.length){
     registarFonte('Aluguer de viaturas', 'reais', ofertas.length + ' viaturas');
-    if(typeof registarPrecoReal === 'function')
+    const emEuros = !moeda || moeda.toUpperCase() === 'EUR';
+    const valor = v => emEuros ? euros(v) : (v + ' ' + moeda.toUpperCase());
+    /* só entra no total se estiver na mesma moeda do resto */
+    if(emEuros && typeof registarPrecoReal === 'function')
       registarPrecoReal('carro', ofertas[0].preco, (ofertas[0].nome || 'viatura') + ' · ' + dias + (dias === 1 ? ' dia' : ' dias'));
     const liga = ligacaoParceiro('discovercars', {...ctx, seccao:'carro'});
     bloco.innerHTML = `
@@ -410,10 +416,10 @@ async function actualizarCarrosReais(ctx){
             <div class="oferta-nome">${escaparHtml(v.nome || 'Viatura')}${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${escaparHtml([v.fornecedor, v.detalhe].filter(Boolean).join(' · ') || 'aluguer completo')}</div>
           </div>
-          <div class="oferta-preco"><div class="preco-actual">${euros(v.preco)}</div></div>
+          <div class="oferta-preco"><div class="preco-actual">${valor(v.preco)}</div></div>
           <a class="btn-ver" href="${escaparHtml(v.url || liga)}" target="_blank" rel="noopener">Reservar</a>
         </div>`).join('')}
-      <p class="bloco-sub">A reserva é concluída no site do parceiro.</p>`;
+      <p class="bloco-sub">A reserva é concluída no site do parceiro.${emEuros ? '' : ' Preços em ' + escaparHtml(moeda.toUpperCase()) + ', por não estarem disponíveis em euros.'}</p>`;
     return;
   }
 
