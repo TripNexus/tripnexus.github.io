@@ -1434,18 +1434,36 @@ function desenharOfertas(){
   ofertasDesenhadas = true;
 
   const origem = cidadePorNome(selector.value || 'Lisboa');
-  const ofertas = calcularOfertas(origem.n);
-  document.getElementById('grelha-ofertas').innerHTML = ofertas.map((of, i) => `
+  const grelha = document.getElementById('grelha-ofertas');
+  grelha.innerHTML = '<p class="bloco-sub">⏳ A procurar tarifas reais…</p>';
+  /* os preços vêm agora do backend, por isso isto é assíncrono */
+  calcularOfertas(origem.n).then(r => desenharCartoesOfertas(origem, r));
+}
+
+function desenharCartoesOfertas(origem, r){
+  const grelha = document.getElementById('grelha-ofertas');
+  const ofertas = r.lista;
+  if(!ofertas.length){
+    /* sem tarifas não se inventam ofertas: diz-se porquê */
+    grelha.innerHTML = `<p class="bloco-sub">${
+      r.estado === 'sem-backend' ? 'Sem ligação ao backend não há ofertas com preços reais.' :
+      r.estado === 'falhou' ? 'Não foi possível obter as tarifas agora. Tente daqui a pouco.' :
+      'Não há tarifas registadas para estas rotas no próximo mês.'}</p>`;
+    return;
+  }
+  grelha.innerHTML = ofertas.map((of, i) => `
     <div class="cartao-oferta">
       <div class="oferta-topo" style="background:${of.gradiente}">
-        <span class="desconto">−${of.queda} %</span>
+        ${of.queda > 0 ? `<span class="desconto">−${of.queda} %</span>` : ''}
         <span class="oferta-bandeira">${of.destino.f}</span>
         <span class="oferta-cidade">${of.destino.n}</span>
       </div>
       <div class="oferta-corpo">
         <span class="oferta-datas">✈ ${origem.n} → ${of.destino.n} · ${formatarDataCurta(of.ida)} - ${formatarDataCurta(of.volta)}</span>
-        <div class="oferta-precos"><span class="oferta-agora">${euros(of.agora)}</span><span class="oferta-tipico">${euros(of.tipico)}</span></div>
-        <span class="oferta-poupanca">Poupa ${euros(of.tipico - of.agora)} face ao valor típico em datas anteriores</span>
+        <div class="oferta-precos"><span class="oferta-agora">${euros(of.agora)}</span>${of.queda > 0 ? `<span class="oferta-tipico">${euros(of.tipico)}</span>` : ''}</div>
+        <span class="oferta-poupanca">${of.queda > 0
+          ? `Poupa ${euros(of.tipico - of.agora)} face à mediana desta rota neste mês (${of.diasComTarifa} dias com tarifa)`
+          : `Tarifa mais barata do mês nesta rota (${of.diasComTarifa} dias com tarifa)`}</span>
         <button type="button" class="btn-oferta" data-i="${i}">Ver esta viagem</button>
       </div>
     </div>`).join('');
@@ -1466,7 +1484,10 @@ function desenharOfertas(){
       pontos.push([of.destino.la, of.destino.lo]);
       const m = L.marker([of.destino.la, of.destino.lo]).addTo(mapaOfertas);
       m.bindTooltip(`${euros(of.agora)}`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
-      m.bindPopup(`<strong>${of.destino.f} ${of.destino.n}</strong><br>${euros(of.agora)} (antes ${euros(of.tipico)})`);
+      /* «antes» dava a entender um preço que se praticou e já não se pratica;
+         o que temos é a mediana do mês, e é isso que se diz */
+      m.bindPopup(`<strong>${of.destino.f} ${of.destino.n}</strong><br>${euros(of.agora)}${
+        of.queda > 0 ? ` · mediana do mês ${euros(of.tipico)}` : ''}`);
       m.on('popupopen', () => {});
     });
     mapaOfertas.fitBounds(L.latLngBounds(pontos).pad(0.2));

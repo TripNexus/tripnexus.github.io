@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v68';
+const VERSAO_WORKER = 'v69';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -993,6 +993,71 @@ async function calendario(url, env){
   return resposta(corpo);
 }
 
+/* /ofertas: as ofertas em conta, com preços reais.
+
+   Esta página mostrava descontos inventados — o preço «agora», o preço
+   «típico» e a percentagem de queda saíam todos do gerador pseudo-aleatório
+   do motor local. Era o último sítio do site com números que não existem.
+
+   Agora: para cada destino pede-se o calendário do mês e fica-se com o dia
+   mais barato. O «típico» deixa de ser inventado e passa a ser a **mediana
+   dos preços diários** dessa mesma rota nesse mês — uma estatística das
+   tarifas observadas, e não um número tirado do ar. A queda é a diferença
+   entre os dois, e só se anuncia quando existe mesmo.
+
+   Um destino sem tarifas registadas não entra: melhor menos cartões do que
+   cartões com valores fabricados. */
+async function ofertas(url, env){
+  const q = url.searchParams;
+  const origem = q.get('origem');
+  if(!origem) return resposta({erro:'parâmetro necessário: origem (IATA)'}, 400);
+  const token = obterToken(env);
+  if(!token) return resposta({ofertas:[], nota:'TP_TOKEN não definido no Worker (ver /estado)'}, 200, true);
+  const destinos = String(q.get('destinos') || '').split(',').map(s => s.trim().toUpperCase())
+    .filter(Boolean).slice(0, 14);
+  if(!destinos.length) return resposta({erro:'parâmetro necessário: destinos (códigos IATA separados por vírgula)'}, 400);
+  const dias = Math.min(30, Math.max(1, +q.get('dias') || 7));
+  const mes = (q.get('mes') || '').slice(0, 7) ||
+    new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 7);
+
+  /* um pedido por destino: o endpoint de calendário já devolve o mais barato
+     de cada dia, que é exactamente o que aqui faz falta */
+  const porDestino = async destino => {
+    const ps = new URLSearchParams({
+      origin: origem, destination: destino, depart_date: mes,
+      calendar_type: 'departure_date', trip_duration: String(dias),
+      currency: 'eur', token
+    });
+    try{
+      const r = await fetch(TP + '/v1/prices/calendar?' + ps,
+        {headers:{'X-Access-Token': token}, cf:{cacheTtl: 10800, cacheEverything: true}});
+      if(!r.ok) return null;
+      const j = await r.json();
+      const linhas = Object.values((j && j.data) || {}).filter(v => v && +v.price > 0);
+      if(linhas.length < 3) return null;   /* poucos dias: a mediana não diz nada */
+      const precos = linhas.map(v => Math.round(+v.price)).sort((a, b) => a - b);
+      const meio = Math.floor(precos.length / 2);
+      const tipico = precos.length % 2 ? precos[meio] : Math.round((precos[meio - 1] + precos[meio]) / 2);
+      const melhor = linhas.reduce((m, v) => (+v.price < +m.price ? v : m));
+      const agora = Math.round(+melhor.price);
+      return {
+        destino, agora, tipico, dias,
+        /* só se anuncia queda quando ela existe */
+        queda: tipico > agora ? Math.round((1 - agora / tipico) * 100) : 0,
+        ida: String(melhor.departure_at || '').slice(0, 10),
+        volta: String(melhor.return_at || '').slice(0, 10),
+        diasComTarifa: linhas.length
+      };
+    }catch(e){ return null; }
+  };
+
+  const lista = (await Promise.all(destinos.map(porDestino)))
+    .filter(Boolean)
+    .sort((a, b) => b.queda - a.queda);
+  return resposta({ofertas: lista, mes, dias, moeda:'EUR', fonte:'travelpayouts',
+                   base:'mediana dos preços diários da rota neste mês'});
+}
+
 /* /hoteis: preços reais de hotéis via SerpApi (motor google_hotels), com
    chave gratuita (o plano actual dá 250 pesquisas/mês; o número exacto
    que resta vem em /estado). Falha sempre de forma graciosa
@@ -1186,6 +1251,7 @@ export default {
     try{
       if(url.pathname === '/voos') return await voos(url, env);
       if(url.pathname === '/calendario') return await calendario(url, env);
+      if(url.pathname === '/ofertas') return await ofertas(url, env);
       if(url.pathname === '/hoteis') return await hoteis(url, env);
       if(url.pathname === '/casas') return await casas(url, env);
       if(url.pathname === '/carros') return await carros(url, env);
@@ -1193,7 +1259,7 @@ export default {
       if(url.pathname === '/assistente') return await assistente(pedido, env);
       if(url.pathname === '/modelos') return await modelos(env);
       if(url.pathname === '/estado') return await estado(env, url);
-      return resposta({erro:'rotas disponíveis: /voos, /calendario, /hoteis, /casas, /carros, /actividades, /assistente, /modelos, /estado'}, 404);
+      return resposta({erro:'rotas disponíveis: /voos, /calendario, /ofertas, /hoteis, /casas, /carros, /actividades, /assistente, /modelos, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }

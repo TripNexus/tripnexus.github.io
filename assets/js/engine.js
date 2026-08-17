@@ -84,28 +84,6 @@ function cotacaoVoo(chaveParceiro, origem, destino, ida, volta, classe, pax){
   };
 }
 
-/* ATENÇÃO: este preço é INVENTADO. Sai do cotacaoVoo(), que o gera com um
-   gerador pseudo-aleatório com semente — estável entre visitas, e por isso
-   convincente, mas sem relação nenhuma com o que custa voar.
-
-   O calendário de datas já não o usa: passou a ler tarifas reais em
-   /calendario. Quem ainda o usa é o calcularOfertas(), que alimenta a página
-   «Ofertas em conta» — e portanto essa página mostra descontos inventados,
-   incluindo a percentagem de «queda» face a um preço «típico» que também é
-   inventado. Está por resolver, e é a última coisa no site que mostra
-   números que não existem. */
-function precoCalendario(origem, destino, ida, nDias, classe, sohIda){
-  let volta = null;
-  if(!sohIda){ volta = new Date(ida); volta.setDate(volta.getDate() + nDias); }
-  const pax1 = {adultos:1, criancas:0, bebes:0};
-  let melhor = Infinity;
-  for(const c of ['skyscanner','momondo','edreams']){
-    const q = cotacaoVoo(c, origem, destino, ida, volta, classe, pax1);
-    if(q.precoFinal < melhor) melhor = q.precoFinal;
-  }
-  return Math.round(melhor);
-}
-
 /* ── cupões ───────────────────────────────────────────────────── */
 function procurarCupao(chaveParceiro, contexto, preco){
   const p = PARCEIROS[chaveParceiro];
@@ -246,25 +224,41 @@ function cotacoesPacote(origem, destino, ida, volta, classe, pax, somaSeparado, 
   }).sort((a,b) => a.precoFinal - b.precoFinal);
 }
 
-/* ── ofertas em conta (comparação com datas anteriores) ───────── */
-function calcularOfertas(origemNome){
+/* ── ofertas em conta ─────────────────────────────────────────
+   Esta página mostrava descontos inventados: o preço «agora», o preço
+   «típico» e a percentagem de queda saíam todos do gerador pseudo-aleatório.
+   Era o último sítio do site com números que não existem.
+
+   Passa a pedir ao backend, que devolve para cada destino o dia mais barato
+   do mês e a mediana dos preços diários da mesma rota — o «típico» deixa de
+   ser um número tirado do ar e passa a ser uma estatística das tarifas
+   observadas. Um destino sem tarifas registadas não aparece: melhor menos
+   cartões do que cartões inventados. */
+async function calcularOfertas(origemNome){
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const origem = cidadePorNome(origemNome) || CIDADES[0];
-  const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const pax1 = {adultos:1, criancas:0, bebes:0};
-  return DESTINOS_OFERTAS
-    .filter(n => n !== origem.n)
-    .map((nome, idx) => {
-      const destino = cidadePorNome(nome);
-      const r = semente('oferta|' + origem.i + destino.i);
-      const ida = new Date(hoje); ida.setDate(ida.getDate() + 20 + Math.floor(r() * 40));
-      const volta = new Date(ida); volta.setDate(volta.getDate() + 5 + Math.floor(r() * 5));
-      const agora = precoCalendario(origem, destino, ida, Math.round((volta - ida)/86400000), 'economica', false);
-      const tipico = Math.round(agora * (1.28 + r() * 0.45));
-      return {destino, ida, volta, agora, tipico,
-              queda: Math.round((1 - agora / tipico) * 100),
-              gradiente: GRADIENTES[idx % GRADIENTES.length]};
-    })
-    .sort((a,b) => b.queda - a.queda);
+  if(!base) return {estado:'sem-backend', origem, lista:[]};
+  const destinos = DESTINOS_OFERTAS.filter(n => n !== origem.n)
+    .map(n => cidadePorNome(n)).filter(Boolean);
+  const mes = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 7);
+  try{
+    const ps = new URLSearchParams({origem: origem.i,
+      destinos: destinos.map(d => d.i).join(','), mes, dias: '7'});
+    const r = await fetch(base + '/ofertas?' + ps);
+    if(!r.ok) return {estado:'falhou', origem, lista:[]};
+    const d = await r.json();
+    const porCodigo = {};
+    for(const c of destinos) porCodigo[c.i] = c;
+    const lista = ((d && d.ofertas) || []).map((o, idx) => ({
+      destino: porCodigo[o.destino],
+      agora: o.agora, tipico: o.tipico, queda: o.queda,
+      ida: o.ida ? new Date(o.ida + 'T12:00:00') : null,
+      volta: o.volta ? new Date(o.volta + 'T12:00:00') : null,
+      diasComTarifa: o.diasComTarifa,
+      gradiente: GRADIENTES[idx % GRADIENTES.length]
+    })).filter(o => o.destino && o.ida);
+    return {estado: lista.length ? 'pronto' : 'sem-tarifas', origem, lista, base: d && d.base};
+  }catch(e){ return {estado:'falhou', origem, lista:[]}; }
 }
 
 /* arredondamento a euros inteiros: mantém os totais coerentes com as parcelas */
