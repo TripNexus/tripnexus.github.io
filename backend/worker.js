@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v67';
+const VERSAO_WORKER = 'v68';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -336,7 +336,19 @@ async function voos(url, env){
            logótipo da companhia ao pics.avs.io, o CDN da própria Travelpayouts */
         codigo: String(v.airline || '').toUpperCase(),
         escalas: +v.transfers || 0,
-        duracao: duracaoTexto(v.duration),
+        /* O regresso tem escalas próprias, e podem não ser as da ida. */
+        escalasVolta: v.return_transfers != null ? (+v.return_transfers || 0) : null,
+        /* «duration» é o total das duas pernas mais a estadia entre elas: dava
+           «directo · 33h50» num Lisboa–Paris, que é um disparate à vista de
+           toda a gente. O que interessa em cada perna é «duration_to» e
+           «duration_back». */
+        duracao: duracaoTexto(v.duration_to || v.duration),
+        duracaoVolta: v.duration_back ? duracaoTexto(v.duration_back) : '',
+        /* O aeroporto de chegada nem sempre é o da cidade: um voo «para
+           Paris» pode aterrar em Beauvais, a 85 km. Quem compara preços tem
+           de saber isso antes de reservar. */
+        aeroportoChegada: String(v.destination_airport || '').toUpperCase(),
+        aeroportoPartida: String(v.origin_airport || '').toUpperCase(),
         partida: String(v.departure_at || '').slice(11, 16),
         data: String(v.departure_at || '').slice(0, 10),
         /* na pesquisa alargada o regresso também sai da data pedida, e sem

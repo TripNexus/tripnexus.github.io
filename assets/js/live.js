@@ -364,10 +364,16 @@ async function actualizarVoosReais(ctx){
                 ? '📅 ' + diaCurto(v.data)
                   + (v.regresso ? ' – ' + diaCurto(v.regresso) + noitesEntre(v.data, v.regresso) : '')
                 : '',
-              v.escalas === 0 ? 'directo' : v.escalas + (v.escalas === 1 ? ' escala' : ' escalas'),
-              v.duracao,
+              /* ida e regresso mostram-se em separado quando não são iguais:
+                 «directo» num voo cujo regresso tem duas escalas é meia
+                 verdade, e a meia verdade é a que engana */
+              'ida ' + textoEscalas(v.escalas) + (v.duracao ? ' · ' + v.duracao : ''),
+              (v.escalasVolta != null && ctx.volta)
+                ? 'regresso ' + textoEscalas(v.escalasVolta) + (v.duracaoVolta ? ' · ' + v.duracaoVolta : '')
+                : '',
               v.partida ? 'partida ' + v.partida : ''
             ].filter(Boolean).join(' · '))}</div>
+            ${notaAeroporto(v.aeroportoChegada) ? `<div class="aviso-aeroporto">${escaparHtml(notaAeroporto(v.aeroportoChegada))}</div>` : ''}
           </div>
           <div class="oferta-preco"><div class="preco-actual">${euros(v.precoFinal)}</div></div>
           <a class="btn-ver" href="${escaparHtml(v.url || liga)}" target="_blank" rel="noopener">Reservar</a>
@@ -416,6 +422,31 @@ function embeberWidget(idBloco, src, titulo, subtitulo, extra, largo){
 }
 
 const dataISO = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+
+/* Aeroportos vendidos com o nome de uma cidade que fica longe. É a
+   diferença entre uma tarifa barata e uma tarifa barata mais 20 € de
+   autocarro e hora e meia de viagem, e um comparador que a esconde não está
+   a comparar coisa nenhuma.
+
+   PARA ACRESCENTAR: código IATA → [nome, distância aproximada em km]. */
+const AEROPORTOS_AFASTADOS = {
+  BVA:['Beauvais', 85], CRL:['Charleroi', 55], NRN:['Weeze', 80],
+  HHN:['Frankfurt-Hahn', 120], SXF:['Berlim-Schönefeld', 20],
+  STN:['Stansted', 60], LTN:['Luton', 55], SEN:['Southend', 65],
+  TSF:['Treviso', 40], BGY:['Milão-Bérgamo', 50], MXP:['Milão-Malpensa', 50],
+  PSA:['Pisa', 80], GRO:['Girona', 100], REU:['Reus', 100],
+  TRF:['Oslo-Sandefjord', 110], NYO:['Estocolmo-Skavsta', 100],
+  VST:['Estocolmo-Västerås', 100], MMX:['Malmö', 45],
+  SFB:['Orlando-Sanford', 60], IPL:['Nova Iorque-Islip', 80]
+};
+function notaAeroporto(codigo){
+  const a = AEROPORTOS_AFASTADOS[String(codigo || '').toUpperCase()];
+  return a ? '⚠ ' + codigo + ' (' + a[0] + ', ~' + a[1] + ' km do centro)' : '';
+}
+/* «directo», «1 escala», «2 escalas» — e o regresso à parte quando difere */
+function textoEscalas(n){
+  return n === 0 ? 'directo' : n + (n === 1 ? ' escala' : ' escalas');
+}
 
 /* « (7 noites)», para se ver de relance se a estadia é a que se pediu */
 function noitesEntre(ida, volta){

@@ -327,6 +327,8 @@ img{max-width:100%}
 .aba:hover{border-color:var(--indigo);color:var(--indigo)}
 .aba.activa{background:var(--indigo);border-color:var(--indigo);color:#fff}
 .fora-da-aba{display:none !important}
+/* aeroporto longe da cidade que dá nome ao voo */
+.aviso-aeroporto{font-size:.78rem;font-weight:700;color:var(--ambar);margin-top:.15rem}
 /* dia cuja tarifa é de uma viagem de outra duração: o número de noites vai
    ao lado do preço, para não passar pela duração que foi pedida */
 .cal-dia-preco em{font-style:normal;opacity:.55;font-size:.78em;margin-left:.12em}
