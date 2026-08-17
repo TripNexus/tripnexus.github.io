@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v62';
+const VERSAO_WORKER = 'v63';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -716,21 +716,63 @@ async function calendario(url, env){
   const idaFixa = q.get('ida') || '';
   const dias = Math.max(0, +q.get('dias') || 0);
   const soIda = q.get('soIda') === '1' || (!dias && !idaFixa);
+  const depurar = q.get('debug') === '1';
+  const diag = {consultas: [], duracoes: {}};
 
-  const pedir = async (partida, regresso) => {
+  /* Uma página só não chega: o «limit» tem tecto e a ordenação é por preço,
+     por isso um único pedido devolve as tarifas mais baratas do mês inteiro
+     e não uma amostra que cubra os dias todos. Pedem-se várias páginas. */
+  const pedir = async (partida, regresso, pagina) => {
     const ps = new URLSearchParams({
       origin: q.get('origem'), destination: q.get('destino'),
       departure_at: partida, currency: 'eur', sorting: 'price',
-      unique: 'false', limit: '1000', one_way: soIda ? 'true' : 'false', token
+      unique: 'false', limit: '1000', page: String(pagina || 1),
+      one_way: soIda ? 'true' : 'false', token
     });
     if(regresso) ps.set('return_at', regresso);
     try{
       const r = await fetch(TP + '/aviasales/v3/prices_for_dates?' + ps,
         {headers:{'X-Access-Token': token}, cf:{cacheTtl: 3600, cacheEverything: true}});
-      if(!r.ok) return [];
+      if(!r.ok){
+        diag.consultas.push({tipo:'prices_for_dates', partida, regresso, pagina, estado: r.status});
+        return [];
+      }
       const j = await r.json();
-      return Array.isArray(j && j.data) ? j.data : [];
-    }catch(e){ return []; }
+      const d = Array.isArray(j && j.data) ? j.data : [];
+      diag.consultas.push({tipo:'prices_for_dates', partida, regresso, pagina, linhas: d.length});
+      return d;
+    }catch(e){
+      diag.consultas.push({tipo:'prices_for_dates', partida, regresso, pagina, erro: String(e.message || e)});
+      return [];
+    }
+  };
+
+  /* A Travelpayouts tem um endpoint feito de propósito para isto, que
+     devolve o mais barato de cada dia em vez das mais baratas do mês. Não o
+     posso confirmar contra a API a partir daqui, por isso entra como
+     acréscimo: se responder, junta-se; se falhar, não se perde nada. O
+     «debug=1» diz se contribuiu. */
+  const pedirCalendario = async () => {
+    if(idaFixa) return [];
+    const ps = new URLSearchParams({
+      origin: q.get('origem'), destination: q.get('destino'),
+      depart_date: mes, calendar_type: 'departure_date', currency: 'eur', token
+    });
+    if(!soIda && dias) ps.set('trip_duration', String(dias));
+    try{
+      const r = await fetch(TP + '/v1/prices/calendar?' + ps,
+        {headers:{'X-Access-Token': token}, cf:{cacheTtl: 3600, cacheEverything: true}});
+      if(!r.ok){ diag.consultas.push({tipo:'prices/calendar', estado: r.status}); return []; }
+      const j = await r.json();
+      const dados = (j && j.data) || {};
+      const linhas = Object.values(dados).filter(v => v && v.price > 0);
+      diag.consultas.push({tipo:'prices/calendar', linhas: linhas.length,
+                           sucesso: j && j.success !== false});
+      return linhas;
+    }catch(e){
+      diag.consultas.push({tipo:'prices/calendar', erro: String(e.message || e)});
+      return [];
+    }
   };
 
   /* o mês seguinte também entra: uma viagem que parte a 30 regressa já no
@@ -740,36 +782,64 @@ async function calendario(url, env){
     return new Date(Date.UTC(a, m, 1)).toISOString().slice(0, 7);
   })();
 
-  const linhas = idaFixa
-    ? await pedir(idaFixa, mes)
-    : (await Promise.all(soIda ? [pedir(mes, '')] : [pedir(mes, mes), pedir(mes, seguinte)])).flat();
+  let linhas;
+  if(idaFixa){
+    linhas = (await Promise.all([pedir(idaFixa, mes, 1), pedir(idaFixa, mes, 2)])).flat();
+  }else if(soIda){
+    linhas = (await Promise.all([pedir(mes, '', 1), pedir(mes, '', 2), pedirCalendario()])).flat();
+  }else{
+    linhas = (await Promise.all([
+      pedir(mes, mes, 1), pedir(mes, mes, 2),
+      pedir(mes, seguinte, 1), pedir(mes, seguinte, 2),
+      pedirCalendario()
+    ])).flat();
+  }
+  diag.linhas_totais = linhas.length;
 
-  const precos = {};
+  /* Por dia guarda-se a tarifa cuja duração está mais perto da pedida, e
+     entre iguais a mais barata. Antes exigia-se a duração exacta a menos de
+     um dia e descartava-se o resto, o que deixava o mês quase vazio: numa
+     fonte que é um registo de pesquisas recentes, e não um horário, exigir a
+     duração ao dia é exigir de mais. O desvio vai no resultado para o site
+     poder dizer, no dia, que aquela tarifa é de uma viagem de outro tamanho. */
+  const melhor = {};
+  let semRegresso = 0, foraDoMes = 0, longeDemais = 0;
   for(const v of linhas){
     const partida = String(v.departure_at || '').slice(0, 10);
     const volta = String(v.return_at || '').slice(0, 10);
     const preco = Math.round(+v.price || 0);
     if(!partida || preco <= 0) continue;
-    let chave;
+    let chave, desvio = 0, n = 0;
     if(idaFixa){
-      /* partida fixa: o dia que interessa é o do regresso */
-      if(!volta || volta <= idaFixa) continue;
+      if(!volta || volta <= idaFixa){ semRegresso++; continue; }
       chave = volta;
     }else{
       if(!soIda){
-        const n = Math.round((Date.parse(volta) - Date.parse(partida)) / 86400000);
-        /* só as viagens com a duração pedida (a menos de um dia) contam para
-           o preço do dia: senão o calendário anunciava, para o dia 9, o valor
-           de uma viagem de outro tamanho */
-        if(!isFinite(n) || n < 1 || Math.abs(n - dias) > 1) continue;
+        n = Math.round((Date.parse(volta) - Date.parse(partida)) / 86400000);
+        if(!isFinite(n) || n < 1){ semRegresso++; continue; }
+        desvio = Math.abs(n - dias);
+        if(depurar) diag.duracoes[n] = (diag.duracoes[n] || 0) + 1;
+        /* três dias de diferença já é outra viagem */
+        if(desvio > 3){ longeDemais++; continue; }
       }
       chave = partida;
     }
-    if(chave.slice(0, 7) !== mes) continue;
-    if(precos[chave] == null || preco < precos[chave]) precos[chave] = preco;
+    if(chave.slice(0, 7) !== mes){ foraDoMes++; continue; }
+    const actual = melhor[chave];
+    if(!actual || desvio < actual.desvio || (desvio === actual.desvio && preco < actual.preco))
+      melhor[chave] = {preco, desvio, noites: n};
   }
-  return resposta({precos, mes, dias, moeda:'EUR', fonte:'travelpayouts',
-                   total: Object.keys(precos).length});
+
+  const precos = {}, noites = {};
+  for(const [dia, v] of Object.entries(melhor)){
+    precos[dia] = v.preco;
+    /* só se assinala quando a duração não é a pedida */
+    if(v.desvio > 0) noites[dia] = v.noites;
+  }
+  const corpo = {precos, noites, mes, dias, moeda:'EUR', fonte:'travelpayouts',
+                 total: Object.keys(precos).length};
+  if(depurar) corpo._diag = Object.assign(diag, {semRegresso, foraDoMes, longeDemais});
+  return resposta(corpo);
 }
 
 /* /hoteis: preços reais de hotéis via SerpApi (motor google_hotels), com
