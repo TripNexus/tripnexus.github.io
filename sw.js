@@ -6,19 +6,19 @@
    rede e nunca são servidos de cache obsoleta.
    ═══════════════════════════════════════════════════════════════ */
 
-const VERSAO = 'tripnexus-v56';
+const VERSAO = 'tripnexus-v57';
 const CASCA = [
   './',
   './index.html',
-  './assets/css/style.css?v=56',
-  './assets/js/analytics.js?v=56',
-  './assets/js/data.js?v=56',
-  './assets/js/engine.js?v=56',
-  './assets/js/calendar.js?v=56',
-  './assets/js/live.js?v=56',
-  './assets/js/alertas.js?v=56',
-  './assets/js/roteiro.js?v=56',
-  './assets/js/app.js?v=56',
+  './assets/css/style.css?v=57',
+  './assets/js/analytics.js?v=57',
+  './assets/js/data.js?v=57',
+  './assets/js/engine.js?v=57',
+  './assets/js/calendar.js?v=57',
+  './assets/js/live.js?v=57',
+  './assets/js/alertas.js?v=57',
+  './assets/js/roteiro.js?v=57',
+  './assets/js/app.js?v=57',
   './assets/img/logo.svg',
   './assets/img/favicon.svg',
   './assets/img/icon-192.png',
