@@ -382,7 +382,11 @@ async function actualizarCarrosReais(ctx){
   let ofertas = [];
   if(base && ctx.destino.la != null){
     try{
-      const ps = new URLSearchParams({lat: ctx.destino.la, lon: ctx.destino.lo, ida: f(ctx.ida), volta: f(ctx.fim)});
+      /* o nome em inglês ajuda o fornecedor a reconhecer o local; as
+         coordenadas ficam como alternativa */
+      const nome = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
+      const ps = new URLSearchParams({cidade: nome, lat: ctx.destino.la, lon: ctx.destino.lo,
+                                      ida: f(ctx.ida), volta: f(ctx.fim)});
       const r = await fetch(base + '/carros?' + ps);
       const d = r.ok ? await r.json() : null;
       ofertas = (d && Array.isArray(d.ofertas)) ? d.ofertas : [];
