@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v60';
+const VERSAO_WORKER = 'v61';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -214,49 +214,38 @@ async function voos(url, env){
     return resposta({ofertas: ofertas.sort((a, b) => a.preco - b.preco).slice(0, 20),
       classe:'economica', fonte:'travelpayouts/prices_for_dates', datas:'exactas'});
 
-  /* 2.ª tentativa: a ida no dia pedido, o regresso em qualquer dia do mês.
-     Faltava este degrau. Passava-se de «o par exacto» para «o mês inteiro dos
-     dois lados», e perdia-se logo a data de ida, que é a que o utilizador
-     mais sente. A API aceita AAAA-MM-DD num lado e AAAA-MM no outro: dá
-     tarifas que partem mesmo no dia pedido, e só o regresso é que varia. */
-  if(!ofertas.length && volta){
-    const doDia = await porDatas(ida, String(volta).slice(0, 7), 'ida exacta, regresso no mês');
-    if(doDia.length){
-      const noitesPedidas = Math.round((Date.parse(volta) - Date.parse(ida)) / 86400000);
-      const lista = doDia
-        .map(o => ({...o, desvio: Math.abs(Math.round((Date.parse(o.regresso) - Date.parse(o.data)) / 86400000) - noitesPedidas)}))
-        .filter(o => isFinite(o.desvio) && Date.parse(o.regresso) > Date.parse(o.data))
-        .sort((a, b) => (a.desvio - b.desvio) || (a.preco - b.preco))
-        .slice(0, 12)
-        .sort((a, b) => a.preco - b.preco);
-      if(lista.length && !debug)
-        return resposta({ofertas: lista, classe:'economica',
-          fonte:'travelpayouts/prices_for_dates', datas:'regresso-proximo',
-          nota: tentativas.join(' · ')});
-      ofertas = lista;
-    }
-  }
-
-  /* 3.ª tentativa: o mês inteiro, ficando com os dias mais próximos do
-     pedido. São tarifas reais de outros dias, e vão identificadas como tal:
-     mais vale um preço verdadeiro de dia 11 do que um inventado para dia 9. */
+  /* 2.ª tentativa: as duas consultas alargadas ao mesmo tempo, e juntas.
+     Ficar pela primeira que respondesse era o erro: a consulta «ida no dia
+     pedido, regresso em qualquer dia do mês» devolveu uma tarifa só, e o
+     bloco ficou com essa uma, quando o mês inteiro tinha meia dúzia. Cada
+     consulta cobre um lado da falha — uma acerta na ida, a outra tem
+     variedade — e não há razão para escolher entre elas: juntam-se, tiram-se
+     as repetidas, e a ordenação decide o que fica à frente. */
   if(!ofertas.length){
     const mes = t => String(t || '').slice(0, 7);
-    const doMes = await porDatas(mes(ida), volta ? mes(volta) : '', 'mês inteiro');
-    if(doMes.length){
+    const [doDia, doMes] = await Promise.all([
+      volta ? porDatas(ida, mes(volta), 'ida exacta, regresso no mês') : Promise.resolve([]),
+      porDatas(mes(ida), volta ? mes(volta) : '', 'mês inteiro')
+    ]);
+    const vistas = new Set();
+    const juntas = [...doDia, ...doMes].filter(o => {
+      const c = [o.data, o.regresso, o.codigo, o.preco, o.partida].join('|');
+      if(vistas.has(c)) return false;
+      vistas.add(c);
+      return true;
+    });
+    if(juntas.length){
       const alvo = Date.parse(ida);
       const dias = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
       /* Uma tarifa de dia vizinho ainda serve; uma viagem de outra duração
          não serve. Quem pediu sete noites não está a comparar com uma ida e
-         volta no mesmo dia — e era isso que aparecia, porque o filtro só
-         olhava para a data de partida e ignorava a de regresso. */
+         volta no mesmo dia. */
       const noitesPedidas = volta ? Math.round(dias(ida, volta)) : null;
-      /* Primeira versão disto era um filtro único e apertado — duração a
-         menos de duas noites e partida a menos de sete dias — e deixava uma
-         tarifa na lista, ou nenhuma. Um filtro que corta tudo é tão inútil
-         como não filtrar: o que se quer é uma ordem, não um corte.
-         Vai-se abrindo o cerco por camadas até haver lista que chegue, e o
-         que nunca entra são as viagens impossíveis. */
+      /* Uma primeira versão disto era um filtro único e apertado, e deixava
+         uma tarifa na lista ou nenhuma. Um filtro que corta tudo é tão inútil
+         como não filtrar: o que se quer é uma ordem, não um corte. Vai-se
+         abrindo o cerco por camadas até haver lista que chegue, e o que nunca
+         entra são as viagens impossíveis. */
       const medir = o => {
         const n = noitesPedidas == null ? null : Math.round(dias(o.data, o.regresso));
         return {...o,
@@ -265,7 +254,7 @@ async function voos(url, env){
           desvio: n == null ? 0 : Math.abs(n - noitesPedidas)};
       };
       /* regresso inexistente, igual ou anterior à partida: não é viagem */
-      const possiveis = doMes.map(medir).filter(o =>
+      const possiveis = juntas.map(medir).filter(o =>
         isFinite(o.afastamento) && (o.noites == null || (isFinite(o.noites) && o.noites >= 1)));
       const camadas = [
         o => o.desvio <= 1 && o.afastamento <= 3,
@@ -285,7 +274,10 @@ async function voos(url, env){
       lista.sort((a, b) => a.preco - b.preco);
       if(lista.length && !debug)
         return resposta({ofertas: lista, classe:'economica',
-          fonte:'travelpayouts/prices_for_dates', datas:'proximas',
+          fonte:'travelpayouts/prices_for_dates',
+          /* se todas partem no dia pedido, o aviso pode ser o mais tranquilo:
+             só o regresso é que muda */
+          datas: lista.every(o => o.data === ida) ? 'regresso-proximo' : 'proximas',
           /* porque é que não houve tarifas nas datas exactas: sem isto, o
              diagnóstico só sabe dizer que caiu para datas próximas */
           nota: tentativas.join(' · ')});
@@ -375,11 +367,15 @@ function ligacaoCarrosBooking(q){
     return {[prefixo + 'Year']: a, [prefixo + 'Month']: String(+m), [prefixo + 'Day']: String(+d),
             [prefixo + 'Hour']: '10', [prefixo + 'Minute']: '0'};
   };
-  const iata = String(q.get('iata') || '').toUpperCase().replace(/[^A-Z]/g, '');
   const p = Object.assign({}, parte(q.get('ida'), 'pu'), parte(q.get('volta'), 'do'), {
     driversAge: '30', prefcurrency: 'EUR', preflang: 'pt'
   });
-  if(iata){ p.locationIata = iata; p.dropLocationIata = iata; }
+  /* Só o nome da cidade, e não o código IATA. Com «locationIata=PAR» a
+     Booking abria em Paris (CDG) — o aeroporto — enquanto a nossa pesquisa é
+     feita nas coordenadas do centro e devolve balcões como a Gare de Lyon.
+     Duas localizações diferentes dão preços diferentes, e o utilizador via
+     isso como uma discrepância nossa. Mais vale o botão procurar onde nós
+     procurámos. */
   if(q.get('cidade')) p.locationName = q.get('cidade');
   return 'https://cars.booking.com/search-results?' + new URLSearchParams(p);
 }

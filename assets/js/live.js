@@ -88,9 +88,14 @@ async function actualizarAlojamentoReal(ctx){
     }catch(e){ return {ofertas:[], nota: nome + ': sem ligação ao backend'}; }
   };
   const vazio = Promise.resolve({ofertas:[], nota:''});
+  /* Só há duas pesquisas na Google — «hotéis» e «alojamento local» — e as
+     categorias finas saem todas da primeira: um hostel, uma pensão ou um
+     apart-hotel vêm na pesquisa de hotéis. Quem escolher só «Hostels» tem de
+     a fazer na mesma, senão não vem nada. */
+  const daPesquisaDeHoteis = ['hotel','hostel','aparthotel','pensao','resort','rural','campismo'];
   const [rh, rc] = await Promise.all([
-    tipos.includes('hotel') ? buscar('/hoteis', 'hotéis') : vazio,
-    tipos.includes('casa')  ? buscar('/casas', 'casas')   : vazio
+    tipos.some(t => daPesquisaDeHoteis.includes(t)) ? buscar('/hoteis', 'hotéis') : vazio,
+    tipos.includes('casa') ? buscar('/casas', 'casas') : vazio
   ]);
   const hoteis = rh.ofertas, casas = rc.ofertas;
   const notas = [rh.nota, rc.nota].filter(Boolean);
@@ -177,11 +182,17 @@ const TIPO_ALOJAMENTO = {
   'homestay':'Quarto em casa de família', 'private vacation home':'Casa de férias',
   'all-inclusive':'Tudo incluído', 'hotel resort':'Resort'
 };
+/* rótulo visível de cada categoria escolhível */
+const ROTULO_CATEGORIA = {
+  hostel:'Hostel', aparthotel:'Aparthotel', pensao:'Pensão / B&B',
+  resort:'Resort', rural:'Turismo rural', campismo:'Campismo',
+  casa:'Casa / apartamento', hotel:'Hotel'
+};
 function rotuloAlojamento(h){
   /* o que os indícios dizem ganha ao «type» genérico da Google: chamar
      «Hotel» a um hostel é o erro que se quer evitar */
   const cat = categoriaAlojamento(h);
-  if(cat === 'hostel') return 'Hostel';
+  if(cat !== 'hotel' && cat !== 'casa') return ROTULO_CATEGORIA[cat];
   const t = String((h && h.tipo) || '').trim();
   if(t && t.toLowerCase() !== 'hotel'){
     const conhecido = TIPO_ALOJAMENTO[t.toLowerCase()];
@@ -197,17 +208,35 @@ function rotuloAlojamento(h){
    na Google devolve hostels e apartamentos pelo meio, e quem escolheu só
    hotéis estava a vê-los na mesma. A escolha da pesquisa passa a ser
    respeitada pelo tipo real, não pela origem. */
+/* As categorias que o utilizador pode escolher na pesquisa, por ordem de
+   prioridade: a primeira que bater ganha. O «hostel» vem antes do «casa»
+   porque um hostel com apartamentos continua a ser um hostel, e o «campismo»
+   vem antes de tudo porque não se confunde com nada.
+
+   PARA ACRESCENTAR UMA CATEGORIA: uma entrada aqui e uma caixa no
+   index.html com o mesmo «value». Mais nada. */
+const CATEGORIAS_ALOJAMENTO = [
+  ['campismo',   /\b(campismo|camping|campsite|campground|glamping|caravan|parque de campismo)\b/i],
+  ['hostel',     /\b(hostel|hostels|hostal|albergue|albergues|dormitóri|dormitor|bunk|backpack)\b/i],
+  ['aparthotel', /\b(apart-?hotel|aparthotel|apartahotel|apartment hotel|residhome|residence hotel)\b/i],
+  ['pensao',     /\b(pensão|pensao|pension|guest ?house|casa de hóspedes|bed and breakfast|bed & breakfast|b&b|estalagem|inn)\b/i],
+  ['resort',     /\b(resort|all-inclusive|tudo incluído|spa resort)\b/i],
+  ['rural',      /\b(turismo rural|quinta|farm ?stay|country house|casa de campo|cottage|cabana|cabin|chalé|chalet|lodge|refúgio)\b/i],
+  ['casa',       /\b(apartamento|apartment|appartement|studio|estúdio|flat|moradia|villa|condo|minbak|riad|casa|house|home|zimmer|loft)\b/i]
+];
 function categoriaAlojamento(h){
   const t = String((h && h.tipo) || '').toLowerCase();
   /* O «type» da Google é grosso: diz «hotel» a tudo o que veio da pesquisa
-     de hotéis, hostels e apart-hotéis incluídos. Só distingue mesmo o
-     alojamento local. Para o resto é preciso olhar para o nome e para a
-     descrição — é uma leitura de indícios, não um campo de dados, e por isso
-     só se muda a categoria quando a palavra aparece por inteiro. */
-  if(/vacation rental|holiday|rental|apartment|apartamento|casa|house|home|villa|condo/.test(t)) return 'casa';
+     de hotéis, seja hostel, apart-hotel ou pensão. Só distingue mesmo o
+     alojamento local, e nisso é de confiar. */
+  const alojamentoLocal = /vacation rental|holiday|rental/.test(t);
+  /* Para o resto é preciso olhar para o nome e para a descrição — é uma
+     leitura de indícios, não um campo de dados, e por isso só conta quando a
+     palavra aparece inteira. */
   const texto = ((h && h.nome) || '') + ' ' + ((h && h.descricao) || '');
-  if(/\b(hostel|hostels|hostal|albergue|albergues|youth hostel|dormitóri|dormitor|bunk|backpack)/i.test(texto)) return 'hostel';
-  if(/\b(apart-?hotel|aparthotel|apartamento|apartment|studio|estúdio|flat|moradia|villa)\b/i.test(texto)) return 'casa';
+  for(const [chave, padrao] of CATEGORIAS_ALOJAMENTO)
+    if(padrao.test(texto)) return chave;
+  if(alojamentoLocal) return 'casa';
   if(t) return 'hotel';
   /* sem indício nenhum não se inventa: fica pela rota que o trouxe */
   return (h && h.cat) || 'hotel';
@@ -479,6 +508,7 @@ async function actualizarCarrosReais(ctx){
     bloco.innerHTML = `
       <h3 class="bloco-titulo">🚗 Aluguer de viatura em ${escaparHtml(ctx.destino.n)} · preços reais</h3>
       <p class="bloco-sub tempo-real">⚡ Preços reais para ${dias} ${dias === 1 ? 'dia' : 'dias'} (Booking.com). Total do aluguer.</p>
+      <p class="bloco-sub">Levantamento em ${escaparHtml(ctx.destino.n)}, nos balcões indicados em cada linha. No aeroporto os preços costumam ser outros — a página do parceiro deixa trocar o local.</p>
       ${ofertas.slice(0, 6).map((v, i) => `
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
           ${caixaLogotipo([

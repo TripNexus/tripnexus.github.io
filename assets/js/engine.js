@@ -128,8 +128,13 @@ function cotacoesAlojamento(cidade, ida, volta, pax, tipos){
   const noites = Math.max(1, Math.round((volta - ida) / 86400000));
   const quartos = Math.max(1, Math.ceil((pax.adultos + pax.criancas) / 2));
   const mapaTipo = {hotel:parceirosDe('hotel'), casa:parceirosDe('casa'), hostel:parceirosDe('hostel')};
+  /* A pesquisa passou a ter categorias finas (apart-hotel, pensão, resort,
+     turismo rural, campismo) que só os preços reais sabem distinguir. O motor
+     local só conhece três famílias de parceiros, por isso as categorias novas
+     entram aqui como hotel — em vez de darem um tipo desconhecido e partirem
+     a estimativa. */
   const resultado = [];
-  for(const tipo of tipos){
+  for(const tipo of [...new Set((tipos || []).map(t => mapaTipo[t] ? t : 'hotel'))]){
     for(const chave of mapaTipo[tipo]){
       const p = PARCEIROS[chave];
       const r = semente('aloj|' + chave + cidade.i + chaveData(ida));

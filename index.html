@@ -55,7 +55,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=56">
+<link rel="stylesheet" href="assets/css/style.css?v=57">
 </head>
 <body>
 
@@ -149,6 +149,11 @@
               <label class="opcao-check"><input type="checkbox" name="alojamento" value="hotel" checked><span>Hotéis</span></label>
               <label class="opcao-check"><input type="checkbox" name="alojamento" value="airbnb" checked><span>Airbnb e semelhantes</span></label>
               <label class="opcao-check"><input type="checkbox" name="alojamento" value="hostel"><span>Hostels</span></label>
+              <label class="opcao-check"><input type="checkbox" name="alojamento" value="aparthotel"><span>Apart-hotéis</span></label>
+              <label class="opcao-check"><input type="checkbox" name="alojamento" value="pensao"><span>Pensões, B&amp;B e casas de hóspedes</span></label>
+              <label class="opcao-check"><input type="checkbox" name="alojamento" value="resort"><span>Resorts</span></label>
+              <label class="opcao-check"><input type="checkbox" name="alojamento" value="rural"><span>Turismo rural e casas de campo</span></label>
+              <label class="opcao-check"><input type="checkbox" name="alojamento" value="campismo"><span>Parques de campismo e glamping</span></label>
             </div>
           </div>
 
@@ -328,20 +333,20 @@
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
   /* mesma versão dos ?v= dos ficheiros: no diagnóstico, denuncia um
      navegador a servir ficheiros antigos de cache */
-  window.TRIPNEXUS_VERSAO = 'v56';
+  window.TRIPNEXUS_VERSAO = 'v57';
   /* Widget de actividades do Klook: mesma ideia. O «city_id» é trocado pelo
      da cidade pesquisada (tabela ACTIVIDADES_KLOOK em live.js). Vazio:
      mantém-se o bloco anterior. */
   window.TRIPNEXUS_ACTIVIDADES_WIDGET_SRC = 'https://tpwdgt.com/content?currency=EUR&trs=552141&shmarker=752935.actividades&locale=en&city_id=705748&category=2&amount=3&powered_by=true&campaign_id=137&promo_id=4497';
 </script>
-<script src="assets/js/analytics.js?v=56"></script>
-<script src="assets/js/data.js?v=56"></script>
-<script src="assets/js/engine.js?v=56"></script>
-<script src="assets/js/calendar.js?v=56"></script>
-<script src="assets/js/live.js?v=56"></script>
-<script src="assets/js/alertas.js?v=56"></script>
-<script src="assets/js/roteiro.js?v=56"></script>
-<script src="assets/js/app.js?v=56"></script>
+<script src="assets/js/analytics.js?v=57"></script>
+<script src="assets/js/data.js?v=57"></script>
+<script src="assets/js/engine.js?v=57"></script>
+<script src="assets/js/calendar.js?v=57"></script>
+<script src="assets/js/live.js?v=57"></script>
+<script src="assets/js/alertas.js?v=57"></script>
+<script src="assets/js/roteiro.js?v=57"></script>
+<script src="assets/js/app.js?v=57"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
