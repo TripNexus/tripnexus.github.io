@@ -950,35 +950,70 @@ function blocoTransportes(d, dias){
     return `<div class="bloco" data-aba="transportes">
       <h3 class="bloco-titulo">🚇 Transportes em ${escaparHtml(d.n)}</h3>
       <p class="bloco-sub">Ainda não temos as tarifas de ${escaparHtml(d.n)} verificadas, e não mostramos valores que não tenhamos confirmado. Consulte o operador local:</p>
-      <a class="btn-ver" style="display:inline-block;margin-top:.4rem" href="${procura}" target="_blank" rel="noopener">Procurar bilhetes e passes ↗</a>
+      <a class="btn-ver btn-inline" href="${procura}" target="_blank" rel="noopener">Procurar bilhetes e passes ↗</a>
     </div>`;
   }
+  const p = perfisTransporte(d, dias, ESTADO.pax);
   const moeda = t.moeda || 'EUR';
-  /* os cêntimos contam: um bilhete de 2,50 € não é um bilhete de 3 € */
   const valor = v => moeda === 'EUR' ? eurosExactos(v)
     : (Number.isInteger(v) ? v : v.toFixed(2)) + ' ' + moeda;
+  const selos = modos => (modos || []).map(m => {
+    const x = MODOS_TRANSPORTE[m];
+    return x ? `<span class="selo-modo">${x.icone} ${escaparHtml(x.nome)}</span>` : '';
+  }).join('');
   const quandoTxt = {
-    antes:   {rotulo:'Antes de partir', classe:'antes',   ajuda:'Compra-se em linha, antes da viagem'},
-    chegada: {rotulo:'À chegada',       classe:'chegada', ajuda:'Compra-se no local, em máquina ou balcão'}
+    antes:   {rotulo:'Comprar antes de partir', classe:'antes'},
+    chegada: {rotulo:'Comprar à chegada',       classe:'chegada'}
   };
+
+  /* Os três perfis primeiro: é a decisão que o utilizador tem de tomar.
+     A lista completa fica a seguir, para quem quiser conferir. */
+  const cartoes = !p ? '' : `
+    <div class="perfis-transporte">
+      ${p.perfis.map(perf => `
+        <div class="perfil-transporte${perf.maisBarato ? ' melhor' : ''}">
+          <div class="perfil-cabeca">
+            <span class="perfil-rotulo">${escaparHtml(perf.rotulo)}</span>
+            ${perf.maisBarato ? '<span class="selo-melhor">Mais barato</span>' : ''}
+          </div>
+          <div class="perfil-preco">${valor(perf.total)}</div>
+          <p class="perfil-descricao">${escaparHtml(perf.descricao)}</p>
+          <ul class="perfil-titulos">
+            ${perf.titulos.map(x => `<li>${x.n > 1 ? x.n + '× ' : ''}${escaparHtml(x.bilhete.nome)}</li>`).join('')}
+          </ul>
+          <div class="selos-modos">${selos(perf.modos)}</div>
+          ${perf.pressuposto ? `<p class="perfil-nota">Contado a ${escaparHtml(perf.pressuposto)} — se andar mais, um passe compensa.</p>` : ''}
+        </div>`).join('')}
+    </div>
+    <p class="bloco-sub">Valores para ${p.dias} ${p.dias === 1 ? 'dia' : 'dias'}${p.pessoas > 1 ? ' e ' + p.pessoas + ' pessoas' : ''}. O «mais barato» não é sempre o melhor: um passe que cobre o aeroporto pode compensar mesmo custando mais.</p>`;
+
   return `<div class="bloco" data-aba="transportes">
     <h3 class="bloco-titulo">🚇 Transportes em ${escaparHtml(d.n)}</h3>
     <p class="bloco-sub">${escaparHtml(t.operador)} · tarifas publicadas em ${t.ano}${moeda !== 'EUR' ? ' · valores em ' + moeda : ''}.</p>
+    ${t.cartao ? `<p class="dica-transportes">💳 <strong>${escaparHtml(t.cartao.nome)}</strong> — ${valor(t.cartao.preco)}, ${escaparHtml(t.cartao.nota)}. Não está incluído nos valores abaixo.</p>` : ''}
     ${t.nota ? `<p class="dica-transportes">💡 ${escaparHtml(t.nota)}</p>` : ''}
+    ${cartoes}
+    <h4 class="sub-titulo">Todos os títulos</h4>
     <div class="lista-transportes">
       ${t.bilhetes.map(b => {
         const q = quandoTxt[b.quando] || quandoTxt.chegada;
+        /* só se assinala quando o título serve mesmo vários transportes: com
+           dois modos as etiquetas já o dizem, e repeti-lo em todas as linhas
+           tornava o aviso invisível de tão frequente */
+        const varios = (b.modos || []).length >= 3;
         return `<div class="linha-transporte">
-          <div class="transporte-info">
-            <div class="transporte-nome">${escaparHtml(b.nome)}</div>
-            <div class="transporte-detalhe">por ${escaparHtml(b.unidade)}</div>
+          <div class="transporte-topo">
+            <span class="transporte-nome">${escaparHtml(b.nome)}</span>
+            <span class="transporte-preco">${valor(b.preco)}<small>por ${escaparHtml(b.unidade)}</small></span>
           </div>
-          <span class="etiqueta-quando ${q.classe}" title="${q.ajuda}">${q.rotulo}</span>
-          <div class="oferta-preco"><div class="preco-actual">${valor(b.preco)}</div></div>
+          <div class="selos-modos">${selos(b.modos)}</div>
+          <div class="transporte-fundo">
+            <span class="etiqueta-quando ${q.classe}">${q.rotulo}</span>
+            ${varios ? `<span class="transporte-varios">Um título para ${(b.modos || []).length} transportes</span>` : ''}
+          </div>
         </div>`;
       }).join('')}
     </div>
-    ${dias ? `<p class="bloco-sub">Para ${dias} ${dias === 1 ? 'dia' : 'dias'} na cidade, compare o custo dos passes com o das viagens avulso: com poucas deslocações por dia, o bilhete simples costuma sair mais barato.</p>` : ''}
     <p class="bloco-sub">Estas tarifas são publicadas pelo operador e mudam uma ou duas vezes por ano — ao contrário dos voos e do alojamento, não são consultadas em tempo real. <a href="${escaparHtml(t.url)}" target="_blank" rel="noopener">Confirme em ${escaparHtml(t.operador)} ↗</a></p>
   </div>`;
 }
