@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v52';
+const VERSAO_WORKER = 'v53';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -65,8 +65,15 @@ async function estado(env){
   }else{
     info.sugestao_alojamento = 'Sem SERPAPI_KEY não há preços reais de alojamento: corra wrangler secret put SERPAPI_KEY na pasta backend/ e cole a chave de serpapi.com.';
   }
-  if(!info.rapidapi_key_definida)
+  if(!info.rapidapi_key_definida){
     info.sugestao_carros = 'Sem RAPIDAPI_KEY não há preços reais de aluguer nem de actividades: corra wrangler secret put RAPIDAPI_KEY na pasta backend/.';
+  }else{
+    /* o mais barato que há para ler os cabeçalhos de quota */
+    const r = await rapid(CAMINHO_CARROS_DESTINO, {term:'Lisbon', countryOfResidence:'pt'}, env);
+    info.rapidapi_quota = r._quota || (r._estado === 429 ? '0 (esgotada)' : 'desconhecida');
+    if(r._estado === 429)
+      info.sugestao_carros = 'A quota do RapidAPI esgotou-se: o aluguer e as actividades ficam sem preço até renovar. Ver backend/README.md sobre a Booking.com Demand API, que não tem limite de pedidos.';
+  }
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
       {headers:{'X-Access-Token': token}});
@@ -291,6 +298,13 @@ async function rapid(caminho, params, env){
        «status:false» e uma mensagem genérica, e sem ver o pedido exacto não
        se distingue um parâmetro errado de uma falha do fornecedor */
     const meta = {_pedido: endereco, _estado: r.status};
+    /* o RapidAPI diz nos cabeçalhos quantos pedidos restam: sem isto, o
+       esgotamento da quota é indistinguível de uma avaria */
+    const resta = r.headers.get('x-ratelimit-requests-remaining');
+    const total = r.headers.get('x-ratelimit-requests-limit');
+    if(resta != null) meta._quota = resta + (total ? '/' + total : '') + ' pedidos restantes';
+    if(r.status === 429)
+      return Object.assign({_erro:'quota do RapidAPI esgotada (429): não há mais pedidos disponíveis este mês'}, meta);
     if(!r.ok) return Object.assign({_erro:'Booking devolveu ' + r.status, _bruto: bruto.slice(0, 500)}, meta);
     try{ return Object.assign(JSON.parse(bruto), meta); }
     catch(e){ return Object.assign({_erro:'resposta ilegível', _bruto: bruto.slice(0, 500)}, meta); }
@@ -341,39 +355,48 @@ async function carros(url, env){
   const c1 = seguro(q.get('caminho1'), CAMINHO_CARROS_DESTINO);
   const c2 = seguro(q.get('caminho2'), CAMINHO_CARROS);
 
-  /* passo 1: o local, para obter as coordenadas que o fornecedor reconhece */
-  const destino = await rapid(c1, {term: q.get('cidade') || (q.get('lat') + ',' + q.get('lon')),
-                                   countryOfResidence: 'pt'}, env);
-  const lista1 = (destino.data && (Array.isArray(destino.data) ? destino.data : destino.data.destinations)) || [];
-  const local = lista1[0] || null;
-  const coord = local && (local.coordinates || local);
-  /* se o fornecedor não reconhecer o local, servem as nossas coordenadas */
-  const lat = (coord && (coord.latitude ?? coord.lat)) ?? q.get('lat');
-  const lon = (coord && (coord.longitude ?? coord.lon)) ?? q.get('lon');
-  if(depurar && !lista1.length) return resposta({passo:'searchDestination', resposta: destino}, 200, true);
-
-  /* passo 2: viaturas nessas coordenadas e nessas datas */
-  const params = {
-    pick_up_latitude: String(lat),   pick_up_longitude: String(lon),
-    drop_off_latitude: String(lat),  drop_off_longitude: String(lon),
-    pick_up_date: q.get('ida'),      drop_off_date: q.get('volta'),
-    pick_up_time: '10:00',           drop_off_time: '10:00',
-    driver_age: '30', countryOfResidence: 'pt'
+  /* Um pedido em vez de dois, sempre que possível. O «searchDestination»
+     serve para afinar o local, mas o «searchCarRentals» aceita coordenadas
+     quaisquer: começa-se pelas nossas, que já temos, e só se elas não derem
+     nada é que se gasta um pedido a afinar. Com quotas apertadas, metade dos
+     pedidos é a diferença entre servir e não servir. */
+  const pedir = async (lat, lon, nomeLocal) => {
+    const params = {
+      pick_up_latitude: String(lat),   pick_up_longitude: String(lon),
+      drop_off_latitude: String(lat),  drop_off_longitude: String(lon),
+      pick_up_date: q.get('ida'),      drop_off_date: q.get('volta'),
+      pick_up_time: '10:00',           drop_off_time: '10:00',
+      driver_age: '30', countryOfResidence: 'pt'
+    };
+    if(nomeLocal) params.pick_up_location_name = nomeLocal;
+    for(const par of (q.get('extra') || '').split(',')){
+      const k = par.indexOf(':');
+      if(k > 0) params[par.slice(0, k).trim()] = par.slice(k + 1).trim();
+    }
+    return rapid(c2, params, env);
   };
-  if(local && local.title) params.pick_up_location_name = local.title;
-  for(const par of (q.get('extra') || '').split(',')){
-    const k = par.indexOf(':');
-    if(k > 0) params[par.slice(0, k).trim()] = par.slice(k + 1).trim();
+  const cartoesDe = resp => ((resp.data && resp.data.content && resp.data.content.items) || [])
+    .filter(x => x && x.type === 'CAR_CARD' && x.content).map(x => x.content);
+
+  let j = await pedir(q.get('lat'), q.get('lon'), q.get('cidade') || '');
+  let local = null;
+  /* nada nas nossas coordenadas: vale a pena perguntar ao fornecedor onde é */
+  if(!j._erro && !cartoesDe(j).length){
+    const destino = await rapid(c1, {term: q.get('cidade') || (q.get('lat') + ',' + q.get('lon')),
+                                     countryOfResidence: 'pt'}, env);
+    const lista1 = (destino.data && (Array.isArray(destino.data) ? destino.data : destino.data.destinations)) || [];
+    local = lista1[0] || null;
+    const coord = local && (local.coordinates || local);
+    if(coord && (coord.latitude ?? coord.lat) != null)
+      j = await pedir(coord.latitude ?? coord.lat, coord.longitude ?? coord.lon, local.title || '');
+    else if(depurar) return resposta({passo:'searchDestination', resposta: destino}, 200, true);
   }
-  const j = await rapid(c2, params, env);
   if(depurar) return resposta({passo:'searchCarRentals', local, resposta: j}, 200, true);
   if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
   /* «search_results» vem sempre vazio: as viaturas estão em content.items,
      misturadas com bandeiras, contagens e outros cartões da interface, e
      distinguem-se pelo type. */
-  const cartoes = ((j.data && j.data.content && j.data.content.items) || [])
-    .filter(x => x && x.type === 'CAR_CARD' && x.content)
-    .map(x => x.content);
+  const cartoes = cartoesDe(j);
   const moeda = (j.data && j.data.metadata && j.data.metadata.lowestVehiclePrice
                  && j.data.metadata.lowestVehiclePrice.currency) || 'EUR';
   /* as características vêm em inglês; o site é em português */
@@ -417,7 +440,8 @@ async function carros(url, env){
   /* sem ofertas, devolve-se uma amostra do que veio, para se perceber porquê */
   const extra = ofertas.length ? {} : {_amostra: cartoes[0] || null,
     _tipos: [...new Set(((j.data && j.data.content && j.data.content.items) || []).map(x => x && x.type))]};
-  return resposta(Object.assign({ofertas, fonte:'booking', moeda, total: cartoes.length}, extra));
+  return resposta(Object.assign({ofertas, fonte:'booking', moeda, total: cartoes.length,
+                                 quota: j._quota || ''}, extra));
 }
 
 /* /actividades: atracções com preço real, pelo nome da cidade.
