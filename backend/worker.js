@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v59';
+const VERSAO_WORKER = 'v60';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -214,7 +214,30 @@ async function voos(url, env){
     return resposta({ofertas: ofertas.sort((a, b) => a.preco - b.preco).slice(0, 20),
       classe:'economica', fonte:'travelpayouts/prices_for_dates', datas:'exactas'});
 
-  /* 2.ª tentativa: o mês inteiro, ficando com os dias mais próximos do
+  /* 2.ª tentativa: a ida no dia pedido, o regresso em qualquer dia do mês.
+     Faltava este degrau. Passava-se de «o par exacto» para «o mês inteiro dos
+     dois lados», e perdia-se logo a data de ida, que é a que o utilizador
+     mais sente. A API aceita AAAA-MM-DD num lado e AAAA-MM no outro: dá
+     tarifas que partem mesmo no dia pedido, e só o regresso é que varia. */
+  if(!ofertas.length && volta){
+    const doDia = await porDatas(ida, String(volta).slice(0, 7), 'ida exacta, regresso no mês');
+    if(doDia.length){
+      const noitesPedidas = Math.round((Date.parse(volta) - Date.parse(ida)) / 86400000);
+      const lista = doDia
+        .map(o => ({...o, desvio: Math.abs(Math.round((Date.parse(o.regresso) - Date.parse(o.data)) / 86400000) - noitesPedidas)}))
+        .filter(o => isFinite(o.desvio) && Date.parse(o.regresso) > Date.parse(o.data))
+        .sort((a, b) => (a.desvio - b.desvio) || (a.preco - b.preco))
+        .slice(0, 12)
+        .sort((a, b) => a.preco - b.preco);
+      if(lista.length && !debug)
+        return resposta({ofertas: lista, classe:'economica',
+          fonte:'travelpayouts/prices_for_dates', datas:'regresso-proximo',
+          nota: tentativas.join(' · ')});
+      ofertas = lista;
+    }
+  }
+
+  /* 3.ª tentativa: o mês inteiro, ficando com os dias mais próximos do
      pedido. São tarifas reais de outros dias, e vão identificadas como tal:
      mais vale um preço verdadeiro de dia 11 do que um inventado para dia 9. */
   if(!ofertas.length){
@@ -337,6 +360,29 @@ const CAMINHO_CARROS = '/api/v2/cars/searchCarRentals';
    solto não é reconhecido e a pesquisa devolve zero destinos, o que se lia
    no site como «a Booking não reconheceu «Paris»». */
 const LOCALE = 'pt-pt';
+
+/* Endereço da pesquisa de aluguer na Booking, já com o local e as datas.
+   Os cartões da API não trazem ligação nenhuma para a viatura, e o botão de
+   reserva estava a cair na página de entrada do site — que é onde tinha ido
+   parar depois de um endereço inventado por nós ter dado «Página não
+   encontrada». Estes parâmetros são os que a Booking documenta para o
+   «cars.booking.com/search-results»: puDay/puMonth/puYear e os do regresso,
+   locationIata, locationName, driversAge, prefcurrency e preflang. */
+function ligacaoCarrosBooking(q){
+  const parte = (iso, prefixo) => {
+    const [a, m, d] = String(iso || '').split('-');
+    if(!a || !m || !d) return {};
+    return {[prefixo + 'Year']: a, [prefixo + 'Month']: String(+m), [prefixo + 'Day']: String(+d),
+            [prefixo + 'Hour']: '10', [prefixo + 'Minute']: '0'};
+  };
+  const iata = String(q.get('iata') || '').toUpperCase().replace(/[^A-Z]/g, '');
+  const p = Object.assign({}, parte(q.get('ida'), 'pu'), parte(q.get('volta'), 'do'), {
+    driversAge: '30', prefcurrency: 'EUR', preflang: 'pt'
+  });
+  if(iata){ p.locationIata = iata; p.dropLocationIata = iata; }
+  if(q.get('cidade')) p.locationName = q.get('cidade');
+  return 'https://cars.booking.com/search-results?' + new URLSearchParams(p);
+}
 
 /* Os nomes dos campos de imagem mudam entre versões desta API, por isso não
    se fixa um: aceita-se a primeira chave plausível que traga um URL. */
@@ -518,6 +564,11 @@ async function carros(url, env){
     .replace(/\bor similar large car\b/gi, 'ou similar, grande')
     .replace(/\bor similar SUV\b/gi, 'ou similar, SUV')
     .replace(/\bor similar\b/gi, 'ou similar')
+    .replace(/\b(\d+)\s*kilometres? per rental\b/gi, '$1 km por aluguer')
+    .replace(/\b(\d+)\s*miles? per rental\b/gi, '$1 milhas por aluguer')
+    .replace(/\bPrice for (\d+) days?\b/gi, 'preço para $1 dias')
+    .replace(/\bFree cancellation\b/gi, 'cancelamento gratuito')
+    .replace(/\bAir conditioning\b/gi, 'ar condicionado')
     .replace(/\s*\|\s*/g, ' · ');
 
   /* O preço vem formatado («€ 18»), mas nem só: há campos numéricos ao lado,
@@ -566,11 +617,30 @@ async function carros(url, env){
         c.location && c.location.pickup && c.location.pickup.location   /* nome próprio */
       ].filter(Boolean).join(' · ')
     };
-  }).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
+  }).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco);
+
+  /* Oito linhas com o mesmo carro e o mesmo preço não são uma comparação.
+     A resposta traz mais de mil viaturas e as mais baratas são quase todas o
+     mesmo modelo em balcões diferentes: ordenar por preço e cortar às oito
+     dava seis «Renault Clio · 165 €» seguidos. Fica o mais barato de cada
+     modelo, que é o que deixa comparar carro com carro. */
+  const vistos = new Set();
+  const distintas = [];
+  for(const o of ofertas){
+    const chave = String(o.nome).toLowerCase().trim();
+    if(vistos.has(chave)) continue;
+    vistos.add(chave);
+    distintas.push(o);
+    if(distintas.length >= 8) break;
+  }
   /* sem ofertas, devolve-se uma amostra do que veio, para se perceber porquê */
-  const extra = ofertas.length ? {} : {_amostra: cartoes[0] || null,
+  const extra = distintas.length ? {} : {_amostra: cartoes[0] || null,
     _tipos: [...new Set(((j.data && j.data.content && j.data.content.items) || []).map(x => x && x.type))]};
-  return resposta(Object.assign({ofertas, fonte:'booking', moeda, total: cartoes.length,
+  return resposta(Object.assign({ofertas: distintas, fonte:'booking', moeda,
+                                 total: cartoes.length, modelos: vistos.size,
+                                 /* endereço da pesquisa na Booking, para o botão
+                                    de reserva abrir estas datas e este local */
+                                 pesquisa: ligacaoCarrosBooking(q),
                                  quota: j._quota || ''}, extra));
 }
 
@@ -669,6 +739,13 @@ async function alojamento(url, env, casas){
     const j = await r.json();
     if(j.error) return resposta({ofertas:[], fonte:'serpapi', nota: String(j.error)}, 200, true);
     const props = Array.isArray(j.properties) ? j.properties : [];
+    /* «debug=1» devolve os dois primeiros alojamentos como a SerpApi os
+       manda. O campo «type» é grosso — diz «hotel» a tudo o que veio da
+       pesquisa de hotéis, hostels incluídos — e é preciso ver o que mais
+       existe antes de escolher outro. */
+    if(q.get('debug') === '1')
+      return resposta({passo:'google_hotels', total: props.length,
+                       amostra: props.slice(0, 2)}, 200, true);
     const precoDe = p => {
       const rn = p.rate_per_night || {};
       return (+rn.extracted_lowest) || precoNumero(rn.lowest) || precoNumero(p.total_rate && p.total_rate.lowest) || 0;
@@ -689,8 +766,12 @@ async function alojamento(url, env, casas){
          a pesquisa de «hotéis» traz hostels, pousadas e apart-hotéis, e
          chamar-lhes «Hotel» a todos é dizer ao utilizador uma coisa que não
          é verdade. Vem no que a Google devolver; a tradução é no site. */
-      tipo: String(p.type || p.property_type || '')
-    })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
+      tipo: String(p.type || p.property_type || ''),
+      /* A descrição é o que distingue um hostel de um hotel nesta fonte: o
+         «type» diz «hotel» a tudo o que veio da pesquisa de hotéis. Vai para
+         o site, que é onde se decide o rótulo. */
+      descricao: String(p.description || '').slice(0, 300)
+    })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 12);
     const extra = ofertas.length ? {} : {_amostra: props[0] || null, _total: props.length};
     return resposta(Object.assign({ofertas, fonte:'serpapi', categoria: casas ? 'casas' : 'hoteis'}, extra));
   }catch(e){
