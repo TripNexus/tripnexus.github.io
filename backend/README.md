@@ -114,12 +114,17 @@ fornecedor, **o pedido exacto e o estado HTTP**: sem isso, uma resposta 200
 com `status:false` é indistinguível de um parâmetro mal escrito.
 
 > **Cuidado com a versão do grupo de endpoints.** O fornecedor mantém um
-> grupo «Car Rental» marcado como *deprecated*, que responde HTTP 200 com
-> `status:false` e uma mensagem genérica — foi nele que a primeira tentativa
-> bateu. O grupo bom é o **«Car Rental - V2»**, e exige **dois passos**:
-> `searchDestination` traduz o local num identificador, e só depois
-> `searchCarRentals` aceita a pesquisa. Os dois caminhos estão em constantes
-> no topo do `worker.js`.
+> grupo «Car Rental» marcado como *deprecated* em `/api/v1/cars/`, que
+> responde HTTP 200 com `status:false` e uma mensagem genérica. O grupo bom é
+> o **«Car Rental - V2»**, em **`/api/v2/cars/`**, e exige **dois passos**:
+> `searchDestination` traduz o local, e só depois `searchCarRentals` aceita a
+> pesquisa. O primeiro recebe **`term`** (não `query`) e `countryOfResidence`.
+> Os caminhos estão em constantes no topo do `worker.js`.
+>
+> Duas lições de método: a mensagem de erro deste fornecedor é sempre a mesma
+> independentemente da causa, por isso o `debug=1` que mostra o pedido enviado
+> vale mais do que ler a resposta; e o URL de exemplo no painel do RapidAPI dá
+> caminho e nomes de parâmetros de uma vez, sem gastar quota.
 
 Para afinar a integração sem publicar o Worker a cada tentativa, `/carros`
 aceita ainda:
