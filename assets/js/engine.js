@@ -188,11 +188,73 @@ function cotacoesTerrestres(origem, destino, ida, pax, meios){
 }
 
 /* ── transportes públicos no destino ──────────────────────────── */
+/* Quantos dias cobre cada tipo de bilhete. Os bilhetes de viagem avulsa
+   ficam de fora de propósito: não sabemos quantas viagens se fazem por dia,
+   e chutar um número seria voltar a inventar. */
+const DIAS_COBERTOS = {
+  'dia':1, '24 h':1, '48 h':2, '72 h':3, '3 dias':3, '5 dias':5,
+  '7 dias':7, 'semana':7
+};
+
+/* Custo REAL dos transportes na cidade, quando temos o tarifário publicado
+   (ver TRANSPORTES_DESTINO). Escolhe a combinação mais barata de passes que
+   cobre a estadia: em Paris, para 8 dias, um Navigo Semaine mais um dia
+   avulso sai muito abaixo de oito passes diários, e é essa a conta que o
+   viajante faria.
+
+   Só serve cidades com tarifário em euros: misturar coroas ou ienes no total
+   da viagem daria um número sem sentido. */
+function custoTransportesReais(cidade, dias, pax){
+  const t = (typeof transportesDe === 'function') ? transportesDe(cidade) : null;
+  if(!t || (t.moeda && t.moeda !== 'EUR')) return null;
+  const opcoes = t.bilhetes
+    .map(b => ({b, cobre: DIAS_COBERTOS[String(b.unidade || '').toLowerCase()]}))
+    .filter(o => o.cobre);
+  if(!opcoes.length) return null;
+
+  /* Combinação mais barata, e não N cópias do mesmo bilhete: em Paris, para
+     oito dias, dois passes semanais custam 63,20 € e um semanal mais um
+     diário custam 43,60 €. É a segunda conta que o viajante faz, por isso é
+     a que temos de fazer também. Programação dinâmica sobre os dias. */
+  const custo = [0];
+  const veio = [null];
+  for(let d = 1; d <= dias; d++){
+    custo[d] = Infinity;
+    for(const o of opcoes){
+      const antes = Math.max(0, d - o.cobre);
+      const c = custo[antes] + o.b.preco;
+      if(c < custo[d]){ custo[d] = c; veio[d] = {antes, opcao: o}; }
+    }
+  }
+  if(!isFinite(custo[dias])) return null;
+
+  /* reconstrói a combinação para a poder nomear */
+  const contagem = new Map();
+  for(let d = dias; d > 0; ){
+    const passo = veio[d];
+    const nome = passo.opcao.b.nome;
+    contagem.set(nome, (contagem.get(nome) || 0) + 1);
+    d = passo.antes;
+  }
+  const pessoas = pax.adultos + pax.criancas;
+  const partes = [...contagem.entries()].map(([nome, n]) => (n > 1 ? n + '× ' : '') + nome);
+  return {
+    total: Math.round(custo[dias] * pessoas * 100) / 100,
+    porDia: custo[dias] / dias, pessoas, dias, real: true,
+    nome: partes.join(' + ') + ' · ' + dias + (dias === 1 ? ' dia' : ' dias')
+          + (pessoas > 1 ? ' × ' + pessoas + ' pessoas' : '')
+  };
+}
+
+/* Recurso para as cidades sem tarifário na tabela: é uma estimativa, sai de
+   um gerador com semente, e é mostrada com «≈» como todas as estimativas. */
 function estimativaTransportesPublicos(cidade, dias, pax){
+  const real = custoTransportesReais(cidade, dias, pax);
+  if(real) return real;
   const r = semente('tp|' + cidade.i);
   const passeDia = (3.6 + r() * 4.5) * cidade.c;
   const pessoas = pax.adultos + pax.criancas;
-  return {porDia:arred(passeDia), total:arred(passeDia * dias * pessoas), pessoas, dias};
+  return {porDia:arred(passeDia), total:arred(passeDia * dias * pessoas), pessoas, dias, real:false};
 }
 
 /* ── actividades ──────────────────────────────────────────────── */
