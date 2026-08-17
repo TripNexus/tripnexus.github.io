@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v57';
+const VERSAO_WORKER = 'v58';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -222,11 +222,28 @@ async function voos(url, env){
     const doMes = await porDatas(mes(ida), volta ? mes(volta) : '', 'mês inteiro');
     if(doMes.length){
       const alvo = Date.parse(ida);
+      const dias = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
+      /* Uma tarifa de dia vizinho ainda serve; uma viagem de outra duração
+         não serve. Quem pediu sete noites não está a comparar com uma ida e
+         volta no mesmo dia — e era isso que aparecia, porque o filtro só
+         olhava para a data de partida e ignorava a de regresso. */
+      const noitesPedidas = volta ? Math.round(dias(ida, volta)) : null;
+      const duracaoServe = o => {
+        if(noitesPedidas == null) return true;      /* só ida: nada a comparar */
+        const n = Math.round(dias(o.data, o.regresso));
+        /* o regresso tem de existir e ser depois da ida: a API devolve
+           linhas com regresso igual ou anterior à partida */
+        if(!isFinite(n) || n < 1) return false;
+        return Math.abs(n - noitesPedidas) <= 2;
+      };
       const perto = doMes
         .map(o => ({...o, afastamento: Math.abs(Date.parse(o.data) - alvo) / 86400000}))
-        .filter(o => isFinite(o.afastamento) && o.afastamento <= 7)
+        .filter(o => isFinite(o.afastamento) && o.afastamento <= 7 && duracaoServe(o))
         .sort((a, b) => a.preco - b.preco);
-      const lista = (perto.length ? perto : doMes.sort((a, b) => a.preco - b.preco)).slice(0, 20);
+      /* se nem uma tarifa tiver a duração pedida, alarga-se — mas as viagens
+         impossíveis ficam sempre de fora */
+      const resto = doMes.filter(o => noitesPedidas == null || Math.round(dias(o.data, o.regresso)) >= 1);
+      const lista = (perto.length ? perto : resto.sort((a, b) => a.preco - b.preco)).slice(0, 20);
       if(lista.length && !debug)
         return resposta({ofertas: lista, classe:'economica',
           fonte:'travelpayouts/prices_for_dates', datas:'proximas'});
@@ -621,9 +638,12 @@ async function alojamento(url, env, casas){
       preco: Math.round(precoDe(p)),
       imagem: fotoDe(p),
       estrelas: Math.round(+p.extracted_hotel_class || +p.hotel_class || 0),
-      /* só o alojamento local tem tipologia e capacidade úteis para mostrar */
       quartos: casas ? (+p.bedrooms || 0) : 0,
-      tipo: casas ? String(p.property_type || p.type || '') : ''
+      /* A tipologia vale para os dois lados, não só para o alojamento local:
+         a pesquisa de «hotéis» traz hostels, pousadas e apart-hotéis, e
+         chamar-lhes «Hotel» a todos é dizer ao utilizador uma coisa que não
+         é verdade. Vem no que a Google devolver; a tradução é no site. */
+      tipo: String(p.type || p.property_type || '')
     })).filter(o => o.preco > 0).sort((a, b) => a.preco - b.preco).slice(0, 8);
     const extra = ofertas.length ? {} : {_amostra: props[0] || null, _total: props.length};
     return resposta(Object.assign({ofertas, fonte:'serpapi', categoria: casas ? 'casas' : 'hoteis'}, extra));
