@@ -121,10 +121,20 @@ com `status:false` é indistinguível de um parâmetro mal escrito.
 > pesquisa. O primeiro recebe **`term`** (não `query`) e `countryOfResidence`.
 > Os caminhos estão em constantes no topo do `worker.js`.
 >
+> O `searchCarRentals` recebe **as coordenadas devolvidas pelo
+> `searchDestination`** (`coordinates.latitude` / `longitude`), não um
+> identificador, e exige as quatro datas e horas. O `title` do local vai como
+> `pick_up_location_name`, que a documentação diz melhorar a correspondência.
+>
+> **Este endpoint não aceita moeda.** O preço vem na que o fornecedor
+> escolher, e a rota devolve-a em `moeda`: se não for EUR, o site mostra o
+> código em vez de fingir euros, e o valor não entra no total da viagem.
+>
 > Duas lições de método: a mensagem de erro deste fornecedor é sempre a mesma
 > independentemente da causa, por isso o `debug=1` que mostra o pedido enviado
-> vale mais do que ler a resposta; e o URL de exemplo no painel do RapidAPI dá
-> caminho e nomes de parâmetros de uma vez, sem gastar quota.
+> vale mais do que ler a resposta; e o painel do RapidAPI dá o URL de exemplo e
+> a lista de parâmetros sem gastar quota nenhuma — vale sempre a pena olhar
+> antes de tentar.
 
 Para afinar a integração sem publicar o Worker a cada tentativa, `/carros`
 aceita ainda:
