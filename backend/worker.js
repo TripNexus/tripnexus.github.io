@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v48';
+const VERSAO_WORKER = 'v49';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -269,6 +269,13 @@ async function voos(url, env){
    As respostas ficam 6 h na cache da Cloudflare: a camada gratuita é
    limitada e repetir a mesma pesquisa não deve gastar pedidos. */
 const RAPID_HOST = 'booking-com15.p.rapidapi.com';
+/* O grupo «Car Rental» antigo está marcado como deprecated no fornecedor e
+   responde 200 com «status:false». O que vale é o «Car Rental - V2», que
+   pede dois passos: primeiro traduzir o local num identificador, depois
+   pesquisar. Os caminhos ficam aqui em cima porque são a única coisa que
+   muda quando o fornecedor renomeia a versão. */
+const CAMINHO_CARROS_DESTINO = '/api/v1/cars/searchDestination';
+const CAMINHO_CARROS = '/api/v1/cars/searchCarRentals';
 
 async function rapid(caminho, params, env){
   const chave = (env.RAPIDAPI_KEY || '').trim();
@@ -312,30 +319,46 @@ function colher(obj, padraoChave, transformar){
 const CHAVE_PRECO = /^(price|amount|total|chargeAmount|drive_away_price|base_price|value)$/i;
 const CHAVE_NOME  = /^(name|title|v_name|vehicle_name|productName)$/i;
 
-/* /carros: preços reais de aluguer por coordenadas, em qualquer destino */
+/* /carros: preços reais de aluguer, em qualquer destino.
+   Passo 1 — «searchDestination» traduz as coordenadas (ou o nome) no
+   identificador de local do fornecedor. Passo 2 — «searchCarRentals» com
+   esse identificador e as datas. Sem o passo 1, o fornecedor recusa.
+   «debug=1» devolve os dois passos em bruto; «caminho1», «caminho2» e
+   «extra» deixam afinar sem publicar o Worker outra vez. */
 async function carros(url, env){
   const q = url.searchParams;
   for(const p of ['lat','lon','ida','volta'])
     if(!q.get(p)) return resposta({erro:'parâmetros necessários: lat, lon, ida, volta'}, 400);
-  /* «caminho» e «extra» só existem para afinar a integração: deixam
-     experimentar outro endpoint ou outros nomes de parâmetro sem publicar o
-     Worker de novo. Ficam presos ao mesmo fornecedor, nunca a um host livre. */
-  let caminho = q.get('caminho') || '/api/v1/cars/searchCarRentals';
-  if(!caminho.startsWith('/api/v1/')) caminho = '/api/v1/cars/searchCarRentals';
+  const depurar = q.get('debug') === '1';
+  const seguro = (v, omissao) => (v && v.startsWith('/api/')) ? v : omissao;
+  const c1 = seguro(q.get('caminho1'), CAMINHO_CARROS_DESTINO);
+  const c2 = seguro(q.get('caminho2'), CAMINHO_CARROS);
+
+  /* passo 1: identificador do local */
+  const busca = q.get('cidade') || (q.get('lat') + ',' + q.get('lon'));
+  const destino = await rapid(c1, {query: busca}, env);
+  const cand = (destino.data && (Array.isArray(destino.data) ? destino.data : destino.data.destinations)) || [];
+  const local = cand[0] || null;
+  const idLocal = local && (local.dest_id || local.id || local.city_id || local.value);
+  if(depurar && !idLocal) return resposta({passo:'searchDestination', resposta: destino}, 200, true);
+  if(!idLocal)
+    return resposta({ofertas:[], fonte:'booking',
+      nota: destino._erro || 'o fornecedor não reconheceu o local'}, 200, true);
+
+  /* passo 2: viaturas para esse local e datas */
   const params = {
-    pick_up_latitude: q.get('lat'),   pick_up_longitude: q.get('lon'),
-    drop_off_latitude: q.get('lat'),  drop_off_longitude: q.get('lon'),
-    pick_up_date: q.get('ida'),       drop_off_date: q.get('volta'),
-    pick_up_time: '10:00',            drop_off_time: '10:00',
+    pick_up_id: idLocal, drop_off_id: idLocal,
+    pick_up_date: q.get('ida'), drop_off_date: q.get('volta'),
+    pick_up_time: '10:00', drop_off_time: '10:00',
     driver_age: '30', currency_code: 'EUR'
   };
-  /* extra=chave:valor,chave:valor — acrescenta ou substitui parâmetros */
+  if(local && local.type){ params.pick_up_type = local.type; params.drop_off_type = local.type; }
   for(const par of (q.get('extra') || '').split(',')){
-    const i = par.indexOf(':');
-    if(i > 0) params[par.slice(0, i).trim()] = par.slice(i + 1).trim();
+    const k = par.indexOf(':');
+    if(k > 0) params[par.slice(0, k).trim()] = par.slice(k + 1).trim();
   }
-  const j = await rapid(caminho, params, env);
-  if(q.get('debug') === '1') return resposta({resposta: j}, 200, true);
+  const j = await rapid(c2, params, env);
+  if(depurar) return resposta({passo:'searchCarRentals', local, resposta: j}, 200, true);
   if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
   const itens = (j.data && (j.data.search_results || j.data.results)) || [];
   const ofertas = itens.map(v => ({

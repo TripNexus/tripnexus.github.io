@@ -113,15 +113,24 @@ Ambas as rotas aceitam `debug=1`, que devolve a resposta em bruto do
 fornecedor, **o pedido exacto e o estado HTTP**: sem isso, uma resposta 200
 com `status:false` é indistinguível de um parâmetro mal escrito.
 
+> **Cuidado com a versão do grupo de endpoints.** O fornecedor mantém um
+> grupo «Car Rental» marcado como *deprecated*, que responde HTTP 200 com
+> `status:false` e uma mensagem genérica — foi nele que a primeira tentativa
+> bateu. O grupo bom é o **«Car Rental - V2»**, e exige **dois passos**:
+> `searchDestination` traduz o local num identificador, e só depois
+> `searchCarRentals` aceita a pesquisa. Os dois caminhos estão em constantes
+> no topo do `worker.js`.
+
 Para afinar a integração sem publicar o Worker a cada tentativa, `/carros`
 aceita ainda:
 
 | Parâmetro | Efeito |
 |---|---|
-| `caminho` | outro endpoint do mesmo fornecedor (tem de começar por `/api/v1/`) |
-| `extra` | `chave:valor,chave:valor` — acrescenta ou substitui parâmetros |
+| `caminho1` | endpoint do passo 1 (tem de começar por `/api/`) |
+| `caminho2` | endpoint do passo 2 |
+| `extra` | `chave:valor,chave:valor` — acrescenta ou substitui parâmetros do passo 2 |
 
-Exemplo: `/carros?lat=38.7&lon=-9.1&ida=2026-09-20&volta=2026-09-24&debug=1&caminho=/api/v1/cars/searchDestination&extra=query:Lisbon`
+Exemplo: `/carros?lat=38.7&lon=-9.1&ida=2026-09-20&volta=2026-09-24&debug=1&caminho1=/api/v2/cars/searchDestination&caminho2=/api/v2/cars/searchCarRentals`
 
 Cada tentativa gasta um pedido da quota, por isso convém confirmar primeiro os
 nomes na documentação do fornecedor e só depois experimentar.
