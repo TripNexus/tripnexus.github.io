@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v64';
+const VERSAO_WORKER = 'v65';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -121,6 +121,119 @@ function duracaoTexto(min){
   return Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0');
 }
 
+/* ── pesquisa ao vivo (Travelpayouts Flight Search) ───────────
+   O «prices_for_dates» é um registo de tarifas vistas em pesquisas
+   recentes: se ninguém pesquisou as datas que o utilizador escolheu, não há
+   lá nada, e o bloco acabava a propor outras datas. Não é isso que um
+   comparador faz — o que os outros sites fazem é procurar mesmo, na hora.
+
+   É o que esta API faz: abre-se uma pesquisa, espera-se, e lêem-se os
+   resultados. Exige `marker` e uma assinatura MD5 dos parâmetros, e é o
+   único sítio do backend que precisa de MD5 — a Web Crypto dos Workers não
+   o tem, daí a implementação abaixo.
+
+   Entra sempre como acréscimo: se falhar, fica o que a cache tiver, e o
+   `/voos?debug=1` mostra o que aconteceu. */
+function md5(texto){
+  const bytes = new TextEncoder().encode(texto);
+  const S = [7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,
+             5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,
+             4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,
+             6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21];
+  const K = new Uint32Array(64);
+  for(let i = 0; i < 64; i++) K[i] = Math.floor(Math.abs(Math.sin(i + 1)) * 4294967296);
+  const n = ((bytes.length + 8) >> 6) + 1;
+  const m = new Uint32Array(n * 16);
+  for(let i = 0; i < bytes.length; i++) m[i >> 2] |= bytes[i] << ((i % 4) * 8);
+  m[bytes.length >> 2] |= 0x80 << ((bytes.length % 4) * 8);
+  m[n * 16 - 2] = bytes.length * 8;
+  let [a, b, c, d] = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476];
+  const rol = (x, s) => (x << s) | (x >>> (32 - s));
+  for(let i = 0; i < n * 16; i += 16){
+    const [aa, bb, cc, dd] = [a, b, c, d];
+    for(let j = 0; j < 64; j++){
+      let f, g;
+      if(j < 16){ f = (b & c) | (~b & d); g = j; }
+      else if(j < 32){ f = (d & b) | (~d & c); g = (5 * j + 1) % 16; }
+      else if(j < 48){ f = b ^ c ^ d; g = (3 * j + 5) % 16; }
+      else { f = c ^ (b | ~d); g = (7 * j) % 16; }
+      const tmp = d; d = c; c = b;
+      b = (b + rol((a + f + K[j] + m[i + g]) >>> 0, S[j])) >>> 0;
+      a = tmp;
+    }
+    a = (a + aa) >>> 0; b = (b + bb) >>> 0; c = (c + cc) >>> 0; d = (d + dd) >>> 0;
+  }
+  return [a, b, c, d].map(x =>
+    [0, 8, 16, 24].map(s => ((x >>> s) & 255).toString(16).padStart(2, '0')).join('')
+  ).join('');
+}
+
+/* A assinatura é o MD5 do token seguido dos valores de todos os parâmetros,
+   pela ordem alfabética das chaves em cada nível, separados por dois pontos.
+   É a parte que mais falha, por isso o corpo vai construído numa ordem só e
+   a cadeia é derivada dele, e não escrita à mão em paralelo. */
+function assinarPesquisa(token, corpo){
+  const valores = [
+    corpo.host, corpo.locale, corpo.marker,
+    corpo.passengers.adults, corpo.passengers.children, corpo.passengers.infants,
+    ...corpo.segments.flatMap(s => [s.date, s.destination, s.origin]),
+    corpo.trip_class, corpo.user_ip
+  ];
+  return md5(token + ':' + valores.join(':'));
+}
+
+async function pesquisaAoVivo(q, env, token, registos){
+  const marker = (env.TP_MARKER || '').trim();
+  const anotar = o => { if(registos) registos.push(Object.assign({tentativa:'pesquisa ao vivo'}, o)); };
+  if(!marker){ anotar({erro:'TP_MARKER não definido no Worker'}); return []; }
+
+  const segmentos = [{origin: q.get('origem'), destination: q.get('destino'), date: q.get('ida')}];
+  if(q.get('volta')) segmentos.push({origin: q.get('destino'), destination: q.get('origem'), date: q.get('volta')});
+  const corpo = {
+    marker, host: 'tripnexus.github.io', user_ip: '127.0.0.1', locale: 'en',
+    trip_class: {economica:'Y', premium:'W', executiva:'C', primeira:'F'}[q.get('classe')] || 'Y',
+    passengers: {adults: Math.max(1, +q.get('adultos') || 1),
+                 children: Math.max(0, +q.get('criancas') || 0), infants: 0},
+    segments: segmentos
+  };
+  corpo.signature = assinarPesquisa(token, corpo);
+
+  let uuid = '';
+  try{
+    const r = await fetch(TP + '/v1/flight_search', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Accept-Encoding':'gzip,deflate'},
+      body: JSON.stringify(corpo)
+    });
+    const bruto = await r.text();
+    if(!r.ok){ anotar({estado: r.status, resposta: bruto.slice(0, 300)}); return []; }
+    let j; try{ j = JSON.parse(bruto); }catch(e){ anotar({erro:'resposta ilegível', resposta: bruto.slice(0, 300)}); return []; }
+    uuid = j && (j.search_id || j.uuid);
+    if(!uuid){ anotar({erro:'sem search_id', resposta: bruto.slice(0, 300)}); return []; }
+  }catch(e){ anotar({erro: String(e.message || e)}); return []; }
+
+  /* A pesquisa é assíncrona: os resultados vão chegando. Lê-se algumas
+     vezes, com espera, e desiste-se antes de o utilizador desistir. */
+  const propostas = [];
+  for(const espera of [1200, 1800, 2500, 3000]){
+    await new Promise(f => setTimeout(f, espera));
+    try{
+      const r = await fetch(TP + '/v1/flight_search_results?uuid=' + encodeURIComponent(uuid),
+        {headers:{'Accept-Encoding':'gzip,deflate'}});
+      if(!r.ok){ anotar({estado_resultados: r.status}); continue; }
+      const blocos = await r.json();
+      if(!Array.isArray(blocos)) continue;
+      for(const bloco of blocos)
+        if(bloco && Array.isArray(bloco.proposals)) propostas.push(...bloco.proposals.map(p => ({p, bloco})));
+      /* o último bloco vem sem propostas quando a pesquisa terminou */
+      const acabou = blocos.length && blocos.every(b => !b || !b.proposals || !b.proposals.length);
+      if(propostas.length && acabou) break;
+    }catch(e){ anotar({erro_resultados: String(e.message || e)}); }
+  }
+  anotar({uuid, propostas: propostas.length});
+  return propostas;
+}
+
 /* /voos: tarifas reais registadas pela Aviasales.
    Três tentativas, da mais fiel à mais lata, porque as estimativas são o
    último recurso e não o primeiro:
@@ -208,82 +321,61 @@ async function voos(url, env){
     }catch(e){ tentativas.push(etiqueta + ': ' + String(e.message || e)); return []; }
   };
 
-  /* 1.ª tentativa: as datas exactas que o utilizador pediu */
-  let ofertas = await porDatas(ida, volta, 'datas exactas');
-  if(ofertas.length && !debug)
-    return resposta({ofertas: ofertas.sort((a, b) => a.preco - b.preco).slice(0, 20),
-      classe:'economica', fonte:'travelpayouts/prices_for_dates', datas:'exactas'});
+  /* AS DATAS SÃO AS DO UTILIZADOR. Este bloco propunha outras quando não
+     encontrava tarifas para as pedidas, e isso está errado: quem escolheu
+     14 a 17 de Outubro não quer saber de 20 a 22. O calendário é que serve
+     para explorar datas; aqui procura-se o que foi pedido, e se não houver
+     diz-se que não há.
 
-  /* 2.ª tentativa: as duas consultas alargadas ao mesmo tempo, e juntas.
-     Ficar pela primeira que respondesse era o erro: a consulta «ida no dia
-     pedido, regresso em qualquer dia do mês» devolveu uma tarifa só, e o
-     bloco ficou com essa uma, quando o mês inteiro tinha meia dúzia. Cada
-     consulta cobre um lado da falha — uma acerta na ida, a outra tem
-     variedade — e não há razão para escolher entre elas: juntam-se, tiram-se
-     as repetidas, e a ordenação decide o que fica à frente. */
-  if(!ofertas.length){
-    const mes = t => String(t || '').slice(0, 7);
-    const [doDia, doMes] = await Promise.all([
-      volta ? porDatas(ida, mes(volta), 'ida exacta, regresso no mês') : Promise.resolve([]),
-      porDatas(mes(ida), volta ? mes(volta) : '', 'mês inteiro')
-    ]);
-    const vistas = new Set();
-    const juntas = [...doDia, ...doMes].filter(o => {
-      const c = [o.data, o.regresso, o.codigo, o.preco, o.partida].join('|');
-      if(vistas.has(c)) return false;
-      vistas.add(c);
-      return true;
-    });
-    if(juntas.length){
-      const alvo = Date.parse(ida);
-      const dias = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
-      /* Uma tarifa de dia vizinho ainda serve; uma viagem de outra duração
-         não serve. Quem pediu sete noites não está a comparar com uma ida e
-         volta no mesmo dia. */
-      const noitesPedidas = volta ? Math.round(dias(ida, volta)) : null;
-      /* Uma primeira versão disto era um filtro único e apertado, e deixava
-         uma tarifa na lista ou nenhuma. Um filtro que corta tudo é tão inútil
-         como não filtrar: o que se quer é uma ordem, não um corte. Vai-se
-         abrindo o cerco por camadas até haver lista que chegue, e o que nunca
-         entra são as viagens impossíveis. */
-      const medir = o => {
-        const n = noitesPedidas == null ? null : Math.round(dias(o.data, o.regresso));
-        return {...o,
-          noites: n,
-          afastamento: Math.abs(Date.parse(o.data) - alvo) / 86400000,
-          desvio: n == null ? 0 : Math.abs(n - noitesPedidas)};
-      };
-      /* regresso inexistente, igual ou anterior à partida: não é viagem */
-      const possiveis = juntas.map(medir).filter(o =>
-        isFinite(o.afastamento) && (o.noites == null || (isFinite(o.noites) && o.noites >= 1)));
-      const camadas = [
-        o => o.desvio <= 1 && o.afastamento <= 3,
-        o => o.desvio <= 2 && o.afastamento <= 7,
-        o => o.desvio <= 3 && o.afastamento <= 14,
-        () => true
-      ];
-      /* mais perto primeiro, e dentro do mesmo grau de proximidade o mais
-         barato — sem nunca deixar a lista curta de mais para se comparar */
-      const lista = [];
-      for(const camada of camadas){
-        if(lista.length >= 8) break;
-        possiveis.filter(o => camada(o) && !lista.includes(o))
-          .sort((a, b) => (a.desvio - b.desvio) || (a.afastamento - b.afastamento) || (a.preco - b.preco))
-          .forEach(o => { if(lista.length < 12) lista.push(o); });
-      }
-      lista.sort((a, b) => a.preco - b.preco);
-      if(lista.length && !debug)
-        return resposta({ofertas: lista, classe:'economica',
-          fonte:'travelpayouts/prices_for_dates',
-          /* se todas partem no dia pedido, o aviso pode ser o mais tranquilo:
-             só o regresso é que muda */
-          datas: lista.every(o => o.data === ida) ? 'regresso-proximo' : 'proximas',
-          /* porque é que não houve tarifas nas datas exactas: sem isto, o
-             diagnóstico só sabe dizer que caiu para datas próximas */
-          nota: tentativas.join(' · ')});
-      ofertas = lista;
-    }
-  }
+     Duas fontes para as mesmas datas, somadas:
+       1. o «prices_for_dates», que é um registo de tarifas vistas em
+          pesquisas recentes — instantâneo, mas com buracos;
+       2. a pesquisa ao vivo, que vai mesmo procurar agora. É mais lenta e
+          exige assinatura, mas é o que permite ter valores para datas que
+          mais ninguém pesquisou. */
+  let ofertas;
+  const [daCache, aoVivo] = await Promise.all([
+    porDatas(ida, volta, 'datas exactas'),
+    pesquisaAoVivo(q, env, token, debug ? registos : null)
+  ]);
+
+  const doVivo = aoVivo.map(({p, bloco}) => {
+    const termos = Object.values(p.terms || {})[0] || {};
+    const seg = (p.segment || [])[0] || {};
+    const voo = (seg.flight || [])[0] || {};
+    const ultimo = (seg.flight || [])[(seg.flight || []).length - 1] || {};
+    const regressoSeg = (p.segment || [])[1];
+    const codigo = String(p.validating_carrier || voo.operating_carrier || '').toUpperCase();
+    const minutos = (p.segment || []).reduce((t, sg) =>
+      t + (sg.flight || []).reduce((x, f) => x + (+f.duration || 0), 0), 0);
+    return {
+      preco: Math.round(+termos.unified_price || +termos.price || 0),
+      companhia: nomes[codigo] || codigo,
+      codigo,
+      escalas: Math.max(0, (seg.flight || []).length - 1),
+      duracao: duracaoTexto(minutos),
+      partida: String(voo.departure_time || '').slice(0, 5),
+      data: String(voo.departure_date || ida).slice(0, 10),
+      regresso: regressoSeg ? String(((regressoSeg.flight || [])[0] || {}).departure_date || volta || '').slice(0, 10) : (volta || ''),
+      url: ''
+    };
+  }).filter(o => o.preco > 0);
+
+  /* nada de datas vizinhas: só o que é mesmo das datas pedidas */
+  const daData = o => o.data === ida && (!volta || !o.regresso || o.regresso === volta);
+  const vistas = new Set();
+  ofertas = [...daCache, ...doVivo].filter(o => {
+    if(!daData(o)) return false;
+    const c = [o.data, o.regresso, o.codigo, o.preco, o.partida].join('|');
+    if(vistas.has(c)) return false;
+    vistas.add(c);
+    return true;
+  }).sort((a, b) => a.preco - b.preco);
+
+  if(ofertas.length && !debug)
+    return resposta({ofertas: ofertas.slice(0, 20), classe:'economica',
+      fonte: doVivo.length ? 'travelpayouts/pesquisa-ao-vivo' : 'travelpayouts/prices_for_dates',
+      datas:'exactas', aoVivo: doVivo.length});
 
   /* 3.ª tentativa: a tarifa mais barata por número de escalas */
   const ps = new URLSearchParams({
@@ -323,12 +415,16 @@ async function voos(url, env){
     if(!cheap.length) tentativas.push('prices/cheap: sem tarifas');
   }
 
-  if(debug) return resposta({registos, tentativas}, 200, true);
-  if(cheap.length)
-    return resposta({ofertas: cheap, classe:'economica', fonte:'travelpayouts/cheap', datas:'exactas'});
-  if(ofertas.length)
-    return resposta({ofertas, classe:'economica', fonte:'travelpayouts/prices_for_dates', datas:'proximas'});
-  return resposta({ofertas:[], fonte:'travelpayouts', nota: tentativas.join(' · ')}, 200, true);
+  if(debug) return resposta({registos, tentativas, aoVivo: doVivo.length,
+                             daCache: daCache.length, exactas: ofertas.length}, 200, true);
+  /* o «prices/cheap» também só conta se for do dia pedido */
+  const cheapExactas = cheap.filter(o => o.data === ida);
+  if(cheapExactas.length)
+    return resposta({ofertas: cheapExactas, classe:'economica', fonte:'travelpayouts/cheap', datas:'exactas'});
+  /* Sem tarifas para estas datas, devolve-se lista vazia e o motivo. Não se
+     propõem outras datas: o utilizador escolheu estas. */
+  return resposta({ofertas:[], fonte:'travelpayouts', datas:'exactas',
+                   nota: tentativas.join(' · ')}, 200, true);
 }
 
 /* ── Aluguer de viaturas e atracções (Booking.com via RapidAPI) ─────

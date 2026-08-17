@@ -305,13 +305,27 @@ async function actualizarVoosReais(ctx){
     if(!r.ok){ registarFonte('Voos (Travelpayouts)', 'estimativas', 'backend devolveu ' + r.status); return; }
     const dados = await r.json();
     if(!dados || !Array.isArray(dados.ofertas) || !dados.ofertas.length){
-      registarFonte('Voos (Travelpayouts)', 'estimativas', (dados && (dados.nota || dados.erro)) || 'sem tarifas para esta rota');
+      /* Sem tarifas para as datas pedidas não se propõem outras datas: o
+         utilizador escolheu-as, e trocá-las por baixo dele é o oposto do que
+         um comparador faz. Fica dito que não há, com as ligações para
+         procurar nessas mesmas datas e o calendário para quem quiser mudar. */
+      registarFonte('Voos (Travelpayouts)', 'sem preços',
+        (dados && (dados.nota || dados.erro)) || 'sem tarifas para estas datas');
+      const liga = p => ligacaoParceiro(p, {...ctx, seccao:'voo'});
+      bloco.innerHTML = `
+        <h3 class="bloco-titulo">✈ Voos</h3>
+        <p class="aviso-datas">📅 Não encontrámos tarifas para <strong>${escaparHtml(diaCurto(dataISO(ctx.ida)))}${ctx.volta ? ' – ' + escaparHtml(diaCurto(dataISO(ctx.volta))) : ''}</strong>. Não mostramos outras datas no lugar destas — se quiser ver que dias têm tarifa, abra o calendário na caixa de pesquisa.</p>
+        ${['skyscanner','kayak','google'].map(p => linhaSemPreco(p, {
+          detalhe: 'Procurar ' + ctx.origem.n + ' → ' + ctx.destino.n + ' nestas datas',
+          url: liga(p)
+        })).join('')}
+        <p class="bloco-sub">Estes sites fazem a pesquisa em directo e podem ter tarifas que a nossa fonte ainda não registou.</p>`;
       return;
     }
     /* tarifas de dias vizinhos: são reais, mas não são as datas pedidas.
        Tem de se dizer, e cada linha leva a sua data. */
-    const soRegresso = dados.datas === 'regresso-proximo';
-    const outrasDatas = dados.datas === 'proximas' || soRegresso;
+    /* o backend já só devolve tarifas das datas pedidas */
+    const soRegresso = false, outrasDatas = false;
     registarFonte('Voos (Travelpayouts)', 'reais',
       dados.ofertas.length + ' tarifas' + (outrasDatas ? ' (datas próximas, não as pedidas)' : '')
       + (outrasDatas && dados.nota ? ' · ' + dados.nota : ''));
