@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v53';
+const VERSAO_WORKER = 'v54';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -283,6 +283,10 @@ const RAPID_HOST = 'booking-com15.p.rapidapi.com';
    muda quando o fornecedor renomeia a versão. */
 const CAMINHO_CARROS_DESTINO = '/api/v2/cars/searchDestination';
 const CAMINHO_CARROS = '/api/v2/cars/searchCarRentals';
+/* A Booking usa códigos de idioma com região («pt-pt», «en-us»). Um «pt»
+   solto não é reconhecido e a pesquisa devolve zero destinos, o que se lia
+   no site como «a Booking não reconheceu «Paris»». */
+const LOCALE = 'pt-pt';
 
 async function rapid(caminho, params, env){
   const chave = (env.RAPIDAPI_KEY || '').trim();
@@ -453,16 +457,18 @@ async function actividades(url, env){
   if(!cidade) return resposta({erro:'parâmetro necessário: cidade'}, 400);
   const depurar = q.get('debug') === '1';
   const local = await rapid('/api/v1/attraction/searchLocation',
-    {query: cidade, languagecode: 'pt'}, env);
+    {query: cidade, languagecode: LOCALE}, env);
   if(local._erro) return resposta({ofertas:[], fonte:'booking', nota: local._erro}, 200, true);
   const destinos = (local.data && (local.data.destinations || local.data.products)) || [];
   const id = destinos.length ? (destinos[0].id || destinos[0].productId) : null;
   if(!id){
     if(depurar) return resposta({passo:'searchLocation', resposta: local}, 200, true);
-    return resposta({ofertas:[], fonte:'booking', nota:'a Booking não reconheceu «' + cidade + '»'}, 200, true);
+    return resposta({ofertas:[], fonte:'booking',
+      nota:'a Booking não reconheceu «' + cidade + '»'
+           + (local._quota ? ' (' + local._quota + ')' : '')}, 200, true);
   }
   const j = await rapid('/api/v1/attraction/searchAttractions',
-    {id, currency_code:'EUR', languagecode:'pt', sortBy:'trending', page:'1'}, env);
+    {id, currency_code:'EUR', languagecode: LOCALE, sortBy:'trending', page:'1'}, env);
   if(depurar) return resposta({passo:'searchAttractions', id, resposta: j}, 200, true);
   if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
   const itens = (j.data && (j.data.products || j.data.results)) || [];

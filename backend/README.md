@@ -141,6 +141,12 @@ com `status:false` é indistinguível de um parâmetro mal escrito.
 > escolher, e a rota devolve-a em `moeda`: se não for EUR, o site mostra o
 > código em vez de fingir euros, e o valor não entra no total da viagem.
 >
+> **O idioma leva região.** Nas actividades, o `languagecode` tem de ser
+> `pt-pt` ou `en-us`; um `pt` solto não é reconhecido e o `searchLocation`
+> devolve zero destinos — o que no site aparecia como «a Booking não
+> reconheceu «Paris»», uma mensagem que culpava a cidade quando o culpado era
+> o parâmetro ao lado. Está numa constante `LOCALE` no `worker.js`.
+>
 > Duas lições de método: a mensagem de erro deste fornecedor é sempre a mesma
 > independentemente da causa, por isso o `debug=1` que mostra o pedido enviado
 > vale mais do que ler a resposta; e o painel do RapidAPI dá o URL de exemplo e
