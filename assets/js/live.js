@@ -301,76 +301,15 @@ function diaCurto(iso){
   return dias[d.getDay()] + ', ' + d.getDate() + ' ' + meses[d.getMonth()];
 }
 
-/* ── Carros: widget do Localrent, por cidade ──────────────────
-   O widget gerado no painel traz o país e a cidade fixos nos
-   parâmetros «country» e «city» (identificadores internos do
-   Localrent). Comparando dois widgets gerados para cidades
-   diferentes, confirmou-se que só esses dois valores mudam, pelo
-   que basta trocá-los para o widget seguir o destino da pesquisa.
-
-   PARA ACRESCENTAR UMA CIDADE: no painel Travelpayouts, gere o
-   mesmo widget escolhendo esse país e cidade, e copie os números
-   de «country» e «city» do endereço para a tabela abaixo. As
-   cidades que não estiverem aqui mantêm o bloco de estimativa, em
-   vez de mostrarem preços de outra cidade. */
-const CARROS_LOCALRENT = {
-  'Atenas':           {pais: 18,  cidade: 61491},
-  'Auckland':         {pais: 48,  cidade: 69801},
-  'Banguecoque':      {pais: 9,   cidade: 62861},
-  'Barcelona':        {pais: 35,  cidade: 60691},
-  'Berlim':           {pais: 29,  cidade: 56121},
-  'Budapeste':        {pais: 118, cidade: 62451},
-  'Buenos Aires':     {pais: 40,  cidade: 58911},
-  'Cairo':            {pais: 61,  cidade: 501},
-  'Cancún':           {pais: 25,  cidade: 66131},
-  'Casablanca':       {pais: 99,  cidade: 421},
-  'Cidade do Cabo':   {pais: 60,  cidade: 41},
-  'Cidade do México': {pais: 25,  cidade: 53451},
-  'Cracóvia':         {pais: 110, cidade: 105511},
-  'Doha':             {pais: 190, cidade: 64591},
-  'Dubai':            {pais: 14,  cidade: 62821},
-  'Dubrovnik':        {pais: 202, cidade: 107271},
-  'Faro':             {pais: 17,  cidade: 127541},
-  'Florença':         {pais: 13,  cidade: 120371},
-  'Funchal':          {pais: 17,  cidade: 130521},
-  'Hamburgo':         {pais: 29,  cidade: 63581},
-  'Hanói':            {pais: 11,  cidade: 97211},
-  'Helsínquia':       {pais: 139, cidade: 47471},
-  'Ibiza':            {pais: 35,  cidade: 143881},
-  'Istambul':         {pais: 109, cidade: 65991},
-  'Kuala Lumpur':     {pais: 2,   cidade: 64911},
-  'Lisboa':           {pais: 17,  cidade: 67671},
-  'Lyon':             {pais: 12,  cidade: 47831},
-  'Madrid':           {pais: 35,  cidade: 51891},
-  'Miami':            {pais: 23,  cidade: 23571},
-  'Milão':            {pais: 13,  cidade: 53061},
-  'Málaga':           {pais: 35,  cidade: 75431},
-  'Nice':             {pais: 12,  cidade: 80631},
-  'Nápoles':          {pais: 13,  cidade: 77451},
-  'Palma de Maiorca': {pais: 35,  cidade: 68561},
-  'Paris':            {pais: 12,  cidade: 53741},
-  'Phuket':           {pais: 9,   cidade: 73501},
-  'Ponta Delgada':    {pais: 17,  cidade: 130191},
-  'Porto':            {pais: 17,  cidade: 79671},
-  'Praga':            {pais: 114, cidade: 61591},
-  'Praia':            {pais: 79,  cidade: 146741},
-  'Reiquiavique':     {pais: 116, cidade: 59441},
-  'Roma':             {pais: 13,  cidade: 54441},
-  'Santorini':        {pais: 18,  cidade: 549007},
-  'Sevilha':          {pais: 35,  cidade: 167551},
-  'Sydney':           {pais: 1,   cidade: 53151},
-  'Tenerife':         {pais: 35,  cidade: 395431},
-  'Valência':         {pais: 35,  cidade: 63391},
-  'Varsóvia':         {pais: 110, cidade: 77681},
-  'Veneza':           {pais: 13,  cidade: 106451},
-  'Viena':            {pais: 127, cidade: 53231},
-  'Zagreb':           {pais: 202, cidade: 78041}
-};
-
 /* Aluguer de viaturas com preços reais, por coordenadas — serve os 95
    destinos, ao contrário do widget, que ficava preso a uma lista de
-   cidades e nunca nos dizia o valor. Se a API não responder, o widget do
-   Localrent continua a servir de recurso nas cidades que cobre. */
+   cidades e nunca nos dizia o valor.
+
+   O widget do Localrent servia aqui de recurso e foi retirado: anunciava
+   «preços reais» e mostrava zero viaturas com datas que não eram as da
+   pesquisa, além de apagar, ao assumir o bloco, o motivo pelo qual a API
+   tinha falhado. Um recurso que mente é pior do que recurso nenhum: sem
+   API, fica o bloco com as ligações aos parceiros e sem preço. */
 async function actualizarCarrosReais(ctx){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-carro');
@@ -429,46 +368,6 @@ async function actualizarCarrosReais(ctx){
     return;
   }
 
-  /* recurso: o widget do Localrent, nas cidades que cobre */
-  const src = (window.TRIPNEXUS_CARRO_WIDGET_SRC || '').trim();
-  const local = CARROS_LOCALRENT[ctx.destino.n];
-  if(!src || !local) return;   /* fica o bloco com as ligações, sem preço */
-  let url;
-  try{
-    url = new URL(src.startsWith('//') ? location.protocol + src : src, location.href);
-  }catch(e){ return; }
-  registarFonte('Aluguer de viaturas', 'reais', 'widget Localrent (abre a pedido)');
-  if(typeof registarPrecoReal === 'function') registarPrecoReal('carro', 'widget');
-  url.searchParams.set('country', String(local.pais));
-  url.searchParams.set('city', String(local.cidade));
-
-  /* O quadro do parceiro é grande e cria ruído se estiver sempre aberto.
-     Fica fechado por omissão, numa barra estreita, e só carrega quando o
-     utilizador o abre: assim não se pede nada à rede sem ser preciso. */
-  const zona = document.getElementById('zona-larga');
-  if(zona) zona.appendChild(bloco);
-  bloco.innerHTML = `
-    <details class="dobra-widget">
-      <summary>
-        <span class="dobra-titulo">🚗 Aluguer de viatura em ${escaparHtml(ctx.destino.n)}</span>
-        <span class="dobra-sub">preços reais · ver viaturas disponíveis</span>
-        <span class="dobra-seta" aria-hidden="true">▾</span>
-      </summary>
-      <div class="widget-parceiro"></div>
-    </details>`;
-  const dobra = bloco.querySelector('details');
-  const alvo = bloco.querySelector('.widget-parceiro');
-  dobra.addEventListener('toggle', () => {
-    if(!dobra.open || alvo.dataset.carregado) return;
-    alvo.dataset.carregado = '1';
-    const s = document.createElement('script');
-    s.async = true; s.charset = 'utf-8'; s.src = url.toString();
-    alvo.appendChild(s);
-    setTimeout(() => {
-      const rendeu = [...alvo.children].some(el => el.tagName !== 'SCRIPT');
-      if(!rendeu) alvo.innerHTML = '<p class="bloco-sub">Não foi possível carregar as viaturas agora. Tente recarregar a página.</p>';
-    }, 4000);
-  });
 }
 
 /* ── Actividades: widget do Klook, por cidade ──────────────────
