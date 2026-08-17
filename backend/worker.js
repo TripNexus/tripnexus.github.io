@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v61';
+const VERSAO_WORKER = 'v62';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -695,6 +695,83 @@ function precoNumero(v){
   return isFinite(n) && n > 0 ? n : 0;
 }
 
+/* /calendario: o preço mais baixo por dia, num mês, para uma dada duração
+   de viagem. É o que alimenta a grelha de datas do site.
+
+   Existe porque a grelha estava a mostrar valores inventados por um gerador
+   pseudo-aleatório do motor local — e a mostrá-los sem ressalva nenhuma, ao
+   lado de preços reais. O utilizador escolhia as datas por eles.
+
+   Dois modos:
+     mes=AAAA-MM&dias=7         → agrupa por data de partida, viagens de N dias
+     mes=AAAA-MM&ida=AAAA-MM-DD → partida fixa, agrupa por data de regresso */
+async function calendario(url, env){
+  const q = url.searchParams;
+  for(const p of ['origem','destino','mes'])
+    if(!q.get(p)) return resposta({erro:'parâmetros necessários: origem, destino, mes (AAAA-MM)'}, 400);
+  const token = obterToken(env);
+  if(!token) return resposta({precos:{}, nota:'TP_TOKEN não definido no Worker (ver /estado)'}, 200, true);
+
+  const mes = String(q.get('mes')).slice(0, 7);
+  const idaFixa = q.get('ida') || '';
+  const dias = Math.max(0, +q.get('dias') || 0);
+  const soIda = q.get('soIda') === '1' || (!dias && !idaFixa);
+
+  const pedir = async (partida, regresso) => {
+    const ps = new URLSearchParams({
+      origin: q.get('origem'), destination: q.get('destino'),
+      departure_at: partida, currency: 'eur', sorting: 'price',
+      unique: 'false', limit: '1000', one_way: soIda ? 'true' : 'false', token
+    });
+    if(regresso) ps.set('return_at', regresso);
+    try{
+      const r = await fetch(TP + '/aviasales/v3/prices_for_dates?' + ps,
+        {headers:{'X-Access-Token': token}, cf:{cacheTtl: 3600, cacheEverything: true}});
+      if(!r.ok) return [];
+      const j = await r.json();
+      return Array.isArray(j && j.data) ? j.data : [];
+    }catch(e){ return []; }
+  };
+
+  /* o mês seguinte também entra: uma viagem que parte a 30 regressa já no
+     mês a seguir, e ficaria de fora se só se pedisse o mês da partida */
+  const seguinte = (() => {
+    const [a, m] = mes.split('-').map(Number);
+    return new Date(Date.UTC(a, m, 1)).toISOString().slice(0, 7);
+  })();
+
+  const linhas = idaFixa
+    ? await pedir(idaFixa, mes)
+    : (await Promise.all(soIda ? [pedir(mes, '')] : [pedir(mes, mes), pedir(mes, seguinte)])).flat();
+
+  const precos = {};
+  for(const v of linhas){
+    const partida = String(v.departure_at || '').slice(0, 10);
+    const volta = String(v.return_at || '').slice(0, 10);
+    const preco = Math.round(+v.price || 0);
+    if(!partida || preco <= 0) continue;
+    let chave;
+    if(idaFixa){
+      /* partida fixa: o dia que interessa é o do regresso */
+      if(!volta || volta <= idaFixa) continue;
+      chave = volta;
+    }else{
+      if(!soIda){
+        const n = Math.round((Date.parse(volta) - Date.parse(partida)) / 86400000);
+        /* só as viagens com a duração pedida (a menos de um dia) contam para
+           o preço do dia: senão o calendário anunciava, para o dia 9, o valor
+           de uma viagem de outro tamanho */
+        if(!isFinite(n) || n < 1 || Math.abs(n - dias) > 1) continue;
+      }
+      chave = partida;
+    }
+    if(chave.slice(0, 7) !== mes) continue;
+    if(precos[chave] == null || preco < precos[chave]) precos[chave] = preco;
+  }
+  return resposta({precos, mes, dias, moeda:'EUR', fonte:'travelpayouts',
+                   total: Object.keys(precos).length});
+}
+
 /* /hoteis: preços reais de hotéis via SerpApi (motor google_hotels), com
    chave gratuita (o plano actual dá 250 pesquisas/mês; o número exacto
    que resta vem em /estado). Falha sempre de forma graciosa
@@ -887,6 +964,7 @@ export default {
     const url = new URL(pedido.url);
     try{
       if(url.pathname === '/voos') return await voos(url, env);
+      if(url.pathname === '/calendario') return await calendario(url, env);
       if(url.pathname === '/hoteis') return await hoteis(url, env);
       if(url.pathname === '/casas') return await casas(url, env);
       if(url.pathname === '/carros') return await carros(url, env);
@@ -894,7 +972,7 @@ export default {
       if(url.pathname === '/assistente') return await assistente(pedido, env);
       if(url.pathname === '/modelos') return await modelos(env);
       if(url.pathname === '/estado') return await estado(env, url);
-      return resposta({erro:'rotas disponíveis: /voos, /hoteis, /casas, /carros, /actividades, /assistente, /modelos, /estado'}, 404);
+      return resposta({erro:'rotas disponíveis: /voos, /calendario, /hoteis, /casas, /carros, /actividades, /assistente, /modelos, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }

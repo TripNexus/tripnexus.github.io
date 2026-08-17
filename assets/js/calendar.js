@@ -20,15 +20,50 @@ function formatarDataCurta(d){
 function mesmoDia(a,b){ return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 function hojeZero(){ const h = new Date(); h.setHours(0,0,0,0); return h; }
 
-/* melhor preço (por adulto) para uma combinação exacta de datas */
-function melhorPrecoExacto(origem, destino, ida, volta, classe){
-  const pax1 = {adultos:1, criancas:0, bebes:0};
-  let melhor = Infinity;
-  for(const c of ['skyscanner','momondo','edreams']){
-    const q = cotacaoVoo(c, origem, destino, ida, volta, classe, pax1);
-    if(q.precoFinal < melhor) melhor = q.precoFinal;
-  }
-  return Math.round(melhor);
+/* ── preços do calendário ─────────────────────────────────────
+   Estes números eram inventados. Vinham do `cotacaoVoo()` do motor local,
+   que os gera com um gerador pseudo-aleatório com semente — estáveis entre
+   visitas, e por isso convincentes, mas sem qualquer relação com o que custa
+   voar. Apareciam sem ressalva nenhuma, ao lado dos preços reais do resto do
+   site, e o utilizador escolhia as datas por eles.
+
+   Passam a vir do backend, da mesma fonte das tarifas (Travelpayouts). Um
+   dia sem tarifa registada fica sem preço — que é a verdade — em vez de
+   receber um número plausível. */
+const CACHE_CAL = {};        /* chave → {estado, precos} */
+
+function chaveCalendario(mes){
+  return [CAL.origem && CAL.origem.i, CAL.destino && CAL.destino.i,
+          mes.getFullYear() + '-' + String(mes.getMonth() + 1).padStart(2, '0'),
+          CAL.modo === 'volta' && CAL.ida ? chaveData(CAL.ida) : '',
+          CAL.sohIda ? 'ida' : CAL.nDias].join('|');
+}
+
+/* Pede ao backend os preços de um mês. Devolve depressa se já os tiver: a
+   grelha é redesenhada a cada clique e não pode pedir de cada vez. */
+function carregarPrecosCalendario(mes){
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
+  if(!base || !CAL.origem || !CAL.destino) return;
+  const chave = chaveCalendario(mes);
+  if(CACHE_CAL[chave]) return;
+  CACHE_CAL[chave] = {estado:'a carregar', precos:{}};
+  const ps = new URLSearchParams({
+    origem: CAL.origem.i, destino: CAL.destino.i,
+    mes: mes.getFullYear() + '-' + String(mes.getMonth() + 1).padStart(2, '0')
+  });
+  if(CAL.sohIda) ps.set('soIda', '1');
+  else if(CAL.modo === 'volta' && CAL.ida) ps.set('ida', chaveData(CAL.ida));
+  else ps.set('dias', CAL.nDias);
+  fetch(base + '/calendario?' + ps)
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      CACHE_CAL[chave] = {estado:'pronto', precos:(d && d.precos) || {}};
+      if(CAL.aberto) desenharCalendario();
+    })
+    .catch(() => {
+      CACHE_CAL[chave] = {estado:'falhou', precos:{}};
+      if(CAL.aberto) desenharCalendario();
+    });
 }
 
 function abrirCalendario(opcoes){
@@ -61,23 +96,18 @@ function desenharCalendario(){
   const mes2 = new Date(CAL.mesBase.getFullYear(), CAL.mesBase.getMonth() + 1, 1);
   const limite = new Date(hoje.getFullYear(), hoje.getMonth() + 11, 1);
 
-  /* preços de todos os dias visíveis, para saber qual é o mais barato */
+  /* preços de todos os dias visíveis, para saber qual é o mais barato.
+     Vêm do backend; os dias sem tarifa registada ficam sem preço. */
   const precos = {};
-  let minimo = Infinity;
+  let minimo = Infinity, aCarregar = false, semBackend = false;
   if(temRota){
     for(const mes of [CAL.mesBase, mes2]){
-      const nDiasMes = new Date(mes.getFullYear(), mes.getMonth()+1, 0).getDate();
-      for(let d = 1; d <= nDiasMes; d++){
-        const dia = new Date(mes.getFullYear(), mes.getMonth(), d);
-        if(dia < hoje) continue;
-        let preco;
-        if(CAL.modo === 'volta' && CAL.ida){
-          if(dia <= CAL.ida) continue;
-          preco = melhorPrecoExacto(CAL.origem, CAL.destino, CAL.ida, dia, CAL.classe);
-        }else{
-          preco = precoCalendario(CAL.origem, CAL.destino, dia, CAL.nDias, CAL.classe, CAL.sohIda);
-        }
-        precos[chaveData(dia)] = preco;
+      carregarPrecosCalendario(mes);
+      const registo = CACHE_CAL[chaveCalendario(mes)];
+      if(!registo){ semBackend = true; continue; }
+      if(registo.estado === 'a carregar'){ aCarregar = true; continue; }
+      for(const [chave, preco] of Object.entries(registo.precos)){
+        precos[chave] = preco;
         if(preco < minimo) minimo = preco;
       }
     }
@@ -125,19 +155,31 @@ function desenharCalendario(){
   }
 
   const legenda = `<span class="cal-legenda"><span class="tracinho"></span> Os preços sublinhados indicam o valor mais baixo apresentado</span>`;
+  const duracao = `<span class="cal-duracao"><button type="button" id="cal-len-menos">‹</button>
+      <strong>viagens de ${CAL.nDias} dias</strong>
+      <button type="button" id="cal-len-mais">›</button></span>`;
   let rodapeInfo;
   if(!temRota){
     rodapeInfo = 'Indique a origem e o destino para ver preços no calendário.';
+  }else if(semBackend){
+    rodapeInfo = 'Sem ligação ao backend não há preços por dia. As datas continuam a poder ser escolhidas.';
+  }else if(aCarregar){
+    rodapeInfo = '⏳ A procurar tarifas reais…';
   }else if(CAL.modo === 'volta' && CAL.ida){
-    rodapeInfo = `A mostrar o preço total de ida e volta, em EUR por passageiro, para partida a ${formatarDataCurta(CAL.ida)}.`;
+    rodapeInfo = `Tarifas <strong>reais</strong> de ida e volta, em EUR por passageiro, para partida a ${formatarDataCurta(CAL.ida)}.`;
   }else if(CAL.sohIda){
-    rodapeInfo = 'A mostrar preços em EUR, por passageiro, para viagens só de ida.';
+    rodapeInfo = 'Tarifas <strong>reais</strong> em EUR, por passageiro, para viagens só de ida.';
   }else{
-    rodapeInfo = `A mostrar preços em EUR para
-      <span class="cal-duracao"><button type="button" id="cal-len-menos">‹</button>
-      <strong>viagens de ${CAL.nDias} dias</strong>
-      <button type="button" id="cal-len-mais">›</button></span>`;
+    rodapeInfo = `Tarifas <strong>reais</strong> em EUR para ${duracao}`;
   }
+  /* a duração é escolhida pelo utilizador e tem de continuar acessível
+     enquanto os preços carregam, senão o botão desaparece a meio */
+  if(temRota && !CAL.sohIda && !(CAL.modo === 'volta' && CAL.ida) && (aCarregar || semBackend))
+    rodapeInfo += ' ' + duracao;
+  const semPrecos = temRota && !aCarregar && !semBackend && !Object.keys(precos).length;
+  if(semPrecos)
+    rodapeInfo = `Não há tarifas registadas para esta rota em ${MESES[CAL.mesBase.getMonth()]}. ` +
+      (CAL.sohIda || (CAL.modo === 'volta' && CAL.ida) ? '' : 'Experimente outra duração: ' + duracao);
 
   html += `</div></div>
     <div class="cal-rodape">
@@ -157,6 +199,7 @@ function desenharCalendario(){
   if(cxVolta) cxVolta.onclick = () => { if(CAL.ida){ CAL.modo = 'volta'; desenharCalendario(); } };
   el.querySelector('#cal-concluir').onclick = () => fecharCalendario(true);
   const menos = el.querySelector('#cal-len-menos'), mais = el.querySelector('#cal-len-mais');
+  /* mudar a duração muda a pergunta ao backend, não só a apresentação */
   if(menos) menos.onclick = () => { if(CAL.nDias > 2){ CAL.nDias--; desenharCalendario(); } };
   if(mais)  mais.onclick  = () => { if(CAL.nDias < 21){ CAL.nDias++; desenharCalendario(); } };
 
