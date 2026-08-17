@@ -57,11 +57,12 @@ function carregarPrecosCalendario(mes){
   fetch(base + '/calendario?' + ps)
     .then(r => r.ok ? r.json() : null)
     .then(d => {
-      CACHE_CAL[chave] = {estado:'pronto', precos:(d && d.precos) || {}};
+      CACHE_CAL[chave] = {estado:'pronto', precos:(d && d.precos) || {},
+                          noites:(d && d.noites) || {}};
       if(CAL.aberto) desenharCalendario();
     })
     .catch(() => {
-      CACHE_CAL[chave] = {estado:'falhou', precos:{}};
+      CACHE_CAL[chave] = {estado:'falhou', precos:{}, noites:{}};
       if(CAL.aberto) desenharCalendario();
     });
 }
@@ -98,7 +99,7 @@ function desenharCalendario(){
 
   /* preços de todos os dias visíveis, para saber qual é o mais barato.
      Vêm do backend; os dias sem tarifa registada ficam sem preço. */
-  const precos = {};
+  const precos = {}, noitesDe = {};
   let minimo = Infinity, aCarregar = false, semBackend = false;
   if(temRota){
     for(const mes of [CAL.mesBase, mes2]){
@@ -110,6 +111,8 @@ function desenharCalendario(){
         precos[chave] = preco;
         if(preco < minimo) minimo = preco;
       }
+      /* dias em que a tarifa mais próxima não é da duração pedida */
+      Object.assign(noitesDe, registo.noites || {});
     }
   }
 
@@ -146,9 +149,14 @@ function desenharCalendario(){
       if(seleccionado) classes.push('seleccionado');
       if(intervalo) classes.push('intervalo');
       if(preco !== undefined && preco === minimo) classes.push('mais-barato');
-      html += `<button type="button" class="${classes.join(' ')}" data-dia="${chave}" ${passado ? 'disabled' : ''}>
+      /* a tarifa mais próxima pode não ser da duração pedida: nesse caso
+         diz-se de quantas noites é, em vez de a fazer passar pela pedida */
+      const n = noitesDe[chave];
+      if(n) classes.push('outra-duracao');
+      const titulo = n ? ` title="Tarifa de uma viagem de ${n} ${n === 1 ? 'noite' : 'noites'}, não de ${CAL.nDias}"` : '';
+      html += `<button type="button" class="${classes.join(' ')}" data-dia="${chave}"${titulo} ${passado ? 'disabled' : ''}>
         <span class="cal-dia-num">${d}</span>
-        ${preco !== undefined ? `<span class="cal-dia-preco">${euros(preco)}</span>` : ''}
+        ${preco !== undefined ? `<span class="cal-dia-preco">${euros(preco)}${n ? '<em>' + n + 'n</em>' : ''}</span>` : ''}
       </button>`;
     }
     html += '</div></div>';

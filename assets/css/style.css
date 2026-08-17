@@ -257,7 +257,7 @@ img{max-width:100%}
 .cal-dia:disabled{color:#5f6368;cursor:default}
 .cal-dia.vazio{cursor:default}
 .cal-dia-num{font-size:.95rem;font-weight:600}
-.cal-dia-preco{font-size:.72rem;color:var(--cal-suave);font-weight:600}
+.cal-dia-preco{font-size:.72rem;color:var(--cal-suave);font-weight:600;white-space:nowrap}
 .cal-dia:disabled .cal-dia-preco{color:#5f6368}
 .cal-dia.intervalo{background:rgba(138,180,248,.14);border-radius:0}
 .cal-dia.seleccionado{background:var(--cal-azul);color:#202124}
@@ -327,6 +327,9 @@ img{max-width:100%}
 .aba:hover{border-color:var(--indigo);color:var(--indigo)}
 .aba.activa{background:var(--indigo);border-color:var(--indigo);color:#fff}
 .fora-da-aba{display:none !important}
+/* dia cuja tarifa é de uma viagem de outra duração: o número de noites vai
+   ao lado do preço, para não passar pela duração que foi pedida */
+.cal-dia-preco em{font-style:normal;opacity:.55;font-size:.78em;margin-left:.12em}
 /* sobra uma coluna só: ocupa a largura toda em vez de deixar metade vazia */
 .res-grelha.coluna-unica{grid-template-columns:1fr}
 
