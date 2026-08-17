@@ -593,6 +593,8 @@ img{max-width:100%}
   color:#fff;border-radius:9px;padding:.4rem .7rem;font-weight:700;font-size:.82rem;
 }
 .btn-resumo:hover{background:rgba(255,255,255,.28)}
+/* o mesmo botão também serve de ligação (requisitos de entrada) */
+a.btn-resumo{text-decoration:none;display:inline-block;cursor:pointer}
 #forma-alerta{display:flex;align-items:center;gap:.4rem;color:#d6daf5;flex-wrap:wrap}
 #forma-alerta input{width:5.2rem;border-radius:7px;border:0;padding:.32rem .45rem;font-weight:700}
 .alerta-confirmado{color:#9be8c5;font-size:.8rem;font-weight:700;width:100%}

@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v58';
+const VERSAO_WORKER = 'v59';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -228,25 +228,44 @@ async function voos(url, env){
          volta no mesmo dia — e era isso que aparecia, porque o filtro só
          olhava para a data de partida e ignorava a de regresso. */
       const noitesPedidas = volta ? Math.round(dias(ida, volta)) : null;
-      const duracaoServe = o => {
-        if(noitesPedidas == null) return true;      /* só ida: nada a comparar */
-        const n = Math.round(dias(o.data, o.regresso));
-        /* o regresso tem de existir e ser depois da ida: a API devolve
-           linhas com regresso igual ou anterior à partida */
-        if(!isFinite(n) || n < 1) return false;
-        return Math.abs(n - noitesPedidas) <= 2;
+      /* Primeira versão disto era um filtro único e apertado — duração a
+         menos de duas noites e partida a menos de sete dias — e deixava uma
+         tarifa na lista, ou nenhuma. Um filtro que corta tudo é tão inútil
+         como não filtrar: o que se quer é uma ordem, não um corte.
+         Vai-se abrindo o cerco por camadas até haver lista que chegue, e o
+         que nunca entra são as viagens impossíveis. */
+      const medir = o => {
+        const n = noitesPedidas == null ? null : Math.round(dias(o.data, o.regresso));
+        return {...o,
+          noites: n,
+          afastamento: Math.abs(Date.parse(o.data) - alvo) / 86400000,
+          desvio: n == null ? 0 : Math.abs(n - noitesPedidas)};
       };
-      const perto = doMes
-        .map(o => ({...o, afastamento: Math.abs(Date.parse(o.data) - alvo) / 86400000}))
-        .filter(o => isFinite(o.afastamento) && o.afastamento <= 7 && duracaoServe(o))
-        .sort((a, b) => a.preco - b.preco);
-      /* se nem uma tarifa tiver a duração pedida, alarga-se — mas as viagens
-         impossíveis ficam sempre de fora */
-      const resto = doMes.filter(o => noitesPedidas == null || Math.round(dias(o.data, o.regresso)) >= 1);
-      const lista = (perto.length ? perto : resto.sort((a, b) => a.preco - b.preco)).slice(0, 20);
+      /* regresso inexistente, igual ou anterior à partida: não é viagem */
+      const possiveis = doMes.map(medir).filter(o =>
+        isFinite(o.afastamento) && (o.noites == null || (isFinite(o.noites) && o.noites >= 1)));
+      const camadas = [
+        o => o.desvio <= 1 && o.afastamento <= 3,
+        o => o.desvio <= 2 && o.afastamento <= 7,
+        o => o.desvio <= 3 && o.afastamento <= 14,
+        () => true
+      ];
+      /* mais perto primeiro, e dentro do mesmo grau de proximidade o mais
+         barato — sem nunca deixar a lista curta de mais para se comparar */
+      const lista = [];
+      for(const camada of camadas){
+        if(lista.length >= 8) break;
+        possiveis.filter(o => camada(o) && !lista.includes(o))
+          .sort((a, b) => (a.desvio - b.desvio) || (a.afastamento - b.afastamento) || (a.preco - b.preco))
+          .forEach(o => { if(lista.length < 12) lista.push(o); });
+      }
+      lista.sort((a, b) => a.preco - b.preco);
       if(lista.length && !debug)
         return resposta({ofertas: lista, classe:'economica',
-          fonte:'travelpayouts/prices_for_dates', datas:'proximas'});
+          fonte:'travelpayouts/prices_for_dates', datas:'proximas',
+          /* porque é que não houve tarifas nas datas exactas: sem isto, o
+             diagnóstico só sabe dizer que caiu para datas próximas */
+          nota: tentativas.join(' · ')});
       ofertas = lista;
     }
   }
@@ -469,6 +488,12 @@ async function carros(url, env){
       j = await pedir(coord.latitude ?? coord.lat, coord.longitude ?? coord.lon, local.title || '');
     else if(depurar) return resposta({passo:'searchDestination', resposta: destino}, 200, true);
   }
+  /* «debug=precos» devolve só os blocos de preço dos primeiros cartões: a
+     resposta inteira tem dezenas de milhares de caracteres e não se lê. */
+  if(q.get('debug') === 'precos')
+    return resposta({passo:'pricing', cartoes: cartoesDe(j).slice(0, 6).map(c => ({
+      titulo: c.title, fornecedor: c.supplier && c.supplier.name, pricing: c.pricing
+    })), quota: j._quota || ''}, 200, true);
   if(depurar) return resposta({passo:'searchCarRentals', local, resposta: j}, 200, true);
   if(j._erro) return resposta({ofertas:[], fonte:'booking', nota: j._erro}, 200, true);
   /* «search_results» vem sempre vazio: as viaturas estão em content.items,
@@ -495,11 +520,27 @@ async function carros(url, env){
     .replace(/\bor similar\b/gi, 'ou similar')
     .replace(/\s*\|\s*/g, ' · ');
 
-  /* os preços vêm formatados («€ 18»), não como número */
+  /* O preço vem formatado («€ 18»), mas nem só: há campos numéricos ao lado,
+     e são esses que valem. Ler apenas a cadeia formatada dava seis viaturas
+     de fornecedores diferentes todas ao mesmo euro — sinal de que a cadeia
+     lida não era a da viatura. Procura-se primeiro um número, e só se não
+     houver nenhum é que se volta a interpretar o texto. */
+  const numeroDe = (o, ...caminhos) => {
+    for(const cam of caminhos){
+      let v = o;
+      for(const passo of cam.split('.')){ v = v && v[passo]; }
+      const n = typeof v === 'number' ? v : (typeof v === 'string' ? precoNumero(v) : 0);
+      if(n > 0) return n;
+    }
+    return 0;
+  };
   const ofertas = cartoes.map(c => {
     const p = c.pricing || {};
-    const antes = precoNumero(p.originalPriceDisplay);
-    const agora = precoNumero(p.finalPriceDisplay);
+    const antes = numeroDe(p, 'originalPrice.amount', 'originalPrice', 'originalPriceDisplay');
+    const agora = numeroDe(p,
+      'finalPrice.amount', 'finalPrice', 'price.amount', 'price',
+      'totalPrice.amount', 'totalPrice', 'discountedPrice.amount',
+      'finalPriceDisplay');
     const forn = c.supplier || {};
     return {
       /* o modelo sozinho; o «ou similar» é detalhe e alongaria o resumo */
@@ -513,6 +554,11 @@ async function carros(url, env){
       imagem: urlDe(c, 'imageUrl', 'image', 'vehicleImage', 'photoUrl')
               || urlDe(c.vehicle || {}, 'imageUrl', 'image'),
       nota: (c.supplier && c.supplier.rating && c.supplier.rating.score) || '',
+      /* ligação para esta viatura, se a Booking a der: sem ela o botão cai
+         numa página de entrada, e a pior hipótese é mandar o utilizador para
+         um endereço inventado que não existe */
+      url: urlDe(c, 'deeplink', 'deepLink', 'url', 'link', 'bookUrl')
+           || urlDe(c.routeInfo || {}, 'deeplink', 'url'),
       detalhe: [
         traduzir(c.subtitle),
         traduzir(c.specs),
