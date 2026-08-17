@@ -327,6 +327,8 @@ img{max-width:100%}
 .aba:hover{border-color:var(--indigo);color:var(--indigo)}
 .aba.activa{background:var(--indigo);border-color:var(--indigo);color:#fff}
 .fora-da-aba{display:none !important}
+/* sobra uma coluna só: ocupa a largura toda em vez de deixar metade vazia */
+.res-grelha.coluna-unica{grid-template-columns:1fr}
 
 .res-grelha{display:grid;grid-template-columns:1.6fr 1fr;gap:1.1rem;align-items:start;margin-top:1.1rem}
 .res-coluna{display:flex;flex-direction:column;gap:1.1rem;min-width:0}
@@ -389,7 +391,12 @@ img{max-width:100%}
 }
 .icone-parceiro img{position:absolute;inset:0;width:100%;height:100%}
 /* logótipos: fundo claro, porque quase todos são desenhados para ele */
-.icone-parceiro img.logo{object-fit:contain;padding:.3rem;background:#fff}
+.icone-parceiro img.logo{object-fit:contain;padding:.22rem;background:#fff}
+/* Nas linhas de oferta a caixa é maior e mais larga do que alta: quase todos
+   estes logótipos são palavras deitadas («AIRFRANCE», «dollar», «Thrifty»),
+   e num quadrado o «contain» encolhia-os até não se lerem. */
+.linha-oferta .icone-parceiro{width:3.9rem;height:3rem;border-radius:12px}
+.linha-oferta .icone-parceiro .mono{font-size:1.25rem}
 /* fotografias de alojamento: preenchem a caixa toda */
 .icone-parceiro img.foto{object-fit:cover}
 /* compatibilidade com marcações antigas que ainda usem .letra */

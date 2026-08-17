@@ -1184,6 +1184,15 @@ function montarAbas(sec){
        próprio «hidden» e as duas coisas têm de poder coexistir */
     sec.querySelectorAll('[data-aba]').forEach(el =>
       el.classList.toggle('fora-da-aba', id !== 'tudo' && el.dataset.aba !== id));
+    /* Uma coluna sem nada dentro não deve continuar a ocupar metade do ecrã:
+       na aba «Viagem» todos os blocos estão à direita, e à esquerda ficava um
+       vazio enorme que parecia avaria. */
+    const colunas = [...sec.querySelectorAll('.res-coluna')];
+    colunas.forEach(c => c.classList.toggle('fora-da-aba',
+      ![...c.children].some(el => !el.classList.contains('fora-da-aba') && !el.hidden)));
+    const grelha = sec.querySelector('.res-grelha');
+    if(grelha) grelha.classList.toggle('coluna-unica',
+      colunas.filter(c => !c.classList.contains('fora-da-aba')).length < 2);
     barra.querySelectorAll('.aba').forEach(b => {
       const activa = b.dataset.ir === id;
       b.classList.toggle('activa', activa);

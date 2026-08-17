@@ -112,7 +112,6 @@ async function actualizarAlojamentoReal(ctx){
       (lista[0].nome || 'alojamento') + ' · ' + noites + (noites === 1 ? ' noite' : ' noites'));
   }
 
-  const rotulo = {hotel:'Hotel', casa:'Casa / apartamento'};
   const temCasas = casas.length > 0;
   bloco.innerHTML = `
     <h3 class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</h3>
@@ -128,7 +127,7 @@ async function actualizarAlojamentoReal(ctx){
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
           ${caixaLogotipo([h.imagem], h.nome || 'Alojamento', {foto:true})}
           <div class="oferta-info">
-            <div class="oferta-nome">${escaparHtml(h.nome || 'Alojamento')} <span class="alt-tag">${rotulo[h.cat]}</span>${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
+            <div class="oferta-nome">${escaparHtml(h.nome || 'Alojamento')} <span class="alt-tag">${escaparHtml(rotuloAlojamento(h))}</span>${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${escaparHtml(detalhe)}</div>
           </div>
           <div class="oferta-preco"><div class="preco-actual">${euros(h.preco)}</div></div>
@@ -136,6 +135,37 @@ async function actualizarAlojamentoReal(ctx){
         </div>`;
     }).join('')}
     <p class="bloco-sub">Tarifas do Google Hotels; a reserva é concluída no site do parceiro.</p>`;
+}
+
+/* A pesquisa de «hotéis» na Google traz também hostels, pousadas e
+   apart-hotéis. Chamar «Hotel» a todos é dizer ao utilizador uma coisa que
+   não é verdade — o «St Christopher's Paris» é um hostel e aparecia como
+   hotel. A tipologia vem da Google, que a devolve ora em inglês ora em
+   português conforme o campo, e o que não estiver na tabela é mostrado tal
+   como veio, em vez de ser arredondado para «Hotel». */
+const TIPO_ALOJAMENTO = {
+  'hotel':'Hotel', 'hostel':'Hostel', 'hostal':'Hostel', 'albergue':'Hostel',
+  'apartment':'Apartamento', 'apartamento':'Apartamento', 'condo':'Apartamento',
+  'aparthotel':'Aparthotel', 'apart-hotel':'Aparthotel', 'apart hotel':'Aparthotel',
+  'vacation rental':'Casa / apartamento', 'casa de férias':'Casa / apartamento',
+  'holiday home':'Casa de férias', 'house':'Casa', 'casa':'Casa',
+  'guest house':'Casa de hóspedes', 'guesthouse':'Casa de hóspedes',
+  'casa de hóspedes':'Casa de hóspedes', 'pensão':'Pensão',
+  'bed and breakfast':'B&B', 'bed & breakfast':'B&B', 'b&b':'B&B',
+  'motel':'Motel', 'resort':'Resort', 'villa':'Moradia', 'moradia':'Moradia',
+  'cottage':'Casa de campo', 'cabin':'Cabana', 'chalet':'Chalé', 'chalé':'Chalé',
+  'inn':'Estalagem', 'estalagem':'Estalagem', 'pousada':'Pousada',
+  'camping':'Parque de campismo', 'hotel de charme':'Hotel de charme'
+};
+function rotuloAlojamento(h){
+  const t = String((h && h.tipo) || '').trim();
+  if(t){
+    const conhecido = TIPO_ALOJAMENTO[t.toLowerCase()];
+    /* o que não conhecemos vai como veio: menos exacto do que traduzir, mas
+       muito melhor do que inventar uma categoria errada */
+    return conhecido || (t.charAt(0).toUpperCase() + t.slice(1));
+  }
+  return h && h.cat === 'casa' ? 'Casa / apartamento' : 'Alojamento';
 }
 
 /* Actividades com preços reais. Sem fonte configurada, o bloco fica com as
@@ -236,8 +266,11 @@ async function actualizarVoosReais(ctx){
           <div class="oferta-info">
             <div class="oferta-nome">${escaparHtml(v.companhia || 'Companhia aérea')}${v === melhor ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${escaparHtml([
+              /* com datas vizinhas mostra-se também a duração: duas datas
+                 soltas não deixam ver que a estadia não é a que se pediu */
               outrasDatas && v.data
-                ? '📅 ' + diaCurto(v.data) + (v.regresso ? ' – ' + diaCurto(v.regresso) : '')
+                ? '📅 ' + diaCurto(v.data)
+                  + (v.regresso ? ' – ' + diaCurto(v.regresso) + noitesEntre(v.data, v.regresso) : '')
                 : '',
               v.escalas === 0 ? 'directo' : v.escalas + (v.escalas === 1 ? ' escala' : ' escalas'),
               v.duracao,
@@ -291,6 +324,12 @@ function embeberWidget(idBloco, src, titulo, subtitulo, extra, largo){
 }
 
 const dataISO = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+
+/* « (7 noites)», para se ver de relance se a estadia é a que se pediu */
+function noitesEntre(ida, volta){
+  const n = Math.round((Date.parse(volta) - Date.parse(ida)) / 86400000);
+  return isFinite(n) && n >= 1 ? ' (' + n + (n === 1 ? ' noite)' : ' noites)') : '';
+}
 
 /* «2026-09-11» → «Sex, 11 Set», para a data da tarifa se ler de relance */
 function diaCurto(iso){
