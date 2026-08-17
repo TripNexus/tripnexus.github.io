@@ -178,14 +178,19 @@ const TIPO_ALOJAMENTO = {
   'all-inclusive':'Tudo incluído', 'hotel resort':'Resort'
 };
 function rotuloAlojamento(h){
+  /* o que os indícios dizem ganha ao «type» genérico da Google: chamar
+     «Hotel» a um hostel é o erro que se quer evitar */
+  const cat = categoriaAlojamento(h);
+  if(cat === 'hostel') return 'Hostel';
   const t = String((h && h.tipo) || '').trim();
-  if(t){
+  if(t && t.toLowerCase() !== 'hotel'){
     const conhecido = TIPO_ALOJAMENTO[t.toLowerCase()];
     /* o que não conhecemos vai como veio: menos exacto do que traduzir, mas
        muito melhor do que inventar uma categoria errada */
     return conhecido || (t.charAt(0).toUpperCase() + t.slice(1));
   }
-  return h && h.cat === 'casa' ? 'Casa / apartamento' : 'Alojamento';
+  if(cat === 'casa') return 'Casa / apartamento';
+  return t ? 'Hotel' : 'Alojamento';
 }
 
 /* A rota que trouxe o alojamento não é o que ele é: a pesquisa de «hotéis»
@@ -194,10 +199,17 @@ function rotuloAlojamento(h){
    respeitada pelo tipo real, não pela origem. */
 function categoriaAlojamento(h){
   const t = String((h && h.tipo) || '').toLowerCase();
-  if(/hostel|hostal|albergue/.test(t)) return 'hostel';
-  if(/apartment|apartamento|condo|rental|casa|house|home|villa|moradia|cottage|cabin|chalet|chalé|lodge|riad|minbak|boat/.test(t)) return 'casa';
+  /* O «type» da Google é grosso: diz «hotel» a tudo o que veio da pesquisa
+     de hotéis, hostels e apart-hotéis incluídos. Só distingue mesmo o
+     alojamento local. Para o resto é preciso olhar para o nome e para a
+     descrição — é uma leitura de indícios, não um campo de dados, e por isso
+     só se muda a categoria quando a palavra aparece por inteiro. */
+  if(/vacation rental|holiday|rental|apartment|apartamento|casa|house|home|villa|condo/.test(t)) return 'casa';
+  const texto = ((h && h.nome) || '') + ' ' + ((h && h.descricao) || '');
+  if(/\b(hostel|hostels|hostal|albergue|albergues|youth hostel|dormitóri|dormitor|bunk|backpack)/i.test(texto)) return 'hostel';
+  if(/\b(apart-?hotel|aparthotel|apartamento|apartment|studio|estúdio|flat|moradia|villa)\b/i.test(texto)) return 'casa';
   if(t) return 'hotel';
-  /* sem tipologia não se inventa: fica pela rota que o trouxe */
+  /* sem indício nenhum não se inventa: fica pela rota que o trouxe */
   return (h && h.cat) || 'hotel';
 }
 
@@ -269,7 +281,8 @@ async function actualizarVoosReais(ctx){
     }
     /* tarifas de dias vizinhos: são reais, mas não são as datas pedidas.
        Tem de se dizer, e cada linha leva a sua data. */
-    const outrasDatas = dados.datas === 'proximas';
+    const soRegresso = dados.datas === 'regresso-proximo';
+    const outrasDatas = dados.datas === 'proximas' || soRegresso;
     registarFonte('Voos (Travelpayouts)', 'reais',
       dados.ofertas.length + ' tarifas' + (outrasDatas ? ' (datas próximas, não as pedidas)' : '')
       + (outrasDatas && dados.nota ? ' · ' + dados.nota : ''));
@@ -291,7 +304,9 @@ async function actualizarVoosReais(ctx){
     bloco.innerHTML = `
       <h3 class="bloco-titulo">✈ Voos · tarifas reais</h3>
       <p class="bloco-sub tempo-real">⚡ Tarifas reais registadas nas últimas horas (Aviasales/Travelpayouts). Total para todos os passageiros.</p>
-      ${outrasDatas ? '<p class="aviso-datas">📅 Não há tarifas registadas para as datas exactas que indicou. Estas são tarifas <strong>reais</strong> de dias próximos: as datas de ida e de regresso de cada uma estão indicadas na linha.</p>' : ''}
+      ${soRegresso
+        ? '<p class="aviso-datas">📅 A <strong>data de ida é a que pediu</strong>. Não há tarifas registadas para o regresso a ' + escaparHtml(diaCurto(dataISO(ctx.volta))) + ', por isso o regresso destas é noutro dia — cada linha diz qual, e quantas noites fica.</p>'
+        : outrasDatas ? '<p class="aviso-datas">📅 Não há tarifas registadas para as datas exactas que indicou. Estas são tarifas <strong>reais</strong> de dias próximos: as datas de ida e de regresso de cada uma estão indicadas na linha.</p>' : ''}
       ${notaClasse}
       ${typeof barraFiltros === 'function' ? barraFiltros(companhias) : ''}
       ${visiveis.length ? visiveis.slice(0, 8).map(v => `
@@ -424,20 +439,24 @@ async function actualizarCarrosReais(ctx){
   const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
   const dias = Math.max(1, Math.round((ctx.fim - ctx.ida) / 86400000));
 
-  let ofertas = [], moeda = '';
+  let ofertas = [], moeda = '', pesquisa = '';
   if(base && ctx.destino.la != null){
     try{
       /* o nome em inglês ajuda o fornecedor a reconhecer o local; as
          coordenadas ficam como alternativa */
       const nome = (typeof WIKI_EN !== 'undefined' && WIKI_EN[ctx.destino.n]) || ctx.destino.n;
       const ps = new URLSearchParams({cidade: nome, lat: ctx.destino.la, lon: ctx.destino.lo,
-                                      ida: f(ctx.ida), volta: f(ctx.fim)});
+                                      ida: f(ctx.ida), volta: f(ctx.fim),
+                                      /* código da cidade, para o botão de reserva
+                                         abrir a pesquisa no local certo */
+                                      iata: ctx.destino.i || ''});
       const r = await fetch(base + '/carros?' + ps);
       const d = r.ok ? await r.json() : null;
       ofertas = (d && Array.isArray(d.ofertas)) ? d.ofertas : [];
       /* este fornecedor não aceita moeda no pedido: se o preço não vier em
          euros, mostra-se o código em vez de fingir que é € */
       moeda = (d && d.moeda) || '';
+      pesquisa = (d && d.pesquisa) || '';
       if(!ofertas.length) registarFonte('Aluguer de viaturas', 'sem preços',
         [(d && (d.nota || d.erro)) || (r.ok ? 'sem viaturas para estas datas' : 'backend devolveu ' + r.status),
          d && d.quota].filter(Boolean).join(' · '));
@@ -451,12 +470,12 @@ async function actualizarCarrosReais(ctx){
     /* só entra no total se estiver na mesma moeda do resto */
     if(emEuros && typeof registarPrecoReal === 'function')
       registarPrecoReal('carro', ofertas[0].preco, (ofertas[0].nome || 'viatura') + ' · ' + dias + (dias === 1 ? ' dia' : ' dias'));
-    /* Os preços vêm da Booking, por isso é para lá que o botão leva quando a
-       resposta não traz a ligação da viatura. Antes ia para um endereço do
-       Discover Cars montado por nós, «/pt/search?location=…», que devolvia
-       «Página não encontrada»: um botão que dá erro é pior do que um botão
-       que abre a página de entrada do sítio certo. */
-    const liga = 'https://www.booking.com/cars/index.html';
+    /* Os cartões da API não trazem ligação para a viatura, por isso o botão
+       abre a pesquisa da Booking já com o local e as datas — construída no
+       backend a partir dos parâmetros que a Booking documenta. A página de
+       entrada fica como último recurso, e o endereço inventado que dava
+       «Página não encontrada» desapareceu. */
+    const liga = pesquisa || 'https://www.booking.com/cars/index.html';
     bloco.innerHTML = `
       <h3 class="bloco-titulo">🚗 Aluguer de viatura em ${escaparHtml(ctx.destino.n)} · preços reais</h3>
       <p class="bloco-sub tempo-real">⚡ Preços reais para ${dias} ${dias === 1 ? 'dia' : 'dias'} (Booking.com). Total do aluguer.</p>
