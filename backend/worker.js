@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v54';
+const VERSAO_WORKER = 'v55';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -70,9 +70,11 @@ async function estado(env){
   }else{
     /* o mais barato que há para ler os cabeçalhos de quota */
     const r = await rapid(CAMINHO_CARROS_DESTINO, {term:'Lisbon', countryOfResidence:'pt'}, env);
-    info.rapidapi_quota = r._quota || (r._estado === 429 ? '0 (esgotada)' : 'desconhecida');
-    if(r._estado === 429)
-      info.sugestao_carros = 'A quota do RapidAPI esgotou-se: o aluguer e as actividades ficam sem preço até renovar. Ver backend/README.md sobre a Booking.com Demand API, que não tem limite de pedidos.';
+    info.rapidapi_quota = r._quota || (r._quotaEsgotada ? '0 (esgotada)' : 'desconhecida');
+    if(r._quotaEsgotada)
+      info.sugestao_carros = 'A quota mensal do RapidAPI esgotou-se: o aluguer e as actividades ficam sem preço até ao mês que vem. Ver backend/README.md sobre a Booking.com Demand API, que não tem limite de pedidos.';
+    else if(r._estado === 429)
+      info.sugestao_carros = 'O RapidAPI travou o ritmo (429), mas a quota do mês não está em causa: são pedidos a mais ao mesmo tempo. O Worker já repete com espera.';
   }
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
@@ -288,10 +290,36 @@ const CAMINHO_CARROS = '/api/v2/cars/searchCarRentals';
    no site como «a Booking não reconheceu «Paris»». */
 const LOCALE = 'pt-pt';
 
+/* O RapidAPI devolve 429 por duas razões muito diferentes, e o código HTTP
+   sozinho não as distingue:
+
+   - a quota do mês acabou — o corpo fala em «MONTHLY quota» e nomeia o plano;
+     esperar não adianta nada, só volta a haver pedidos no mês seguinte;
+   - pedidos a mais por segundo — o corpo diz apenas «Too many requests». O
+     plano gratuito tolera muito pouca simultaneidade, e o site pede carros e
+     actividades ao mesmo tempo, o que basta para o accionar. Aqui esperar
+     resolve, e é o que se faz.
+
+   Confundir os dois custou-nos um diagnóstico errado: demos por esgotada uma
+   quota que estava em 47/50. */
+function quotaDoMes(corpo){ return /monthly quota|exceeded the .*quota/i.test(corpo || ''); }
+
 async function rapid(caminho, params, env){
   const chave = (env.RAPIDAPI_KEY || '').trim();
   if(!chave) return {_erro:'RAPIDAPI_KEY não definido no Worker (ver /estado)'};
   const endereco = 'https://' + RAPID_HOST + caminho + '?' + new URLSearchParams(params);
+  const esperas = [0, 1200, 2500];
+  let ultima = null;
+  for(const espera of esperas){
+    if(espera) await new Promise(f => setTimeout(f, espera));
+    ultima = await uma(endereco, chave);
+    /* só vale a pena repetir o 429 de ritmo; o da quota do mês é definitivo */
+    if(ultima._estado !== 429 || ultima._quotaEsgotada) break;
+  }
+  return ultima;
+}
+
+async function uma(endereco, chave){
   try{
     const r = await fetch(endereco, {
       headers:{'x-rapidapi-key': chave, 'x-rapidapi-host': RAPID_HOST},
@@ -307,8 +335,15 @@ async function rapid(caminho, params, env){
     const resta = r.headers.get('x-ratelimit-requests-remaining');
     const total = r.headers.get('x-ratelimit-requests-limit');
     if(resta != null) meta._quota = resta + (total ? '/' + total : '') + ' pedidos restantes';
-    if(r.status === 429)
-      return Object.assign({_erro:'quota do RapidAPI esgotada (429): não há mais pedidos disponíveis este mês'}, meta);
+    if(r.status === 429){
+      const doMes = quotaDoMes(bruto);
+      return Object.assign({
+        _quotaEsgotada: doMes,
+        _erro: doMes
+          ? 'quota mensal do RapidAPI esgotada: só há mais pedidos no mês que vem'
+          : 'o RapidAPI travou o ritmo (429, «too many requests»); a quota do mês não está em causa'
+      }, meta);
+    }
     if(!r.ok) return Object.assign({_erro:'Booking devolveu ' + r.status, _bruto: bruto.slice(0, 500)}, meta);
     try{ return Object.assign(JSON.parse(bruto), meta); }
     catch(e){ return Object.assign({_erro:'resposta ilegível', _bruto: bruto.slice(0, 500)}, meta); }

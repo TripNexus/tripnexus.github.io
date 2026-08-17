@@ -108,10 +108,19 @@ inventados.
 > directamente nas coordenadas que já temos, e só se elas não derem viaturas é
 > que se gasta um segundo a perguntar ao fornecedor onde fica o local.
 >
-> Esgotada a quota, o fornecedor responde **HTTP 429**, que o `/estado` e o
-> diagnóstico do site passam a mostrar como tal — em vez de parecer avaria. Os
-> cabeçalhos `x-ratelimit-requests-remaining` são lidos e devolvidos no campo
-> `quota`.
+> **O 429 tem duas causas, e confundi-las custa caro.** O plano gratuito
+> limita os pedidos **por mês** e também **por segundo**, e devolve o mesmo
+> código HTTP para as duas coisas. Distinguem-se pelo corpo: o da quota fala em
+> *«MONTHLY quota»* e nomeia o plano; o do ritmo diz apenas *«Too many
+> requests»*. O site pede carros e actividades ao mesmo tempo, o que basta para
+> accionar o segundo com a quota do mês quase intacta — foi exactamente o que
+> nos aconteceu, com 47 dos 50 pedidos por gastar.
+>
+> O `rapid()` trata-os de maneira diferente: no 429 de ritmo repete até duas
+> vezes, com 1,2 s e 2,5 s de espera; no da quota desiste de imediato, porque
+> esperar não devolve pedidos. Os cabeçalhos
+> `x-ratelimit-requests-remaining` são lidos e devolvidos no campo `quota`, e o
+> `/estado` mostra qual dos dois casos é.
 >
 > Isto serve para validar a integração, não para um site aberto ao público. O destino natural é a **Booking.com Demand API**
 > (<https://developers.booking.com/demand>), que não cobra pela utilização —
