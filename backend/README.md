@@ -238,6 +238,7 @@ utilizador.
 | Rota | Parâmetros | Devolve |
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas`, `marker` | `{ofertas:[{preco, companhia, escalas, duracao, partida, url}], classe, fonte}` |
+| `/calendario` | `origem`, `destino` (IATA), `mes` (AAAA-MM), e depois `dias` (duração da viagem) **ou** `ida` (AAAA-MM-DD, para agrupar por dia de regresso) **ou** `soIda=1` | `{precos:{"2026-09-09":171, …}, mes, dias, fonte}`: o preço real mais baixo por dia. É o que alimenta a grelha de datas — que antes mostrava valores inventados por um gerador com semente |
 | `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
 | `/casas` | os mesmos de `/hoteis` | alojamento local: mesmo motor e **mesma chave**, com `vacation_rentals=true` |
 | `/carros` | `lat`, `lon`, `ida`, `volta` (AAAA-MM-DD), `debug` | `{ofertas:[{nome, preco, fornecedor, detalhe}], fonte:"booking"}` |

@@ -84,7 +84,16 @@ function cotacaoVoo(chaveParceiro, origem, destino, ida, volta, classe, pax){
   };
 }
 
-/* preço rápido para o calendário: melhor cotação (por adulto) */
+/* ATENÇÃO: este preço é INVENTADO. Sai do cotacaoVoo(), que o gera com um
+   gerador pseudo-aleatório com semente — estável entre visitas, e por isso
+   convincente, mas sem relação nenhuma com o que custa voar.
+
+   O calendário de datas já não o usa: passou a ler tarifas reais em
+   /calendario. Quem ainda o usa é o calcularOfertas(), que alimenta a página
+   «Ofertas em conta» — e portanto essa página mostra descontos inventados,
+   incluindo a percentagem de «queda» face a um preço «típico» que também é
+   inventado. Está por resolver, e é a última coisa no site que mostra
+   números que não existem. */
 function precoCalendario(origem, destino, ida, nDias, classe, sohIda){
   let volta = null;
   if(!sohIda){ volta = new Date(ida); volta.setDate(volta.getDate() + nDias); }
