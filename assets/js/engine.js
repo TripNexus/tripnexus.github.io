@@ -257,6 +257,111 @@ function estimativaTransportesPublicos(cidade, dias, pax){
   return {porDia:arred(passeDia), total:arred(passeDia * dias * pessoas), pessoas, dias, real:false};
 }
 
+/* ── perfis de transporte no destino ──────────────────────────
+   Uma lista de bilhetes não é uma decisão. O que uma pessoa quer saber é
+   «qual destes é o meu», e isso depende de quanto tenciona andar. Montam-se
+   três respostas a partir das mesmas tarifas publicadas:
+
+     económico  — bilhetes avulso, para quem anda pouco. O total depende do
+                  número de viagens, que não sabemos, por isso é o único que
+                  leva um pressuposto declarado: duas viagens por dia.
+     habitual   — o passe mais barato que cobre metro e autocarro durante a
+                  estadia. É o que a maioria dos visitantes usa.
+     completo   — o mesmo, mas exigindo também comboio ou aeroporto, para
+                  quem quer as deslocações todas cobertas.
+
+   Cada perfil traz a combinação exacta de títulos, e não uma média: em
+   Paris, oito dias saem mais baratos com um passe semanal mais um diário do
+   que com dois semanais. O mais barato dos três fica marcado. */
+function combinacaoMaisBarata(bilhetes, dias){
+  const opcoes = bilhetes
+    .map(b => ({b, cobre: DIAS_COBERTOS[String(b.unidade || '').toLowerCase()]}))
+    .filter(o => o.cobre);
+  if(!opcoes.length) return null;
+  const custo = [0], veio = [null];
+  for(let d = 1; d <= dias; d++){
+    custo[d] = Infinity;
+    for(const o of opcoes){
+      const antes = Math.max(0, d - o.cobre);
+      const c = custo[antes] + o.b.preco;
+      if(c < custo[d]){ custo[d] = c; veio[d] = {antes, opcao:o}; }
+    }
+  }
+  if(!isFinite(custo[dias])) return null;
+  const contagem = new Map();
+  for(let d = dias; d > 0; ){
+    const passo = veio[d];
+    contagem.set(passo.opcao.b, (contagem.get(passo.opcao.b) || 0) + 1);
+    d = passo.antes;
+  }
+  return {total: custo[dias], titulos: [...contagem.entries()].map(([b, n]) => ({bilhete:b, n}))};
+}
+
+/* união dos modos cobertos por uma combinação de títulos */
+function modosDaCombinacao(c){
+  const s = new Set();
+  for(const t of c.titulos) for(const m of (t.bilhete.modos || [])) s.add(m);
+  return [...s];
+}
+
+const VIAGENS_POR_DIA = 2;   /* pressuposto do perfil económico, declarado no ecrã */
+
+function perfisTransporte(cidade, dias, pax){
+  const t = (typeof transportesDe === 'function') ? transportesDe(cidade) : null;
+  if(!t) return null;
+  const pessoas = Math.max(1, pax.adultos + pax.criancas);
+  const temModo = (b, ms) => ms.some(m => (b.modos || []).includes(m));
+  const perfis = [];
+
+  /* económico: bilhetes avulso de transporte urbano */
+  const avulso = t.bilhetes.filter(b => String(b.unidade).includes('viagem')
+    && temModo(b, ['metro','autocarro','eletrico']));
+  if(avulso.length){
+    const barato = avulso.reduce((m, b) => b.preco < m.preco ? b : m);
+    perfis.push({
+      chave:'economico', rotulo:'Económico',
+      descricao:'Bilhetes avulso, para quem anda pouco.',
+      total: barato.preco * VIAGENS_POR_DIA * dias * pessoas,
+      titulos:[{bilhete:barato, n: VIAGENS_POR_DIA * dias}],
+      modos: barato.modos || [],
+      pressuposto: VIAGENS_POR_DIA + ' viagens por dia'
+    });
+  }
+
+  /* habitual: passe que cubra metro e autocarro */
+  const urbanos = t.bilhetes.filter(b => temModo(b, ['metro','autocarro','eletrico']));
+  const cHabitual = combinacaoMaisBarata(urbanos, dias);
+  if(cHabitual) perfis.push({
+    chave:'habitual', rotulo:'Habitual',
+    descricao:'Passe para os transportes que se usam dentro da cidade.',
+    total: cHabitual.total * pessoas, titulos: cHabitual.titulos,
+    modos: modosDaCombinacao(cHabitual)
+  });
+
+  /* completo: exige também comboio ou aeroporto */
+  /* só comboio e aeroporto: o barco e os elevadores costumam já vir no passe
+     urbano, e exigi-los fazia o perfil «completo» repetir o «habitual» */
+  const completos = t.bilhetes.filter(b => temModo(b, ['comboio','aeroporto']));
+  const cCompleto = combinacaoMaisBarata(completos, dias);
+  if(cCompleto && (!cHabitual || cCompleto.total !== cHabitual.total ||
+      modosDaCombinacao(cCompleto).length > modosDaCombinacao(cHabitual).length))
+    perfis.push({
+      chave:'completo', rotulo:'Completo',
+      descricao:'Cobre também o comboio ou o aeroporto, conforme a cidade.',
+      total: cCompleto.total * pessoas, titulos: cCompleto.titulos,
+      modos: modosDaCombinacao(cCompleto)
+    });
+
+  if(!perfis.length) return null;
+  for(const p of perfis) p.total = Math.round(p.total * 100) / 100;
+  /* o mais barato fica assinalado, mas não é sempre o melhor: um passe que
+     cobre o aeroporto pode compensar mesmo custando mais */
+  const min = Math.min(...perfis.map(p => p.total));
+  for(const p of perfis) p.maisBarato = p.total === min;
+  return {perfis, moeda: t.moeda || 'EUR', operador: t.operador, url: t.url,
+          ano: t.ano, nota: t.nota, cartao: t.cartao, dias, pessoas};
+}
+
 /* ── actividades ──────────────────────────────────────────────── */
 const NOMES_ACT = [
   'Visita guiada ao centro histórico','Excursão de dia inteiro aos arredores',

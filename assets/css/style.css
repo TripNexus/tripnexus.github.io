@@ -336,27 +336,67 @@ img{max-width:100%}
    ao lado do preço, para não passar pela duração que foi pedida */
 .cal-dia-preco em{font-style:normal;opacity:.55;font-size:.78em;margin-left:.12em}
 
-/* ── transportes no destino ─────────────────────────────────── */
+/* ── transportes no destino ───────────────────────────────────
+   O texto amontoava-se: nome, etiqueta e preço disputavam a mesma linha e
+   colidiam assim que o nome do bilhete era comprido. Passa a haver linhas
+   próprias — nome e preço em cima, modos de transporte no meio, quando
+   comprar em baixo — e cada título tem espaço para respirar. */
 .dica-transportes{
   background:var(--verde-claro);border-left:3px solid var(--verde);
-  padding:.55rem .75rem;border-radius:8px;font-size:.88rem;margin-bottom:.7rem;
+  padding:.6rem .8rem;border-radius:8px;font-size:.88rem;margin-bottom:.7rem;line-height:1.5;
 }
-.lista-transportes{display:flex;flex-direction:column;gap:.4rem}
+.sub-titulo{
+  font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--cinza);margin:1.2rem 0 .55rem;
+}
+.btn-inline{display:inline-block;margin-top:.5rem}
+
+/* os três perfis: é aqui que se decide */
+.perfis-transporte{display:grid;grid-template-columns:repeat(auto-fit,minmax(13.5rem,1fr));gap:.6rem}
+.perfil-transporte{
+  border:1.5px solid var(--cinza-claro);border-radius:14px;padding:.85rem .9rem;
+  display:flex;flex-direction:column;gap:.4rem;
+}
+.perfil-transporte.melhor{border-color:var(--verde);background:var(--verde-claro)}
+.perfil-cabeca{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.perfil-rotulo{font-weight:800;font-size:.95rem}
+.perfil-preco{font-size:1.45rem;font-weight:800;line-height:1.1}
+.perfil-descricao{font-size:.83rem;color:var(--cinza);line-height:1.45}
+.perfil-titulos{list-style:none;display:flex;flex-direction:column;gap:.2rem;font-size:.84rem}
+.perfil-titulos li{padding-left:.9rem;position:relative;line-height:1.4}
+.perfil-titulos li::before{content:'·';position:absolute;left:.25rem;font-weight:800}
+.perfil-nota{font-size:.78rem;color:var(--cinza);line-height:1.4;margin-top:auto}
+
+/* que transportes cada título serve */
+.selos-modos{display:flex;flex-wrap:wrap;gap:.3rem}
+.selo-modo{
+  font-size:.73rem;font-weight:700;padding:.2rem .5rem;border-radius:999px;
+  background:var(--cinza-claro);color:var(--cinza);white-space:nowrap;
+}
+.perfil-transporte.melhor .selo-modo{background:rgba(255,255,255,.65)}
+
+/* lista completa dos títulos */
+.lista-transportes{display:flex;flex-direction:column;gap:.5rem}
 .linha-transporte{
-  display:flex;align-items:center;gap:.7rem;
-  border:1.5px solid var(--cinza-claro);border-radius:12px;padding:.6rem .8rem;
+  border:1.5px solid var(--cinza-claro);border-radius:12px;padding:.65rem .8rem;
+  display:flex;flex-direction:column;gap:.45rem;
 }
-.transporte-info{flex:1;min-width:0}
-.transporte-nome{font-weight:700;font-size:.93rem}
-.transporte-detalhe{font-size:.8rem;color:var(--cinza)}
+.transporte-topo{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.transporte-nome{font-weight:700;font-size:.93rem;line-height:1.4;min-width:0}
+.transporte-preco{
+  font-weight:800;font-size:1.02rem;text-align:right;white-space:nowrap;flex:0 0 auto;
+}
+.transporte-preco small{display:block;font-size:.72rem;font-weight:600;color:var(--cinza)}
+.transporte-fundo{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .etiqueta-quando{
-  font-size:.72rem;font-weight:800;padding:.22rem .55rem;border-radius:999px;
-  white-space:nowrap;flex:0 0 auto;
+  font-size:.72rem;font-weight:800;padding:.22rem .55rem;border-radius:999px;white-space:nowrap;
 }
 /* comprar antes é uma decisão a tomar já; à chegada não exige nada agora */
 .etiqueta-quando.antes{background:#fff3d6;color:#8a5a00}
 .etiqueta-quando.chegada{background:var(--cinza-claro);color:var(--cinza)}
+.transporte-varios{font-size:.76rem;color:var(--verde);font-weight:700}
 [data-tema="escuro"] .etiqueta-quando.antes{background:#3d2f10;color:#f5c65a}
+[data-tema="escuro"] .perfil-transporte.melhor .selo-modo{background:rgba(0,0,0,.28)}
 /* sobra uma coluna só: ocupa a largura toda em vez de deixar metade vazia */
 .res-grelha.coluna-unica{grid-template-columns:1fr}
 
