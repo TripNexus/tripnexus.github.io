@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v65';
+const VERSAO_WORKER = 'v66';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -83,6 +83,21 @@ async function estado(env, url){
       info.sugestao_carros = 'A quota mensal do RapidAPI esgotou-se: o aluguer e as actividades ficam sem preço até ao mês que vem. Ver backend/README.md sobre a Booking.com Demand API, que não tem limite de pedidos.';
     else if(r._estado === 429)
       info.sugestao_carros = 'O RapidAPI travou o ritmo (429), mas a quota do mês não está em causa: são pedidos a mais ao mesmo tempo. O Worker já repete com espera.';
+  }
+  info.tp_marker_definido = ((env.TP_MARKER || '').trim().length > 0);
+  if(token && info.tp_marker_definido){
+    /* a pesquisa ao vivo é o que permite ter tarifas nas datas exactas
+       quando ninguém as pesquisou antes; se estiver fechada, convém sabê-lo
+       aqui e não só no debug de uma rota */
+    const registos = [];
+    await pesquisaAoVivo(new URLSearchParams({origem:'LIS', destino:'BCN',
+      ida: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+      adultos:'1', classe:'economica'}), env, token, registos);
+    const r0 = registos[0] || {};
+    info.pesquisa_ao_vivo = r0.propostas > 0 ? 'a funcionar ('+ r0.propostas + ' propostas)'
+      : (r0.diagnostico || r0.erro || 'sem propostas');
+  }else if(token && !info.tp_marker_definido){
+    info.pesquisa_ao_vivo = 'sem TP_MARKER: só há tarifas nas datas que já estiverem em cache. Corra wrangler secret put TP_MARKER na pasta backend/.';
   }
   if(token){
     const r = await fetch(TP + '/v1/prices/cheap?origin=LIS&destination=BCN&currency=eur&token=' + token,
@@ -206,7 +221,18 @@ async function pesquisaAoVivo(q, env, token, registos){
       body: JSON.stringify(corpo)
     });
     const bruto = await r.text();
-    if(!r.ok){ anotar({estado: r.status, resposta: bruto.slice(0, 300)}); return []; }
+    if(!r.ok){
+      /* Um 403 com «Forbidden» em texto simples é a porta fechada, não a
+         assinatura mal feita: uma assinatura errada devolve JSON a dizê-lo.
+         O acesso à pesquisa ao vivo é dado à parte pela Travelpayouts, a
+         pedido, e não vem com a conta de afiliado. */
+      const porta = r.status === 403 && /forbidden/i.test(bruto);
+      anotar({estado: r.status, resposta: bruto.slice(0, 300),
+        diagnostico: porta
+          ? 'a conta não tem acesso à API de pesquisa ao vivo: peça-o à Travelpayouts (Flights Search API). Não é a assinatura.'
+          : 'pedido recusado; ver a resposta'});
+      return [];
+    }
     let j; try{ j = JSON.parse(bruto); }catch(e){ anotar({erro:'resposta ilegível', resposta: bruto.slice(0, 300)}); return []; }
     uuid = j && (j.search_id || j.uuid);
     if(!uuid){ anotar({erro:'sem search_id', resposta: bruto.slice(0, 300)}); return []; }
