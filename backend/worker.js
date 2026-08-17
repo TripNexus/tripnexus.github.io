@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v66';
+const VERSAO_WORKER = 'v67';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -442,7 +442,20 @@ async function voos(url, env){
   }
 
   if(debug) return resposta({registos, tentativas, aoVivo: doVivo.length,
-                             daCache: daCache.length, exactas: ofertas.length}, 200, true);
+                             daCache: daCache.length, exactas: ofertas.length,
+                             /* as ofertas já interpretadas, e não só a
+                                resposta em bruto: é a única forma de ver se
+                                uma tarifa que existe na origem sobreviveu ao
+                                caminho todo até ao ecrã */
+                             maisBaratas: ofertas.slice(0, 5),
+                             /* e as que foram postas de parte, com a razão */
+                             rejeitadas: [...daCache, ...doVivo]
+                               .filter(o => !(o.data === ida && (!volta || !o.regresso || o.regresso === volta)))
+                               .slice(0, 5)
+                               .map(o => ({preco:o.preco, companhia:o.companhia,
+                                           data:o.data, regresso:o.regresso,
+                                           razao: o.data !== ida ? 'ida noutro dia' : 'regresso noutro dia'}))
+                            }, 200, true);
   /* o «prices/cheap» também só conta se for do dia pedido */
   const cheapExactas = cheap.filter(o => o.data === ida);
   if(cheapExactas.length)
