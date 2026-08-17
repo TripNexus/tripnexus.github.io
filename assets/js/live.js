@@ -333,7 +333,8 @@ async function actualizarCarrosReais(ctx){
          euros, mostra-se o código em vez de fingir que é € */
       moeda = (d && d.moeda) || '';
       if(!ofertas.length) registarFonte('Aluguer de viaturas', 'sem preços',
-        (d && (d.nota || d.erro)) || (r.ok ? 'sem viaturas para estas datas' : 'backend devolveu ' + r.status));
+        [(d && (d.nota || d.erro)) || (r.ok ? 'sem viaturas para estas datas' : 'backend devolveu ' + r.status),
+         d && d.quota].filter(Boolean).join(' · '));
     }catch(e){ registarFonte('Aluguer de viaturas', 'sem preços', 'sem ligação ao backend'); }
   }
 

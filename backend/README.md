@@ -100,9 +100,20 @@ Confirme em `/estado` (campo `rapidapi_key_definida`). Sem a chave, os dois
 blocos ficam com as ligações aos parceiros e sem preço — nunca com valores
 inventados.
 
-> **Quotas.** A camada gratuita do RapidAPI é curta (dezenas de pedidos por
-> mês), o que serve para validar a integração mas não para um site aberto ao
-> público. O destino natural é a **Booking.com Demand API**
+> **Quotas — o ponto crítico.** A camada gratuita do RapidAPI dá **50 pedidos
+> por mês**. Uma pesquisa do site gastava quatro (dois no aluguer, dois nas
+> actividades), o que dava **doze pesquisas por mês**: inutilizável.
+>
+> O aluguer passou a gastar **um** pedido no caso comum — pesquisa-se
+> directamente nas coordenadas que já temos, e só se elas não derem viaturas é
+> que se gasta um segundo a perguntar ao fornecedor onde fica o local.
+>
+> Esgotada a quota, o fornecedor responde **HTTP 429**, que o `/estado` e o
+> diagnóstico do site passam a mostrar como tal — em vez de parecer avaria. Os
+> cabeçalhos `x-ratelimit-requests-remaining` são lidos e devolvidos no campo
+> `quota`.
+>
+> Isto serve para validar a integração, não para um site aberto ao público. O destino natural é a **Booking.com Demand API**
 > (<https://developers.booking.com/demand>), que não cobra pela utilização —
 > o modelo é por comissão — e cobre os mesmos produtos. Exige aprovação como
 > parceiro afiliado. As rotas `/carros` e `/actividades` foram escritas com os
