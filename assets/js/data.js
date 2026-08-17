@@ -318,10 +318,15 @@ function ligacaoParceiro(chave, ctx){
       return d
         ? `https://www.hostelworld.com/pt/pesquisa?search_keywords=${enc(d.n)}${temEstadia ? `&date_from=${fData(c.ida)}&date_to=${fData(c.volta)}` : ''}&number_of_guests=${ad + cr}`
         : 'https://www.hostelworld.com/pt/';
+    /* Estes dois tinham caminhos de pesquisa montados por nós — «/pt/search?
+       location=…» e «/pt/search-results?location=…» — que não existem nestes
+       sítios e devolviam «Página não encontrada». Uma ligação profunda só vale
+       se for a que o parceiro documenta; inventada, é pior do que nenhuma.
+       Ficam as páginas de entrada até haver um formato confirmado. */
     case 'rentalcars':
-      return d ? `https://www.rentalcars.com/pt/search-results?location=${enc(d.n)}` : 'https://www.rentalcars.com/pt/';
+      return 'https://www.rentalcars.com/pt/';
     case 'discovercars':
-      return d ? `https://www.discovercars.com/pt/search?location=${enc(d.n)}` : 'https://www.discovercars.com/pt';
+      return 'https://www.discovercars.com/pt';
     case 'autoeurope':
       return 'https://www.autoeurope.pt/';
     case 'getyourguide':

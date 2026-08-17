@@ -211,12 +211,23 @@ function desenharPainelAlertas(){
 }
 
 /* botões «Guardar pesquisa» e «Alerta de preço» no resumo (chamado pelo app.js) */
+/* Os requisitos de entrada também estão no bloco «Sobre o destino», mas é no
+   resumo que se decide a viagem, e é aí que a pergunta se faz. Fica nos dois
+   sítios de propósito. */
+function ligacaoVistos(destino){
+  if(!destino || !destino.p) return '';
+  const url = 'https://www.google.com/search?q=' + encodeURIComponent(
+    'requisitos de entrada e vistos ' + destino.p + ' para cidadãos portugueses');
+  return `<a class="btn-resumo" href="${url}" target="_blank" rel="noopener">🛂 Requisitos de entrada e vistos</a>`;
+}
+
 function montarAccoesResumo(raiz, ctx, melhorVoo){
   const zona = raiz.querySelector('#accoes-resumo');
   if(!zona) return;
   const fav = ehFavorito();
   zona.innerHTML = `
     <button type="button" class="btn-resumo" id="btn-favorito">${fav ? '★ Guardado nos favoritos' : '☆ Guardar pesquisa'}</button>
+    ${ligacaoVistos(ctx.destino)}
     ${melhorVoo && ctx.origem && ctx.destino && ctx.ida ? '<button type="button" class="btn-resumo" id="btn-alerta">🔔 Alerta de preço</button>' : ''}
     <span id="forma-alerta" hidden></span>`;
   zona.querySelector('#btn-favorito').onclick = () => { alternarFavorito(); montarAccoesResumo(raiz, ctx, melhorVoo); };

@@ -94,17 +94,25 @@ async function actualizarAlojamentoReal(ctx){
   ]);
   const hoteis = rh.ofertas, casas = rc.ofertas;
   const notas = [rh.nota, rc.nota].filter(Boolean);
-  const lista = [
+  const todos = [
     ...hoteis.map(h => ({...h, cat:'hotel'})),
     ...casas.map(h => ({...h, cat:'casa'}))
   ].sort((a, b) => a.preco - b.preco);
+  /* respeita a escolha da pesquisa pelo tipo real de cada alojamento */
+  const lista = todos.filter(h => tipos.includes(categoriaAlojamento(h)));
+  const excluidos = todos.length - lista.length;
   if(!lista.length){   /* sem dados reais, ficam as estimativas */
-    registarFonte('Alojamento (SerpApi)', 'estimativas', notas.join(' · '));
-    explicarEstimativa('bloco-alojamento', notas.join(' · '));
+    const porque = todos.length
+      ? 'a Google só devolveu tipos que não escolheu (' + todos.length + ' resultados postos de parte)'
+      : notas.join(' · ');
+    registarFonte('Alojamento (SerpApi)', 'estimativas', porque);
+    explicarEstimativa('bloco-alojamento', porque);
     return;
   }
   registarFonte('Alojamento (SerpApi)', 'reais',
-    hoteis.length + ' hotéis · ' + casas.length + ' casas' + (notas.length ? ' · ' + notas.join(' · ') : ''));
+    lista.length + ' de ' + todos.length + ' resultados'
+    + (excluidos ? ' (' + excluidos + ' de tipos não escolhidos)' : '')
+    + (notas.length ? ' · ' + notas.join(' · ') : ''));
   /* o alojamento vem por noite; o total da viagem conta a estadia inteira */
   if(typeof registarPrecoReal === 'function'){
     const noites = Math.max(1, Math.round((ctx.fim - ctx.ida) / 86400000));
@@ -112,12 +120,12 @@ async function actualizarAlojamentoReal(ctx){
       (lista[0].nome || 'alojamento') + ' · ' + noites + (noites === 1 ? ' noite' : ' noites'));
   }
 
-  const temCasas = casas.length > 0;
+  const temCasas = lista.some(h => categoriaAlojamento(h) === 'casa');
   bloco.innerHTML = `
     <h3 class="bloco-titulo">🏨 Alojamento em ${ctx.destino.n} · preços reais</h3>
     <p class="bloco-sub tempo-real">⚡ Preços reais (Google Hotels) para as suas datas${temCasas ? ', incluindo alojamento local' : ''}.</p>
     ${lista.slice(0, 8).map((h, i) => {
-      const liga = ligacaoParceiro(h.cat === 'casa' ? 'airbnb' : 'booking', {...ctx, seccao:'hotel'});
+      const liga = ligacaoParceiro(categoriaAlojamento(h) === 'casa' ? 'airbnb' : 'booking', {...ctx, seccao:'hotel'});
       const detalhe = [
         h.estrelas ? '★'.repeat(Math.min(5, Math.round(h.estrelas))) : '',
         h.quartos ? h.quartos + (h.quartos === 1 ? ' quarto' : ' quartos') : '',
@@ -145,17 +153,29 @@ async function actualizarAlojamentoReal(ctx){
    como veio, em vez de ser arredondado para «Hotel». */
 const TIPO_ALOJAMENTO = {
   'hotel':'Hotel', 'hostel':'Hostel', 'hostal':'Hostel', 'albergue':'Hostel',
+  'albergue da juventude':'Hostel', 'youth hostel':'Hostel',
   'apartment':'Apartamento', 'apartamento':'Apartamento', 'condo':'Apartamento',
+  'condominium':'Apartamento', 'serviced apartment':'Apartamento com serviços',
   'aparthotel':'Aparthotel', 'apart-hotel':'Aparthotel', 'apart hotel':'Aparthotel',
+  'apartment hotel':'Aparthotel',
   'vacation rental':'Casa / apartamento', 'casa de férias':'Casa / apartamento',
-  'holiday home':'Casa de férias', 'house':'Casa', 'casa':'Casa',
+  'holiday home':'Casa de férias', 'holiday park':'Parque de férias',
+  'house':'Casa', 'casa':'Casa', 'townhouse':'Moradia geminada',
   'guest house':'Casa de hóspedes', 'guesthouse':'Casa de hóspedes',
-  'casa de hóspedes':'Casa de hóspedes', 'pensão':'Pensão',
+  'casa de hóspedes':'Casa de hóspedes', 'pensão':'Pensão', 'pension':'Pensão',
   'bed and breakfast':'B&B', 'bed & breakfast':'B&B', 'b&b':'B&B',
   'motel':'Motel', 'resort':'Resort', 'villa':'Moradia', 'moradia':'Moradia',
   'cottage':'Casa de campo', 'cabin':'Cabana', 'chalet':'Chalé', 'chalé':'Chalé',
+  'lodge':'Refúgio', 'farm stay':'Turismo rural', 'country house':'Casa de campo',
   'inn':'Estalagem', 'estalagem':'Estalagem', 'pousada':'Pousada',
-  'camping':'Parque de campismo', 'hotel de charme':'Hotel de charme'
+  'camping':'Parque de campismo', 'campsite':'Parque de campismo',
+  'campground':'Parque de campismo', 'glamping':'Glamping',
+  'boat':'Barco', 'houseboat':'Casa-barco', 'ryokan':'Ryokan',
+  'riad':'Riad', 'minbak':'Minbak', 'capsule hotel':'Hotel cápsula',
+  'love hotel':'Love hotel', 'hotel de charme':'Hotel de charme',
+  'boutique hotel':'Hotel boutique', 'spa hotel':'Hotel com spa',
+  'homestay':'Quarto em casa de família', 'private vacation home':'Casa de férias',
+  'all-inclusive':'Tudo incluído', 'hotel resort':'Resort'
 };
 function rotuloAlojamento(h){
   const t = String((h && h.tipo) || '').trim();
@@ -166,6 +186,19 @@ function rotuloAlojamento(h){
     return conhecido || (t.charAt(0).toUpperCase() + t.slice(1));
   }
   return h && h.cat === 'casa' ? 'Casa / apartamento' : 'Alojamento';
+}
+
+/* A rota que trouxe o alojamento não é o que ele é: a pesquisa de «hotéis»
+   na Google devolve hostels e apartamentos pelo meio, e quem escolheu só
+   hotéis estava a vê-los na mesma. A escolha da pesquisa passa a ser
+   respeitada pelo tipo real, não pela origem. */
+function categoriaAlojamento(h){
+  const t = String((h && h.tipo) || '').toLowerCase();
+  if(/hostel|hostal|albergue/.test(t)) return 'hostel';
+  if(/apartment|apartamento|condo|rental|casa|house|home|villa|moradia|cottage|cabin|chalet|chalé|lodge|riad|minbak|boat/.test(t)) return 'casa';
+  if(t) return 'hotel';
+  /* sem tipologia não se inventa: fica pela rota que o trouxe */
+  return (h && h.cat) || 'hotel';
 }
 
 /* Actividades com preços reais. Sem fonte configurada, o bloco fica com as
@@ -238,7 +271,8 @@ async function actualizarVoosReais(ctx){
        Tem de se dizer, e cada linha leva a sua data. */
     const outrasDatas = dados.datas === 'proximas';
     registarFonte('Voos (Travelpayouts)', 'reais',
-      dados.ofertas.length + ' tarifas' + (outrasDatas ? ' (datas próximas, não as pedidas)' : ''));
+      dados.ofertas.length + ' tarifas' + (outrasDatas ? ' (datas próximas, não as pedidas)' : '')
+      + (outrasDatas && dados.nota ? ' · ' + dados.nota : ''));
 
     const lista = dados.ofertas.map(v => Object.assign({}, v, {precoFinal: v.preco}));
     /* o total da viagem passa a contar com este preço, em vez da estimativa */
@@ -417,7 +451,12 @@ async function actualizarCarrosReais(ctx){
     /* só entra no total se estiver na mesma moeda do resto */
     if(emEuros && typeof registarPrecoReal === 'function')
       registarPrecoReal('carro', ofertas[0].preco, (ofertas[0].nome || 'viatura') + ' · ' + dias + (dias === 1 ? ' dia' : ' dias'));
-    const liga = ligacaoParceiro('discovercars', {...ctx, seccao:'carro'});
+    /* Os preços vêm da Booking, por isso é para lá que o botão leva quando a
+       resposta não traz a ligação da viatura. Antes ia para um endereço do
+       Discover Cars montado por nós, «/pt/search?location=…», que devolvia
+       «Página não encontrada»: um botão que dá erro é pior do que um botão
+       que abre a página de entrada do sítio certo. */
+    const liga = 'https://www.booking.com/cars/index.html';
     bloco.innerHTML = `
       <h3 class="bloco-titulo">🚗 Aluguer de viatura em ${escaparHtml(ctx.destino.n)} · preços reais</h3>
       <p class="bloco-sub tempo-real">⚡ Preços reais para ${dias} ${dias === 1 ? 'dia' : 'dias'} (Booking.com). Total do aluguer.</p>
