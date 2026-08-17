@@ -253,6 +253,16 @@ SerpApi ficam 6 h na cache da Cloudflare e os da Travelpayouts 30 minutos: sem
 isto, repetir a mesma pesquisa gastava duas das pesquisas mensais gratuitas
 de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas.
 
+> **A pesquisa ao vivo precisa de acesso pedido à parte.** Com o `TP_MARKER`
+> definido, o primeiro teste devolveu **HTTP 403 «Forbidden»** em texto
+> simples. Isso é a porta fechada, não a assinatura mal feita — uma
+> assinatura errada devolve JSON a dizê-lo. O acesso à *Flights Search API*
+> é concedido a pedido pela Travelpayouts e não vem com a conta de afiliado.
+> O `/estado` mostra o estado no campo `pesquisa_ao_vivo`, e enquanto não
+> houver acesso o site vive do que estiver em cache — que para muitas rotas
+> chega: na primeira medição, Lisboa→Paris a 14–17 de Outubro tinha 33
+> tarifas nas datas exactas.
+>
 > **`TP_MARKER` é o que permite procurar nas datas exactas.** O
 > `prices_for_dates` é um registo de tarifas vistas em pesquisas recentes: se
 > ninguém pesquisou as datas escolhidas, não há lá nada. A **pesquisa ao
