@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v55';
+const VERSAO_WORKER = 'v56';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -33,7 +33,7 @@ function obterToken(env){
 }
 
 /* /estado: diagnóstico rápido, sem expor o token */
-async function estado(env){
+async function estado(env, url){
   const token = obterToken(env);
   const chaveSerp = (env.SERPAPI_KEY || '').trim();
   const info = {
@@ -68,9 +68,17 @@ async function estado(env){
   if(!info.rapidapi_key_definida){
     info.sugestao_carros = 'Sem RAPIDAPI_KEY não há preços reais de aluguer nem de actividades: corra wrangler secret put RAPIDAPI_KEY na pasta backend/.';
   }else{
-    /* o mais barato que há para ler os cabeçalhos de quota */
-    const r = await rapid(CAMINHO_CARROS_DESTINO, {term:'Lisbon', countryOfResidence:'pt'}, env);
+    /* O mais barato que há para ler os cabeçalhos de quota. Por omissão vai
+       buscá-lo à cache de 6 h, para que recarregar o /estado não gaste
+       pedidos — mas então o número lido é o da altura em que a resposta foi
+       guardada, e não desce à medida que o site consome. Com «fresco=1»
+       gasta-se um pedido para ver o valor de agora. */
+    const fresco = url.searchParams.get('fresco') === '1';
+    const r = await rapid(CAMINHO_CARROS_DESTINO, {term:'Lisbon', countryOfResidence:'pt'}, env, fresco);
     info.rapidapi_quota = r._quota || (r._quotaEsgotada ? '0 (esgotada)' : 'desconhecida');
+    info.rapidapi_quota_nota = fresco
+      ? 'leitura de agora (gastou um pedido)'
+      : 'leitura em cache, até 6 h de atraso: não desce à medida que o site consome. Use /estado?fresco=1 para o valor actual, ao preço de um pedido.';
     if(r._quotaEsgotada)
       info.sugestao_carros = 'A quota mensal do RapidAPI esgotou-se: o aluguer e as actividades ficam sem preço até ao mês que vem. Ver backend/README.md sobre a Booking.com Demand API, que não tem limite de pedidos.';
     else if(r._estado === 429)
@@ -304,7 +312,7 @@ const LOCALE = 'pt-pt';
    quota que estava em 47/50. */
 function quotaDoMes(corpo){ return /monthly quota|exceeded the .*quota/i.test(corpo || ''); }
 
-async function rapid(caminho, params, env){
+async function rapid(caminho, params, env, semCache){
   const chave = (env.RAPIDAPI_KEY || '').trim();
   if(!chave) return {_erro:'RAPIDAPI_KEY não definido no Worker (ver /estado)'};
   const endereco = 'https://' + RAPID_HOST + caminho + '?' + new URLSearchParams(params);
@@ -312,18 +320,18 @@ async function rapid(caminho, params, env){
   let ultima = null;
   for(const espera of esperas){
     if(espera) await new Promise(f => setTimeout(f, espera));
-    ultima = await uma(endereco, chave);
+    ultima = await uma(endereco, chave, semCache);
     /* só vale a pena repetir o 429 de ritmo; o da quota do mês é definitivo */
     if(ultima._estado !== 429 || ultima._quotaEsgotada) break;
   }
   return ultima;
 }
 
-async function uma(endereco, chave){
+async function uma(endereco, chave, semCache){
   try{
     const r = await fetch(endereco, {
       headers:{'x-rapidapi-key': chave, 'x-rapidapi-host': RAPID_HOST},
-      cf:{cacheTtl: 21600, cacheEverything: true}
+      cf: semCache ? {cacheTtl: 0} : {cacheTtl: 21600, cacheEverything: true}
     });
     const bruto = await r.text();
     /* o pedido e o estado vão sempre no resultado: esta API responde 200 com
@@ -712,7 +720,7 @@ export default {
       if(url.pathname === '/actividades') return await actividades(url, env);
       if(url.pathname === '/assistente') return await assistente(pedido, env);
       if(url.pathname === '/modelos') return await modelos(env);
-      if(url.pathname === '/estado') return await estado(env);
+      if(url.pathname === '/estado') return await estado(env, url);
       return resposta({erro:'rotas disponíveis: /voos, /hoteis, /casas, /carros, /actividades, /assistente, /modelos, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);

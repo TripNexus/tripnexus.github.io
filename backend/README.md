@@ -122,6 +122,12 @@ inventados.
 > `x-ratelimit-requests-remaining` são lidos e devolvidos no campo `quota`, e o
 > `/estado` mostra qual dos dois casos é.
 >
+> **O número de quota no `/estado` vem da cache.** A sondagem que o lê está
+> guardada 6 h, para que recarregar a página de diagnóstico não gaste pedidos —
+> mas isso quer dizer que o número não desce à medida que o site consome, e
+> pode estar até seis horas atrasado. Para ver o valor de agora, `/estado?fresco=1`,
+> que gasta um pedido para o ir buscar.
+>
 > Isto serve para validar a integração, não para um site aberto ao público. O destino natural é a **Booking.com Demand API**
 > (<https://developers.booking.com/demand>), que não cobra pela utilização —
 > o modelo é por comissão — e cobre os mesmos produtos. Exige aprovação como
