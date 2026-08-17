@@ -40,6 +40,7 @@ produção exige verificação da empresa; fica documentado como evolução futu
    cd backend
    wrangler login
    wrangler secret put TP_TOKEN      (nome do segredo, não o valor)
+   wrangler secret put TP_MARKER     (o seu marker de afiliado, só dígitos)
    wrangler secret put SERPAPI_KEY
    wrangler deploy
    ```
@@ -251,6 +252,14 @@ As respostas são guardadas em cache 10 minutos no navegador. Os pedidos à
 SerpApi ficam 6 h na cache da Cloudflare e os da Travelpayouts 30 minutos: sem
 isto, repetir a mesma pesquisa gastava duas das pesquisas mensais gratuitas
 de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas.
+
+> **`TP_MARKER` é o que permite procurar nas datas exactas.** O
+> `prices_for_dates` é um registo de tarifas vistas em pesquisas recentes: se
+> ninguém pesquisou as datas escolhidas, não há lá nada. A **pesquisa ao
+> vivo** (`/v1/flight_search`) vai mesmo procurar na hora, mas exige o marker
+> e uma assinatura MD5 dos parâmetros. Sem `TP_MARKER` o site continua a
+> funcionar, apenas fica dependente do que estiver em cache — e nas datas sem
+> tarifa registada mostra que não há, em vez de propor outras.
 
 ### De onde vêm as tarifas de voo
 
