@@ -315,6 +315,16 @@ function euros(v){
   const n = Math.round(v * (TAXAS[MOEDA] || 1)).toLocaleString('pt-PT', {maximumFractionDigits:0});
   return m.ap ? m.s + ' ' + n : n + ' ' + m.s;
 }
+/* O mesmo, mas com os cêntimos. Nos voos e no alojamento o euro inteiro
+   chega; num bilhete de metro de 2,50 € arredondar para 3 € é mostrar outro
+   preço — e é o preço exacto que está no tarifário do operador. */
+function eurosExactos(v){
+  const m = MOEDAS[MOEDA] || MOEDAS.EUR;
+  const c = v * (TAXAS[MOEDA] || 1);
+  const n = c.toLocaleString('pt-PT', {minimumFractionDigits: Number.isInteger(c) ? 0 : 2,
+                                       maximumFractionDigits: 2});
+  return m.ap ? m.s + ' ' + n : n + ' ' + m.s;
+}
 const MOEDAS = {EUR:{s:'€',ap:false}, USD:{s:'$',ap:true}, GBP:{s:'£',ap:true}, BRL:{s:'R$',ap:true}};
 let MOEDA = 'EUR';
 let TAXAS = {EUR:1, USD:1.08, GBP:0.85, BRL:6.2};   // recurso; substituído por taxas ao vivo

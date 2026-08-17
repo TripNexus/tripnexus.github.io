@@ -933,6 +933,53 @@ function blocoEvolucao(o, d, ida, precoHoje){
 }
 
 /* ── bloco «Sobre o destino» (clima, melhor altura, links) ───── */
+/* ── transportes no destino ───────────────────────────────────
+   Quanto custa andar na cidade, em que bilhete, e se se compra antes de
+   partir ou à chegada. Ao contrário do resto do site, estes valores não vêm
+   de uma API: são tarifas publicadas pelos operadores, que mudam uma ou duas
+   vezes por ano. Por isso cada bloco leva a ligação oficial e o ano — e as
+   cidades que não estão na tabela não mostram valor nenhum. */
+function blocoTransportes(d, dias){
+  const t = transportesDe(d);
+  if(!t){
+    const procura = 'https://www.google.com/search?q=' + encodeURIComponent(
+      'transportes públicos ' + d.n + ' bilhetes e passes preços');
+    return `<div class="bloco" data-aba="transportes">
+      <h3 class="bloco-titulo">🚇 Transportes em ${escaparHtml(d.n)}</h3>
+      <p class="bloco-sub">Ainda não temos as tarifas de ${escaparHtml(d.n)} verificadas, e não mostramos valores que não tenhamos confirmado. Consulte o operador local:</p>
+      <a class="btn-ver" style="display:inline-block;margin-top:.4rem" href="${procura}" target="_blank" rel="noopener">Procurar bilhetes e passes ↗</a>
+    </div>`;
+  }
+  const moeda = t.moeda || 'EUR';
+  /* os cêntimos contam: um bilhete de 2,50 € não é um bilhete de 3 € */
+  const valor = v => moeda === 'EUR' ? eurosExactos(v)
+    : (Number.isInteger(v) ? v : v.toFixed(2)) + ' ' + moeda;
+  const quandoTxt = {
+    antes:   {rotulo:'Antes de partir', classe:'antes',   ajuda:'Compra-se em linha, antes da viagem'},
+    chegada: {rotulo:'À chegada',       classe:'chegada', ajuda:'Compra-se no local, em máquina ou balcão'}
+  };
+  return `<div class="bloco" data-aba="transportes">
+    <h3 class="bloco-titulo">🚇 Transportes em ${escaparHtml(d.n)}</h3>
+    <p class="bloco-sub">${escaparHtml(t.operador)} · tarifas publicadas em ${t.ano}${moeda !== 'EUR' ? ' · valores em ' + moeda : ''}.</p>
+    ${t.nota ? `<p class="dica-transportes">💡 ${escaparHtml(t.nota)}</p>` : ''}
+    <div class="lista-transportes">
+      ${t.bilhetes.map(b => {
+        const q = quandoTxt[b.quando] || quandoTxt.chegada;
+        return `<div class="linha-transporte">
+          <div class="transporte-info">
+            <div class="transporte-nome">${escaparHtml(b.nome)}</div>
+            <div class="transporte-detalhe">por ${escaparHtml(b.unidade)}</div>
+          </div>
+          <span class="etiqueta-quando ${q.classe}" title="${q.ajuda}">${q.rotulo}</span>
+          <div class="oferta-preco"><div class="preco-actual">${valor(b.preco)}</div></div>
+        </div>`;
+      }).join('')}
+    </div>
+    ${dias ? `<p class="bloco-sub">Para ${dias} ${dias === 1 ? 'dia' : 'dias'} na cidade, compare o custo dos passes com o das viagens avulso: com poucas deslocações por dia, o bilhete simples costuma sair mais barato.</p>` : ''}
+    <p class="bloco-sub">Estas tarifas são publicadas pelo operador e mudam uma ou duas vezes por ano — ao contrário dos voos e do alojamento, não são consultadas em tempo real. <a href="${escaparHtml(t.url)}" target="_blank" rel="noopener">Confirme em ${escaparHtml(t.operador)} ↗</a></p>
+  </div>`;
+}
+
 function blocoDestino(d){
   const t = climaEstimado(d);
   const bons = t.map((x, i) => ({x, i})).filter(o => o.x >= 16 && o.x <= 28).map(o => MESES[o.i]);
@@ -1089,6 +1136,8 @@ function desenharResultados(){
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'actividade'})
           })).join('')}
         </div>
+
+        ${blocoTransportes(d, noites + 1)}
       </div>
 
       <div class="res-coluna">
@@ -1162,6 +1211,7 @@ const ABAS = [
   {id:'alojamento',  rotulo:'🏨 Alojamento'},
   {id:'carro',       rotulo:'🚗 Aluguer'},
   {id:'actividades', rotulo:'🎟 Actividades'},
+  {id:'transportes',  rotulo:'🚇 Transportes'},
   {id:'viagem',      rotulo:'🗺 Viagem'}
 ];
 /* guardada fora da função: os filtros de voos e de alojamento voltam a
