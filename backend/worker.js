@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v63';
+const VERSAO_WORKER = 'v64';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -803,7 +803,7 @@ async function calendario(url, env){
      duração ao dia é exigir de mais. O desvio vai no resultado para o site
      poder dizer, no dia, que aquela tarifa é de uma viagem de outro tamanho. */
   const melhor = {};
-  let semRegresso = 0, foraDoMes = 0, longeDemais = 0;
+  let semRegresso = 0, foraDoMes = 0;
   for(const v of linhas){
     const partida = String(v.departure_at || '').slice(0, 10);
     const volta = String(v.return_at || '').slice(0, 10);
@@ -819,8 +819,11 @@ async function calendario(url, env){
         if(!isFinite(n) || n < 1){ semRegresso++; continue; }
         desvio = Math.abs(n - dias);
         if(depurar) diag.duracoes[n] = (diag.duracoes[n] || 0) + 1;
-        /* três dias de diferença já é outra viagem */
-        if(desvio > 3){ longeDemais++; continue; }
+        /* Não se descarta por duração. O diagnóstico mostrou que a maior
+           parte das tarifas registadas são de estadias curtas — duas e três
+           noites dominam — e cortá-las deixava o mês quase vazio. Guarda-se a
+           mais próxima do pedido e diz-se de quantas noites é: um dia com
+           «96 € 2n» informa, um dia em branco não. */
       }
       chave = partida;
     }
@@ -830,15 +833,16 @@ async function calendario(url, env){
       melhor[chave] = {preco, desvio, noites: n};
   }
 
+  /* as noites vão sempre, e não só quando diferem: é com elas que o site
+     decide qual é o dia realmente mais barato para a viagem que se pediu */
   const precos = {}, noites = {};
   for(const [dia, v] of Object.entries(melhor)){
     precos[dia] = v.preco;
-    /* só se assinala quando a duração não é a pedida */
-    if(v.desvio > 0) noites[dia] = v.noites;
+    if(v.noites) noites[dia] = v.noites;
   }
   const corpo = {precos, noites, mes, dias, moeda:'EUR', fonte:'travelpayouts',
                  total: Object.keys(precos).length};
-  if(depurar) corpo._diag = Object.assign(diag, {semRegresso, foraDoMes, longeDemais});
+  if(depurar) corpo._diag = Object.assign(diag, {semRegresso, foraDoMes});
   return resposta(corpo);
 }
 

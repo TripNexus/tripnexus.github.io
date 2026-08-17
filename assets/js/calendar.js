@@ -100,20 +100,32 @@ function desenharCalendario(){
   /* preços de todos os dias visíveis, para saber qual é o mais barato.
      Vêm do backend; os dias sem tarifa registada ficam sem preço. */
   const precos = {}, noitesDe = {};
-  let minimo = Infinity, aCarregar = false, semBackend = false;
+  let aCarregar = false, semBackend = false;
   if(temRota){
     for(const mes of [CAL.mesBase, mes2]){
       carregarPrecosCalendario(mes);
       const registo = CACHE_CAL[chaveCalendario(mes)];
       if(!registo){ semBackend = true; continue; }
       if(registo.estado === 'a carregar'){ aCarregar = true; continue; }
-      for(const [chave, preco] of Object.entries(registo.precos)){
-        precos[chave] = preco;
-        if(preco < minimo) minimo = preco;
-      }
-      /* dias em que a tarifa mais próxima não é da duração pedida */
+      Object.assign(precos, registo.precos);
       Object.assign(noitesDe, registo.noites || {});
     }
+  }
+
+  /* O dia «mais barato» tem de ser o mais barato *para a viagem que se
+     pediu*. Como agora se mostram também tarifas de outras durações, o valor
+     mais baixo da grelha pode ser de uma estadia de duas noites — sublinhá-lo
+     seria apontar o dia errado. Compara-se só dentro do grupo de dias cuja
+     duração está mais perto da pedida. */
+  let minimo = Infinity;
+  if(Object.keys(precos).length){
+    const desvioDe = dia => {
+      const n = noitesDe[dia];
+      return (n && !CAL.sohIda && CAL.modo !== 'volta') ? Math.abs(n - CAL.nDias) : 0;
+    };
+    const melhorDesvio = Math.min(...Object.keys(precos).map(desvioDe));
+    for(const [dia, preco] of Object.entries(precos))
+      if(desvioDe(dia) === melhorDesvio && preco < minimo) minimo = preco;
   }
 
   const tipoTxt = CAL.sohIda ? 'Só ida' : 'Ida e volta';
@@ -151,9 +163,12 @@ function desenharCalendario(){
       if(preco !== undefined && preco === minimo) classes.push('mais-barato');
       /* a tarifa mais próxima pode não ser da duração pedida: nesse caso
          diz-se de quantas noites é, em vez de a fazer passar pela pedida */
-      const n = noitesDe[chave];
+      /* quantas noites tem esta tarifa. Diz-se sempre que se souber, e sem
+         a comparar com a duração escolhida: quem abre o calendário pode estar
+         justamente à procura de outra estadia. */
+      const n = (noitesDe[chave] && noitesDe[chave] !== CAL.nDias) ? noitesDe[chave] : 0;
       if(n) classes.push('outra-duracao');
-      const titulo = n ? ` title="Tarifa de uma viagem de ${n} ${n === 1 ? 'noite' : 'noites'}, não de ${CAL.nDias}"` : '';
+      const titulo = n ? ` title="Tarifa de uma viagem de ${n} ${n === 1 ? 'noite' : 'noites'}"` : '';
       html += `<button type="button" class="${classes.join(' ')}" data-dia="${chave}"${titulo} ${passado ? 'disabled' : ''}>
         <span class="cal-dia-num">${d}</span>
         ${preco !== undefined ? `<span class="cal-dia-preco">${euros(preco)}${n ? '<em>' + n + 'n</em>' : ''}</span>` : ''}
