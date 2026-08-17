@@ -20,12 +20,66 @@ let mapaResultados = null, mapaOfertas = null, mapaExplorar = null, ofertasDesen
 function normalizar(t){
   return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
+/* ── logótipos ────────────────────────────────────────────────
+   Um serviço de ícones sozinho não chega. O do Google está em várias listas
+   de bloqueio de publicidade e seguimento, e basta ter um bloqueador activo
+   para todos os logótipos do site caírem ao mesmo tempo na inicial da
+   empresa — que era exactamente o que se via. A correcção não é escolher
+   outro serviço, é não depender de nenhum: tenta-se uma cadeia de fontes
+   independentes e só quando todas falharem aparece o monograma.
+
+   As alternativas viajam num atributo, separadas por «|», que não ocorre
+   dentro de um URL. */
+function proximoLogotipo(img){
+  const restantes = (img.dataset.fontes || '').split('|').filter(Boolean);
+  if(restantes.length){
+    img.dataset.fontes = restantes.slice(1).join('|');
+    img.src = restantes[0];
+    return;
+  }
+  /* esgotadas as fontes, o monograma que está por baixo fica à vista */
+  img.remove();
+}
+/* cor estável a partir do nome: a mesma empresa fica sempre com a mesma, e
+   duas empresas com a mesma inicial não ficam com o mesmo quadrado */
+function corDoNome(nome){
+  let h = 0;
+  for(let i = 0; i < nome.length; i++) h = (h * 31 + nome.charCodeAt(i)) % 360;
+  return h;
+}
+/* Caixa de logótipo: o monograma está sempre lá, por baixo, e a imagem
+   cobre-o quando carrega. Assim não há troca de «display» nem um instante
+   em branco à espera da imagem. */
+function caixaLogotipo(fontes, nome, opts){
+  const o = opts || {};
+  const lista = (fontes || []).filter(Boolean);
+  const rotulo = escaparHtml(o.titulo || nome || '');
+  const inicial = escaparHtml((nome || '?').trim()[0] || '?').toUpperCase();
+  return `<span class="icone-parceiro" title="${rotulo}">
+    <span class="mono" style="background:hsl(${corDoNome(nome || '?')} 52% 40%)">${inicial}</span>
+    ${lista.length ? `<img class="${o.foto ? 'foto' : 'logo'}" src="${escaparHtml(lista[0])}" alt="${rotulo}" loading="lazy"
+         data-fontes="${escaparHtml(lista.slice(1).join('|'))}" onerror="proximoLogotipo(this)">` : ''}
+  </span>`;
+}
+/* Três serviços independentes mais o favicon servido pelo próprio parceiro:
+   para os logótipos desaparecerem todos, teriam de falhar os quatro. */
+function fontesDoDominio(dom){
+  if(!dom) return [];
+  return [
+    'https://icons.duckduckgo.com/ip3/' + dom + '.ico',
+    'https://www.google.com/s2/favicons?sz=64&domain=' + dom,
+    'https://' + dom + '/favicon.ico'
+  ];
+}
 function iconeParceiro(chave){
   const p = PARCEIROS[chave];
-  return `<span class="icone-parceiro" title="${p.nome}">
-    <img src="https://www.google.com/s2/favicons?sz=64&domain=${p.dom}" alt="${p.nome}" loading="lazy"
-         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-    <span class="letra">${p.nome[0]}</span></span>`;
+  return caixaLogotipo(fontesDoDominio(p.dom), p.nome);
+}
+/* Logótipo de companhia aérea pelo código IATA. O pics.avs.io é o CDN da
+   própria Travelpayouts, de quem já recebemos as tarifas. */
+function iconeCompanhia(codigo, nome){
+  const c = String(codigo || '').toUpperCase();
+  return caixaLogotipo(c ? ['https://pics.avs.io/80/80/' + c + '.png'] : [], nome || c || '?');
 }
 function etiquetaCupao(cupao){
   if(!cupao) return '';
@@ -870,7 +924,7 @@ function blocoEvolucao(o, d, ida, precoHoje){
       ? `⚠️ Preço alto: está ${serie.dif} % acima do típico das últimas 8 semanas. Se puder, aguarde ou active um alerta de preço.`
       : `➖ Preço dentro do típico das últimas 8 semanas.`;
   return `
-        <div class="bloco" id="bloco-evolucao">
+        <div class="bloco" id="bloco-evolucao" data-aba="viagem">
           <h3 class="bloco-titulo">📈 Evolução do preço do voo</h3>
           <div class="veredicto ${serie.tipo}">${texto}</div>
           ${graficoEvolucao(serie)}
@@ -889,7 +943,7 @@ function blocoDestino(d){
     return `<div class="clima-col"><div class="clima-barra" style="height:${h.toFixed(0)}px;background:${cor}" title="${x}°C"></div><span>${MESES_INI[i]}</span></div>`;
   }).join('');
   const linkVisto = 'https://www.google.com/search?q=' + encodeURIComponent('requisitos de entrada e vistos ' + d.p + ' para cidadãos portugueses');
-  return `<div class="bloco">
+  return `<div class="bloco" data-aba="viagem">
     <h3 class="bloco-titulo">🌡 Sobre ${d.n}</h3>
     <p class="bloco-sub">${d.p}. Clima típico estimado (máximas médias, °C):</p>
     <div class="clima">${barras}</div>
@@ -970,10 +1024,11 @@ function desenharResultados(){
         ${n} ${n === 1 ? 'passageiro' : 'passageiros'} · ${NOME_CLASSE[ESTADO.classe]}
         ${nCupoes ? ` · <strong>🎟 ${nCupoes} ${nCupoes === 1 ? 'cupão encontrado' : 'cupões encontrados'}</strong>` : ''}</span>
     </div>
+    <nav class="abas-resultados" id="abas-resultados" aria-label="Secções dos resultados"></nav>
     <div class="res-grelha">
       <div class="res-coluna">
 
-        <div class="bloco" id="bloco-voos">
+        <div class="bloco" id="bloco-voos" data-aba="voos">
           <h3 class="bloco-titulo">✈ Voos · ${todosVoos.length} sites comparados</h3>
           ${barraFiltros(companhias)}
           ${voos.length ? voos.slice(0, 10).map(q => linhaOferta(q, {
@@ -984,7 +1039,7 @@ function desenharResultados(){
         </div>
 
         ${terrestre ? `
-        <div class="bloco">
+        <div class="bloco" data-aba="voos">
           <h3 class="bloco-titulo">🚆 Alternativa terrestre (comboio / autocarro)</h3>
           ${terrestre.viavel ? `
             <p class="bloco-sub">Distância aproximada: ${terrestre.km} km. Preços totais para ${n} ${n === 1 ? 'passageiro' : 'passageiros'}.</p>
@@ -1003,7 +1058,7 @@ function desenharResultados(){
         </div>` : ''}
 
         ${todosAloj.length ? `
-        <div class="bloco" id="bloco-alojamento">
+        <div class="bloco" id="bloco-alojamento" data-aba="alojamento">
           <h3 class="bloco-titulo">🏨 Alojamento em ${d.n} · ${noites} ${noites === 1 ? 'noite' : 'noites'}</h3>
           <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação, calculados a partir de dados históricos. O preço real é confirmado no site do parceiro.</span></p>
           ${barraFiltrosAloj(todosAloj)}
@@ -1015,7 +1070,7 @@ function desenharResultados(){
         </div>` : ''}
 
         ${carros ? `
-        <div class="bloco" id="bloco-carro">
+        <div class="bloco" id="bloco-carro" data-aba="carro">
           <h3 class="bloco-titulo">🚗 Aluguer de viatura · ${diasCarro} ${diasCarro === 1 ? 'dia' : 'dias'}</h3>
           <p class="bloco-sub">Ainda não temos preços reais de aluguer para ${d.n}, por isso não mostramos nenhum. Veja directamente em quem aluga.</p>
           ${carros.map(q => linhaSemPreco(q.parceiro, {
@@ -1024,9 +1079,9 @@ function desenharResultados(){
           })).join('')}
         </div>` : ''}
 
-        <div class="bloco" id="bloco-roteiro" hidden></div>
+        <div class="bloco" id="bloco-roteiro" data-aba="actividades" hidden></div>
 
-        <div class="bloco" id="bloco-actividades">
+        <div class="bloco" id="bloco-actividades" data-aba="actividades">
           <h3 class="bloco-titulo">🎟 Actividades em ${d.n}</h3>
           <p class="bloco-sub">Não há fonte de preços reais de actividades para este destino, por isso não mostramos nenhum: um valor inventado seria pior do que valor nenhum. Veja directamente em quem as vende.</p>
           ${actividades.map(q => linhaSemPreco(q.parceiro, {
@@ -1042,7 +1097,7 @@ function desenharResultados(){
         ${blocoEvolucao(o, d, ida, melhorVoo.precoFinal)}
 
         ${pacotes.length ? `
-        <div class="bloco">
+        <div class="bloco" data-aba="viagem">
           <h3 class="bloco-titulo">📦 Pacotes (voo + alojamento)</h3>
           <p class="bloco-sub">Comparados com a reserva em separado: ${euros(somaPacote)}.</p>
           ${pacotes.map((q, idx) => {
@@ -1067,7 +1122,7 @@ function desenharResultados(){
           }).join('')}
         </div>` : ''}
 
-        <div class="bloco">
+        <div class="bloco" data-aba="viagem">
           <h3 class="bloco-titulo">🗺 Mapa da viagem</h3>
           <div id="mapa-resultados" class="mapa"></div>
         </div>
@@ -1079,6 +1134,7 @@ function desenharResultados(){
   const sec = document.getElementById('resultados');
   sec.innerHTML = html;
   sec.hidden = false;
+  montarAbas(sec);
   desenharMapaResultados([o, d]);
   ligarFiltrosVoos(sec, desenharResultados);
   ligarFiltrosAloj(sec, desenharResultados);
@@ -1089,6 +1145,62 @@ function desenharResultados(){
   if(typeof actualizarCarrosReais === 'function') actualizarCarrosReais(ctx);
   if(typeof actualizarActividadesWidget === 'function') actualizarActividadesWidget(ctx);
   if(typeof desenharRoteiro === 'function') desenharRoteiro(d, noites);
+}
+
+/* ── abas dos resultados ──────────────────────────────────────
+   EXPERIÊNCIA: a página de resultados era um único rolo muito comprido.
+   As abas dividem-na sem mexer no conteúdo — cada bloco declara a que aba
+   pertence num «data-aba», e a barra só mostra as abas que têm blocos.
+   O resumo da viagem não tem «data-aba» de propósito: é o valor que se
+   quer sempre à vista, seja qual for a aba.
+
+   PARA REVERTER: apagar esta secção, a barra «abas-resultados» no HTML dos
+   resultados, os atributos «data-aba» e a regra .fora-da-aba do CSS. Nada
+   mais depende disto. */
+const ABAS = [
+  {id:'voos',        rotulo:'✈ Voos'},
+  {id:'alojamento',  rotulo:'🏨 Alojamento'},
+  {id:'carro',       rotulo:'🚗 Aluguer'},
+  {id:'actividades', rotulo:'🎟 Actividades'},
+  {id:'viagem',      rotulo:'🗺 Viagem'}
+];
+/* guardada fora da função: os filtros de voos e de alojamento voltam a
+   desenhar os resultados, e sem isto a aba escolhida saltava para trás */
+let ABA_ACTIVA = 'voos';
+
+function montarAbas(sec){
+  const barra = sec.querySelector('#abas-resultados');
+  if(!barra) return;
+  const presentes = ABAS.filter(a => sec.querySelector('[data-aba="' + a.id + '"]'));
+  /* com uma secção só, abas não são navegação nenhuma — são um enfeite */
+  if(presentes.length < 2){ barra.hidden = true; return; }
+  barra.hidden = false;
+  barra.innerHTML = presentes.map(a =>
+    `<button type="button" class="aba" data-ir="${a.id}">${a.rotulo}</button>`).join('')
+    + '<button type="button" class="aba" data-ir="tudo">Tudo</button>';
+
+  const mostrar = id => {
+    /* classe, e não o atributo «hidden»: o bloco do roteiro gere o seu
+       próprio «hidden» e as duas coisas têm de poder coexistir */
+    sec.querySelectorAll('[data-aba]').forEach(el =>
+      el.classList.toggle('fora-da-aba', id !== 'tudo' && el.dataset.aba !== id));
+    barra.querySelectorAll('.aba').forEach(b => {
+      const activa = b.dataset.ir === id;
+      b.classList.toggle('activa', activa);
+      b.setAttribute('aria-current', activa ? 'true' : 'false');
+    });
+    ABA_ACTIVA = id;
+    /* o mapa foi criado dentro de um bloco escondido e mediu-se a zero: só
+       quando a aba abre é que pode saber o tamanho que tem */
+    if(mapaResultados && typeof mapaResultados.invalidateSize === 'function')
+      requestAnimationFrame(() => mapaResultados.invalidateSize());
+  };
+  barra.addEventListener('click', e => {
+    const b = e.target.closest('.aba');
+    if(b) mostrar(b.dataset.ir);
+  });
+  const valida = ABA_ACTIVA === 'tudo' || presentes.some(a => a.id === ABA_ACTIVA);
+  mostrar(valida ? ABA_ACTIVA : presentes[0].id);
 }
 
 /* ── resultados: várias cidades ──────────────────────────────── */

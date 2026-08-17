@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v56';
+const VERSAO_WORKER = 'v57';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -193,6 +193,9 @@ async function voos(url, env){
       return dados.map(v => ({
         preco: Math.round(v.price * pax),
         companhia: nomes[v.airline] || v.airline || '',
+        /* o código IATA vai a par do nome: é com ele que o site vai buscar o
+           logótipo da companhia ao pics.avs.io, o CDN da própria Travelpayouts */
+        codigo: String(v.airline || '').toUpperCase(),
         escalas: +v.transfers || 0,
         duracao: duracaoTexto(v.duration),
         partida: String(v.departure_at || '').slice(11, 16),
@@ -259,6 +262,7 @@ async function voos(url, env){
     cheap = Object.entries(porDestino).map(([escalas, v]) => ({
       preco: Math.round(v.price * pax),
       companhia: nomes[v.airline] || v.airline,
+      codigo: String(v.airline || '').toUpperCase(),
       escalas: +escalas,
       duracao: '',
       partida: (v.departure_at || '').slice(11, 16),
@@ -297,6 +301,16 @@ const CAMINHO_CARROS = '/api/v2/cars/searchCarRentals';
    solto não é reconhecido e a pesquisa devolve zero destinos, o que se lia
    no site como «a Booking não reconheceu «Paris»». */
 const LOCALE = 'pt-pt';
+
+/* Os nomes dos campos de imagem mudam entre versões desta API, por isso não
+   se fixa um: aceita-se a primeira chave plausível que traga um URL. */
+const urlDe = (o, ...chaves) => {
+  for(const k of chaves){
+    const v = o && o[k];
+    if(typeof v === 'string' && /^https?:\/\//.test(v)) return v;
+  }
+  return '';
+};
 
 /* O RapidAPI devolve 429 por duas razões muito diferentes, e o código HTTP
    sozinho não as distingue:
@@ -469,12 +483,18 @@ async function carros(url, env){
     const p = c.pricing || {};
     const antes = precoNumero(p.originalPriceDisplay);
     const agora = precoNumero(p.finalPriceDisplay);
+    const forn = c.supplier || {};
     return {
       /* o modelo sozinho; o «ou similar» é detalhe e alongaria o resumo */
       nome: c.title || 'Viatura',
       preco: Math.round(agora),
       precoAntes: antes > agora ? Math.round(antes) : 0,
-      fornecedor: (c.supplier && c.supplier.name) || '',
+      fornecedor: forn.name || '',
+      /* o logótipo da empresa de aluguer, e a fotografia da viatura como
+         alternativa: qualquer um deles diz mais do que um emoji de carro */
+      logo: urlDe(forn, 'logoUrl', 'logo', 'imageUrl', 'image'),
+      imagem: urlDe(c, 'imageUrl', 'image', 'vehicleImage', 'photoUrl')
+              || urlDe(c.vehicle || {}, 'imageUrl', 'image'),
       nota: (c.supplier && c.supplier.rating && c.supplier.rating.score) || '',
       detalhe: [
         traduzir(c.subtitle),
@@ -518,6 +538,9 @@ async function actividades(url, env){
   const ofertas = itens.map(a => ({
     nome: colher(a, CHAVE_NOME, x => typeof x === 'string' && x.length < 120 ? x : null) || 'Actividade',
     preco: Math.round(colher(a, CHAVE_PRECO, x => precoNumero(x && x.amount != null ? x.amount : x)) || 0),
+    /* a fotografia da atracção diz mais do que um bilhete desenhado */
+    imagem: urlDe(a.primaryPhoto || {}, 'small', 'medium', 'large', 'url')
+            || urlDe(a, 'imageUrl', 'image', 'photoUrl'),
     url: a.slug ? 'https://www.booking.com/attractions/' + a.slug + '.html' : ''
   })).filter(o => o.preco > 0).slice(0, 6);
   const extra = ofertas.length ? {} : {_amostra: itens[0] || null, _total: itens.length};
@@ -587,9 +610,16 @@ async function alojamento(url, env, casas){
       const rn = p.rate_per_night || {};
       return (+rn.extracted_lowest) || precoNumero(rn.lowest) || precoNumero(p.total_rate && p.total_rate.lowest) || 0;
     };
+    /* a fotografia do próprio alojamento vale mais do que a inicial do nome
+       num quadrado colorido: é a imagem que o utilizador vai reconhecer */
+    const fotoDe = p => {
+      const im = Array.isArray(p.images) ? p.images[0] : null;
+      return (im && (im.thumbnail || im.original_image)) || p.thumbnail || '';
+    };
     const ofertas = props.map(p => ({
       nome: p.name || (casas ? 'Alojamento' : 'Hotel'),
       preco: Math.round(precoDe(p)),
+      imagem: fotoDe(p),
       estrelas: Math.round(+p.extracted_hotel_class || +p.hotel_class || 0),
       /* só o alojamento local tem tipologia e capacidade úteis para mostrar */
       quartos: casas ? (+p.bedrooms || 0) : 0,

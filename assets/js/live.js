@@ -126,7 +126,7 @@ async function actualizarAlojamentoReal(ctx){
       ].filter(Boolean).join(' · ');
       return `
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
-          <span class="icone-parceiro"><span class="letra" style="display:flex">${escaparHtml((h.nome || 'A')[0])}</span></span>
+          ${caixaLogotipo([h.imagem], h.nome || 'Alojamento', {foto:true})}
           <div class="oferta-info">
             <div class="oferta-nome">${escaparHtml(h.nome || 'Alojamento')} <span class="alt-tag">${rotulo[h.cat]}</span>${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${escaparHtml(detalhe)}</div>
@@ -171,7 +171,7 @@ async function actualizarActividadesReais(ctx){
       <p class="bloco-sub tempo-real">⚡ Preços reais por pessoa. Não incluídas no total da viagem.</p>
       ${d.ofertas.slice(0, 6).map((a, i) => `
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
-          <span class="icone-parceiro"><span class="letra" style="display:flex">🎟</span></span>
+          ${caixaLogotipo([a.imagem], a.nome || 'Actividade', {foto:true})}
           <div class="oferta-info"><div class="oferta-nome">${escaparHtml(a.nome)}</div>
           <div class="oferta-detalhe">por pessoa</div></div>
           <div class="oferta-preco"><div class="preco-actual">${euros(a.preco)}</div></div>
@@ -232,7 +232,7 @@ async function actualizarVoosReais(ctx){
       ${typeof barraFiltros === 'function' ? barraFiltros(companhias) : ''}
       ${visiveis.length ? visiveis.slice(0, 8).map(v => `
         <div class="linha-oferta ${v === melhor ? 'melhor' : ''}">
-          <span class="icone-parceiro"><span class="letra" style="display:flex">${escaparHtml((v.companhia || '?')[0])}</span></span>
+          ${iconeCompanhia(v.codigo, v.companhia)}
           <div class="oferta-info">
             <div class="oferta-nome">${escaparHtml(v.companhia || 'Companhia aérea')}${v === melhor ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${escaparHtml([
@@ -310,6 +310,39 @@ function diaCurto(iso){
    pesquisa, além de apagar, ao assumir o bloco, o motivo pelo qual a API
    tinha falhado. Um recurso que mente é pior do que recurso nenhum: sem
    API, fica o bloco com as ligações aos parceiros e sem preço. */
+/* A Booking nem sempre traz o logótipo da empresa de aluguer, mas traz-lhe
+   sempre o nome. Com o domínio, a cadeia de fontes de ícones faz o resto —
+   e uma empresa que não esteja aqui cai no monograma, não num emoji igual
+   para todas. */
+const DOMINIO_ALUGUER = {
+  'avis':'avis.com', 'hertz':'hertz.com', 'europcar':'europcar.com', 'sixt':'sixt.com',
+  'enterprise':'enterprise.com', 'budget':'budget.com', 'alamo':'alamo.com',
+  'national':'nationalcar.com', 'thrifty':'thrifty.com', 'dollar':'dollar.com',
+  'goldcar':'goldcar.es', 'centauro':'centauro.net', 'firefly':'fireflycarrental.com',
+  'keddy':'keddybyeuropcar.com', 'interrent':'interrent.com', 'surprice':'surpricecarrentals.com',
+  'green motion':'greenmotion.com', 'record go':'recordgo.com', 'drivalia':'drivalia.com',
+  'maggiore':'maggiore.it', 'locauto':'locautorent.com', 'guerin':'guerin.pt',
+  'ok mobility':'okmobility.com', 'flizzr':'flizzr.com', 'rentalcars':'rentalcars.com',
+  'sicily by car':'sicilybycar.it', 'autovia':'autovia.pt', 'wheego':'wheego.pt',
+  'ace':'acerentacar.com', 'del paso':'delpaso.es', 'orlando':'orlandocarrental.com'
+};
+function dominioDoAluguer(nome){
+  const n = (nome || '').toLowerCase().trim();
+  if(!n) return '';
+  /* do nome mais longo para o mais curto, para «green motion» ganhar a
+     «motion» e «sicily by car» não ser apanhado por outra entrada */
+  const chaves = Object.keys(DOMINIO_ALUGUER).sort((a, b) => b.length - a.length);
+  for(const k of chaves){
+    /* nomes curtos só valem como palavra inteira: «ace» não pode apanhar
+       «Ace» dentro de «Interlace» nem de «Palace» */
+    const bate = k.length <= 4
+      ? new RegExp('\\b' + k + '\\b').test(n)
+      : n.includes(k);
+    if(bate) return DOMINIO_ALUGUER[k];
+  }
+  return '';
+}
+
 async function actualizarCarrosReais(ctx){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   const bloco = document.getElementById('bloco-carro');
@@ -351,7 +384,11 @@ async function actualizarCarrosReais(ctx){
       <p class="bloco-sub tempo-real">⚡ Preços reais para ${dias} ${dias === 1 ? 'dia' : 'dias'} (Booking.com). Total do aluguer.</p>
       ${ofertas.slice(0, 6).map((v, i) => `
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
-          <span class="icone-parceiro"><span class="letra" style="display:flex">🚗</span></span>
+          ${caixaLogotipo([
+            v.logo,
+            ...fontesDoDominio(dominioDoAluguer(v.fornecedor)),
+            v.imagem
+          ], v.fornecedor || v.nome || 'Aluguer', {titulo: v.fornecedor || ''})}
           <div class="oferta-info">
             <div class="oferta-nome">${escaparHtml(v.nome || 'Viatura')}${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
             <div class="oferta-detalhe">${escaparHtml([
