@@ -414,9 +414,15 @@ async function actualizarCarrosReais(ctx){
           <span class="icone-parceiro"><span class="letra" style="display:flex">🚗</span></span>
           <div class="oferta-info">
             <div class="oferta-nome">${escaparHtml(v.nome || 'Viatura')}${i === 0 ? ' <span class="selo-melhor">Mais barato</span>' : ''}</div>
-            <div class="oferta-detalhe">${escaparHtml([v.fornecedor, v.detalhe].filter(Boolean).join(' · ') || 'aluguer completo')}</div>
+            <div class="oferta-detalhe">${escaparHtml([
+              v.fornecedor + (v.nota ? ' (' + v.nota + '/10)' : ''),
+              v.detalhe
+            ].filter(Boolean).join(' · ') || 'aluguer completo')}</div>
           </div>
-          <div class="oferta-preco"><div class="preco-actual">${valor(v.preco)}</div></div>
+          <div class="oferta-preco">
+            ${v.precoAntes ? `<div class="preco-antes">${valor(v.precoAntes)}</div>` : ''}
+            <div class="preco-actual">${valor(v.preco)}</div>
+          </div>
           <a class="btn-ver" href="${escaparHtml(v.url || liga)}" target="_blank" rel="noopener">Reservar</a>
         </div>`).join('')}
       <p class="bloco-sub">A reserva é concluída no site do parceiro.${emEuros ? '' : ' Preços em ' + escaparHtml(moeda.toUpperCase()) + ', por não estarem disponíveis em euros.'}</p>`;
