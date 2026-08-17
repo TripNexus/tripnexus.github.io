@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v49';
+const VERSAO_WORKER = 'v50';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -274,8 +274,8 @@ const RAPID_HOST = 'booking-com15.p.rapidapi.com';
    pede dois passos: primeiro traduzir o local num identificador, depois
    pesquisar. Os caminhos ficam aqui em cima porque são a única coisa que
    muda quando o fornecedor renomeia a versão. */
-const CAMINHO_CARROS_DESTINO = '/api/v1/cars/searchDestination';
-const CAMINHO_CARROS = '/api/v1/cars/searchCarRentals';
+const CAMINHO_CARROS_DESTINO = '/api/v2/cars/searchDestination';
+const CAMINHO_CARROS = '/api/v2/cars/searchCarRentals';
 
 async function rapid(caminho, params, env){
   const chave = (env.RAPIDAPI_KEY || '').trim();
@@ -335,8 +335,10 @@ async function carros(url, env){
   const c2 = seguro(q.get('caminho2'), CAMINHO_CARROS);
 
   /* passo 1: identificador do local */
+  /* o parâmetro chama-se «term», não «query»: foi isso, mais o caminho da
+     versão antiga, que fazia o fornecedor recusar sem dizer porquê */
   const busca = q.get('cidade') || (q.get('lat') + ',' + q.get('lon'));
-  const destino = await rapid(c1, {query: busca}, env);
+  const destino = await rapid(c1, {term: busca, countryOfResidence: 'pt'}, env);
   const cand = (destino.data && (Array.isArray(destino.data) ? destino.data : destino.data.destinations)) || [];
   const local = cand[0] || null;
   const idLocal = local && (local.dest_id || local.id || local.city_id || local.value);
