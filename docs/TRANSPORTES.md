@@ -129,19 +129,17 @@ para uma ronda feita à mão, num navegador normal.
 
 ## Estado em 18 de Agosto de 2026
 
-95 cidades no site.
+95 cidades no site. Começámos o dia com 17 na tabela e nenhuma com data de
+conferência.
 
-- **26** com tarifas na tabela, das quais **14** confirmadas nesta data:
-  Amesterdão, Atenas, Barcelona, Bruxelas, Budapeste, Copenhaga, Dublin,
-  Edimburgo, Florença, Lisboa, Varsóvia, Veneza, Viena e Zurique.
-- **12** com tarifas mas por reconferir, herdadas da revisão de Janeiro:
-  Porto, Madrid, Paris, Londres, Roma, Milão, Berlim, Praga, Istambul,
-  Nova Iorque, Tóquio e Singapura.
-- **6** só com operador: Sevilha, Valência, Nápoles, Munique, Estocolmo e
-  Oslo.
-- **63** sem operador, à espera de levantamento.
+| | Cidades | |
+|---|---:|---|
+| Com tarifas **confirmadas hoje** | **27** | Amesterdão, Atenas, Barcelona, Boston, Bruxelas, Budapeste, Copenhaga, Dublin, Edimburgo, Florença, Genebra, Hamburgo, Lisboa, Los Angeles, Miami, Montreal, Orlando, Rio de Janeiro, Salvador, São Francisco, São Paulo, Sydney, Toronto, Varsóvia, Veneza, Viena, Zurique |
+| Com tarifas **por reconferir** | 12 | Porto, Madrid, Paris, Londres, Roma, Milão, Berlim, Praga, Istambul, Nova Iorque, Tóquio, Singapura |
+| **Só operador**, sem valores | 30 | Sevilha, Valência, Nápoles, Estocolmo, Oslo, Munique, Funchal, Faro, Tenerife, Palma de Maiorca, Nice, Marselha, Manchester, Cracóvia, Zagreb, Reiquiavique, Bogotá, Santiago, Cidade do Cabo, Auckland, Hong Kong, Osaka, Kuala Lumpur, Deli, Banguecoque, Buenos Aires, Dubrovnik, Recife, Casablanca, Hanói |
+| **Sem operador** | 26 | Ponta Delgada, Málaga, Ibiza, Lyon, Frankfurt, Santorini, Helsínquia, Marraquexe, Cairo, Dubai, Doha, Fortaleza, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Melbourne, Luanda, Maputo, Sal, Praia |
 
-### Correcções encontradas nesta revisão
+### Correcções em cidades que já cá estavam
 
 Todas lidas na página do operador.
 
@@ -162,19 +160,39 @@ Todas lidas na página do operador.
 | Amesterdão | 24 h 9,00 € | **10,00 €** | |
 | Amesterdão | 72 h 21,00 € | **21,50 €** | acrescentados os de 48 h e 7 dias |
 | Amesterdão | Schiphol 5,90 € | **retirado** | é da NS, não do GVB |
-| Zurique | sem valores | **tabela completa** | 2.ª classe, adulto; a cidade conta como 2 zonas |
 
 ### Endereços partidos, que o utilizador via
 
-Cinco das ligações «Ver tarifário oficial» davam **404**. Corrigidas:
+Sete ligações «Ver tarifário oficial» davam **404**. Um tarifário certo atrás
+de uma ligação morta não serve de nada, e nenhuma destas se via sem ir lá.
 
 | Cidade | Dava 404 | Agora |
 |---|---|---|
 | Porto | `metrodoporto.pt/pages/389` | `metrodoporto.pt/pages/357` |
 | Barcelona | `tmb.cat/pt/tarifas-metro-bus-barcelona` | `tmb.cat/en/barcelona-fares-metro-bus` |
-| Milão | `atm.it/en/ViaggiaConNoi/Pages/SceltaBiglietto.aspx` | `atm.it/en/Pages/default.aspx` |
+| Milão | `atm.it/…/SceltaBiglietto.aspx` | `atm.it/en/Pages/default.aspx` |
 | Berlim | `bvg.de/en/tickets-and-fares` | `bvg.de/en` |
-| Singapura | `lta.gov.sg/content/…/fares_and_ticketing.html` | `lta.gov.sg/` |
+| Singapura | `lta.gov.sg/content/…` | `lta.gov.sg/` |
+| Munique | `mvv-muenchen.de/en/tickets-and-fares/` | `mvg.de` (é o MVG que opera a rede da cidade) |
+| Bogotá e Auckland | caminhos apanhados na sondagem | raízes confirmadas |
 
-Vale a pena sondar os endereços de vez em quando, não só os preços: um
-tarifário certo atrás de uma ligação morta não serve de nada.
+### O que trava as 56 que faltam
+
+Nada que se resolva a insistir:
+
+- **Páginas em JavaScript.** Sem Chromium não se lê o SL de Estocolmo, a
+  ATAC de Roma, o DPP de Praga, o Istanbulkart, a EMT Palma, a TfGM de
+  Manchester, o MTR de Hong Kong, o Rapid KL nem o Delhi Metro. Vêm sem
+  números.
+- **Operadores que recusam agentes automáticos** (403 ou ligação cortada):
+  TfL, MTA, Île-de-France Mobilités, Tokyo Metro, TUSSAM, HSL de
+  Helsínquia, TCL de Lyon, RMV de Frankfurt, EMT Málaga, RTA do Dubai,
+  Metro CDMX, PTV de Melbourne, Metrovalencia.
+- **Certificados que não validam** (não se desliga a verificação): Seoul
+  Metro, Metro do Cairo.
+- **Cidades sem rede urbana formal** ou sem operador com sítio próprio:
+  Ibiza, Phuket, Bali, Cancún, Sal, Praia, Luanda, Maputo.
+
+Todas estas ficam à espera de uma ronda feita num navegador normal. É
+trabalho de pessoa, não de ferramenta, e o `--url` do
+`ferramentas/transportes.js` dá a lista pronta a colar.
