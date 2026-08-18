@@ -26,14 +26,14 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TripNexus">
 <meta property="og:locale" content="pt_PT">
-<meta property="og:title" content="TripNexus — Comparador de viagens">
+<meta property="og:title" content="TripNexus | Comparador de viagens">
 <meta property="og:description" content="Compare voos, alojamento, carros e transportes em mais de 70 sites e encontre a viagem mais barata, com cupões e pacotes inteligentes.">
 <meta property="og:url" content="https://tripnexus.github.io/">
 <meta property="og:image" content="https://tripnexus.github.io/assets/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="TripNexus — Comparador de viagens">
+<meta name="twitter:title" content="TripNexus | Comparador de viagens">
 <meta name="twitter:description" content="Compare voos, alojamento, carros e transportes em mais de 70 sites e encontre a viagem mais barata.">
 <meta name="twitter:image" content="https://tripnexus.github.io/assets/img/og.jpg">
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
@@ -55,7 +55,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=67">
+<link rel="stylesheet" href="assets/css/style.css?v=68">
 </head>
 <body>
 
@@ -139,8 +139,8 @@
                    é uma alternativa ao voo, o metro é o que se anda depois de lá
                    chegar. Ficam separadas. -->
               <p class="painel-titulo">Como chegar (em vez de voar)</p>
-              <label class="opcao-check"><input type="checkbox" name="transporte" value="comboio"><span>Comboio<small>Compara a viagem de comboio com o voo</small></span></label>
-              <label class="opcao-check"><input type="checkbox" name="transporte" value="autocarro"><span>Autocarro<small>Compara a viagem de autocarro com o voo</small></span></label>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="comboio"><span>Comboio<small>Mostra quem vende o bilhete para esta rota</small></span></label>
+              <label class="opcao-check"><input type="checkbox" name="transporte" value="autocarro"><span>Autocarro<small>Mostra quem vende o bilhete para esta rota</small></span></label>
               <p class="painel-titulo">Como andar no destino</p>
               <label class="opcao-check"><input type="checkbox" name="transporte" value="carro"><span>Carro alugado<small>Preços reais de aluguer na cidade, somados ao total</small></span></label>
               <label class="opcao-check"><input type="checkbox" name="transporte" value="metro" checked><span>Metro e transportes públicos<small>Passes para os dias da estadia, somados ao total</small></span></label>
@@ -228,7 +228,7 @@
   <section id="como-funciona" class="seccao">
     <h2>Como funciona</h2>
     <div class="passos">
-      <div class="passo"><span class="passo-num">1</span><h3>Pesquisa uma vez</h3><p>Indique a origem, o destino e as datas. Vamos buscar tarifas reais de voos, alojamento, aluguer de viaturas e actividades — cada uma à fonte que a tem, e para as datas que escolheu.</p></div>
+      <div class="passo"><span class="passo-num">1</span><h3>Pesquisa uma vez</h3><p>Indique a origem, o destino e as datas. Vamos buscar tarifas reais de voos, alojamento, aluguer de viaturas e actividades, cada uma à fonte que a tem, e para as datas que escolheu.</p></div>
       <div class="passo"><span class="passo-num">2</span><h3>Nós fazemos as contas</h3><p>Somamos voo, alojamento, aluguer e transportes no destino para o total da viagem. O que for estimativa vai assinalado com «≈», e nunca inventamos um preço para tapar um buraco.</p></div>
       <div class="passo"><span class="passo-num">3</span><h3>Reserve ao melhor preço</h3><p>Se um pacote ficar igual ou com pouca margem acima das reservas em separado, recomendamo-lo. A reserva é sempre concluída no site do parceiro.</p></div>
     </div>
@@ -263,14 +263,15 @@
   <div class="rodape-inner">
     <div>
       <p class="logo-rodape"><img src="assets/img/logo.svg" alt="" class="logo-rodape-img" width="27" height="27"><span class="logo-texto"><span class="logo-trip">Trip</span><span class="logo-nexus">Nexus</span></span></p>
-      <p>Comparador independente de viagens: compara voos, alojamento, aluguer de viaturas, actividades e transportes no destino. Não vendemos bilhetes nem reservas — encontramos o preço e encaminhamo-lo para quem vende, que é onde a reserva se conclui.</p>
+      <p>Comparador independente de viagens: compara voos, alojamento, aluguer de viaturas, actividades e transportes no destino. Não vendemos bilhetes nem reservas: encontramos o preço e encaminhamo-lo para quem vende, que é onde a reserva se conclui.</p>
     </div>
     <div>
       <p><strong>Nota sobre os preços</strong></p>
       <p><strong>Preços reais</strong>, obtidos na hora para as datas que pediu: voos (Travelpayouts/Aviasales), alojamento (Google Hotels), aluguer de viaturas e actividades (Booking.com).</p>
       <p><strong>Tarifários publicados</strong>, verificados por cidade: os passes e bilhetes de transporte no destino. Mudam uma ou duas vezes por ano e cada bloco leva a ligação ao operador para confirmar.</p>
-      <p><strong>Estimativas</strong>, sempre com o sinal «≈»: as alternativas de comboio e autocarro em vez do voo, os pacotes, os extras, e os transportes das cidades cujo tarifário ainda não verificámos.</p>
-      <p>Quando não há tarifa para as suas datas, dizemos que não há — não trocamos as datas nem preenchemos com valores inventados. O preço final é sempre confirmado no site onde efectua a reserva.</p>
+      <p><strong>Sem preço</strong>, só com a ligação a quem o tem: ir por comboio ou autocarro em vez de voar. Não existe fonte gratuita de tarifas reais para estas viagens, e um número inventado seria pior do que número nenhum.</p>
+      <p><strong>Estimativas</strong>, sempre com o sinal «≈»: os pacotes, os extras, e os transportes das cidades cujo tarifário ainda não verificámos. São o último recurso, e servem também de rede quando as consultas do mês se esgotam.</p>
+      <p>Quando não há tarifa para as suas datas, dizemos que não há. Não trocamos as datas nem preenchemos com valores inventados. O preço final é sempre confirmado no site onde efectua a reserva.</p>
     </div>
     <div>
       <p><strong>Informação legal</strong></p>
@@ -341,20 +342,20 @@
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
   /* mesma versão dos ?v= dos ficheiros: no diagnóstico, denuncia um
      navegador a servir ficheiros antigos de cache */
-  window.TRIPNEXUS_VERSAO = 'v67';
+  window.TRIPNEXUS_VERSAO = 'v68';
   /* Widget de actividades do Klook: mesma ideia. O «city_id» é trocado pelo
      da cidade pesquisada (tabela ACTIVIDADES_KLOOK em live.js). Vazio:
      mantém-se o bloco anterior. */
   window.TRIPNEXUS_ACTIVIDADES_WIDGET_SRC = 'https://tpwdgt.com/content?currency=EUR&trs=552141&shmarker=752935.actividades&locale=en&city_id=705748&category=2&amount=3&powered_by=true&campaign_id=137&promo_id=4497';
 </script>
-<script src="assets/js/analytics.js?v=67"></script>
-<script src="assets/js/data.js?v=67"></script>
-<script src="assets/js/engine.js?v=67"></script>
-<script src="assets/js/calendar.js?v=67"></script>
-<script src="assets/js/live.js?v=67"></script>
-<script src="assets/js/alertas.js?v=67"></script>
-<script src="assets/js/roteiro.js?v=67"></script>
-<script src="assets/js/app.js?v=67"></script>
+<script src="assets/js/analytics.js?v=68"></script>
+<script src="assets/js/data.js?v=68"></script>
+<script src="assets/js/engine.js?v=68"></script>
+<script src="assets/js/calendar.js?v=68"></script>
+<script src="assets/js/live.js?v=68"></script>
+<script src="assets/js/alertas.js?v=68"></script>
+<script src="assets/js/roteiro.js?v=68"></script>
+<script src="assets/js/app.js?v=68"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

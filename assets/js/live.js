@@ -20,7 +20,7 @@ const MODO_DIAG = /[?&]diag=1/.test(location.search);
 function registarFonte(fonte, estado, detalhe){
   DIAG[fonte] = {estado, detalhe: detalhe || '', hora: new Date().toTimeString().slice(0, 8)};
   if(estado !== 'a consultar')
-    console.info('[TripNexus] ' + fonte + ': ' + estado + (detalhe ? ' — ' + detalhe : ''));
+    console.info('[TripNexus] ' + fonte + ': ' + estado + (detalhe ? ': ' + detalhe : ''));
   desenharDiagnostico();
 }
 function desenharDiagnostico(){
@@ -56,7 +56,7 @@ function desenharDiagnostico(){
 function explicarEstimativa(idBloco, motivo){
   const nota = document.querySelector('#' + idBloco + ' .nota-estimativa span:last-child');
   if(!nota) return;
-  nota.innerHTML = '<strong>Valores estimados</strong> — não foi possível obter preços reais para esta pesquisa'
+  nota.innerHTML = '<strong>Valores estimados</strong>: não foi possível obter preços reais para esta pesquisa'
     + (motivo ? ' (' + escaparHtml(motivo) + ')' : '') + '. O preço real é confirmado no site do parceiro.';
 }
 
@@ -88,7 +88,7 @@ async function actualizarAlojamentoReal(ctx){
     }catch(e){ return {ofertas:[], nota: nome + ': sem ligação ao backend'}; }
   };
   const vazio = Promise.resolve({ofertas:[], nota:''});
-  /* Só há duas pesquisas na Google — «hotéis» e «alojamento local» — e as
+  /* Só há duas pesquisas na Google, «hotéis» e «alojamento local», e as
      categorias finas saem todas da primeira: um hostel, uma pensão ou um
      apart-hotel vêm na pesquisa de hotéis. Quem escolher só «Hostels» tem de
      a fazer na mesma, senão não vem nada. */
@@ -152,7 +152,7 @@ async function actualizarAlojamentoReal(ctx){
 
 /* A pesquisa de «hotéis» na Google traz também hostels, pousadas e
    apart-hotéis. Chamar «Hotel» a todos é dizer ao utilizador uma coisa que
-   não é verdade — o «St Christopher's Paris» é um hostel e aparecia como
+   não é verdade: o «St Christopher's Paris» é um hostel e aparecia como
    hotel. A tipologia vem da Google, que a devolve ora em inglês ora em
    português conforme o campo, e o que não estiver na tabela é mostrado tal
    como veio, em vez de ser arredondado para «Hotel». */
@@ -230,7 +230,7 @@ function categoriaAlojamento(h){
      de hotéis, seja hostel, apart-hotel ou pensão. Só distingue mesmo o
      alojamento local, e nisso é de confiar. */
   const alojamentoLocal = /vacation rental|holiday|rental/.test(t);
-  /* Para o resto é preciso olhar para o nome e para a descrição — é uma
+  /* Para o resto é preciso olhar para o nome e para a descrição, e é uma
      leitura de indícios, não um campo de dados, e por isso só conta quando a
      palavra aparece inteira. */
   const texto = ((h && h.nome) || '') + ' ' + ((h && h.descricao) || '');
@@ -314,7 +314,7 @@ async function actualizarVoosReais(ctx){
       const liga = p => ligacaoParceiro(p, {...ctx, seccao:'voo'});
       bloco.innerHTML = `
         <h3 class="bloco-titulo">✈ Voos</h3>
-        <p class="aviso-datas">📅 Não encontrámos tarifas para <strong>${escaparHtml(diaCurto(dataISO(ctx.ida)))}${ctx.volta ? ' – ' + escaparHtml(diaCurto(dataISO(ctx.volta))) : ''}</strong>. Não mostramos outras datas no lugar destas — se quiser ver que dias têm tarifa, abra o calendário na caixa de pesquisa.</p>
+        <p class="aviso-datas">📅 Não encontrámos tarifas para <strong>${escaparHtml(diaCurto(dataISO(ctx.ida)))}${ctx.volta ? ' – ' + escaparHtml(diaCurto(dataISO(ctx.volta))) : ''}</strong>. Não mostramos outras datas no lugar destas. Se quiser ver que dias têm tarifa, abra o calendário na caixa de pesquisa.</p>
         ${['skyscanner','kayak','google'].map(p => linhaSemPreco(p, {
           detalhe: 'Procurar ' + ctx.origem.n + ' → ' + ctx.destino.n + ' nestas datas',
           url: liga(p)
@@ -348,7 +348,7 @@ async function actualizarVoosReais(ctx){
       <h3 class="bloco-titulo">✈ Voos · tarifas reais</h3>
       <p class="bloco-sub tempo-real">⚡ Tarifas reais registadas nas últimas horas (Aviasales/Travelpayouts). Total para todos os passageiros.</p>
       ${soRegresso
-        ? '<p class="aviso-datas">📅 A <strong>data de ida é a que pediu</strong>. Não há tarifas registadas para o regresso a ' + escaparHtml(diaCurto(dataISO(ctx.volta))) + ', por isso o regresso destas é noutro dia — cada linha diz qual, e quantas noites fica.</p>'
+        ? '<p class="aviso-datas">📅 A <strong>data de ida é a que pediu</strong>. Não há tarifas registadas para o regresso a ' + escaparHtml(diaCurto(dataISO(ctx.volta))) + ', por isso o regresso destas é noutro dia: cada linha diz qual, e quantas noites fica.</p>'
         : outrasDatas ? '<p class="aviso-datas">📅 Não há tarifas registadas para as datas exactas que indicou. Estas são tarifas <strong>reais</strong> de dias próximos: as datas de ida e de regresso de cada uma estão indicadas na linha.</p>' : ''}
       ${notaClasse}
       ${typeof barraFiltros === 'function' ? barraFiltros(companhias) : ''}
@@ -443,7 +443,7 @@ function notaAeroporto(codigo){
   const a = AEROPORTOS_AFASTADOS[String(codigo || '').toUpperCase()];
   return a ? '⚠ ' + codigo + ' (' + a[0] + ', ~' + a[1] + ' km do centro)' : '';
 }
-/* «directo», «1 escala», «2 escalas» — e o regresso à parte quando difere */
+/* «directo», «1 escala», «2 escalas», e o regresso à parte quando difere */
 function textoEscalas(n){
   return n === 0 ? 'directo' : n + (n === 1 ? ' escala' : ' escalas');
 }
@@ -463,7 +463,7 @@ function diaCurto(iso){
   return dias[d.getDay()] + ', ' + d.getDate() + ' ' + meses[d.getMonth()];
 }
 
-/* Aluguer de viaturas com preços reais, por coordenadas — serve os 95
+/* Aluguer de viaturas com preços reais, por coordenadas: serve os 95
    destinos, ao contrário do widget, que ficava preso a uma lista de
    cidades e nunca nos dizia o valor.
 
@@ -473,7 +473,7 @@ function diaCurto(iso){
    tinha falhado. Um recurso que mente é pior do que recurso nenhum: sem
    API, fica o bloco com as ligações aos parceiros e sem preço. */
 /* A Booking nem sempre traz o logótipo da empresa de aluguer, mas traz-lhe
-   sempre o nome. Com o domínio, a cadeia de fontes de ícones faz o resto —
+   sempre o nome. Com o domínio, a cadeia de fontes de ícones faz o resto,
    e uma empresa que não esteja aqui cai no monograma, não num emoji igual
    para todas. */
 const DOMINIO_ALUGUER = {
@@ -545,7 +545,7 @@ async function actualizarCarrosReais(ctx){
     if(emEuros && typeof registarPrecoReal === 'function')
       registarPrecoReal('carro', ofertas[0].preco, (ofertas[0].nome || 'viatura') + ' · ' + dias + (dias === 1 ? ' dia' : ' dias'));
     /* Os cartões da API não trazem ligação para a viatura, por isso o botão
-       abre a pesquisa da Booking já com o local e as datas — construída no
+       abre a pesquisa da Booking já com o local e as datas, construída no
        backend a partir dos parâmetros que a Booking documenta. A página de
        entrada fica como último recurso, e o endereço inventado que dava
        «Página não encontrada» desapareceu. */
@@ -553,7 +553,7 @@ async function actualizarCarrosReais(ctx){
     bloco.innerHTML = `
       <h3 class="bloco-titulo">🚗 Aluguer de viatura em ${escaparHtml(ctx.destino.n)} · preços reais</h3>
       <p class="bloco-sub tempo-real">⚡ Preços reais para ${dias} ${dias === 1 ? 'dia' : 'dias'} (Booking.com). Total do aluguer.</p>
-      <p class="bloco-sub">Levantamento em ${escaparHtml(ctx.destino.n)}, nos balcões indicados em cada linha. No aeroporto os preços costumam ser outros — a página do parceiro deixa trocar o local.</p>
+      <p class="bloco-sub">Levantamento em ${escaparHtml(ctx.destino.n)}, nos balcões indicados em cada linha. No aeroporto os preços costumam ser outros. A página do parceiro deixa trocar o local.</p>
       ${ofertas.slice(0, 6).map((v, i) => `
         <div class="linha-oferta ${i === 0 ? 'melhor' : ''}">
           ${caixaLogotipo([

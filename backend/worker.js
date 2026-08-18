@@ -70,7 +70,7 @@ async function estado(env, url){
   }else{
     /* O mais barato que há para ler os cabeçalhos de quota. Por omissão vai
        buscá-lo à cache de 6 h, para que recarregar o /estado não gaste
-       pedidos — mas então o número lido é o da altura em que a resposta foi
+       pedidos, mas então o número lido é o da altura em que a resposta foi
        guardada, e não desce à medida que o site consome. Com «fresco=1»
        gasta-se um pedido para ver o valor de agora. */
     const fresco = url.searchParams.get('fresco') === '1';
@@ -140,11 +140,11 @@ function duracaoTexto(min){
    O «prices_for_dates» é um registo de tarifas vistas em pesquisas
    recentes: se ninguém pesquisou as datas que o utilizador escolheu, não há
    lá nada, e o bloco acabava a propor outras datas. Não é isso que um
-   comparador faz — o que os outros sites fazem é procurar mesmo, na hora.
+   comparador faz: o que os outros sites fazem é procurar mesmo, na hora.
 
    É o que esta API faz: abre-se uma pesquisa, espera-se, e lêem-se os
    resultados. Exige `marker` e uma assinatura MD5 dos parâmetros, e é o
-   único sítio do backend que precisa de MD5 — a Web Crypto dos Workers não
+   único sítio do backend que precisa de MD5, e a Web Crypto dos Workers não
    o tem, daí a implementação abaixo.
 
    Entra sempre como acréscimo: se falhar, fica o que a cache tiver, e o
@@ -367,7 +367,7 @@ async function voos(url, env){
 
      Duas fontes para as mesmas datas, somadas:
        1. o «prices_for_dates», que é um registo de tarifas vistas em
-          pesquisas recentes — instantâneo, mas com buracos;
+          pesquisas recentes, instantâneo, mas com buracos;
        2. a pesquisa ao vivo, que vai mesmo procurar agora. É mais lenta e
           exige assinatura, mas é o que permite ter valores para datas que
           mais ninguém pesquisou. */
@@ -481,7 +481,7 @@ async function voos(url, env){
 /* ── Aluguer de viaturas e atracções (Booking.com via RapidAPI) ─────
    Os widgets do Localrent e do Klook fixam a cidade num identificador
    interno deles, o que os prendia a uma lista de cidades e, pior, nunca
-   nos dizia o preço — logo, nunca podiam entrar no total da viagem.
+   nos dizia o preço, logo nunca podiam entrar no total da viagem.
    Esta API aceita coordenadas (viaturas) e o nome da cidade (atracções),
    que temos para os 95 destinos, e devolve o valor.
 
@@ -502,7 +502,7 @@ const LOCALE = 'pt-pt';
 
 /* Endereço da pesquisa de aluguer na Booking, já com o local e as datas.
    Os cartões da API não trazem ligação nenhuma para a viatura, e o botão de
-   reserva estava a cair na página de entrada do site — que é onde tinha ido
+   reserva estava a cair na página de entrada do site, que é onde tinha ido
    parar depois de um endereço inventado por nós ter dado «Página não
    encontrada». Estes parâmetros são os que a Booking documenta para o
    «cars.booking.com/search-results»: puDay/puMonth/puYear e os do regresso,
@@ -518,7 +518,7 @@ function ligacaoCarrosBooking(q){
     driversAge: '30', prefcurrency: 'EUR', preflang: 'pt'
   });
   /* Só o nome da cidade, e não o código IATA. Com «locationIata=PAR» a
-     Booking abria em Paris (CDG) — o aeroporto — enquanto a nossa pesquisa é
+     Booking abria em Paris (CDG), o aeroporto, enquanto a nossa pesquisa é
      feita nas coordenadas do centro e devolve balcões como a Gare de Lyon.
      Duas localizações diferentes dão preços diferentes, e o utilizador via
      isso como uma discrepância nossa. Mais vale o botão procurar onde nós
@@ -540,9 +540,9 @@ const urlDe = (o, ...chaves) => {
 /* O RapidAPI devolve 429 por duas razões muito diferentes, e o código HTTP
    sozinho não as distingue:
 
-   - a quota do mês acabou — o corpo fala em «MONTHLY quota» e nomeia o plano;
+   - a quota do mês acabou: o corpo fala em «MONTHLY quota» e nomeia o plano;
      esperar não adianta nada, só volta a haver pedidos no mês seguinte;
-   - pedidos a mais por segundo — o corpo diz apenas «Too many requests». O
+   - pedidos a mais por segundo: o corpo diz apenas «Too many requests». O
      plano gratuito tolera muito pouca simultaneidade, e o site pede carros e
      actividades ao mesmo tempo, o que basta para o accionar. Aqui esperar
      resolve, e é o que se faz.
@@ -623,7 +623,7 @@ const CHAVE_NOME  = /^(name|title|v_name|vehicle_name|productName)$/i;
    Dois passos, como o fornecedor exige:
      1. «searchDestination» (term + countryOfResidence) devolve locais, cada
         um com coordinates.latitude/longitude e um title;
-     2. «searchCarRentals» recebe essas coordenadas — não um identificador —
+     2. «searchCarRentals» recebe essas coordenadas (não um identificador),
         mais as datas e as horas, que são todas obrigatórias.
    O title vai como pick_up_location_name: a documentação diz que melhora a
    correspondência do local, sem ser obrigatório.
@@ -716,7 +716,7 @@ async function carros(url, env){
 
   /* O preço vem formatado («€ 18»), mas nem só: há campos numéricos ao lado,
      e são esses que valem. Ler apenas a cadeia formatada dava seis viaturas
-     de fornecedores diferentes todas ao mesmo euro — sinal de que a cadeia
+     de fornecedores diferentes todas ao mesmo euro, sinal de que a cadeia
      lida não era a da viatura. Procura-se primeiro um número, e só se não
      houver nenhum é que se volta a interpretar o texto. */
   const numeroDe = (o, ...caminhos) => {
@@ -846,7 +846,7 @@ function precoNumero(v){
    de viagem. É o que alimenta a grelha de datas do site.
 
    Existe porque a grelha estava a mostrar valores inventados por um gerador
-   pseudo-aleatório do motor local — e a mostrá-los sem ressalva nenhuma, ao
+   pseudo-aleatório do motor local, e a mostrá-los sem ressalva nenhuma, ao
    lado de preços reais. O utilizador escolhia as datas por eles.
 
    Dois modos:
@@ -941,7 +941,7 @@ async function calendario(url, env){
       pedir(mes, seguinte, 1), pedir(mes, seguinte, 2),
       /* Duas passagens: uma com a duração pedida, outra sem filtro nenhum. A
          primeira dá o melhor preço para a viagem que se quer; a segunda enche
-         os dias em que não existe viagem dessa duração mas existe alguma — e
+         os dias em que não existe viagem dessa duração mas existe alguma, e
          eram esses que ficavam em branco. Como a duração de cada tarifa vai no
          resultado e aparece ao lado do preço, nenhum desses dias se disfarça
          do que não é. */
@@ -974,8 +974,8 @@ async function calendario(url, env){
         desvio = Math.abs(n - dias);
         if(depurar) diag.duracoes[n] = (diag.duracoes[n] || 0) + 1;
         /* Não se descarta por duração. O diagnóstico mostrou que a maior
-           parte das tarifas registadas são de estadias curtas — duas e três
-           noites dominam — e cortá-las deixava o mês quase vazio. Guarda-se a
+           parte das tarifas registadas são de estadias curtas (duas e três
+           noites dominam), e cortá-las deixava o mês quase vazio. Guarda-se a
            mais próxima do pedido e diz-se de quantas noites é: um dia com
            «96 € 2n» informa, um dia em branco não. */
       }
@@ -1002,13 +1002,13 @@ async function calendario(url, env){
 
 /* /ofertas: as ofertas em conta, com preços reais.
 
-   Esta página mostrava descontos inventados — o preço «agora», o preço
+   Esta página mostrava descontos inventados: o preço «agora», o preço
    «típico» e a percentagem de queda saíam todos do gerador pseudo-aleatório
    do motor local. Era o último sítio do site com números que não existem.
 
    Agora: para cada destino pede-se o calendário do mês e fica-se com o dia
    mais barato. O «típico» deixa de ser inventado e passa a ser a **mediana
-   dos preços diários** dessa mesma rota nesse mês — uma estatística das
+   dos preços diários** dessa mesma rota nesse mês, uma estatística das
    tarifas observadas, e não um número tirado do ar. A queda é a diferença
    entre os dois, e só se anuncia quando existe mesmo.
 
@@ -1106,8 +1106,8 @@ async function alojamento(url, env, casas){
     if(j.error) return resposta({ofertas:[], fonte:'serpapi', nota: String(j.error)}, 200, true);
     const props = Array.isArray(j.properties) ? j.properties : [];
     /* «debug=1» devolve os dois primeiros alojamentos como a SerpApi os
-       manda. O campo «type» é grosso — diz «hotel» a tudo o que veio da
-       pesquisa de hotéis, hostels incluídos — e é preciso ver o que mais
+       manda. O campo «type» é grosso: diz «hotel» a tudo o que veio da
+       pesquisa de hotéis, hostels incluídos, e é preciso ver o que mais
        existe antes de escolher outro. */
     if(q.get('debug') === '1')
       return resposta({passo:'google_hotels', total: props.length,

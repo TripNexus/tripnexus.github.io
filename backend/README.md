@@ -33,7 +33,7 @@ produção exige verificação da empresa; fica documentado como evolução futu
    `npm install -g wrangler`
 2. **Todos os comandos correm dentro da pasta `backend/`**, que é onde está o
    `wrangler.toml`. Corridos na raiz do repositório, o wrangler queixa-se de
-   `Required Worker name missing` — e o `wrangler deploy` chega a propor
+   `Required Worker name missing`, e o `wrangler deploy` chega a propor
    publicar o site inteiro como um Worker novo, o que não é o que se quer.
 
    ```
@@ -61,7 +61,7 @@ produção exige verificação da empresa; fica documentado como evolução futu
 
 Os preços reais de hotéis vêm da **SerpApi** (motor `google_hotels`, os
 mesmos preços que aparecem no Google Hotels). O plano gratuito tem um limite
-mensal de pesquisas (250, no plano actual) — o número exacto que resta vem em
+mensal de pesquisas (250, no plano actual). O número exacto que resta vem em
 `/estado`, no campo `serpapi_pesquisas_restantes`. Esgotado o limite, o
 alojamento volta às estimativas locais, sem erro para o utilizador.
 
@@ -87,7 +87,7 @@ configurar nada além da `SERPAPI_KEY`. Note que cada pesquisa passa a gastar
 ### Chave para aluguer de viaturas e actividades
 
 O aluguer e as actividades vêm da **Booking.com**, que aceita coordenadas
-(viaturas) e o nome da cidade (atracções) — ao contrário dos widgets do
+(viaturas) e o nome da cidade (atracções), ao contrário dos widgets do
 Localrent e do Klook, que fixam a cidade num identificador interno e por isso
 só serviam uma lista fechada de cidades. E, ao contrário dos widgets, a API
 devolve o valor, o que permite somá-lo no total da viagem.
@@ -98,14 +98,14 @@ wrangler secret put RAPIDAPI_KEY
 ```
 
 Confirme em `/estado` (campo `rapidapi_key_definida`). Sem a chave, os dois
-blocos ficam com as ligações aos parceiros e sem preço — nunca com valores
+blocos ficam com as ligações aos parceiros e sem preço, nunca com valores
 inventados.
 
-> **Quotas — o ponto crítico.** A camada gratuita do RapidAPI dá **50 pedidos
+> **Quotas: o ponto crítico.** A camada gratuita do RapidAPI dá **50 pedidos
 > por mês**. Uma pesquisa do site gastava quatro (dois no aluguer, dois nas
 > actividades), o que dava **doze pesquisas por mês**: inutilizável.
 >
-> O aluguer passou a gastar **um** pedido no caso comum — pesquisa-se
+> O aluguer passou a gastar **um** pedido no caso comum: pesquisa-se
 > directamente nas coordenadas que já temos, e só se elas não derem viaturas é
 > que se gasta um segundo a perguntar ao fornecedor onde fica o local.
 >
@@ -114,7 +114,7 @@ inventados.
 > código HTTP para as duas coisas. Distinguem-se pelo corpo: o da quota fala em
 > *«MONTHLY quota»* e nomeia o plano; o do ritmo diz apenas *«Too many
 > requests»*. O site pede carros e actividades ao mesmo tempo, o que basta para
-> accionar o segundo com a quota do mês quase intacta — foi exactamente o que
+> accionar o segundo com a quota do mês quase intacta, e foi exactamente o que
 > nos aconteceu, com 47 dos 50 pedidos por gastar.
 >
 > O `rapid()` trata-os de maneira diferente: no 429 de ritmo repete até duas
@@ -124,14 +124,14 @@ inventados.
 > `/estado` mostra qual dos dois casos é.
 >
 > **O número de quota no `/estado` vem da cache.** A sondagem que o lê está
-> guardada 6 h, para que recarregar a página de diagnóstico não gaste pedidos —
+> guardada 6 h, para que recarregar a página de diagnóstico não gaste pedidos,
 > mas isso quer dizer que o número não desce à medida que o site consome, e
 > pode estar até seis horas atrasado. Para ver o valor de agora, `/estado?fresco=1`,
 > que gasta um pedido para o ir buscar.
 >
 > Isto serve para validar a integração, não para um site aberto ao público. O destino natural é a **Booking.com Demand API**
-> (<https://developers.booking.com/demand>), que não cobra pela utilização —
-> o modelo é por comissão — e cobre os mesmos produtos. Exige aprovação como
+> (<https://developers.booking.com/demand>), que não cobra pela utilização
+> (o modelo é por comissão) e cobre os mesmos produtos. Exige aprovação como
 > parceiro afiliado. As rotas `/carros` e `/actividades` foram escritas com os
 > nomes dos campos procurados por padrão (ver `colher()`), pelo que a troca de
 > fornecedor é uma alteração contida ao `rapid()` e aos dois caminhos.
@@ -159,14 +159,14 @@ com `status:false` é indistinguível de um parâmetro mal escrito.
 >
 > **O idioma leva região.** Nas actividades, o `languagecode` tem de ser
 > `pt-pt` ou `en-us`; um `pt` solto não é reconhecido e o `searchLocation`
-> devolve zero destinos — o que no site aparecia como «a Booking não
+> devolve zero destinos, o que no site aparecia como «a Booking não
 > reconheceu «Paris»», uma mensagem que culpava a cidade quando o culpado era
 > o parâmetro ao lado. Está numa constante `LOCALE` no `worker.js`.
 >
 > Duas lições de método: a mensagem de erro deste fornecedor é sempre a mesma
 > independentemente da causa, por isso o `debug=1` que mostra o pedido enviado
 > vale mais do que ler a resposta; e o painel do RapidAPI dá o URL de exemplo e
-> a lista de parâmetros sem gastar quota nenhuma — vale sempre a pena olhar
+> a lista de parâmetros sem gastar quota nenhuma, e vale sempre a pena olhar
 > antes de tentar.
 
 Para afinar a integração sem publicar o Worker a cada tentativa, `/carros`
@@ -176,7 +176,7 @@ aceita ainda:
 |---|---|
 | `caminho1` | endpoint do passo 1 (tem de começar por `/api/`) |
 | `caminho2` | endpoint do passo 2 |
-| `extra` | `chave:valor,chave:valor` — acrescenta ou substitui parâmetros do passo 2 |
+| `extra` | `chave:valor,chave:valor`, acrescenta ou substitui parâmetros do passo 2 |
 
 Exemplo: `/carros?lat=38.7&lon=-9.1&ida=2026-09-20&volta=2026-09-24&debug=1&caminho1=/api/v2/cars/searchDestination&caminho2=/api/v2/cars/searchCarRentals`
 
@@ -239,7 +239,7 @@ utilizador.
 | Rota | Parâmetros | Devolve |
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas`, `marker` | `{ofertas:[{preco, companhia, escalas, duracao, partida, url}], classe, fonte}` |
-| `/calendario` | `origem`, `destino` (IATA), `mes` (AAAA-MM), e depois `dias` (duração da viagem) **ou** `ida` (AAAA-MM-DD, para agrupar por dia de regresso) **ou** `soIda=1` | `{precos:{"2026-09-09":171, …}, mes, dias, fonte}`: o preço real mais baixo por dia. É o que alimenta a grelha de datas — que antes mostrava valores inventados por um gerador com semente |
+| `/calendario` | `origem`, `destino` (IATA), `mes` (AAAA-MM), e depois `dias` (duração da viagem) **ou** `ida` (AAAA-MM-DD, para agrupar por dia de regresso) **ou** `soIda=1` | `{precos:{"2026-09-09":171, …}, mes, dias, fonte}`: o preço real mais baixo por dia. É o que alimenta a grelha de datas, que antes mostrava valores inventados por um gerador com semente |
 | `/ofertas` | `origem` (IATA), `destinos` (IATA separados por vírgula), `mes` (AAAA-MM), `dias` | `{ofertas:[{destino, agora, tipico, queda, ida, volta, diasComTarifa}]}`: o dia mais barato do mês por destino e a **mediana dos preços diários da rota** como termo de comparação. Alimenta a página «Ofertas em conta», que mostrava descontos inventados |
 | `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
 | `/casas` | os mesmos de `/hoteis` | alojamento local: mesmo motor e **mesma chave**, com `vacation_rentals=true` |
@@ -256,11 +256,11 @@ de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas.
 
 > **A pesquisa ao vivo precisa de acesso pedido à parte.** Com o `TP_MARKER`
 > definido, o primeiro teste devolveu **HTTP 403 «Forbidden»** em texto
-> simples. Isso é a porta fechada, não a assinatura mal feita — uma
+> simples. Isso é a porta fechada, não a assinatura mal feita. Uma
 > assinatura errada devolve JSON a dizê-lo. O acesso à *Flights Search API*
 > é concedido a pedido pela Travelpayouts e não vem com a conta de afiliado.
 > O `/estado` mostra o estado no campo `pesquisa_ao_vivo`, e enquanto não
-> houver acesso o site vive do que estiver em cache — que para muitas rotas
+> houver acesso o site vive do que estiver em cache, que para muitas rotas
 > chega: na primeira medição, Lisboa→Paris a 14–17 de Outubro tinha 33
 > tarifas nas datas exactas.
 >
@@ -269,7 +269,7 @@ de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas.
 > ninguém pesquisou as datas escolhidas, não há lá nada. A **pesquisa ao
 > vivo** (`/v1/flight_search`) vai mesmo procurar na hora, mas exige o marker
 > e uma assinatura MD5 dos parâmetros. Sem `TP_MARKER` o site continua a
-> funcionar, apenas fica dependente do que estiver em cache — e nas datas sem
+> funcionar, apenas fica dependente do que estiver em cache, e nas datas sem
 > tarifa registada mostra que não há, em vez de propor outras.
 
 ### De onde vêm as tarifas de voo
@@ -278,7 +278,7 @@ A rota `/voos` usa o **`aviasales/v3/prices_for_dates`** da Travelpayouts, que
 devolve uma lista de tarifas para as datas pedidas, cada uma com companhia,
 escalas, duração e **ligação directa à reserva** (com o nosso marker). Se essa
 lista vier vazia, tenta-se o antigo `v1/prices/cheap`, que só dá a mais barata
-por número de escalas — no máximo três linhas, e vazio em muitas rotas.
+por número de escalas: no máximo três linhas, e vazio em muitas rotas.
 
 ## Porque é que o site mostra «estimativa»
 
@@ -297,6 +297,43 @@ Motivos mais frequentes:
 | `SERPAPI_KEY não definido` | corra `wrangler secret put SERPAPI_KEY` |
 | `sem tarifas registadas para esta rota` | a Travelpayouts só tem tarifas de pesquisas reais recentes; é normal em rotas pouco procuradas |
 | `sem ligação ao backend` | o Worker não respondeu: confirme o endereço em `window.TRIPNEXUS_API` |
+
+### Comboio e autocarro: porque é que não há preço nenhum
+
+O bloco «Ir por terra» mostra a distância e quem vende o bilhete, e **nenhum
+valor**. Não é um esquecimento: até à versão 67 do site aqueles preços eram
+inventados por uma fórmula em `cotacoesTerrestres()`, 0,105 €/km no comboio e
+0,055 €/km no autocarro, com ruído pseudo-aleatório por cima para parecerem
+tarifas. Não vinham de tarifário, de média nem de histórico, e apareciam ao
+lado dos voos, esses reais. A função foi substituída por `rotaTerrestre()`,
+que só devolve a distância (calculada das coordenadas reais das cidades) e a
+lista de operadores.
+
+Nenhuma das fontes que já temos serve para isto:
+
+| Fonte | Porque não serve |
+|---|---|
+| Travelpayouts / Aviasales | só voos; os produtos de comboio da rede são programas de afiliação, não API de preços |
+| SerpApi | tem `google_flights` e `google_hotels`, não tem motor de comboios |
+| RapidAPI `booking-com15` | a Booking encaminha comboios para a Omio, e não os expõe nesta API |
+
+As vias reais, todas com contrato de parceiro pelo meio:
+
+- **Omio Partner API** (<https://www.omio.com/partners>): comboio, autocarro e
+  ferry na Europa, que é exactamente o que este bloco precisa;
+- **Trainline Partner API** (<https://www.thetrainline.com/partners>);
+- **FlixBus / Flix Partner API**, só autocarro, mas com a rede maior da Europa;
+- **Busbud Affiliate API**, autocarro fora da Europa também.
+
+Quando uma delas estiver aprovada, o encaixe é o mesmo dos voos: uma rota
+`/terrestre` no Worker, e o `live.js` a depositar as ofertas no bloco. O
+`rotaTerrestre()` já devolve a lista de operadores com a chave do parceiro,
+que é o que falta para casar as respostas.
+
+Entretanto, **as ligações não inventam caminhos**. Só a Rome2Rio e a Omio
+têm endereço de rota confirmado (`ROTA_DIRECTA`, em `assets/js/data.js`); os
+restantes abrem a página de entrada e a linha diz isso ao utilizador. Foi um
+endereço inventado que pôs a Discover Cars numa «Página não encontrada».
 
 ### O Worker publicado é o do repositório?
 

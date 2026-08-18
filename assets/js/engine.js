@@ -118,7 +118,7 @@ function cotacoesAlojamento(cidade, ida, volta, pax, tipos){
   /* A pesquisa passou a ter categorias finas (apart-hotel, pensão, resort,
      turismo rural, campismo) que só os preços reais sabem distinguir. O motor
      local só conhece três famílias de parceiros, por isso as categorias novas
-     entram aqui como hotel — em vez de darem um tipo desconhecido e partirem
+     entram aqui como hotel, em vez de darem um tipo desconhecido e partirem
      a estimativa. */
   const resultado = [];
   for(const tipo of [...new Set((tipos || []).map(t => mapaTipo[t] ? t : 'hotel'))]){
@@ -157,34 +157,41 @@ function cotacoesCarro(cidade, ida, volta){
   }).sort((a,b) => a.precoFinal - b.precoFinal);
 }
 
-/* ── comboio / autocarro (alternativa terrestre) ──────────────── */
-function cotacoesTerrestres(origem, destino, ida, pax, meios){
-  const km = distanciaKm(origem, destino);
-  if(km > 1500) return {viavel:false, km:Math.round(km)};
-  const linhas = [];
-  const mult = multPax(pax);
-  if(meios.includes('comboio')){
-    for(const chave of parceirosDe('comboio')){
-      const r = semente('comboio|' + chave + origem.i + destino.i + chaveData(ida));
-      const preco = Math.max(9, km * 0.105 * PARCEIROS[chave].fx * (0.85 + r() * 0.3)) * mult;
-      const cupao = procurarCupao(chave, 'comboio' + origem.i + destino.i, preco);
-      linhas.push({parceiro:chave, meio:'Comboio', preco:arred(preco), cupao,
-                   precoFinal:arred(cupao ? cupao.depois : preco),
-                   duracao: Math.round(km/95*10)/10 + ' h'});
+/* ── comboio / autocarro (ir por terra em vez de voar) ─────────
+   ESTES PREÇOS ERAM INVENTADOS, e este era o último sítio do site onde
+   ainda o eram. Saíam de uma fórmula por quilómetro (0,105 €/km no
+   comboio, 0,055 €/km no autocarro) com ruído pseudo-aleatório por cima,
+   e apareciam ao lado dos voos, que são reais. Não vinham de lado nenhum:
+   nem de tarifários, nem de médias, nem de histórico. Um comparador que
+   inventa o preço da alternativa está a decidir pelo utilizador.
+
+   Não há hoje fonte gratuita de tarifas reais de comboio e autocarro que
+   possamos consultar: a Travelpayouts dá voos (Aviasales) e hotéis, a
+   Booking não vende comboios pela API que usamos, e a SerpApi não tem
+   motor de comboios. A Omio, a Trainline, a FlixBus e a Busbud têm API de
+   parceiro, mas exigem contrato aprovado (ver backend/README.md).
+
+   Até haver essa fonte, o bloco mostra só o que sabemos mesmo: a
+   distância, calculada das coordenadas reais das duas cidades, e quem
+   vende o bilhete, com a ligação já apontada à rota certa. Preço nenhum.
+   Quando houver fonte, entra aqui em «ofertas», como nos voos. */
+function rotaTerrestre(origem, destino, meios){
+  const km = Math.round(distanciaKm(origem, destino));
+  /* um parceiro que venda comboio e autocarro aparece uma vez só, com os
+     dois modos, em vez de duas linhas iguais com botões iguais */
+  const porParceiro = new Map();
+  const juntar = (cat, meio) => {
+    for(const chave of parceirosDe(cat)){
+      if(!porParceiro.has(chave)) porParceiro.set(chave, {parceiro:chave, meios:[]});
+      porParceiro.get(chave).meios.push(meio);
     }
-  }
-  if(meios.includes('autocarro')){
-    for(const chave of parceirosDe('autocarro')){
-      const r = semente('bus|' + chave + origem.i + destino.i + chaveData(ida));
-      const preco = Math.max(5, km * 0.055 * PARCEIROS[chave].fx * (0.85 + r() * 0.3)) * mult;
-      const cupao = procurarCupao(chave, 'bus' + origem.i + destino.i, preco);
-      linhas.push({parceiro:chave, meio:'Autocarro', preco:arred(preco), cupao,
-                   precoFinal:arred(cupao ? cupao.depois : preco),
-                   duracao: Math.round(km/68*10)/10 + ' h'});
-    }
-  }
-  linhas.sort((a,b) => a.precoFinal - b.precoFinal);
-  return {viavel:true, km:Math.round(km), linhas};
+  };
+  if(meios.includes('comboio')) juntar('comboio', 'Comboio');
+  if(meios.includes('autocarro')) juntar('autocarro', 'Autocarro');
+  /* à frente quem abre já na rota pedida: é o que poupa cliques a quem lê */
+  const operadores = [...porParceiro.values()]
+    .sort((a, b) => (ROTA_DIRECTA.has(b.parceiro) ? 1 : 0) - (ROTA_DIRECTA.has(a.parceiro) ? 1 : 0));
+  return {viavel: km <= 1500, km, operadores};
 }
 
 /* ── transportes públicos no destino ──────────────────────────── */
@@ -262,13 +269,13 @@ function estimativaTransportesPublicos(cidade, dias, pax){
    «qual destes é o meu», e isso depende de quanto tenciona andar. Montam-se
    três respostas a partir das mesmas tarifas publicadas:
 
-     económico  — bilhetes avulso, para quem anda pouco. O total depende do
-                  número de viagens, que não sabemos, por isso é o único que
-                  leva um pressuposto declarado: duas viagens por dia.
-     habitual   — o passe mais barato que cobre metro e autocarro durante a
-                  estadia. É o que a maioria dos visitantes usa.
-     completo   — o mesmo, mas exigindo também comboio ou aeroporto, para
-                  quem quer as deslocações todas cobertas.
+     económico: bilhetes avulso, para quem anda pouco. O total depende do
+                número de viagens, que não sabemos, por isso é o único que
+                leva um pressuposto declarado: duas viagens por dia.
+     habitual:  o passe mais barato que cobre metro e autocarro durante a
+                estadia. É o que a maioria dos visitantes usa.
+     completo:  o mesmo, mas exigindo também comboio ou aeroporto, para
+                quem quer as deslocações todas cobertas.
 
    Cada perfil traz a combinação exacta de títulos, e não uma média: em
    Paris, oito dias saem mais baratos com um passe semanal mais um diário do
@@ -397,7 +404,7 @@ function cotacoesPacote(origem, destino, ida, volta, classe, pax, somaSeparado, 
    Era o último sítio do site com números que não existem.
 
    Passa a pedir ao backend, que devolve para cada destino o dia mais barato
-   do mês e a mediana dos preços diários da mesma rota — o «típico» deixa de
+   do mês e a mediana dos preços diários da mesma rota. O «típico» deixa de
    ser um número tirado do ar e passa a ser uma estatística das tarifas
    observadas. Um destino sem tarifas registadas não aparece: melhor menos
    cartões do que cartões inventados. */
@@ -478,7 +485,7 @@ function euros(v){
 }
 /* O mesmo, mas com os cêntimos. Nos voos e no alojamento o euro inteiro
    chega; num bilhete de metro de 2,50 € arredondar para 3 € é mostrar outro
-   preço — e é o preço exacto que está no tarifário do operador. */
+   preço, e é o preço exacto que está no tarifário do operador. */
 function eurosExactos(v){
   const m = MOEDAS[MOEDA] || MOEDAS.EUR;
   const c = v * (TAXAS[MOEDA] || 1);

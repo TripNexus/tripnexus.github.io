@@ -22,13 +22,13 @@ function hojeZero(){ const h = new Date(); h.setHours(0,0,0,0); return h; }
 
 /* ── preços do calendário ─────────────────────────────────────
    Estes números eram inventados. Vinham do `cotacaoVoo()` do motor local,
-   que os gera com um gerador pseudo-aleatório com semente — estáveis entre
+   que os gera com um gerador pseudo-aleatório com semente, estáveis entre
    visitas, e por isso convincentes, mas sem qualquer relação com o que custa
    voar. Apareciam sem ressalva nenhuma, ao lado dos preços reais do resto do
    site, e o utilizador escolhia as datas por eles.
 
    Passam a vir do backend, da mesma fonte das tarifas (Travelpayouts). Um
-   dia sem tarifa registada fica sem preço — que é a verdade — em vez de
+   dia sem tarifa registada fica sem preço, que é a verdade, em vez de
    receber um número plausível. */
 const CACHE_CAL = {};        /* chave → {estado, precos} */
 
@@ -114,7 +114,7 @@ function desenharCalendario(){
 
   /* O dia «mais barato» tem de ser o mais barato *para a viagem que se
      pediu*. Como agora se mostram também tarifas de outras durações, o valor
-     mais baixo da grelha pode ser de uma estadia de duas noites — sublinhá-lo
+     mais baixo da grelha pode ser de uma estadia de duas noites, e sublinhá-lo
      seria apontar o dia errado. Compara-se só dentro do grupo de dias cuja
      duração está mais perto da pedida. */
   let minimo = Infinity;
