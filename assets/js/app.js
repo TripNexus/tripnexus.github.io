@@ -24,7 +24,7 @@ function normalizar(t){
    Um serviço de ícones sozinho não chega. O do Google está em várias listas
    de bloqueio de publicidade e seguimento, e basta ter um bloqueador activo
    para todos os logótipos do site caírem ao mesmo tempo na inicial da
-   empresa — que era exactamente o que se via. A correcção não é escolher
+   empresa, que era exactamente o que se via. A correcção não é escolher
    outro serviço, é não depender de nenhum: tenta-se uma cadeia de fontes
    independentes e só quando todas falharem aparece o monograma.
 
@@ -169,7 +169,7 @@ function blocoResumo(){
   const carro = PRECOS_REAIS.carro === 'widget'
     ? {valor: 0, real: true, html: `<div class="resumo-linha">
         <span>🚗 Carro <span class="resumo-fonte real">preços reais no quadro do parceiro</span></span>
-        <strong>—</strong></div>`}
+        <strong>ver quadro</strong></div>`}
     : linha('🚗', 'Carro', R.carro, PRECOS_REAIS.carro);
   const partes = [
     linha('✈', 'Voo', R.voo, PRECOS_REAIS.voo),
@@ -940,7 +940,7 @@ function blocoEvolucao(o, d, ida, precoHoje){
    Quanto custa andar na cidade, em que bilhete, e se se compra antes de
    partir ou à chegada. Ao contrário do resto do site, estes valores não vêm
    de uma API: são tarifas publicadas pelos operadores, que mudam uma ou duas
-   vezes por ano. Por isso cada bloco leva a ligação oficial e o ano — e as
+   vezes por ano. Por isso cada bloco leva a ligação oficial e o ano, e as
    cidades que não estão na tabela não mostram valor nenhum. */
 function blocoTransportes(d, dias){
   const t = transportesDe(d);
@@ -982,7 +982,7 @@ function blocoTransportes(d, dias){
             ${perf.titulos.map(x => `<li>${x.n > 1 ? x.n + '× ' : ''}${escaparHtml(x.bilhete.nome)}</li>`).join('')}
           </ul>
           <div class="selos-modos">${selos(perf.modos)}</div>
-          ${perf.pressuposto ? `<p class="perfil-nota">Contado a ${escaparHtml(perf.pressuposto)} — se andar mais, um passe compensa.</p>` : ''}
+          ${perf.pressuposto ? `<p class="perfil-nota">Contado a ${escaparHtml(perf.pressuposto)}. Se andar mais, um passe compensa.</p>` : ''}
         </div>`).join('')}
     </div>
     <p class="bloco-sub">Valores para ${p.dias} ${p.dias === 1 ? 'dia' : 'dias'}${p.pessoas > 1 ? ' e ' + p.pessoas + ' pessoas' : ''}. O «mais barato» não é sempre o melhor: um passe que cobre o aeroporto pode compensar mesmo custando mais.</p>`;
@@ -990,7 +990,7 @@ function blocoTransportes(d, dias){
   return `<div class="bloco" data-aba="transportes">
     <h3 class="bloco-titulo">🚇 Transportes em ${escaparHtml(d.n)}</h3>
     <p class="bloco-sub">${escaparHtml(t.operador)} · tarifas publicadas em ${t.ano}${moeda !== 'EUR' ? ' · valores em ' + moeda : ''}.</p>
-    ${t.cartao ? `<p class="dica-transportes">💳 <strong>${escaparHtml(t.cartao.nome)}</strong> — ${valor(t.cartao.preco)}, ${escaparHtml(t.cartao.nota)}. Não está incluído nos valores abaixo.</p>` : ''}
+    ${t.cartao ? `<p class="dica-transportes">💳 <strong>${escaparHtml(t.cartao.nome)}</strong>: ${valor(t.cartao.preco)}, ${escaparHtml(t.cartao.nota)}. Não está incluído nos valores abaixo.</p>` : ''}
     ${t.nota ? `<p class="dica-transportes">💡 ${escaparHtml(t.nota)}</p>` : ''}
     ${cartoes}
     <h4 class="sub-titulo">Todos os títulos</h4>
@@ -1014,7 +1014,7 @@ function blocoTransportes(d, dias){
         </div>`;
       }).join('')}
     </div>
-    <p class="bloco-sub">Estas tarifas são publicadas pelo operador e mudam uma ou duas vezes por ano — ao contrário dos voos e do alojamento, não são consultadas em tempo real. <a href="${escaparHtml(t.url)}" target="_blank" rel="noopener">Confirme em ${escaparHtml(t.operador)} ↗</a></p>
+    <p class="bloco-sub">Estas tarifas são publicadas pelo operador e mudam uma ou duas vezes por ano. Ao contrário dos voos e do alojamento, não são consultadas em tempo real. <a href="${escaparHtml(t.url)}" target="_blank" rel="noopener">Confirme em ${escaparHtml(t.operador)} ↗</a></p>
   </div>`;
 }
 
@@ -1056,9 +1056,10 @@ function desenharResultados(){
   const voos = aplicarFiltrosVoos(todosVoos);
   const melhorVoo = voos.length ? voos.reduce((m, q) => q.precoFinal < m.precoFinal ? q : m) : todosVoos[0];
 
-  /* alternativa terrestre (comboio / autocarro) */
+  /* ir por terra (comboio / autocarro): só a rota e quem vende o bilhete.
+     Os preços saíam de uma fórmula por quilómetro com ruído aleatório. */
   const meiosTerrestres = ESTADO.transportes.filter(t => t === 'comboio' || t === 'autocarro');
-  const terrestre = meiosTerrestres.length ? cotacoesTerrestres(o, d, ida, ESTADO.pax, meiosTerrestres) : null;
+  const terrestre = meiosTerrestres.length ? rotaTerrestre(o, d, meiosTerrestres) : null;
 
   /* alojamento, carro, transportes públicos, actividades */
   const todosAloj = ESTADO.alojamento.length ? cotacoesAlojamento(d, ida, fimEstadia, ESTADO.pax, tiposAlojamento()) : [];
@@ -1070,7 +1071,7 @@ function desenharResultados(){
   if(FILTRO_ABERTO && FILTRO_ABERTO.startsWith('voo:') && !voos.length) FILTRO_ABERTO = null;
   if(FILTRO_ABERTO && FILTRO_ABERTO.startsWith('aloj:') && !alojamentos.length) FILTRO_ABERTO = null;
   /* aluguer: só a lista de quem aluga. Os preços vinham do mesmo gerador
-     aleatório das actividades — e até o modelo do carro era sorteado. */
+     aleatório das actividades, e até o modelo do carro era sorteado. */
   const diasCarro = Math.max(1, Math.round((fimEstadia - ida) / 86400000));
   const carros = ESTADO.transportes.includes('carro')
     ? parceirosDe('carro').map(parceiro => ({parceiro})) : null;
@@ -1086,7 +1087,7 @@ function desenharResultados(){
   const pacotes = (volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, false) : [];
   const melhorPacote = pacotes[0] || null;
 
-  const nCupoes = [...todosVoos, ...todosAloj, ...(carros || []), ...(terrestre && terrestre.viavel ? terrestre.linhas : []), ...pacotes]
+  const nCupoes = [...todosVoos, ...todosAloj, ...(carros || []), ...pacotes]
     .filter(x => x.cupao).length;
 
   const tiposAloj = {hotel:'Hotel', casa:'Casa / apartamento', hostel:'Hostel'};
@@ -1126,21 +1127,23 @@ function desenharResultados(){
 
         ${terrestre ? `
         <div class="bloco" data-aba="voos">
-          <h3 class="bloco-titulo">🚆 Alternativa terrestre (comboio / autocarro)</h3>
-          ${terrestre.viavel ? `
-            <p class="bloco-sub">Distância aproximada: ${terrestre.km} km. Preços totais para ${n} ${n === 1 ? 'passageiro' : 'passageiros'}.</p>
-            ${terrestre.linhas.slice(0,4).map((q, idx) => linhaOferta(q, {
-              melhor: idx === 0, tag: q.meio,
-              detalhe: `Duração aprox. ${q.duracao}`,
-              url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'terrestre', meio:q.meio})
-            })).join('')}
-            ${terrestre.linhas[0].precoFinal < melhorVoo.precoFinal ? `<p class="bloco-sub" style="margin-top:.6rem">💡 A opção terrestre mais barata fica <strong>${euros(melhorVoo.precoFinal - terrestre.linhas[0].precoFinal)}</strong> abaixo do melhor voo.</p>` : ''}
-          ` : `
-            <p class="bloco-sub">A distância desta rota (~${terrestre.km} km) torna a viagem terrestre pouco prática. Consulte todas as combinações possíveis no Rome2Rio:</p>
-            <div class="linha-oferta">${iconeParceiro('rome2rio')}
-              <div class="oferta-info"><div class="oferta-nome">Rome2Rio</div><div class="oferta-detalhe">Todas as formas de ir de ${o.n} a ${d.n}</div></div>
-              <a class="btn-ver" href="${ligacaoParceiro('rome2rio', ctx)}" target="_blank" rel="noopener">Ver rotas</a>
-            </div>`}
+          <h3 class="bloco-titulo">🚆 Ir por terra (comboio / autocarro)</h3>
+          <p class="bloco-sub">${o.n} a ${d.n}: ${terrestre.km.toLocaleString('pt-PT')} km em linha recta${terrestre.viavel ? '' : ', distância a que a viagem por terra deixa de fazer sentido'}.</p>
+          <p class="bloco-sub">${terrestre.viavel
+            ? 'Não temos fonte de tarifas reais de comboio e de autocarro, por isso <strong>não mostramos preço nenhum aqui</strong>: cada operador tem o dele, na página abaixo.'
+            : 'A esta distância a ligação por terra, quando existe, é uma sucessão de troços de vários operadores. O Rome2Rio mostra-os todos, com a duração e o preço de cada um.'}</p>
+          <div class="linha-oferta">${iconeParceiro('rome2rio')}
+            <div class="oferta-info"><div class="oferta-nome">Rome2Rio</div><div class="oferta-detalhe">Todas as formas de ir de ${escaparHtml(o.n)} a ${escaparHtml(d.n)}, com duração e preço</div></div>
+            <a class="btn-ver" href="${ligacaoParceiro('rome2rio', ctx)}" target="_blank" rel="noopener">Ver rotas</a>
+          </div>
+          ${terrestre.viavel ? terrestre.operadores.slice(0, 6).map(q => linhaSemPreco(q.parceiro, {
+            /* só se diz «abre na rota» quando o endereço da rota é mesmo o
+               que o parceiro documenta; nos outros abre a página de entrada */
+            detalhe: q.meios.join(' e ') + (ROTA_DIRECTA.has(q.parceiro)
+              ? ' · abre em ' + escaparHtml(o.n) + ' a ' + escaparHtml(d.n)
+              : ' · procure a rota no site'),
+            url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'terrestre', meio:q.meios[0]})
+          })).join('') : ''}
         </div>` : ''}
 
         ${todosAloj.length ? `
@@ -1237,7 +1240,7 @@ function desenharResultados(){
 
 /* ── abas dos resultados ──────────────────────────────────────
    EXPERIÊNCIA: a página de resultados era um único rolo muito comprido.
-   As abas dividem-na sem mexer no conteúdo — cada bloco declara a que aba
+   As abas dividem-na sem mexer no conteúdo: cada bloco declara a que aba
    pertence num «data-aba», e a barra só mostra as abas que têm blocos.
    O resumo da viagem não tem «data-aba» de propósito: é o valor que se
    quer sempre à vista, seja qual for a aba.
@@ -1261,7 +1264,7 @@ function montarAbas(sec){
   const barra = sec.querySelector('#abas-resultados');
   if(!barra) return;
   const presentes = ABAS.filter(a => sec.querySelector('[data-aba="' + a.id + '"]'));
-  /* com uma secção só, abas não são navegação nenhuma — são um enfeite */
+  /* com uma secção só, abas não são navegação nenhuma, são um enfeite */
   if(presentes.length < 2){ barra.hidden = true; return; }
   barra.hidden = false;
   barra.innerHTML = presentes.map(a =>

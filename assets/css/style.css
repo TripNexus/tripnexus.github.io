@@ -339,8 +339,8 @@ img{max-width:100%}
 /* ── transportes no destino ───────────────────────────────────
    O texto amontoava-se: nome, etiqueta e preço disputavam a mesma linha e
    colidiam assim que o nome do bilhete era comprido. Passa a haver linhas
-   próprias — nome e preço em cima, modos de transporte no meio, quando
-   comprar em baixo — e cada título tem espaço para respirar. */
+   próprias: nome e preço em cima, modos de transporte no meio, quando
+   comprar em baixo, e cada título tem espaço para respirar. */
 .dica-transportes{
   background:var(--verde-claro);border-left:3px solid var(--verde);
   padding:.6rem .8rem;border-radius:8px;font-size:.88rem;margin-bottom:.7rem;line-height:1.5;
@@ -406,7 +406,7 @@ img{max-width:100%}
 .bloco{background:#fff;border-radius:var(--raio);box-shadow:var(--sombra);padding:1.15rem 1.2rem}
 .bloco-titulo{font-size:1.02rem;font-weight:800;display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
 /* A margem negativa existia para encostar o subtítulo ao título do bloco,
-   mas aplicava-se a todos os «bloco-sub» — e quando um deles vem a seguir a
+   mas aplicava-se a todos os «bloco-sub», e quando um deles vem a seguir a
    outro conteúdo, sobe meia linha para cima dele. Era isso que fazia o texto
    aparecer por cima dos cartões de transporte e da última linha da lista.
    Fica só quando é mesmo o subtítulo, logo a seguir ao título. */

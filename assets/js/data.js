@@ -209,13 +209,13 @@ const PARCEIROS = {
 
    NATUREZA DESTES DADOS, que é diferente de tudo o resto no site: não são
    preços de mercado obtidos numa API, são **tarifas publicadas** pelos
-   operadores — mudam uma ou duas vezes por ano, com aviso, e estão no site
+   operadores: mudam uma ou duas vezes por ano, com aviso, e estão no site
    oficial de cada um. Por isso podem viver aqui, numa tabela, sem serem
    invenção. Mas também não são consultados em tempo real: cada entrada leva
    a ligação oficial e o ano a que a tarifa se refere, e o bloco diz que o
    valor é para confirmar no operador.
 
-   As cidades que não estiverem aqui não mostram valores nenhuns — mostram só
+   As cidades que não estiverem aqui não mostram valores nenhuns, mostram só
    a ligação para procurar. Um valor a mais seria pior do que valor nenhum.
 
    PARA ACRESCENTAR UMA CIDADE: uma entrada com o nome exacto da cidade tal
@@ -229,7 +229,7 @@ const TRANSPORTES_DESTINO = {
     cartao:{nome:'Navegante Ocasional', preco:0.50, nota:'reutilizável; sem ele não se carrega nenhum título'},
     bilhetes:[
       {nome:'Bilhete simples', preco:1.85, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'Passe 24 h — Carris e Metro', preco:6.90, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
+      {nome:'Passe 24 h (Carris e Metro)', preco:6.90, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
       {nome:'Passe 24 h + comboios urbanos', preco:10.90, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular','comboio']},
       {nome:'Aeroporto ↔ centro (metro, linha vermelha)', preco:1.85, unidade:'viagem', quando:'chegada', modos:['metro','aeroporto']}
     ]},
@@ -250,7 +250,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Abono turístico 5 dias (zona A)', preco:26.80, unidade:'5 dias', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']}
     ]},
   'Barcelona': {operador:'TMB', url:'https://www.tmb.cat/pt/tarifas-metro-bus-barcelona', ano:2026,
-    nota:'A T-casual é pessoal; o Hola Barcelona pode ser partilhado por várias pessoas — compare em função do grupo.',
+    nota:'A T-casual é pessoal; o Hola Barcelona pode ser partilhado por várias pessoas, compare em função do grupo.',
     bilhetes:[
       {nome:'Bilhete simples', preco:2.65, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'T-casual (10 viagens, 1 zona)', preco:12.55, unidade:'10 viagens', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
@@ -325,7 +325,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 72 h', preco:5500, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']}
     ]},
   'Nova Iorque': {operador:'MTA', url:'https://www.mta.info/fares', ano:2026, moeda:'USD',
-    nota:'Com o OMNY (pagamento por aproximação) as viagens ficam gratuitas depois da 12.ª na mesma semana — não é preciso comprar passe.',
+    nota:'Com o OMNY (pagamento por aproximação) as viagens ficam gratuitas depois da 12.ª na mesma semana, não é preciso comprar passe.',
     bilhetes:[
       {nome:'Metro ou autocarro (OMNY ou MetroCard)', preco:2.90, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
       {nome:'Tecto semanal com OMNY', preco:34.80, unidade:'semana', quando:'chegada', modos:['metro','autocarro']},
@@ -485,8 +485,8 @@ function ligacaoParceiro(chave, ctx){
       return d
         ? `https://www.hostelworld.com/pt/pesquisa?search_keywords=${enc(d.n)}${temEstadia ? `&date_from=${fData(c.ida)}&date_to=${fData(c.volta)}` : ''}&number_of_guests=${ad + cr}`
         : 'https://www.hostelworld.com/pt/';
-    /* Estes dois tinham caminhos de pesquisa montados por nós — «/pt/search?
-       location=…» e «/pt/search-results?location=…» — que não existem nestes
+    /* Estes dois tinham caminhos de pesquisa montados por nós («/pt/search?
+       location=…» e «/pt/search-results?location=…»), que não existem nestes
        sítios e devolviam «Página não encontrada». Uma ligação profunda só vale
        se for a que o parceiro documenta; inventada, é pior do que nenhuma.
        Ficam as páginas de entrada até haver um formato confirmado. */
@@ -514,10 +514,20 @@ function ligacaoParceiro(chave, ctx){
       return 'https://www.thetrainline.com/pt';
     case 'flixbus':
       return 'https://www.flixbus.pt/';
+    /* A Busbud, a CheckMyBus e a Rail Europe caem no «default», que usa o
+       domínio declarado no PARCEIROS. Não lhes montamos caminho de rota nem
+       de idioma: o que não está confirmado não se inventa (foi assim que a
+       Discover Cars foi parar a uma «Página não encontrada»). */
     default:
       return PARCEIROS[chave] ? 'https://' + PARCEIROS[chave].dom : '#';
   }
 }
+
+/* Dos parceiros de comboio e de autocarro, estes dois são os únicos cujo
+   endereço de rota («de A para B») está confirmado. Nos restantes a ligação
+   é a página de entrada, e o site diz isso na linha em vez de prometer uma
+   pesquisa já feita. */
+const ROTA_DIRECTA = new Set(['rome2rio', 'omio']);
 
 /* Companhias aéreas plausíveis para atribuir às cotações. */
 const COMPANHIAS = ['TAP Air Portugal','Ryanair','easyJet','Vueling','Iberia','Lufthansa','Air France','KLM','British Airways','SWISS','Emirates','Qatar Airways','LATAM','United','Delta'];
