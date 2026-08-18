@@ -215,17 +215,60 @@ const PARCEIROS = {
    a ligação oficial e o ano a que a tarifa se refere, e o bloco diz que o
    valor é para confirmar no operador.
 
-   As cidades que não estiverem aqui não mostram valores nenhuns, mostram só
-   a ligação para procurar. Um valor a mais seria pior do que valor nenhum.
+   TRÊS ESTADOS, e não dois. Uma cidade pode estar aqui sem ter tarifas
+   confirmadas: nesse caso leva o operador e as ligações oficiais, e a lista
+   de bilhetes fica vazia. É melhor do que não estar de todo, porque o
+   utilizador fica na mesma a saber quem manda nos transportes da cidade e
+   onde comprar, e é pior do que ter tarifas, o que o bloco diz sem rodeios.
+
+     bilhetes com valores   mostra preços, perfis e o total da viagem
+     bilhetes: []           mostra o operador e as ligações, sem preço
+     cidade ausente         mostra só uma procura, que é o pior caso
+
+   CAMPOS DE PROVENIÊNCIA, que são o que torna isto sustentável:
+
+     actualizado  data (AAAA-MM-DD) em que a tarifa foi confirmada. Não é o
+                  ano da tarifa: é o dia em que alguém foi lá ver. O bloco
+                  mostra-a, e avisa quando passa de TRANSPORTES_REVISAO_DIAS.
+     fonte        endereço onde o valor foi confirmado. Sem isto a revisão
+                  do mês seguinte tem de refazer a procura toda.
+     url          tarifário oficial do operador.
+     comprar      onde se compra em linha, quando é sítio diferente do
+                  tarifário. Sem inventar caminhos: ou é o endereço que o
+                  operador publica, ou não se põe.
 
    PARA ACRESCENTAR UMA CIDADE: uma entrada com o nome exacto da cidade tal
-   como está em CIDADES, o operador, a ligação oficial, e os bilhetes que
-   valem a pena comparar. `quando` diz 'antes' (compra-se antes de viajar,
-   normalmente em linha) ou 'chegada' (compra-se no local).
+   como está em CIDADES, o operador, a ligação oficial, a data e a fonte, e
+   os bilhetes que valem a pena comparar. `quando` diz 'antes' (compra-se
+   antes de viajar, normalmente em linha) ou 'chegada' (compra-se no local).
 
-   Última revisão das tarifas: 2026. Confirme sempre no operador. */
+   PARA REVER: ver docs/TRANSPORTES.md, e correr
+   `node ferramentas/transportes.js` para saber o que está por rever. */
+
+/* De quanto em quanto tempo as tarifas são para reconferir. Um mês: é a
+   cadência a que os operadores costumam publicar alterações, e é curta o
+   bastante para o site nunca estar muito longe da verdade. */
+const TRANSPORTES_REVISAO_DIAS = 30;
+
+/* Dias desde a última confirmação, ou null se a entrada não disser quando
+   foi confirmada (caso em que se trata como estando por rever). */
+function diasDesdeRevisao(t){
+  if(!t || !t.actualizado) return null;
+  const d = new Date(t.actualizado + 'T00:00:00Z');
+  if(isNaN(d)) return null;
+  return Math.floor((Date.now() - d.getTime()) / 86400000);
+}
+function tarifaPorRever(t){
+  const dias = diasDesdeRevisao(t);
+  return dias === null || dias > TRANSPORTES_REVISAO_DIAS;
+}
+/* Uma entrada só com operador e ligações, sem tarifas confirmadas. */
+function tarifaSemValores(t){
+  return !!t && !(t.bilhetes && t.bilhetes.length);
+}
+
 const TRANSPORTES_DESTINO = {
-  'Lisboa': {operador:'Carris / Metro de Lisboa', url:'https://www.metrolisboa.pt/comprar/', ano:2026,
+  'Lisboa': {operador:'Carris / Metro de Lisboa', url:'https://www.metrolisboa.pt/comprar/', actualizado:'2026-01-01',
     cartao:{nome:'Navegante Ocasional', preco:0.50, nota:'reutilizável; sem ele não se carrega nenhum título'},
     bilhetes:[
       {nome:'Bilhete simples', preco:1.85, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -233,14 +276,14 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 24 h + comboios urbanos', preco:10.90, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular','comboio']},
       {nome:'Aeroporto ↔ centro (metro, linha vermelha)', preco:1.85, unidade:'viagem', quando:'chegada', modos:['metro','aeroporto']}
     ]},
-  'Porto': {operador:'Metro do Porto / STCP', url:'https://www.metrodoporto.pt/pages/389', ano:2026,
+  'Porto': {operador:'Metro do Porto / STCP', url:'https://www.metrodoporto.pt/pages/389', actualizado:'2026-01-01',
     cartao:{nome:'Andante Azul', preco:0.60, nota:'serve metro, autocarro e comboio urbano'},
     bilhetes:[
       {nome:'Título Z2 (centro)', preco:1.40, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','comboio']},
       {nome:'Andante 24 h Z2', preco:4.80, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','comboio']},
       {nome:'Aeroporto ↔ centro (Z4, linha E)', preco:2.25, unidade:'viagem', quando:'chegada', modos:['metro','aeroporto']}
     ]},
-  'Madrid': {operador:'Metro de Madrid / CRTM', url:'https://www.crtm.es/billetes-y-tarifas', ano:2026,
+  'Madrid': {operador:'Metro de Madrid / CRTM', url:'https://www.crtm.es/billetes-y-tarifas', actualizado:'2026-01-01',
     cartao:{nome:'Tarjeta Multi', preco:2.50, nota:'obrigatória para carregar bilhetes'},
     nota:'O suplemento de aeroporto é 3 € por viagem e não está incluído nos bilhetes simples.',
     bilhetes:[
@@ -249,7 +292,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Abono turístico 1 dia (zona A)', preco:8.40, unidade:'dia', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']},
       {nome:'Abono turístico 5 dias (zona A)', preco:26.80, unidade:'5 dias', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']}
     ]},
-  'Barcelona': {operador:'TMB', url:'https://www.tmb.cat/pt/tarifas-metro-bus-barcelona', ano:2026,
+  'Barcelona': {operador:'TMB', url:'https://www.tmb.cat/pt/tarifas-metro-bus-barcelona', actualizado:'2026-01-01',
     nota:'A T-casual é pessoal; o Hola Barcelona pode ser partilhado por várias pessoas, compare em função do grupo.',
     bilhetes:[
       {nome:'Bilhete simples', preco:2.65, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -257,7 +300,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Hola Barcelona 48 h', preco:18.10, unidade:'48 h', quando:'antes', modos:['metro','autocarro','eletrico','comboio','aeroporto','funicular']},
       {nome:'Hola Barcelona 72 h', preco:26.30, unidade:'72 h', quando:'antes', modos:['metro','autocarro','eletrico','comboio','aeroporto','funicular']}
     ]},
-  'Paris': {operador:'RATP / Île-de-France Mobilités', url:'https://www.iledefrance-mobilites.fr/titres-et-tarifs', ano:2026,
+  'Paris': {operador:'RATP / Île-de-France Mobilités', url:'https://www.iledefrance-mobilites.fr/titres-et-tarifs', actualizado:'2026-01-01',
     nota:'Desde 2025 há tarifa única em toda a região: 2,50 € por viagem, incluindo de e para os aeroportos.',
     bilhetes:[
       {nome:'Ticket t+', preco:2.50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
@@ -265,7 +308,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Navigo Semaine (seg. a dom.)', preco:31.60, unidade:'semana', quando:'chegada', modos:['metro','autocarro','eletrico','comboio','aeroporto']},
       {nome:'Aeroporto CDG ↔ Paris (RER B)', preco:2.50, unidade:'viagem', quando:'chegada', modos:['comboio','aeroporto']}
     ]},
-  'Londres': {operador:'Transport for London', url:'https://tfl.gov.uk/fares/', ano:2026, moeda:'GBP',
+  'Londres': {operador:'Transport for London', url:'https://tfl.gov.uk/fares/', actualizado:'2026-01-01', moeda:'GBP',
     nota:'Não compre bilhetes avulso: pague por aproximação com o cartão bancário ou telemóvel, que aplica sozinho o tecto diário e semanal.',
     bilhetes:[
       {nome:'Metro, zona 1 (hora de ponta)', preco:2.90, unidade:'viagem', quando:'chegada', modos:['metro']},
@@ -273,7 +316,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Tecto diário, zonas 1–2', preco:8.90, unidade:'dia', quando:'chegada', modos:['metro','autocarro','comboio','barco']},
       {nome:'Elizabeth line, Heathrow ↔ centro', preco:12.80, unidade:'viagem', quando:'chegada', modos:['comboio','aeroporto']}
     ]},
-  'Roma': {operador:'ATAC', url:'https://www.atac.roma.it/en/tickets-and-passes', ano:2026,
+  'Roma': {operador:'ATAC', url:'https://www.atac.roma.it/en/tickets-and-passes', actualizado:'2026-01-01',
     nota:'O bilhete BIT vale 100 minutos e permite mudar de autocarro, mas só uma entrada no metro.',
     bilhetes:[
       {nome:'BIT (100 minutos)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -281,13 +324,13 @@ const TRANSPORTES_DESTINO = {
       {nome:'Roma 72H', preco:18.00, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
       {nome:'Leonardo Express, Fiumicino ↔ Termini', preco:14.00, unidade:'viagem', quando:'antes', modos:['comboio','aeroporto']}
     ]},
-  'Milão': {operador:'ATM', url:'https://www.atm.it/en/ViaggiaConNoi/Pages/SceltaBiglietto.aspx', ano:2026,
+  'Milão': {operador:'ATM', url:'https://www.atm.it/en/ViaggiaConNoi/Pages/SceltaBiglietto.aspx', actualizado:'2026-01-01',
     bilhetes:[
       {nome:'Bilhete urbano (90 minutos)', preco:2.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'Passe 24 h', preco:7.60, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'Passe 3 dias', preco:13.00, unidade:'3 dias', quando:'chegada', modos:['metro','autocarro','eletrico']}
     ]},
-  'Berlim': {operador:'BVG', url:'https://www.bvg.de/en/tickets-and-fares', ano:2026,
+  'Berlim': {operador:'BVG', url:'https://www.bvg.de/en/tickets-and-fares', actualizado:'2026-01-01',
     nota:'O Deutschlandticket (58 €/mês) cobre todos os transportes regionais da Alemanha e compensa a partir de uma semana, mas é subscrição mensal.',
     bilhetes:[
       {nome:'Bilhete simples AB', preco:3.80, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
@@ -295,15 +338,19 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 7 dias AB', preco:44.00, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
       {nome:'Aeroporto BER ↔ centro (zona ABC)', preco:4.40, unidade:'viagem', quando:'chegada', modos:['comboio','aeroporto']}
     ]},
-  'Amesterdão': {operador:'GVB', url:'https://en.gvb.nl/en/travel-products', ano:2026,
-    nota:'Também se pode pagar por aproximação com o cartão bancário (OVpay), que costuma sair mais barato do que os passes se andar pouco.',
+  /* O passe de 24 h estava a 9,00 € e são 10,00 €. A linha do comboio de
+     Schiphol saiu: é da NS, não do GVB, e as fontes não concordaram no
+     preço. Fica dita na nota, sem número. */
+  'Amesterdão': {operador:'GVB', url:'https://www.gvb.nl/en/travel-products/hour-and-day-tickets/gvb-day-ticket', comprar:'https://www.gvb.nl/en/travel-products', actualizado:'2026-08-18', fonte:'https://www.gvb.nl/en/travel-products/hour-and-day-tickets/gvb-day-ticket',
+    nota:'Também se pode pagar por aproximação com o cartão bancário (OVpay), que costuma sair mais barato do que os passes se andar pouco. O comboio entre Schiphol e a Centraal é da NS e não está incluído em nenhum destes títulos.',
     bilhetes:[
       {nome:'Bilhete de 1 hora', preco:3.40, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
-      {nome:'Passe 24 h', preco:9.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
-      {nome:'Passe 72 h', preco:21.00, unidade:'72 h', quando:'antes', modos:['metro','autocarro','eletrico','barco']},
-      {nome:'Comboio Schiphol ↔ Centraal', preco:5.90, unidade:'viagem', quando:'chegada', modos:['comboio','aeroporto']}
+      {nome:'Passe 24 h', preco:10.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
+      {nome:'Passe 48 h', preco:16.00, unidade:'48 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
+      {nome:'Passe 72 h', preco:21.50, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
+      {nome:'Passe 7 dias', preco:43.00, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico','barco']}
     ]},
-  'Praga': {operador:'DPP', url:'https://www.dpp.cz/en/fares', ano:2026, moeda:'CZK',
+  'Praga': {operador:'DPP', url:'https://www.dpp.cz/en/fares', actualizado:'2026-01-01', moeda:'CZK',
     nota:'Um dos sistemas mais baratos da Europa. Valide o bilhete à entrada, nas máquinas amarelas.',
     bilhetes:[
       {nome:'Bilhete de 30 minutos', preco:30, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -311,27 +358,30 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 24 h', preco:120, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
       {nome:'Passe 72 h', preco:330, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']}
     ]},
-  'Viena': {operador:'Wiener Linien', url:'https://www.wienerlinien.at/tickets', ano:2026,
+  /* A Wiener Linien mudou a estrutura tarifária a 1 de Janeiro de 2026 e
+     acabou com os passes de 48 h e de 72 h. A tabela ainda tinha o de 72 h
+     a 17,10 €: um título que já não se vende. */
+  'Viena': {operador:'Wiener Linien', url:'https://www.wienerlinien.at/web/wl-en/news/new-fare-structure-from-1-january-2026', comprar:'https://www.wienerlinien.at/web/wl-en/tickets', actualizado:'2026-08-18', fonte:'https://www.wienerlinien.at/web/wl-en/news/new-fare-structure-from-1-january-2026',
+    nota:'Os passes de 48 h e de 72 h deixaram de existir em 2026. Para mais de um dia, o passe de 7 dias é o que resta. O comboio CAT para o aeroporto é de outro operador e tem tarifa própria.',
     bilhetes:[
-      {nome:'Bilhete simples', preco:2.60, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'Passe 24 h', preco:8.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'Passe 72 h', preco:17.10, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'CAT, aeroporto ↔ Wien Mitte', preco:14.90, unidade:'viagem', quando:'antes', modos:['comboio','aeroporto']}
+      {nome:'Bilhete simples', preco:3.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Passe 24 h', preco:10.20, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Passe 7 dias', preco:28.90, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico']}
     ]},
-  'Budapeste': {operador:'BKK', url:'https://bkk.hu/en/tickets-and-passes/prices/', ano:2026, moeda:'HUF',
+  'Budapeste': {operador:'BKK', url:'https://bkk.hu/en/tickets-and-passes/prices/', actualizado:'2026-01-01', moeda:'HUF',
     bilhetes:[
       {nome:'Bilhete simples', preco:450, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'Passe 24 h', preco:2500, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
       {nome:'Passe 72 h', preco:5500, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']}
     ]},
-  'Nova Iorque': {operador:'MTA', url:'https://www.mta.info/fares', ano:2026, moeda:'USD',
+  'Nova Iorque': {operador:'MTA', url:'https://www.mta.info/fares', actualizado:'2026-01-01', moeda:'USD',
     nota:'Com o OMNY (pagamento por aproximação) as viagens ficam gratuitas depois da 12.ª na mesma semana, não é preciso comprar passe.',
     bilhetes:[
       {nome:'Metro ou autocarro (OMNY ou MetroCard)', preco:2.90, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
       {nome:'Tecto semanal com OMNY', preco:34.80, unidade:'semana', quando:'chegada', modos:['metro','autocarro']},
       {nome:'AirTrain JFK + metro', preco:11.15, unidade:'viagem', quando:'chegada', modos:['comboio','metro','aeroporto']}
     ]},
-  'Tóquio': {operador:'Tokyo Metro / JR East', url:'https://www.tokyometro.jp/en/ticket/', ano:2026, moeda:'JPY',
+  'Tóquio': {operador:'Tokyo Metro / JR East', url:'https://www.tokyometro.jp/en/ticket/', actualizado:'2026-01-01', moeda:'JPY',
     cartao:{nome:'Suica ou Pasmo', preco:500, nota:'serve metro, comboio, autocarro e lojas de conveniência'},
     nota:'O Japan Rail Pass só compensa se sair de Tóquio.',
     bilhetes:[
@@ -339,18 +389,91 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 24 h do Tokyo Metro', preco:600, unidade:'24 h', quando:'chegada', modos:['metro']},
       {nome:'Narita Express, aeroporto ↔ Tóquio', preco:3070, unidade:'viagem', quando:'antes', modos:['comboio','aeroporto']}
     ]},
-  'Singapura': {operador:'SMRT / SBS Transit', url:'https://www.lta.gov.sg/content/ltagov/en/getting_around/public_transport/fares_and_ticketing.html', ano:2026, moeda:'SGD',
+  'Singapura': {operador:'SMRT / SBS Transit', url:'https://www.lta.gov.sg/content/ltagov/en/getting_around/public_transport/fares_and_ticketing.html', actualizado:'2026-01-01', moeda:'SGD',
     nota:'Pague por aproximação com o cartão bancário: não é preciso comprar cartão de transporte.',
     bilhetes:[
       {nome:'Viagem típica de metro', preco:1.50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
       {nome:'Singapore Tourist Pass, 1 dia', preco:22.00, unidade:'dia', quando:'chegada', modos:['metro','autocarro']}
     ]},
-  'Istambul': {operador:'İETT / Metro İstanbul', url:'https://www.istanbulkart.istanbul/', ano:2026, moeda:'TRY',
+  'Istambul': {operador:'İETT / Metro İstanbul', url:'https://www.istanbulkart.istanbul/', actualizado:'2026-01-01', moeda:'TRY',
     cartao:{nome:'Istanbulkart', preco:130, nota:'obrigatório; sem ele não se anda de transporte público'},
     bilhetes:[
       {nome:'Viagem com Istanbulkart', preco:27, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','barco','funicular']},
       {nome:'Aeroporto IST ↔ centro (M11 + metro)', preco:54, unidade:'viagem', quando:'chegada', modos:['metro','aeroporto']}
-    ]}
+    ]},
+
+  'Atenas': {operador:'OASA', url:'https://www.oasa.gr/en/tickets/prices-of-products/', comprar:'https://www.oasa.gr/en/tickets/points-of-sale-reloading/points-of-supply-for-tickets-and-cards/', actualizado:'2026-08-18', fonte:'https://www.oasa.gr/en/tickets/prices-of-products/',
+    nota:'Os bilhetes normais não servem para o aeroporto: essa viagem tem tarifa própria.',
+    bilhetes:[
+      {nome:'Bilhete de 90 minutos', preco:1.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Bilhete de 24 h', preco:4.10, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Aeroporto ↔ centro (metro, linha 3)', preco:9.00, unidade:'viagem', quando:'chegada', modos:['metro','aeroporto']},
+      {nome:'Turístico 3 dias (inclui ida e volta ao aeroporto)', preco:20.00, unidade:'3 dias', quando:'chegada', modos:['metro','autocarro','eletrico','aeroporto']}
+    ]},
+  'Bruxelas': {operador:'STIB-MIVB', url:'https://www.stib-mivb.be/home/client-support/fares-and-tickets', actualizado:'2026-08-18', fonte:'https://www.stib-mivb.be/home/client-support/fares-and-tickets',
+    nota:'Pagar por aproximação com o cartão bancário fica mais barato do que comprar o bilhete avulso.',
+    bilhetes:[
+      {nome:'Viagem avulsa', preco:2.60, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Viagem por aproximação (cartão bancário)', preco:2.40, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Passe de 24 h', preco:8.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']}
+    ]},
+  'Veneza': {operador:'ACTV / AVM', url:'https://actv.avmspa.it/en/content/integrated-fares-0', comprar:'https://www.veneziaunica.it/', actualizado:'2026-08-18', fonte:'https://actv.avmspa.it/en/content/integrated-fares-0',
+    nota:'Em Veneza o «autocarro» é o vaporetto. A viagem avulsa é cara ao ponto de o passe de 24 h compensar a partir de três viagens.',
+    bilhetes:[
+      {nome:'Vaporetto, 75 minutos', preco:9.50, unidade:'viagem', quando:'chegada', modos:['barco']},
+      {nome:'Passe de 24 h', preco:25.00, unidade:'24 h', quando:'chegada', modos:['barco','autocarro']},
+      {nome:'Passe de 48 h', preco:35.00, unidade:'48 h', quando:'chegada', modos:['barco','autocarro']},
+      {nome:'Passe de 72 h', preco:45.00, unidade:'72 h', quando:'chegada', modos:['barco','autocarro']},
+      {nome:'Passe de 7 dias', preco:65.00, unidade:'7 dias', quando:'chegada', modos:['barco','autocarro']}
+    ]},
+  'Florença': {operador:'Autolinee Toscane', url:'https://www.at-bus.it/en/ticket', comprar:'https://www.at-bus.it/en/ticket', actualizado:'2026-08-18', fonte:'https://www.at-bus.it/en/ticket',
+    nota:'Comprado a bordo, o mesmo bilhete custa 2,50 €. Compre antes de entrar.',
+    bilhetes:[
+      {nome:'Bilhete de 90 minutos (comprado antes)', preco:1.70, unidade:'viagem', quando:'antes', modos:['autocarro','eletrico']},
+      {nome:'Bilhete de 90 minutos (comprado a bordo)', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']}
+    ]},
+  'Copenhaga': {operador:'DOT (Movia / Metro / DSB)', url:'https://www.publictransport.dk/tickets/citypass', comprar:'https://www.publictransport.dk/tickets/citypass', actualizado:'2026-08-18', fonte:'https://www.publictransport.dk/tickets/citypass', moeda:'DKK',
+    bilhetes:[
+      {nome:'Bilhete simples, 2 zonas', preco:30, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','comboio']},
+      {nome:'City Pass 24 h (todas as zonas)', preco:100, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','comboio','barco','aeroporto']}
+    ]},
+  'Varsóvia': {operador:'ZTM Warszawa', url:'https://www.wtp.waw.pl/en/ticket-tariff/', comprar:'https://www.wtp.waw.pl/en/ticket-tariff/', actualizado:'2026-08-18', fonte:'https://www.wtp.waw.pl/en/ticket-tariff/', moeda:'PLN',
+    bilhetes:[
+      {nome:'Bilhete de 20 minutos (zona 1)', preco:3.40, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Bilhete de 24 h (zona 1)', preco:26.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']}
+    ]},
+  'Edimburgo': {operador:'Lothian Buses / Edinburgh Trams', url:'https://www.lothianbuses.com/tickets/', comprar:'https://www.lothianbuses.com/tickets/', actualizado:'2026-08-18', fonte:'https://edinburghtrams.com/news/changes-tram-fares-2026', moeda:'GBP',
+    nota:'A tarifa do eléctrico para o aeroporto é a única que não subiu este ano.',
+    bilhetes:[
+      {nome:'Autocarro, viagem simples', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'DAYticket (autocarro e eléctrico)', preco:6.00, unidade:'dia', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Eléctrico, viagem na cidade', preco:2.40, unidade:'viagem', quando:'chegada', modos:['eletrico']},
+      {nome:'Eléctrico, aeroporto ↔ centro', preco:7.90, unidade:'viagem', quando:'chegada', modos:['eletrico','aeroporto']}
+    ]},
+  'Dublin': {operador:'Transport for Ireland (TFI)', url:'https://www.transportforireland.ie/fares/', comprar:'https://about.leapcard.ie/dublin', actualizado:'2026-08-18', fonte:'https://about.leapcard.ie/tfi-90-minute-fare',
+    cartao:{nome:'TFI Leap Card', preco:0, nota:'sem ela paga-se mais caro em dinheiro; é o cartão que dá estes preços'},
+    nota:'Não há passe diário: há um tecto. Depois de gasto o tecto, as viagens do dia não custam mais nada.',
+    bilhetes:[
+      {nome:'Tarifa de 90 minutos (Leap Card)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico','comboio']},
+      {nome:'Tecto diário (Dublin Bus)', preco:6.00, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Tecto semanal (Dublin Bus)', preco:24.00, unidade:'semana', quando:'chegada', modos:['autocarro']}
+    ]},
+  'Sevilha': {operador:'TUSSAM', url:'https://www.tussam.es/en/node/1442', actualizado:'2026-08-18', fonte:'https://www.tussam.es/en/node/1442',
+    nota:'A tarifa de 2026 estava em proposta e por aprovar pela câmara quando confirmámos.',
+    bilhetes:[]},
+  'Valência': {operador:'EMT València / Metrovalencia', url:'https://www.metrovalencia.es/es/nuestras-tarifas/', actualizado:'2026-08-18', fonte:'https://www.metrovalencia.es/es/nuestras-tarifas/',
+    nota:'O preço depende da zona e há tarifas diferentes na EMT e no Metrovalencia.',
+    bilhetes:[]},
+  'Nápoles': {operador:'ANM', url:'https://www.anm.it/index.php?option=com_content&task=view&id=1344', actualizado:'2026-08-18', fonte:'https://www.anm.it/index.php?option=com_content&task=view&id=1344',
+    bilhetes:[]},
+  'Estocolmo': {operador:'SL', url:'https://sl.se/en/in-english/', actualizado:'2026-08-18', fonte:'https://sl.se/en/in-english/', moeda:'SEK',
+    bilhetes:[]},
+  'Oslo': {operador:'Ruter', url:'https://ruter.no/en/', actualizado:'2026-08-18', fonte:'https://ruter.no/en/', moeda:'NOK',
+    bilhetes:[]},
+  'Munique': {operador:'MVV', url:'https://www.mvv-muenchen.de/en/tickets-and-fares/', actualizado:'2026-08-18', fonte:'https://www.mvv-muenchen.de/en/tickets-and-fares/',
+    bilhetes:[]},
+  'Zurique': {operador:'ZVV', url:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/24h-tickets.html', actualizado:'2026-08-18', fonte:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/24h-tickets.html', moeda:'CHF',
+    bilhetes:[]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
