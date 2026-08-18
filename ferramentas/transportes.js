@@ -13,6 +13,9 @@
    Com `--csv` despeja a lista toda em CSV, para levar para uma folha.
    Com `--url` imprime só os endereços por abrir, um por linha, que é o que
    se cola no navegador para fazer a ronda.
+   Com `--folha` escreve uma folha de revisão em Markdown: por cidade, o
+   endereço a abrir e os valores que lá temos, com espaço para escrever os
+   que se encontrarem. É o que se leva para a ronda feita à mão.
 
    Não vai à rede: lê o data.js e faz as contas. Quem vai à rede é quem
    estiver a fazer a revisão.
@@ -69,6 +72,48 @@ if(args.includes('--csv')){
 
 if(args.includes('--url')){
   for(const l of [...comTarifa.filter(x => x.rever), ...soOperador]) console.log(l.url);
+  process.exit(0);
+}
+
+if(args.includes('--folha')){
+  /* Uma folha para levar para a ronda: por cidade, a ligação a abrir e o
+     que temos hoje, para se conferir linha a linha. Quem a preencher não
+     precisa de saber onde fica o data.js. */
+  const linha = l => {
+    const t = T[l.cidade];
+    const tit = (t.bilhetes || []).map(b =>
+      `| ${b.nome} | ${b.preco} ${l.moeda} | por ${b.unidade} | | |`).join('\n');
+    return [
+      `### ${l.cidade}  ·  ${l.operador}`, '',
+      `Abrir: <${l.url}>`, '',
+      l.titulos
+        ? `| Título | Temos | Unidade | **É** | **Ainda existe?** |\n|---|---|---|---|---|\n${tit}`
+        : `Não temos valores nenhuns. Escreva os títulos que a página tiver:\n\n| Título | Preço | Unidade |\n|---|---|---|\n| | | |`,
+      ''
+    ].join('\n');
+  };
+  const atrasadas = comTarifa.filter(l => l.rever).sort((a,b) => (b.dias||0) - (a.dias||0));
+  console.log('# Folha de revisão das tarifas de transportes');
+  console.log('');
+  console.log('Preencha as colunas a **negrito** e devolva a folha. Regras:');
+  console.log('');
+  console.log('- o valor tem de vir da página do operador, não de um guia de viagens;');
+  console.log('- se um título já não existir, escreva «extinto» na última coluna;');
+  console.log('- se a página não for clara, deixe em branco: melhor vazio do que errado.');
+  console.log('');
+  console.log('## 1. Têm preços no site e estão por reconferir (' + atrasadas.length + ')');
+  console.log('');
+  console.log('Estas são as urgentes: o site está a mostrar estes números a quem o visita.');
+  console.log('');
+  atrasadas.forEach(l => console.log(linha(l)));
+  console.log('## 2. Têm operador, faltam os valores (' + soOperador.length + ')');
+  console.log('');
+  soOperador.forEach(l => console.log(linha(l)));
+  console.log('## 3. Sem operador (' + semNada.length + ')');
+  console.log('');
+  console.log('Falta descobrir quem opera os transportes e qual é a página de tarifário.');
+  console.log('');
+  semNada.forEach(c => console.log('- ' + c.n + ' (' + c.p + '): operador ______  ·  endereço ______'));
   process.exit(0);
 }
 
