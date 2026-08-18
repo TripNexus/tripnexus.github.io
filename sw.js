@@ -6,19 +6,26 @@
    rede e nunca são servidos de cache obsoleta.
    ═══════════════════════════════════════════════════════════════ */
 
-const VERSAO = 'tripnexus-v68';
+const VERSAO = 'tripnexus-v69';
 const CASCA = [
   './',
   './index.html',
-  './assets/css/style.css?v=68',
-  './assets/js/analytics.js?v=68',
-  './assets/js/data.js?v=68',
-  './assets/js/engine.js?v=68',
-  './assets/js/calendar.js?v=68',
-  './assets/js/live.js?v=68',
-  './assets/js/alertas.js?v=68',
-  './assets/js/roteiro.js?v=68',
-  './assets/js/app.js?v=68',
+  './assets/css/style.css?v=69',
+  './assets/js/analytics.js?v=69',
+  './assets/js/data.js?v=69',
+  './assets/js/engine.js?v=69',
+  './assets/js/calendar.js?v=69',
+  './assets/js/live.js?v=69',
+  './assets/js/alertas.js?v=69',
+  './assets/js/roteiro.js?v=69',
+  './assets/js/ui.js?v=69',
+  './assets/js/blocks.js?v=69',
+  './assets/js/filters.js?v=69',
+  './assets/js/results.js?v=69',
+  './assets/js/offers.js?v=69',
+  './assets/js/search.js?v=69',
+  './assets/js/form.js?v=69',
+  './assets/js/app.js?v=69',
   './assets/img/logo.svg',
   './assets/img/favicon.svg',
   './assets/img/icon-192.png',
