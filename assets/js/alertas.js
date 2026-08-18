@@ -59,10 +59,29 @@ function desenharGuardados(){
       ${fav ? '★' : '🕘'} ${x.rotulo}
       <button type="button" class="chip-x" data-remover="${fav ? 'fav' : 'hist'}" title="Remover">✕</button>
     </span>`;
+  /* Cada chip tem o seu «✕», mas apagar oito pesquisas uma a uma é trabalho
+     que não devia existir. O botão de limpar tudo fica ao lado do título de
+     cada lista, e só aparece quando há mais do que uma coisa para limpar. */
+  const limpar = (chave, quantos) => quantos > 1
+    ? `<button type="button" class="btn-limpar" data-limpar="${chave}">Limpar tudo</button>` : '';
+  const titulo = (texto, chave, quantos) =>
+    `<div class="guardados-cabeca"><p class="guardados-titulo">${texto}</p>${limpar(chave, quantos)}</div>`;
   zona.innerHTML =
-    (favs.length ? `<p class="guardados-titulo">Favoritos</p><div class="chips">${favs.map(f => chip(f, true)).join('')}</div>` : '') +
-    (hist.length ? `<p class="guardados-titulo">Pesquisas recentes</p><div class="chips">${hist.map(h => chip(h, false)).join('')}</div>` : '');
+    (favs.length ? titulo('Favoritos', 'fav', favs.length) +
+      `<div class="chips">${favs.map(f => chip(f, true)).join('')}</div>` : '') +
+    (hist.length ? titulo('Pesquisas recentes', 'hist', hist.length) +
+      `<div class="chips">${hist.map(h => chip(h, false)).join('')}</div>` : '');
   zona.hidden = false;
+  zona.querySelectorAll('[data-limpar]').forEach(b => {
+    b.addEventListener('click', () => {
+      const fav = b.dataset.limpar === 'fav';
+      /* apagar favoritos é perder coisas que se guardaram de propósito; o
+         histórico enche-se sozinho e não vale a pena perguntar */
+      if(fav && !confirm('Apagar todos os favoritos guardados?')) return;
+      gravarLS(fav ? LS_FAV : LS_HIST, []);
+      desenharGuardados();
+    });
+  });
   zona.querySelectorAll('.chip-guardado').forEach(c => {
     c.addEventListener('click', e => {
       const url = c.dataset.url;

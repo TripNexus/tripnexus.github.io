@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v71';
+const VERSAO_WORKER = 'v72';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
