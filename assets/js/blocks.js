@@ -129,6 +129,30 @@ function blocoEvolucao(o, d, ida, precoHoje){
    de uma API: são tarifas publicadas pelos operadores, que mudam uma ou duas
    vezes por ano. Por isso cada bloco leva a ligação oficial e o ano, e as
    cidades que não estão na tabela não mostram valor nenhum. */
+/* Data por extenso, para a linha de «confirmado a». */
+const MESES_EXTENSO = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+  'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function dataExtenso(iso){
+  const d = new Date(iso + 'T00:00:00Z');
+  if(isNaN(d)) return iso;
+  return d.getUTCDate() + ' de ' + MESES_EXTENSO[d.getUTCMonth()] + ' de ' + d.getUTCFullYear();
+}
+/* A linha de proveniência, igual nos dois estados que têm operador: quem
+   manda, quando foi confirmado, e o aviso quando isso já foi há muito. */
+function procedenciaTransportes(t){
+  const dias = diasDesdeRevisao(t);
+  const rever = tarifaPorRever(t);
+  return `
+    <p class="tarifa-procedencia${rever ? ' a-rever' : ''}">
+      ${t.actualizado
+        ? `${rever ? '⚠️' : '✅'} Confirmado a <strong>${dataExtenso(t.actualizado)}</strong>${dias !== null && dias > TRANSPORTES_REVISAO_DIAS ? ` (há ${dias} dias)` : ''}.`
+        : '⚠️ Sem data de confirmação registada.'}
+      ${rever ? ' Pode ter mudado desde então: confirme no operador antes de contar com o valor.' : ''}
+      <a href="${escaparHtml(t.fonte || t.url)}" target="_blank" rel="noopener">Ver tarifário oficial ↗</a>
+      ${t.comprar ? `<a href="${escaparHtml(t.comprar)}" target="_blank" rel="noopener">Comprar em linha ↗</a>` : ''}
+    </p>`;
+}
+
 function blocoTransportes(d, dias){
   const t = transportesDe(d);
   if(!t){
@@ -136,8 +160,20 @@ function blocoTransportes(d, dias){
       'transportes públicos ' + d.n + ' bilhetes e passes preços');
     return `<div class="bloco" data-aba="transportes">
       <h3 class="bloco-titulo">🚇 Transportes em ${escaparHtml(d.n)}</h3>
-      <p class="bloco-sub">Ainda não temos as tarifas de ${escaparHtml(d.n)} verificadas, e não mostramos valores que não tenhamos confirmado. Consulte o operador local:</p>
+      <p class="bloco-sub">Ainda não sabemos quem opera os transportes de ${escaparHtml(d.n)}, e não mostramos valores que não tenhamos confirmado. Consulte o operador local:</p>
       <a class="btn-ver btn-inline" href="${procura}" target="_blank" rel="noopener">Procurar bilhetes e passes ↗</a>
+    </div>`;
+  }
+  /* Sabemos o operador e onde ver as tarifas, mas não as confirmámos. Vale
+     mais do que nada e menos do que preços: o bloco diz as duas coisas. */
+  if(tarifaSemValores(t)){
+    return `<div class="bloco" data-aba="transportes">
+      <h3 class="bloco-titulo">🚇 Transportes em ${escaparHtml(d.n)}</h3>
+      <p class="bloco-sub">${escaparHtml(t.operador)} opera os transportes de ${escaparHtml(d.n)}.</p>
+      <p class="bloco-sub"><strong>Ainda não confirmámos as tarifas desta cidade</strong>, e não pomos aqui números que não tenhamos ido ver. Ficam as ligações oficiais, que é onde o preço está certo.</p>
+      ${t.nota ? `<p class="dica-transportes">💡 ${escaparHtml(t.nota)}</p>` : ''}
+      <a class="btn-ver btn-inline" href="${escaparHtml(t.url)}" target="_blank" rel="noopener">Tarifário do ${escaparHtml(t.operador)} ↗</a>
+      ${t.comprar ? `<a class="btn-ver btn-inline" href="${escaparHtml(t.comprar)}" target="_blank" rel="noopener">Comprar bilhetes em linha ↗</a>` : ''}
     </div>`;
   }
   const p = perfisTransporte(d, dias, ESTADO.pax);
@@ -176,7 +212,8 @@ function blocoTransportes(d, dias){
 
   return `<div class="bloco" data-aba="transportes">
     <h3 class="bloco-titulo">🚇 Transportes em ${escaparHtml(d.n)}</h3>
-    <p class="bloco-sub">${escaparHtml(t.operador)} · tarifas publicadas em ${t.ano}${moeda !== 'EUR' ? ' · valores em ' + moeda : ''}.</p>
+    <p class="bloco-sub">${escaparHtml(t.operador)}${moeda !== 'EUR' ? ' · valores em ' + moeda + ', não somados ao total da viagem' : ''}.</p>
+    ${procedenciaTransportes(t)}
     ${t.cartao ? `<p class="dica-transportes">💳 <strong>${escaparHtml(t.cartao.nome)}</strong>: ${valor(t.cartao.preco)}, ${escaparHtml(t.cartao.nota)}. Não está incluído nos valores abaixo.</p>` : ''}
     ${t.nota ? `<p class="dica-transportes">💡 ${escaparHtml(t.nota)}</p>` : ''}
     ${cartoes}
@@ -197,11 +234,12 @@ function blocoTransportes(d, dias){
           <div class="transporte-fundo">
             <span class="etiqueta-quando ${q.classe}">${q.rotulo}</span>
             ${varios ? `<span class="transporte-varios">Um título para ${(b.modos || []).length} transportes</span>` : ''}
+            ${b.url || t.comprar ? `<a class="transporte-comprar" href="${escaparHtml(b.url || t.comprar)}" target="_blank" rel="noopener">Comprar ↗</a>` : ''}
           </div>
         </div>`;
       }).join('')}
     </div>
-    <p class="bloco-sub">Estas tarifas são publicadas pelo operador e mudam uma ou duas vezes por ano. Ao contrário dos voos e do alojamento, não são consultadas em tempo real. <a href="${escaparHtml(t.url)}" target="_blank" rel="noopener">Confirme em ${escaparHtml(t.operador)} ↗</a></p>
+    <p class="bloco-sub">Estas tarifas são publicadas pelo operador, não consultadas em tempo real como os voos e o alojamento. Reconferimo-las de mês a mês; a data acima diz quando foi a última vez.</p>
   </div>`;
 }
 
