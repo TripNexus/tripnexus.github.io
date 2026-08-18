@@ -100,40 +100,81 @@ todas irreconciliáveis sem abrir o tarifário.
 mas o `custoTransportesReais()` ignora-os: somar coroas a euros dava um
 número sem sentido. O bloco di-lo na linha do operador.
 
+## Como se lê um tarifário desta caixa
+
+O ambiente passou a ter **Network access: Full**, mas nem tudo atravessa:
+
+| Via | Funciona | Nota |
+|---|---|---|
+| `curl` | **sim** | é por aqui que se lê |
+| WebFetch | não | tem lista de saída própria, que o ambiente não muda |
+| Chromium / Playwright | não | `ERR_CONNECTION_RESET` com e sem proxy |
+
+Como o Chromium não passa, páginas que montem a tabela de preços em
+JavaScript saem sem números. Isso vê-se (o `ler.py` diz «o padrão não casou»)
+e trata-se procurando a página que serve os preços em HTML, uma versão para
+imprimir, ou o PDF do tarifário. **Não se adivinha.**
+
+```
+python3 ferramentas/ler.py <url> "<padrão>"
+```
+
+Despeja o texto legível da página, filtrado por uma expressão regular, com
+duas linhas de contexto de cada lado. É assim que os valores abaixo foram
+lidos: na página do operador, não num guia de viagens.
+
+Há operadores que respondem **403** ao `curl` (TfL, MTA, Île-de-France
+Mobilités, Tokyo Metro, TUSSAM): bloqueiam agentes automáticos. Esses ficam
+para uma ronda feita à mão, num navegador normal.
+
 ## Estado em 18 de Agosto de 2026
 
 95 cidades no site.
 
-- **25** com tarifas na tabela, das quais **10** confirmadas nesta data:
-  Amesterdão, Atenas, Bruxelas, Copenhaga, Dublin, Edimburgo, Florença,
-  Varsóvia, Veneza e Viena.
-- **15** com tarifas mas por reconferir, herdadas da revisão de Janeiro:
-  Lisboa, Porto, Madrid, Barcelona, Paris, Londres, Roma, Milão, Berlim,
-  Praga, Budapeste, Istambul, Nova Iorque, Tóquio e Singapura.
-- **7** só com operador, porque as fontes não concordaram: Sevilha, Valência,
-  Nápoles, Munique, Zurique, Estocolmo e Oslo.
+- **26** com tarifas na tabela, das quais **14** confirmadas nesta data:
+  Amesterdão, Atenas, Barcelona, Bruxelas, Budapeste, Copenhaga, Dublin,
+  Edimburgo, Florença, Lisboa, Varsóvia, Veneza, Viena e Zurique.
+- **12** com tarifas mas por reconferir, herdadas da revisão de Janeiro:
+  Porto, Madrid, Paris, Londres, Roma, Milão, Berlim, Praga, Istambul,
+  Nova Iorque, Tóquio e Singapura.
+- **6** só com operador: Sevilha, Valência, Nápoles, Munique, Estocolmo e
+  Oslo.
 - **63** sem operador, à espera de levantamento.
 
 ### Correcções encontradas nesta revisão
 
+Todas lidas na página do operador.
+
 | Cidade | Estava | É | Nota |
 |---|---|---|---|
-| Viena | simples 2,60 € | 3,20 € | nova estrutura tarifária a 1 de Janeiro de 2026 |
-| Viena | 24 h 8,00 € | 10,20 € | |
+| Lisboa | simples 1,85 € | **1,90 €** | |
+| Lisboa | 24 h 6,90 € | **7,25 €** | |
+| Lisboa | 24 h + CP 10,90 € | **11,40 €** | acrescentados o zapping, o cartão bancário e o diário com a Transtejo |
+| Barcelona | simples 2,65 € | **2,90 €** | |
+| Barcelona | T-casual 12,55 € | **13,00 €** | |
+| Barcelona | Hola Barcelona 48 h e 72 h | **retirados** | a página anuncia «a partir de 12,50 €» e não os separa por duração |
+| Budapeste | simples 450 Ft | **500 Ft** | |
+| Budapeste | 24 h 2 500 Ft | **2 750 Ft** | |
+| Budapeste | 72 h 5 500 Ft | **5 750 Ft** | |
+| Viena | simples 2,60 € | **3,20 €** | nova estrutura tarifária a 1 de Janeiro de 2026 |
+| Viena | 24 h 8,00 € | **10,20 €** | |
 | Viena | 72 h 17,10 € | **extinto** | os passes de 48 h e 72 h deixaram de existir |
-| Amesterdão | 24 h 9,00 € | 10,00 € | |
-| Amesterdão | 72 h 21,00 € | 21,50 € | acrescentados os de 48 h e 7 dias |
-| Amesterdão | Schiphol 5,90 € | **retirado** | é da NS, não do GVB, e as fontes divergem |
+| Amesterdão | 24 h 9,00 € | **10,00 €** | |
+| Amesterdão | 72 h 21,00 € | **21,50 €** | acrescentados os de 48 h e 7 dias |
+| Amesterdão | Schiphol 5,90 € | **retirado** | é da NS, não do GVB |
+| Zurique | sem valores | **tabela completa** | 2.ª classe, adulto; a cidade conta como 2 zonas |
 
-### O que falta, e o que o bloqueia
+### Endereços partidos, que o utilizador via
 
-As 63 cidades sem operador e as 7 sem valores precisam que alguém abra o
-tarifário de cada operador. Quem fizer a ronda a partir de um sítio com
-acesso normal à internet consegue: são páginas públicas.
+Cinco das ligações «Ver tarifário oficial» davam **404**. Corrigidas:
 
-Do ambiente onde esta revisão foi feita não se consegue. O acesso de saída só
-permite pesquisa; as tentativas de abrir `stib-mivb.be`, `tmb.cat`,
-`metro.cph.dk` e `mta.info` devolvem todas 403 no proxy. Foi por isso que a
-ronda parou nas cidades cujo valor as pesquisas deram sem se contradizerem, e
-por isso que as outras ficaram em «só operador» em vez de receberem números
-plausíveis.
+| Cidade | Dava 404 | Agora |
+|---|---|---|
+| Porto | `metrodoporto.pt/pages/389` | `metrodoporto.pt/pages/357` |
+| Barcelona | `tmb.cat/pt/tarifas-metro-bus-barcelona` | `tmb.cat/en/barcelona-fares-metro-bus` |
+| Milão | `atm.it/en/ViaggiaConNoi/Pages/SceltaBiglietto.aspx` | `atm.it/en/Pages/default.aspx` |
+| Berlim | `bvg.de/en/tickets-and-fares` | `bvg.de/en` |
+| Singapura | `lta.gov.sg/content/…/fares_and_ticketing.html` | `lta.gov.sg/` |
+
+Vale a pena sondar os endereços de vez em quando, não só os preços: um
+tarifário certo atrás de uma ligação morta não serve de nada.

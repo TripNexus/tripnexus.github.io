@@ -268,15 +268,21 @@ function tarifaSemValores(t){
 }
 
 const TRANSPORTES_DESTINO = {
-  'Lisboa': {operador:'Carris / Metro de Lisboa', url:'https://www.metrolisboa.pt/comprar/', actualizado:'2026-01-01',
-    cartao:{nome:'Navegante Ocasional', preco:0.50, nota:'reutilizável; sem ele não se carrega nenhum título'},
+  /* Lido no tarifário do Metro a 18/08/2026. Estava tudo desactualizado:
+     simples 1,85 (são 1,90), 24 h 6,90 (são 7,25), 24 h + CP 10,90 (são
+     11,40). O preço do cartão navegante não vem nesta página, por isso sai
+     da tabela e fica dito na nota, sem número. */
+  'Lisboa': {operador:'Carris / Metro de Lisboa', url:'https://www.metrolisboa.pt/comprar/', comprar:'https://www.metrolisboa.pt/comprar/', actualizado:'2026-08-18', fonte:'https://www.metrolisboa.pt/comprar/',
+    nota:'É preciso um cartão navegante ocasional para carregar qualquer título; compra-se na máquina, à parte. O aeroporto fica na linha vermelha e paga a tarifa normal do metro.',
     bilhetes:[
-      {nome:'Bilhete simples', preco:1.85, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'Passe 24 h (Carris e Metro)', preco:6.90, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
-      {nome:'Passe 24 h + comboios urbanos', preco:10.90, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular','comboio']},
-      {nome:'Aeroporto ↔ centro (metro, linha vermelha)', preco:1.85, unidade:'viagem', quando:'chegada', modos:['metro','aeroporto']}
+      {nome:'Bilhete Carris/Metro (60 min)', preco:1.90, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Viagem no metro com zapping', preco:1.72, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Viagem no metro com cartão bancário', preco:1.92, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Bilhete diário Carris/Metro', preco:7.25, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
+      {nome:'Bilhete diário Carris/Metro/Transtejo (Cacilhas)', preco:10.35, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular','barco']},
+      {nome:'Bilhete diário Carris/Metro/CP (urbanos)', preco:11.40, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular','comboio']}
     ]},
-  'Porto': {operador:'Metro do Porto / STCP', url:'https://www.metrodoporto.pt/pages/389', actualizado:'2026-01-01',
+  'Porto': {operador:'Metro do Porto / STCP', url:'https://www.metrodoporto.pt/pages/357', actualizado:'2026-01-01',
     cartao:{nome:'Andante Azul', preco:0.60, nota:'serve metro, autocarro e comboio urbano'},
     bilhetes:[
       {nome:'Título Z2 (centro)', preco:1.40, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','comboio']},
@@ -292,13 +298,17 @@ const TRANSPORTES_DESTINO = {
       {nome:'Abono turístico 1 dia (zona A)', preco:8.40, unidade:'dia', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']},
       {nome:'Abono turístico 5 dias (zona A)', preco:26.80, unidade:'5 dias', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']}
     ]},
-  'Barcelona': {operador:'TMB', url:'https://www.tmb.cat/pt/tarifas-metro-bus-barcelona', actualizado:'2026-01-01',
-    nota:'A T-casual é pessoal; o Hola Barcelona pode ser partilhado por várias pessoas, compare em função do grupo.',
+  /* O endereço que aqui estava dava 404. Lido no tarifário da TMB a
+     18/08/2026: simples 2,65 -> 2,90, T-casual 12,55 -> 13,00. Os Hola
+     Barcelona de 48 h e 72 h saíram: a página anuncia-os «a partir de
+     12,50 €» e não os separa por duração, e um passe inventado foi o que
+     nos deixou Viena a vender um título extinto. */
+  'Barcelona': {operador:'TMB', url:'https://www.tmb.cat/en/barcelona-fares-metro-bus', comprar:'https://www.tmb.cat/en/barcelona-fares-metro-bus', actualizado:'2026-08-18', fonte:'https://www.tmb.cat/en/barcelona-fares-metro-bus',
+    nota:'O Hola Barcelona Travel Card cobre 2 a 5 dias e inclui a ida e volta ao aeroporto, a partir de 12,50 €. O preço muda com a duração: veja no tarifário antes de comprar.',
     bilhetes:[
-      {nome:'Bilhete simples', preco:2.65, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'T-casual (10 viagens, 1 zona)', preco:12.55, unidade:'10 viagens', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
-      {nome:'Hola Barcelona 48 h', preco:18.10, unidade:'48 h', quando:'antes', modos:['metro','autocarro','eletrico','comboio','aeroporto','funicular']},
-      {nome:'Hola Barcelona 72 h', preco:26.30, unidade:'72 h', quando:'antes', modos:['metro','autocarro','eletrico','comboio','aeroporto','funicular']}
+      {nome:'Bilhete simples', preco:2.90, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','funicular']},
+      {nome:'T-casual (10 viagens, 1 zona)', preco:13.00, unidade:'10 viagens', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Bilhete de aeroporto (metro L9, T1 e T2)', preco:5.90, unidade:'viagem', quando:'chegada', modos:['metro','aeroporto']}
     ]},
   'Paris': {operador:'RATP / Île-de-France Mobilités', url:'https://www.iledefrance-mobilites.fr/titres-et-tarifs', actualizado:'2026-01-01',
     nota:'Desde 2025 há tarifa única em toda a região: 2,50 € por viagem, incluindo de e para os aeroportos.',
@@ -324,13 +334,13 @@ const TRANSPORTES_DESTINO = {
       {nome:'Roma 72H', preco:18.00, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
       {nome:'Leonardo Express, Fiumicino ↔ Termini', preco:14.00, unidade:'viagem', quando:'antes', modos:['comboio','aeroporto']}
     ]},
-  'Milão': {operador:'ATM', url:'https://www.atm.it/en/ViaggiaConNoi/Pages/SceltaBiglietto.aspx', actualizado:'2026-01-01',
+  'Milão': {operador:'ATM', url:'https://www.atm.it/en/Pages/default.aspx', actualizado:'2026-01-01',
     bilhetes:[
       {nome:'Bilhete urbano (90 minutos)', preco:2.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'Passe 24 h', preco:7.60, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'Passe 3 dias', preco:13.00, unidade:'3 dias', quando:'chegada', modos:['metro','autocarro','eletrico']}
     ]},
-  'Berlim': {operador:'BVG', url:'https://www.bvg.de/en/tickets-and-fares', actualizado:'2026-01-01',
+  'Berlim': {operador:'BVG', url:'https://www.bvg.de/en', actualizado:'2026-01-01',
     nota:'O Deutschlandticket (58 €/mês) cobre todos os transportes regionais da Alemanha e compensa a partir de uma semana, mas é subscrição mensal.',
     bilhetes:[
       {nome:'Bilhete simples AB', preco:3.80, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
@@ -368,11 +378,18 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 24 h', preco:10.20, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'Passe 7 dias', preco:28.90, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico']}
     ]},
-  'Budapeste': {operador:'BKK', url:'https://bkk.hu/en/tickets-and-passes/prices/', actualizado:'2026-01-01', moeda:'HUF',
+  /* Lido na BKK a 18/08/2026. Estava tudo abaixo do real: simples 450
+     (são 500), 24 h 2500 (são 2750), 72 h 5500 (são 5750). */
+  'Budapeste': {operador:'BKK', url:'https://bkk.hu/en/tickets-and-passes/prices/', comprar:'https://bkk.hu/en/tickets-and-passes/prices/', actualizado:'2026-08-18', fonte:'https://bkk.hu/en/tickets-and-passes/prices/', moeda:'HUF',
+    nota:'Comprado ao motorista, o bilhete simples custa 700 Ft em vez de 500. O autocarro do aeroporto tem bilhete próprio.',
     bilhetes:[
-      {nome:'Bilhete simples', preco:450, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'Passe 24 h', preco:2500, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
-      {nome:'Passe 72 h', preco:5500, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']}
+      {nome:'Bilhete simples', preco:500, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
+      {nome:'Bilhete de 30 minutos', preco:600, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Bilhete de 90 minutos', preco:850, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Bloco de 10 bilhetes', preco:4500, unidade:'10 viagens', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
+      {nome:'Passe 24 h (Budapeste)', preco:2750, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
+      {nome:'Passe 72 h (Budapeste)', preco:5750, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
+      {nome:'Autocarro do aeroporto (100E)', preco:2500, unidade:'viagem', quando:'chegada', modos:['autocarro','aeroporto']}
     ]},
   'Nova Iorque': {operador:'MTA', url:'https://www.mta.info/fares', actualizado:'2026-01-01', moeda:'USD',
     nota:'Com o OMNY (pagamento por aproximação) as viagens ficam gratuitas depois da 12.ª na mesma semana, não é preciso comprar passe.',
@@ -389,7 +406,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 24 h do Tokyo Metro', preco:600, unidade:'24 h', quando:'chegada', modos:['metro']},
       {nome:'Narita Express, aeroporto ↔ Tóquio', preco:3070, unidade:'viagem', quando:'antes', modos:['comboio','aeroporto']}
     ]},
-  'Singapura': {operador:'SMRT / SBS Transit', url:'https://www.lta.gov.sg/content/ltagov/en/getting_around/public_transport/fares_and_ticketing.html', actualizado:'2026-01-01', moeda:'SGD',
+  'Singapura': {operador:'SMRT / SBS Transit', url:'https://www.lta.gov.sg/', actualizado:'2026-01-01', moeda:'SGD',
     nota:'Pague por aproximação com o cartão bancário: não é preciso comprar cartão de transporte.',
     bilhetes:[
       {nome:'Viagem típica de metro', preco:1.50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
@@ -472,8 +489,17 @@ const TRANSPORTES_DESTINO = {
     bilhetes:[]},
   'Munique': {operador:'MVV', url:'https://www.mvv-muenchen.de/en/tickets-and-fares/', actualizado:'2026-08-18', fonte:'https://www.mvv-muenchen.de/en/tickets-and-fares/',
     bilhetes:[]},
-  'Zurique': {operador:'ZVV', url:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/24h-tickets.html', actualizado:'2026-08-18', fonte:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/24h-tickets.html', moeda:'CHF',
-    bilhetes:[]},
+  /* Lida a tabela oficial do ZVV a 18/08/2026, 2.ª classe, adulto. A
+     cidade de Zurique é a zona 110, que conta como 2 zonas. */
+  'Zurique': {operador:'ZVV', url:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/single-tickets.html', comprar:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/24h-tickets.html', actualizado:'2026-08-18', fonte:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/24h-tickets.html', moeda:'CHF',
+    nota:'A cidade conta como 2 zonas, por isso é a linha «1 a 2 zonas» que interessa a quem só anda em Zurique. O bilhete de rede local serve trajectos curtos.',
+    bilhetes:[
+      {nome:'Bilhete simples, rede local (30 min)', preco:2.80, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Bilhete simples, 1 a 2 zonas (1 h)', preco:4.70, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Passe 24 h, rede local', preco:5.60, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Passe 24 h, 1 a 2 zonas', preco:9.40, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Passe 24 h, todas as zonas (inclui aeroporto)', preco:36.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio','aeroporto']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
