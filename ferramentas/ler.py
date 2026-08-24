@@ -8,9 +8,15 @@ Paginas que montem a tabela de precos em JavaScript saem sem numeros: isso
 ve-se e trata-se noutro sitio, nao se adivinha.
 
   python3 ler.py <url> [padrao]
+  python3 ler.py <url> --linhas 418-448
 
 `padrao` e uma expressao regular; saem so as linhas que casarem, com duas de
 contexto de cada lado. Sem padrao saem as primeiras 200 linhas.
+
+`--linhas A-B` despeja um intervalo pelo numero que a propria ferramenta
+imprime. Serve para quando o padrao acha a seccao certa mas os precos estao
+nas linhas a seguir, que e o caso comum nas paginas que poem o nome do
+titulo numa linha e o valor noutra.
 """
 import html
 import re
@@ -20,8 +26,22 @@ import sys
 UA = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
       'Chrome/120.0.0.0 Safari/537.36')
 
+# A consola do Windows abre em cp1252, e um tarifario alemao ou checo tem
+# sempre um caracter que ela nao sabe escrever: sem isto, imprimir a pagina
+# rebenta com UnicodeEncodeError. Nao e cosmetica, e o que faz a ferramenta
+# correr fora do Linux.
+for _f in (sys.stdout, sys.stderr):
+    try:
+        _f.reconfigure(encoding='utf-8', errors='replace')
+    except (AttributeError, ValueError):
+        pass
+
 
 def buscar(url):
+    # `text=True` descodificaria com a codificacao da maquina (cp1252 no
+    # Windows), o que estraga qualquer pagina em UTF-8: precos em euros
+    # ficavam com «â‚¬» no meio e os padroes deixavam de casar. Le-se em
+    # bytes e descodifica-se sempre como UTF-8.
     r = subprocess.run(
         ['curl', '-sSL', '--max-time', '45', '--compressed',
          '-A', UA,
@@ -29,10 +49,12 @@ def buscar(url):
          '-H', 'Accept-Language: en-GB,en;q=0.9,pt;q=0.8',
          '-w', '\n@@ESTADO@@%{http_code} %{url_effective}',
          url],
-        capture_output=True, text=True)
+        capture_output=True)
     if r.returncode != 0:
-        return None, 'curl falhou: ' + (r.stderr or '').strip()[:200]
-    corpo, _, cauda = r.stdout.rpartition('\n@@ESTADO@@')
+        erro = (r.stderr or b'').decode('utf-8', 'replace').strip()
+        return None, 'curl falhou: ' + erro[:200]
+    saida = (r.stdout or b'').decode('utf-8', 'replace')
+    corpo, _, cauda = saida.rpartition('\n@@ESTADO@@')
     return corpo, cauda.strip()
 
 
@@ -53,7 +75,17 @@ def texto(doc):
 
 def main():
     url = sys.argv[1]
-    padrao = re.compile(sys.argv[2], re.I) if len(sys.argv) > 2 else None
+    resto = sys.argv[2:]
+    faixa = None
+    if '--linhas' in resto:
+        i = resto.index('--linhas')
+        m = re.match(r'(\d+)-(\d+)$', resto[i + 1] if i + 1 < len(resto) else '')
+        if not m:
+            print('uso: --linhas A-B (por exemplo --linhas 418-448)')
+            return 2
+        faixa = (int(m.group(1)), int(m.group(2)))
+        del resto[i:i + 2]
+    padrao = re.compile(resto[0], re.I) if resto else None
 
     corpo, estado = buscar(url)
     if corpo is None:
@@ -64,7 +96,11 @@ def main():
     print('linhas legiveis: %d' % len(linhas))
     print('-' * 70)
 
-    if padrao:
+    if faixa:
+        a, b = faixa
+        for i in range(max(0, a), min(len(linhas), b + 1)):
+            print('%4d| %s' % (i, linhas[i][:300]))
+    elif padrao:
         querer = set()
         for i, l in enumerate(linhas):
             if padrao.search(l):
