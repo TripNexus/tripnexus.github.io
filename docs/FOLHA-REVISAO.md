@@ -6,23 +6,13 @@ Preencha as colunas a **negrito** e devolva a folha. Regras:
 - se um título já não existir, escreva «extinto» na última coluna;
 - se a página não for clara, deixe em branco: melhor vazio do que errado.
 
-## 1. Têm preços no site e estão por reconferir (12)
+## 1. Têm preços no site e estão por reconferir (10)
 
 Estas são as urgentes: o site está a mostrar estes números a quem o visita.
 
-### Porto  ·  Metro do Porto / STCP
-
-Abrir: <https://www.metrodoporto.pt/pages/357>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| Título Z2 (centro) | 1.4 EUR | por viagem | | |
-| Andante 24 h Z2 | 4.8 EUR | por 24 h | | |
-| Aeroporto ↔ centro (Z4, linha E) | 2.25 EUR | por viagem | | |
-
 ### Madrid  ·  Metro de Madrid / CRTM
 
-Abrir: <https://www.crtm.es/billetes-y-tarifas>
+Abrir: <https://www.crtm.es/billetes-y-tarifas/>
 
 | Título | Temos | Unidade | **É** | **Ainda existe?** |
 |---|---|---|---|---|
@@ -73,17 +63,6 @@ Abrir: <https://www.atm.it/en/Pages/default.aspx>
 | Bilhete urbano (90 minutos) | 2.2 EUR | por viagem | | |
 | Passe 24 h | 7.6 EUR | por 24 h | | |
 | Passe 3 dias | 13 EUR | por 3 dias | | |
-
-### Berlim  ·  BVG
-
-Abrir: <https://www.bvg.de/en>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| Bilhete simples AB | 3.8 EUR | por viagem | | |
-| Passe diário AB | 10.6 EUR | por dia | | |
-| Passe 7 dias AB | 44 EUR | por 7 dias | | |
-| Aeroporto BER ↔ centro (zona ABC) | 4.4 EUR | por viagem | | |
 
 ### Praga  ·  DPP
 

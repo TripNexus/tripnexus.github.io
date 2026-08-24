@@ -39,7 +39,7 @@ número que não fomos ver.
   operador: 'Wiener Linien',
   url:      'https://…',        // tarifário oficial
   comprar:  'https://…',        // onde se compra em linha (facultativo)
-  actualizado: '2026-08-18',    // o DIA em que alguém foi lá ver
+  actualizado: '2026-08-24',    // o DIA em que alguém foi lá ver
   fonte:    'https://…',        // a página onde o valor foi lido
   moeda:    'EUR',              // ausente = EUR
   bilhetes: [ … ]
@@ -47,7 +47,7 @@ número que não fomos ver.
 ```
 
 `actualizado` **não é o ano da tarifa**, é o dia da conferência. É a
-diferença entre «esta é a tarifa de 2026» e «fui ver isto a 18 de Agosto».
+diferença entre «esta é a tarifa de 2026» e «fui ver isto a 24 de Agosto».
 Só a segunda permite saber se a informação envelheceu.
 
 Cada bilhete pode ainda levar `url`, para quando o título se compra numa
@@ -89,6 +89,15 @@ caminho inventado que pôs a Discover Cars numa «Página não encontrada», e o
 mesmo erro numa tarifa manda o utilizador a lado nenhum quando ele mais
 precisa. Na dúvida, a raiz do domínio do operador.
 
+**200 não quer dizer página certa.** Sondar o código HTTP apanha as ligações
+mortas e mais nada. O Porto esteve com `metrodoporto.pt/pages/357`, que
+responde 200 alegremente e é a página do capital social da empresa: uma
+ligação viva a apontar ao sítio errado, que nenhuma sondagem automática
+apanha. O tarifário é o `pages/287`. Antes de guardar um `url`, confirme que
+a página tem lá preços: o `sondar.py` conta-os na coluna `precos=`, e um
+`precos=0` numa página que devia ser um tarifário é sinal de que ou é a
+página errada, ou monta os valores em JavaScript.
+
 **Fontes secundárias não chegam.** Sites de turismo e guias de cidade copiam
 uns dos outros e ficam desactualizados. Servem para *encontrar* a página do
 operador; não servem como fonte do valor. Nesta revisão apanhámos, só nas
@@ -108,7 +117,11 @@ O ambiente passou a ter **Network access: Full**, mas nem tudo atravessa:
 |---|---|---|
 | `curl` | **sim** | é por aqui que se lê |
 | WebFetch | não | tem lista de saída própria, que o ambiente não muda |
-| Chromium / Playwright | não | `ERR_CONNECTION_RESET` com e sem proxy |
+| Chromium / Playwright | não | bloqueado no sandbox, não na política de rede: falha igual com e sem proxy, com e sem `--no-sandbox`, e com o DNS encaminhado para o proxy |
+
+Numa máquina normal (por exemplo, o `claude` a correr no computador de
+casa) o Chromium funciona e este limite desaparece. As páginas em JavaScript
+resolvem-se aí.
 
 Como o Chromium não passa, páginas que montem a tabela de preços em
 JavaScript saem sem números. Isso vê-se (o `ler.py` diz «o padrão não casou»)
@@ -117,17 +130,20 @@ imprimir, ou o PDF do tarifário. **Não se adivinha.**
 
 ```
 python3 ferramentas/ler.py <url> "<padrão>"
+python3 ferramentas/ler.py <url> --linhas 418-448
 ```
 
 Despeja o texto legível da página, filtrado por uma expressão regular, com
-duas linhas de contexto de cada lado. É assim que os valores abaixo foram
+duas linhas de contexto de cada lado. O `--linhas` despeja um intervalo pelo
+número que a própria ferramenta imprime, que é o que se usa quando o padrão
+acha a secção certa mas os preços estão nas linhas a seguir. É assim que os valores abaixo foram
 lidos: na página do operador, não num guia de viagens.
 
 Há operadores que respondem **403** ao `curl` (TfL, MTA, Île-de-France
 Mobilités, Tokyo Metro, TUSSAM): bloqueiam agentes automáticos. Esses ficam
 para uma ronda feita à mão, num navegador normal.
 
-## Estado em 18 de Agosto de 2026
+## Estado em 24 de Agosto de 2026
 
 95 cidades no site. Começámos o dia com 17 na tabela e nenhuma com data de
 conferência.
