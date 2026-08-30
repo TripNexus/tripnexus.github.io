@@ -6,7 +6,7 @@ Preencha as colunas a **negrito** e devolva a folha. Regras:
 - se um título já não existir, escreva «extinto» na última coluna;
 - se a página não for clara, deixe em branco: melhor vazio do que errado.
 
-## 1. Têm preços no site e estão por reconferir (9)
+## 1. Têm preços no site e estão por reconferir (3)
 
 Estas são as urgentes: o site está a mostrar estes números a quem o visita.
 
@@ -21,39 +21,6 @@ Abrir: <https://www.crtm.es/billetes-y-tarifas/>
 | Abono turístico 1 dia (zona A) | 8.4 EUR | por dia | | |
 | Abono turístico 5 dias (zona A) | 26.8 EUR | por 5 dias | | |
 
-### Paris  ·  RATP / Île-de-France Mobilités
-
-Abrir: <https://www.iledefrance-mobilites.fr/titres-et-tarifs>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| Ticket t+ | 2.5 EUR | por viagem | | |
-| Navigo Jour (todas as zonas) | 12 EUR | por dia | | |
-| Navigo Semaine (seg. a dom.) | 31.6 EUR | por semana | | |
-| Aeroporto CDG ↔ Paris (RER B) | 2.5 EUR | por viagem | | |
-
-### Londres  ·  Transport for London
-
-Abrir: <https://tfl.gov.uk/fares/>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| Metro, zona 1 (hora de ponta) | 2.9 GBP | por viagem | | |
-| Autocarro (qualquer distância) | 1.75 GBP | por viagem | | |
-| Tecto diário, zonas 1–2 | 8.9 GBP | por dia | | |
-| Elizabeth line, Heathrow ↔ centro | 12.8 GBP | por viagem | | |
-
-### Roma  ·  ATAC
-
-Abrir: <https://www.atac.roma.it/en/tickets-and-passes>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| BIT (100 minutos) | 1.5 EUR | por viagem | | |
-| Roma 24H | 7 EUR | por 24 h | | |
-| Roma 72H | 18 EUR | por 72 h | | |
-| Leonardo Express, Fiumicino ↔ Termini | 14 EUR | por viagem | | |
-
 ### Milão  ·  ATM
 
 Abrir: <https://www.atm.it/en/Pages/default.aspx>
@@ -64,35 +31,6 @@ Abrir: <https://www.atm.it/en/Pages/default.aspx>
 | Passe 24 h | 7.6 EUR | por 24 h | | |
 | Passe 3 dias | 13 EUR | por 3 dias | | |
 
-### Istambul  ·  İETT / Metro İstanbul
-
-Abrir: <https://www.istanbulkart.istanbul/>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| Viagem com Istanbulkart | 27 TRY | por viagem | | |
-| Aeroporto IST ↔ centro (M11 + metro) | 54 TRY | por viagem | | |
-
-### Nova Iorque  ·  MTA
-
-Abrir: <https://www.mta.info/fares>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| Metro ou autocarro (OMNY ou MetroCard) | 2.9 USD | por viagem | | |
-| Tecto semanal com OMNY | 34.8 USD | por semana | | |
-| AirTrain JFK + metro | 11.15 USD | por viagem | | |
-
-### Tóquio  ·  Tokyo Metro / JR East
-
-Abrir: <https://www.tokyometro.jp/en/ticket/>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| Metro, viagem curta | 180 JPY | por viagem | | |
-| Passe 24 h do Tokyo Metro | 600 JPY | por 24 h | | |
-| Narita Express, aeroporto ↔ Tóquio | 3070 JPY | por viagem | | |
-
 ### Singapura  ·  SMRT / SBS Transit
 
 Abrir: <https://www.lta.gov.sg/>
@@ -102,7 +40,7 @@ Abrir: <https://www.lta.gov.sg/>
 | Viagem típica de metro | 1.5 SGD | por viagem | | |
 | Singapore Tourist Pass, 1 dia | 22 SGD | por dia | | |
 
-## 2. Têm operador, faltam os valores (30)
+## 2. Têm operador, faltam os valores (24)
 
 ### Faro  ·  Vamus Algarve
 
@@ -127,26 +65,6 @@ Não temos valores nenhuns. Escreva os títulos que a página tiver:
 ### Sevilha  ·  TUSSAM
 
 Abrir: <https://www.tussam.es/en/node/1442>
-
-Não temos valores nenhuns. Escreva os títulos que a página tiver:
-
-| Título | Preço | Unidade |
-|---|---|---|
-| | | |
-
-### Valência  ·  EMT València / Metrovalencia
-
-Abrir: <https://www.metrovalencia.es/es/nuestras-tarifas/>
-
-Não temos valores nenhuns. Escreva os títulos que a página tiver:
-
-| Título | Preço | Unidade |
-|---|---|---|
-| | | |
-
-### Palma de Maiorca  ·  EMT Palma
-
-Abrir: <https://www.emtpalma.cat/ca/tarifes/tarifes>
 
 Não temos valores nenhuns. Escreva os títulos que a página tiver:
 
@@ -184,16 +102,6 @@ Não temos valores nenhuns. Escreva os títulos que a página tiver:
 |---|---|---|
 | | | |
 
-### Manchester  ·  Bee Network (TfGM)
-
-Abrir: <https://tfgm.com/tickets-and-passes>
-
-Não temos valores nenhuns. Escreva os títulos que a página tiver:
-
-| Título | Preço | Unidade |
-|---|---|---|
-| | | |
-
 ### Nápoles  ·  ANM
 
 Abrir: <https://www.anm.it/index.php?option=com_content&task=view&id=1344>
@@ -207,6 +115,16 @@ Não temos valores nenhuns. Escreva os títulos que a página tiver:
 ### Munique  ·  MVG
 
 Abrir: <https://www.mvg.de/>
+
+Não temos valores nenhuns. Escreva os títulos que a página tiver:
+
+| Título | Preço | Unidade |
+|---|---|---|
+| | | |
+
+### Frankfurt  ·  RMV
+
+Abrir: <https://www.rmv.de/c/en/tickets/your-ticket/tickets-overview/single-tickets/single-ticket>
 
 Não temos valores nenhuns. Escreva os títulos que a página tiver:
 
@@ -237,16 +155,6 @@ Não temos valores nenhuns. Escreva os títulos que a página tiver:
 ### Dubrovnik  ·  Libertas Dubrovnik
 
 Abrir: <https://www.libertasdubrovnik.hr/>
-
-Não temos valores nenhuns. Escreva os títulos que a página tiver:
-
-| Título | Preço | Unidade |
-|---|---|---|
-| | | |
-
-### Estocolmo  ·  SL
-
-Abrir: <https://sl.se/en/in-english/>
 
 Não temos valores nenhuns. Escreva os títulos que a página tiver:
 
@@ -334,16 +242,6 @@ Não temos valores nenhuns. Escreva os títulos que a página tiver:
 |---|---|---|
 | | | |
 
-### Hong Kong  ·  MTR
-
-Abrir: <https://www.mtr.com.hk/index.php>
-
-Não temos valores nenhuns. Escreva os títulos que a página tiver:
-
-| Título | Preço | Unidade |
-|---|---|---|
-| | | |
-
 ### Banguecoque  ·  BTS SkyTrain
 
 Abrir: <https://www.bts.co.th/>
@@ -357,26 +255,6 @@ Não temos valores nenhuns. Escreva os títulos que a página tiver:
 ### Hanói  ·  Hanoi Metro
 
 Abrir: <https://www.hanoimetro.net.vn/>
-
-Não temos valores nenhuns. Escreva os títulos que a página tiver:
-
-| Título | Preço | Unidade |
-|---|---|---|
-| | | |
-
-### Kuala Lumpur  ·  Rapid KL
-
-Abrir: <https://myrapid.com.my/>
-
-Não temos valores nenhuns. Escreva os títulos que a página tiver:
-
-| Título | Preço | Unidade |
-|---|---|---|
-| | | |
-
-### Deli  ·  Delhi Metro
-
-Abrir: <https://www.delhimetrorail.com/>
 
 Não temos valores nenhuns. Escreva os títulos que a página tiver:
 
@@ -404,20 +282,15 @@ Não temos valores nenhuns. Escreva os títulos que a página tiver:
 |---|---|---|
 | | | |
 
-## 3. Sem operador (26)
+## 3. Sem operador (20)
 
 Falta descobrir quem opera os transportes e qual é a página de tarifário.
 
 - Ponta Delgada (Portugal): operador ______  ·  endereço ______
-- Málaga (Espanha): operador ______  ·  endereço ______
 - Ibiza (Espanha): operador ______  ·  endereço ______
-- Lyon (França): operador ______  ·  endereço ______
-- Frankfurt (Alemanha): operador ______  ·  endereço ______
 - Santorini (Grécia): operador ______  ·  endereço ______
-- Helsínquia (Finlândia): operador ______  ·  endereço ______
 - Marraquexe (Marrocos): operador ______  ·  endereço ______
 - Cairo (Egipto): operador ______  ·  endereço ______
-- Dubai (Emiratos Árabes Unidos): operador ______  ·  endereço ______
 - Doha (Catar): operador ______  ·  endereço ______
 - Fortaleza (Brasil): operador ______  ·  endereço ______
 - Cidade do México (México): operador ______  ·  endereço ______
@@ -429,7 +302,6 @@ Falta descobrir quem opera os transportes e qual é a página de tarifário.
 - Phuket (Tailândia): operador ______  ·  endereço ______
 - Bali (Indonésia): operador ______  ·  endereço ______
 - Bombaim (Índia): operador ______  ·  endereço ______
-- Melbourne (Austrália): operador ______  ·  endereço ______
 - Luanda (Angola): operador ______  ·  endereço ______
 - Maputo (Moçambique): operador ______  ·  endereço ______
 - Sal (Cabo Verde): operador ______  ·  endereço ______

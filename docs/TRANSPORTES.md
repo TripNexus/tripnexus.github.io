@@ -182,8 +182,8 @@ nenhuma com data de conferência.
 | **Só operador**, sem valores | 24 | Sevilha, Frankfurt, Nápoles, Oslo, Munique, Funchal, Faro, Tenerife, Nice, Marselha, Cracóvia, Zagreb, Reiquiavique, Bogotá, Santiago, Cidade do Cabo, Auckland, Osaka, Banguecoque, Buenos Aires, Dubrovnik, Recife, Casablanca, Hanói |
 | **Sem operador** | 20 | Ponta Delgada, Ibiza, Santorini, Marraquexe, Cairo, Doha, Fortaleza, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia |
 
-Das 21 cidades que esta ronda foi buscar, **18 ficaram com preços** — doze
-que já cá estavam e seis que nem sequer apareciam na tabela —, uma passou a
+Das 21 cidades que esta ronda foi buscar, **18 ficaram com preços**: doze
+que já cá estavam e seis que nem sequer apareciam na tabela. Uma passou a
 ter operador e ligação (Frankfurt) e duas ficaram como estavam, pelas
 razões que estão mais abaixo (Sevilha e Cidade do México).
 
@@ -237,8 +237,8 @@ Todas lidas na página do operador.
 
 Doze cidades que já tinham valores foram lidas pela primeira vez na página
 do operador. Nenhuma delas tinha data de conferência: todas diziam
-`2026-01-01`, que era o ano da tarifa e não o dia em que alguém foi ver —
-exactamente o hábito que este documento existe para acabar.
+`2026-01-01`, que era o ano da tarifa e não o dia em que alguém foi ver.
+Exactamente o hábito que este documento existe para acabar.
 
 | Cidade | Estava | É | Nota |
 |---|---|---|---|
@@ -268,7 +268,7 @@ que nem sequer estavam na tabela:
 |---|---|---|
 | Valência | só operador | sencillo 1,50 € (zona A) e os passes SUMA T de 24, 48 e 72 h |
 | Palma de Maiorca | só operador | 2,00 € urbano, 5,00 € o aeroporto |
-| Estocolmo | só operador | simples 43 SEK — fecha a dúvida dos guias entre 42 e 43 |
+| Estocolmo | só operador | simples 43 SEK, fecha a dúvida dos guias entre 42 e 43 |
 | Manchester | só operador | 2,00 £ o autocarro, tectos de 9,50 e 41,00 £ |
 | Hong Kong | só operador | Tourist Day Pass 75 HKD e a Airport Express a 120 |
 | Kuala Lumpur | só operador | Rapid Kembara 25 e 55 MYR (o Kota, mais barato, é só para malaios) |
@@ -283,7 +283,7 @@ que nem sequer estavam na tabela:
 Duas coisas dignas de nota, porque não são «o preço subiu»:
 
 **Lyon vem com data.** O guia tarifário que a TCL publica diz, na capa, «à
-partir du 1er septembre 2026» — dois dias depois desta ronda. São as tarifas
+partir du 1er septembre 2026», dois dias depois desta ronda. São as tarifas
 que vão entrar em vigor, e a nota da cidade di-lo por palavras, para que
 ninguém as leia como as de hoje.
 
@@ -310,8 +310,8 @@ de uma ligação morta não serve de nada, e nenhuma destas se via sem ir lá.
 
 ### O que trava as que faltam
 
-As duas primeiras listas da ronda anterior — páginas em JavaScript e
-operadores que recusam o `curl` — resolveram-se todas no navegador, menos
+As duas primeiras listas da ronda anterior (páginas em JavaScript e
+operadores que recusam o `curl`) resolveram-se todas no navegador, menos
 duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
 
 - **Verificação de bot da Cloudflare**: TUSSAM de Sevilha. Não é o
@@ -319,7 +319,7 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
   Fica em «só operador», com a nota a dizer ao utilizador que abra a página
   no navegador dele.
 - **Sítio inalcançável daqui**: Cidade do México. Todo o domínio
-  `cdmx.gob.mx` dá `ERR_CONNECTION_TIMED_OUT` — `metro.`, `semovi.`,
+  `cdmx.gob.mx` dá `ERR_CONNECTION_TIMED_OUT`: `metro.`, `semovi.`,
   `metrobus.` e o `www.`. Como não se conseguiu confirmar que endereço
   algum responde, a cidade fica **sem operador**: guardar uma ligação que
   não se abriu seria inventar um endereço.
@@ -328,7 +328,7 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
   in our timetable information»: o RMV não publica tabela nenhuma, só
   calcula o percurso. Fica com operador e ligação, sem valores.
 - **Tarifas por distância, sem valor único**: MTR de Hong Kong, Rapid KL,
-  Delhi Metro, Tokyo Metro. Aqui não há bloqueio nenhum — há uma tabela
+  Delhi Metro, Tokyo Metro. Aqui não há bloqueio nenhum: há uma tabela
   estação a estação, e pôr «a viagem custa X» seria inventar uma média.
   Entram os títulos de preço fixo (passes, aeroporto) e a faixa de distância
   fica dita na nota.
@@ -337,7 +337,7 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
 - **Cidades sem rede urbana formal** ou sem operador com sítio próprio:
   Ibiza, Phuket, Bali, Cancún, Sal, Praia, Luanda, Maputo.
 
-As que continuam por reconferir — Madrid, Milão e Singapura — não estão
+As que continuam por reconferir (Madrid, Milão e Singapura) não estão
 nesta lista por bloqueio nenhum: ficaram de fora do âmbito desta ronda e
 esperam a próxima. O `--url` do `ferramentas/transportes.js` dá a lista
 pronta a colar.

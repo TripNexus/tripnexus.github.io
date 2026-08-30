@@ -320,8 +320,8 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete de aeroporto (metro L9, T1 e T2)', preco:5.90, unidade:'viagem', quando:'chegada', modos:['metro','aeroporto']}
     ]},
   /* Lido na Île-de-France Mobilités a 30/08/2026, em navegador. A nota que
-     aqui estava — «tarifa única de 2,50 €, incluindo de e para os
-     aeroportos» — já não é verdade em nenhuma das duas metades: há dois
+     aqui estava («tarifa única de 2,50 €, incluindo de e para os
+     aeroportos») já não é verdade em nenhuma das duas metades: há dois
      preços de viagem (2,55 € no metro e no RER, 2,05 € no autocarro) e o
      aeroporto tem título próprio, a 14 €. Era o erro mais caro da tabela. */
   'Paris': {operador:'RATP / Île-de-France Mobilités', url:'https://www.iledefrance-mobilites.fr/titres-et-tarifs', actualizado:'2026-08-30', fonte:'https://www.iledefrance-mobilites.fr/titres-et-tarifs',
@@ -333,7 +333,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Navigo Semaine (seg. a dom.)', preco:32.40, unidade:'semana', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
       {nome:'Ticket Paris Région ↔ Aeroportos (Orly ou CDG)', preco:14.00, unidade:'viagem', quando:'chegada', modos:['metro','comboio','aeroporto']}
     ]},
-  /* Tectos e Travelcards lidos na tabela oficial de 2026 — o PDF «Adult
+  /* Tectos e Travelcards lidos na tabela oficial de 2026: o PDF «Adult
      rate prices 2026» que a própria TfL publica na página de tarifas do
      metro; os do autocarro, na página de tarifas de autocarro e eléctrico.
      O simples do metro na zona 1 e a Elizabeth line de Heathrow saíram: o
@@ -443,7 +443,7 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Lido no Tokyo Metro a 30/08/2026. O passe de 24 h estava a 600 e são
      700; a viagem curta não mexeu. O Narita Express saiu: é da JR East,
-     não do Tokyo Metro, e não vem nestas páginas — por isso o operador
+     não do Tokyo Metro, e não vem nestas páginas, por isso o operador
      também deixa de dizer JR East, que é o que aqui se foi conferir. */
   'Tóquio': {operador:'Tokyo Metro', url:'https://www.tokyometro.jp/en/ticket/', actualizado:'2026-08-30', fonte:'https://www.tokyometro.jp/en/ticket/regular/index.html', moeda:'JPY',
     cartao:{nome:'PASMO', preco:500, nota:'é uma caução, devolvida quando entregar o cartão; serve metro, comboio, autocarro e lojas de conveniência'},
@@ -540,7 +540,7 @@ const TRANSPORTES_DESTINO = {
      rede de metro e eléctrico; a EMT (autocarros) tem tarifário próprio,
      que não vem nesta página. */
   'Valência': {operador:'Metrovalencia', url:'https://www.metrovalencia.es/es/nuestras-tarifas/', actualizado:'2026-08-30', fonte:'https://www.metrovalencia.es/es/nuestras-tarifas/',
-    nota:'O preço depende da zona: a cidade é a zona A. O título não inclui o suporte — o cartão SUMA anónimo custa 2,20 € em plástico ou 1,10 € em cartão, à parte. Os autocarros da EMT têm tarifário próprio.',
+    nota:'O preço depende da zona: a cidade é a zona A. O título não inclui o suporte: o cartão SUMA anónimo custa 2,20 € em plástico ou 1,10 € em cartão, à parte. Os autocarros da EMT têm tarifário próprio.',
     bilhetes:[
       {nome:'Sencillo, zona A ou B', preco:1.50, unidade:'viagem', quando:'chegada', modos:['metro','eletrico']},
       {nome:'Sencillo, zonas AB', preco:2.80, unidade:'viagem', quando:'chegada', modos:['metro','eletrico']},
@@ -593,7 +593,7 @@ const TRANSPORTES_DESTINO = {
     bilhetes:[]},
   /* Frankfurt não estava na tabela: passa a ter operador e ligação, ainda
      sem valores. O RMV não publica o preço do simples nem do diário em
-     lado nenhum do sítio — as páginas dos dois títulos dizem, à letra,
+     lado nenhum do sítio: as páginas dos dois títulos dizem, à letra,
      «you can find the price of your ticket in our timetable information», e
      mandam-no ao planeador de viagem. O único valor firme, lido a
      30/08/2026, é o do Deutschland-Ticket, que é subscrição mensal e não
@@ -716,7 +716,7 @@ const TRANSPORTES_DESTINO = {
      porque o preço varia com as zonas, mas o operador publica o guia
      tarifário completo em PDF, e é de lá que vem isto (páginas 18 e 19),
      na coluna «Zones 1 et 2», que é a cidade. Atenção: o próprio guia diz
-     «à partir du 1er septembre 2026», e hoje é 30 de Agosto — são as
+     «à partir du 1er septembre 2026», e hoje é 30 de Agosto. São as
      tarifas que entram em vigor daqui a dois dias, e a nota di-lo. */
   'Lyon': {operador:'TCL', url:'https://www.tcl.fr/titres-et-tarifs/tous-les-titres-et-abonnements', actualizado:'2026-08-30', fonte:'https://www.tcl.fr/sites/default/files/2026-07/Guide_Tarifaire_TCL_Mai_2026.pdf',
     nota:'Valores das zonas 1 e 2, que cobrem a cidade, e que o guia da TCL dá como em vigor a partir de 1 de Setembro de 2026. Pagando com o cartão bancário não paga mais de 7,10 € por dia, o mesmo que o passe de 24 h. O título carrega-se num bilhete recarregável que custa 0,20 € à primeira compra.',
@@ -792,8 +792,8 @@ const TRANSPORTES_DESTINO = {
     ]},
   'Banguecoque': {operador:'BTS SkyTrain', url:'https://www.bts.co.th/', actualizado:'2026-08-24', fonte:'https://www.bts.co.th/', moeda:'THB',
     bilhetes:[]},
-  /* Dubai não estava na tabela. Lido na RTA a 30/08/2026. É por zonas — são
-     sete — e o preço depende de quantas atravessa, por isso ficam as três
+  /* Dubai não estava na tabela. Lido na RTA a 30/08/2026. É por zonas (são
+     sete), e o preço depende de quantas atravessa, por isso ficam as três
      linhas da tabela, e não um valor inventado à média. O nol Silver é o
      cartão normal; o Red Ticket é o bilhete de papel, mais caro à viagem. */
   'Dubai': {operador:'RTA', url:'https://www.rta.ae/wps/portal/rta/ae/public-transport/Nol-Fares?lang=en', actualizado:'2026-08-30', fonte:'https://www.rta.ae/wps/portal/rta/ae/public-transport/Nol-Fares?lang=en', moeda:'AED',
