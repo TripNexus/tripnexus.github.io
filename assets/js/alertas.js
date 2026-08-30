@@ -99,7 +99,10 @@ function desenharGuardados(){
 
 /* ── alertas de preço ────────────────────────────────────────── */
 
-/* melhor preço actual do voo do alerta (tarifas reais quando há backend) */
+/* melhor preço actual do voo do alerta (tarifas reais quando há backend).
+   Devolve sempre {preco, real}: sem essa marca, um alerta disparado com a
+   estimativa local parecia tão de confiança como um com tarifa real, e é
+   a diferença entre avisar «desceu» e avisar «pode ter descido». */
 function precoActualAlerta(al){
   const o = cidadePorNome(al.origem), d = cidadePorNome(al.destino);
   const ida = deISO(al.ida), volta = al.volta ? deISO(al.volta) : null;
@@ -111,7 +114,7 @@ function precoActualAlerta(al){
       const q = cotacaoVoo(c, o, d, ida, volta, al.classe || 'economica', pax);
       if(q.precoFinal < melhor) melhor = q.precoFinal;
     }
-    return melhor;
+    return {preco: melhor, real: false};
   };
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
   if(!base) return Promise.resolve(local());
@@ -120,7 +123,7 @@ function precoActualAlerta(al){
   if(al.volta) ps.set('volta', al.volta);
   return fetch(base + '/voos?' + ps)
     .then(r => r.ok ? r.json() : null)
-    .then(j => (j && j.ofertas && j.ofertas.length) ? j.ofertas[0].preco : local())
+    .then(j => (j && j.ofertas && j.ofertas.length) ? {preco: j.ofertas[0].preco, real: true} : local())
     .catch(local);
 }
 
@@ -149,9 +152,10 @@ async function verificarAlertas(){
     const ida = deISO(al.ida);
     al.expirado = !ida || ida < hoje;
     if(al.expirado) continue;
-    const preco = await precoActualAlerta(al);
-    if(preco == null || !isFinite(preco)) continue;
-    al.ultimoPreco = Math.round(preco);
+    const r = await precoActualAlerta(al);
+    if(!r || !isFinite(r.preco)) continue;
+    al.ultimoPreco = Math.round(r.preco);
+    al.ultimoPrecoReal = r.real;
     al.ultimaVerificacao = Date.now();
     /* avisa quando desce abaixo do limite, e volta a avisar só se descer ainda mais */
     if(al.ultimoPreco <= al.limite && (al.notificadoA == null || al.ultimoPreco < al.notificadoA)){
@@ -172,7 +176,7 @@ function urlDoAlerta(al){
 }
 
 function avisarAlerta(al){
-  const texto = `${rotuloAlerta(al)} está a ${al.ultimoPreco} €, abaixo do seu limite de ${al.limite} €`;
+  const texto = `${rotuloAlerta(al)} está a ${al.ultimoPrecoReal ? '' : '≈ '}${al.ultimoPreco} €${al.ultimoPrecoReal ? '' : ' (estimativa)'}, abaixo do seu limite de ${al.limite} €`;
   const zona = document.getElementById('avisos');
   if(zona){
     const el = document.createElement('div');
@@ -211,7 +215,7 @@ function desenharPainelAlertas(){
           <div class="alerta-rota">${rotuloAlerta(al)}</div>
           <div class="alerta-detalhe">${al.ida}${al.volta ? ' a ' + al.volta : ' (só ida)'} · avisar abaixo de ${al.limite} €${
             al.expirado ? ' · <strong>expirado</strong>'
-            : (al.ultimoPreco != null ? ` · agora: <strong class="${al.ultimoPreco <= al.limite ? 'abaixo' : ''}">${al.ultimoPreco} €</strong>` : '')
+            : (al.ultimoPreco != null ? ` · agora: <strong class="${al.ultimoPreco <= al.limite ? 'abaixo' : ''}">${al.ultimoPrecoReal ? '' : '≈ '}${al.ultimoPreco} €</strong>${al.ultimoPrecoReal ? '' : ' <span class=\"selo-estimativa\" title=\"Sem tarifa real registada para esta data: valor estimado\">estimativa</span>'}` : '')
           }</div>
         </div>
         <button type="button" class="alerta-abrir" data-id="${al.id}" ${al.expirado ? 'disabled' : ''}>Ver</button>

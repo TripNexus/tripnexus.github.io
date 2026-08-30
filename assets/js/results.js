@@ -157,7 +157,7 @@ function desenharResultados(){
         ${pacotes.length ? `
         <div class="bloco" data-aba="viagem">
           <h3 class="bloco-titulo">📦 Pacotes (voo + alojamento)</h3>
-          <p class="bloco-sub">Comparados com a reserva em separado: ${euros(somaPacote)}.</p>
+          <p class="nota-estimativa"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para comparação com a reserva em separado (${euros(somaPacote)}). O preço exacto do pacote é confirmado no site do parceiro.</span></p>
           ${pacotes.map((q, idx) => {
             const dif = q.precoFinal - somaPacote;
             const recomendado = dif <= 0;
@@ -166,15 +166,15 @@ function desenharResultados(){
               ${recomendado ? '<span class="pacote-selo">Recomendado</span>' : (margemPequena ? '<span class="pacote-selo">Margem pequena</span>' : '')}
               <div class="pacote-cabeca">${iconeParceiro(q.parceiro)}
                 <div><div class="pacote-nome">${PARCEIROS[q.parceiro].nome}</div><div class="pacote-inclui">${q.inclui}</div>${etiquetaCupao(q.cupao)}</div>
-                <div class="pacote-preco">${q.cupao ? `<div class="preco-antes">${euros(q.preco)}</div>` : ''}<div class="preco-actual">${euros(q.precoFinal)}</div>
-                  <a class="btn-ver" href="${ligacaoParceiro(q.parceiro, {...ctx, seccao:'pacote'})}" target="_blank" rel="noopener">Ver pacote</a></div>
+                <div class="pacote-preco">${q.cupao ? `<div class="preco-antes">≈ ${euros(q.preco)}</div>` : ''}<div class="preco-actual preco-estimado">≈ ${euros(q.precoFinal)}</div>
+                  <a class="btn-ver" href="${ligacaoParceiro(q.parceiro, {...ctx, seccao:'pacote'})}" target="_blank" rel="noopener">Ver preço real</a></div>
               </div>
               <div class="pacote-compara">${
                 recomendado
-                  ? `<span class="poupa">Poupa ${euros(-dif)}</span> face às reservas em separado. É a melhor opção.`
+                  ? `<span class="poupa">Poupa ${euros(-dif)}</span> face às reservas em separado, nesta estimativa. Pode ser a melhor opção.`
                   : margemPequena
-                    ? `Fica apenas <span class="acima">${euros(dif)} acima (${Math.round(dif / somaPacote * 100)} %)</span>. Pode compensar pela comodidade e protecção de pacote.`
-                    : `Fica ${euros(dif)} acima das reservas em separado.`
+                    ? `Fica apenas <span class="acima">${euros(dif)} acima (${Math.round(dif / somaPacote * 100)} %)</span>, nesta estimativa. Pode compensar pela comodidade e protecção de pacote.`
+                    : `Fica ${euros(dif)} acima das reservas em separado, nesta estimativa.`
               }</div>
             </div>`;
           }).join('')}
