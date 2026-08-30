@@ -364,11 +364,18 @@ const TRANSPORTES_DESTINO = {
       {nome:'Roma 72H', preco:22.00, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
       {nome:'CIS, bilhete semanal integrado', preco:29.00, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']}
     ]},
-  'Milão': {operador:'ATM', url:'https://www.atm.it/en/Pages/default.aspx', actualizado:'2026-01-01',
+  /* O url que aqui estava (a raiz do sítio) respondia 200 mas não é o
+     tarifário; a ligação certa, achada na própria raiz, tem
+     «bypublictransport» no fim e faltava. Lida a 30/08/2026: o simples e o
+     diário não mudaram, mas o passe de 3 dias estava a 13,00 e são 15,50, e
+     faltava o carnet de 10 viagens. */
+  'Milão': {operador:'ATM', url:'https://www.atm.it/en/ViaggiaConNoi/Biglietti/Pages/HowtogetaroundMilanbypublictransport.aspx', actualizado:'2026-08-30', fonte:'https://www.atm.it/en/ViaggiaConNoi/Biglietti/Pages/HowtogetaroundMilanbypublictransport.aspx',
+    nota:'Quem tiver um passe carregado paga mais 1,70 € para o troço Malpensa/Rho Fiera. O bilhete serve metro, autocarro, eléctrico e as linhas S da Trenord dentro da cidade (zonas Mi1-Mi3).',
     bilhetes:[
-      {nome:'Bilhete urbano (90 minutos)', preco:2.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'Passe 24 h', preco:7.60, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'Passe 3 dias', preco:13.00, unidade:'3 dias', quando:'chegada', modos:['metro','autocarro','eletrico']}
+      {nome:'Bilhete urbano (90 minutos)', preco:2.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Carnet de 10 viagens', preco:19.50, unidade:'10 viagens', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Passe 24 h', preco:7.60, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Passe 3 dias', preco:15.50, unidade:'3 dias', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']}
     ]},
   /* Lido na BVG a 24/08/2026. O simples AB estava a 3,80 e são 4,00; o
      diário estava a 10,60 e são 11,20. O passe de 7 dias e a tarifa do
@@ -454,11 +461,18 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 24 h do Tokyo Metro', preco:700, unidade:'24 h', quando:'chegada', modos:['metro']},
       {nome:'Passe 1 dia, Tokyo Metro + Toei Subway', preco:1100, unidade:'dia', quando:'chegada', modos:['metro']}
     ]},
-  'Singapura': {operador:'SMRT / SBS Transit', url:'https://www.lta.gov.sg/', actualizado:'2026-01-01', moeda:'SGD',
-    nota:'Pague por aproximação com o cartão bancário: não é preciso comprar cartão de transporte.',
+  /* Lido na SBS Transit a 30/08/2026: a tabela «with effect from 27
+     December 2025», ainda em vigor. O «1,50 SGD, viagem típica» que aqui
+     estava era uma média inventada; a tarifa é por distância, como em Hong
+     Kong e Deli, e o bilhete de papel avulso deixou de se vender em 2022.
+     O preço do Singapore Tourist Pass não veio confirmado em nenhuma fonte
+     oficial (só em sítios de afiliados), por isso sai sem número. */
+  'Singapura': {operador:'SMRT / SBS Transit', url:'https://www.sbstransit.com.sg/fares-and-concessions', actualizado:'2026-08-30', fonte:'https://www.sbstransit.com.sg/fares-and-concessions', moeda:'SGD',
+    nota:'A tarifa é por distância, paga com EZ-Link, SimplyGo ou cartão bancário sem contacto: quanto mais anda, mais paga, dentro destes escalões. Não há bilhete de papel avulso desde 2022. O Singapore Tourist Pass existe e dá viagens ilimitadas, mas não confirmámos o preço em nenhuma fonte oficial: veja-o antes de comprar.',
     bilhetes:[
-      {nome:'Viagem típica de metro', preco:1.50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
-      {nome:'Singapore Tourist Pass, 1 dia', preco:22.00, unidade:'dia', quando:'chegada', modos:['metro','autocarro']}
+      {nome:'Metro/LRT, até 3,2 km (fora de hora de ponta)', preco:1.28, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Metro/LRT, 5,3 a 6,2 km (fora de hora de ponta)', preco:1.59, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Metro/LRT, 10,3 a 11,2 km (fora de hora de ponta)', preco:1.90, unidade:'viagem', quando:'chegada', modos:['metro']}
     ]},
   /* O istanbulkart.istanbul é uma aplicação de página única que daqui não
      desenha nada, nem em navegador real, e a página de tarifário da İETT
@@ -774,7 +788,7 @@ const TRANSPORTES_DESTINO = {
      diz «exclusively for Malaysians only». Fica o Kembara, que é o que a
      página dá como aberto a todos e feito para turistas. */
   'Kuala Lumpur': {operador:'Rapid KL', url:'https://myrapid.com.my/bus-train/rapid-kl/integrated-fare-table/', actualizado:'2026-08-30', fonte:'https://myrapid.com.my/our-products/rapidkembarapass/', moeda:'MYR',
-    nota:'O preço do passe não inclui o cartão Touch ’n Go, que se compra à parte e tem de ter saldo mínimo. A tarifa avulsa depende da distância: veja a tabela do operador.',
+    nota:'O preço do passe não inclui o cartão Touch ’n Go, que se compra à parte e tem de ter saldo mínimo. A tarifa avulsa depende da distância: veja a tabela do operador. Há um passe mais barato, o Rapid Kota, mas é só para residentes com bilhete de identidade malaio; não entra aqui por não estar aberto a quem visita.',
     bilhetes:[
       {nome:'Rapid Kembara, 1 dia (comboio e autocarro)', preco:25, unidade:'dia', quando:'chegada', modos:['metro','autocarro']},
       {nome:'Rapid Kembara, 3 dias (comboio e autocarro)', preco:55, unidade:'3 dias', quando:'chegada', modos:['metro','autocarro']}
