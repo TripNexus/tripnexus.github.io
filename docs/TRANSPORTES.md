@@ -177,15 +177,18 @@ nenhuma com data de conferência.
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | **51** | Amesterdão, Atenas, Barcelona, Berlim, Boston, Bruxelas, Budapeste, Copenhaga, Deli, Dubai, Dublin, Edimburgo, Estocolmo, Florença, Genebra, Hamburgo, Helsínquia, Hong Kong, Istambul, Kuala Lumpur, Lisboa, Londres, Los Angeles, Lyon, Málaga, Manchester, Melbourne, Miami, Montreal, Nova Iorque, Orlando, Palma de Maiorca, Paris, Porto, Praga, Rio de Janeiro, Roma, Salvador, São Francisco, São Paulo, Sydney, Tóquio, Toronto, Valência, Varsóvia, Veneza, Viena, Zurique (e Lisboa, Porto e Barcelona da ronda anterior) |
-| Com tarifas **por reconferir** | 3 | Madrid, Milão, Singapura |
+| Com tarifas **confirmadas** | **53** | Amesterdão, Atenas, Barcelona, Berlim, Boston, Bruxelas, Budapeste, Copenhaga, Deli, Dubai, Dublin, Edimburgo, Estocolmo, Florença, Genebra, Hamburgo, Helsínquia, Hong Kong, Istambul, Kuala Lumpur, Lisboa, Londres, Los Angeles, Lyon, Málaga, Manchester, Melbourne, Miami, Milão, Montreal, Nova Iorque, Orlando, Palma de Maiorca, Paris, Porto, Praga, Rio de Janeiro, Roma, Salvador, São Francisco, São Paulo, Singapura, Sydney, Tóquio, Toronto, Valência, Varsóvia, Veneza, Viena, Zurique (e Lisboa, Porto e Barcelona da ronda anterior) |
+| Com tarifas **por reconferir** | 1 | Madrid |
 | **Só operador**, sem valores | 24 | Sevilha, Frankfurt, Nápoles, Oslo, Munique, Funchal, Faro, Tenerife, Nice, Marselha, Cracóvia, Zagreb, Reiquiavique, Bogotá, Santiago, Cidade do Cabo, Auckland, Osaka, Banguecoque, Buenos Aires, Dubrovnik, Recife, Casablanca, Hanói |
 | **Sem operador** | 20 | Ponta Delgada, Ibiza, Santorini, Marraquexe, Cairo, Doha, Fortaleza, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia |
 
 Das 21 cidades que esta ronda foi buscar, **18 ficaram com preços**: doze
 que já cá estavam e seis que nem sequer apareciam na tabela. Uma passou a
 ter operador e ligação (Frankfurt) e duas ficaram como estavam, pelas
-razões que estão mais abaixo (Sevilha e Cidade do México).
+razões que estão mais abaixo (Sevilha e Cidade do México). Milão e
+Singapura, que tinham ficado de fora do âmbito dessa ronda, foram
+conferidas a seguir, a 30 de Agosto: ver a razão de cada correcção no
+histórico.
 
 ### Sobre os bloqueios: mudam de um dia para o outro
 
@@ -203,110 +206,8 @@ bloqueio, ao nível do sandbox e não da política de rede, que trava as
 páginas que montam os preços em JavaScript, mesmo nos sítios (MTA,
 Istanbulkart, EMT Palma) que já deixam o `curl` entrar.
 
-### Correcções em cidades que já cá estavam
-
-Todas lidas na página do operador.
-
-| Cidade | Estava | É | Nota |
-|---|---|---|---|
-| Lisboa | simples 1,85 € | **1,90 €** | |
-| Lisboa | 24 h 6,90 € | **7,25 €** | |
-| Lisboa | 24 h + CP 10,90 € | **11,40 €** | acrescentados o zapping, o cartão bancário e o diário com a Transtejo |
-| Barcelona | simples 2,65 € | **2,90 €** | |
-| Barcelona | T-casual 12,55 € | **13,00 €** | |
-| Barcelona | Hola Barcelona 48 h e 72 h | **retirados** | a página anuncia «a partir de 12,50 €» e não os separa por duração |
-| Budapeste | simples 450 Ft | **500 Ft** | |
-| Budapeste | 24 h 2 500 Ft | **2 750 Ft** | |
-| Budapeste | 72 h 5 500 Ft | **5 750 Ft** | |
-| Viena | simples 2,60 € | **3,20 €** | nova estrutura tarifária a 1 de Janeiro de 2026 |
-| Viena | 24 h 8,00 € | **10,20 €** | |
-| Viena | 72 h 17,10 € | **extinto** | os passes de 48 h e 72 h deixaram de existir |
-| Amesterdão | 24 h 9,00 € | **10,00 €** | |
-| Amesterdão | 72 h 21,00 € | **21,50 €** | acrescentados os de 48 h e 7 dias |
-| Amesterdão | Schiphol 5,90 € | **retirado** | é da NS, não do GVB |
-| Porto | Andante 24 Z2 4,80 € | **5,35 €** | endereço trocado: o antigo era a página do capital social, não o tarifário |
-| Porto | Z4 aeroporto 2,25 € | **2,30 €** | acrescentados o Andante 24 Z4 e os Andante Tour de 1 e 3 dias |
-| Berlim | simples AB 3,80 € | **4,00 €** | |
-| Berlim | diário AB 10,60 € | **11,20 €** | passe de 7 dias e tarifa do aeroporto retirados: não vêm nesta página |
-| Praga | 30 min 30 CZK | **39 CZK** | |
-| Praga | 90 min 40 CZK | **50 CZK** | |
-| Praga | 24 h 120 CZK | **150 CZK** | |
-| Praga | 72 h 330 CZK | **350 CZK** | |
-
-### Correcções da ronda em navegador, a 30 de Agosto
-
-Doze cidades que já tinham valores foram lidas pela primeira vez na página
-do operador. Nenhuma delas tinha data de conferência: todas diziam
-`2026-01-01`, que era o ano da tarifa e não o dia em que alguém foi ver.
-Exactamente o hábito que este documento existe para acabar.
-
-| Cidade | Estava | É | Nota |
-|---|---|---|---|
-| Paris | Ticket t+ 2,50 € | **2,55 €** | e passou a haver um segundo preço: 2,05 € no autocarro e eléctrico |
-| Paris | Navigo Jour 12,00 € | **12,30 €** | |
-| Paris | Navigo Semaine 31,60 € | **32,40 €** | |
-| Paris | CDG 2,50 € | **14,00 €** | a nota dizia «tarifa única, incluindo de e para os aeroportos»; era o erro mais caro da tabela |
-| Roma | Roma 24H 7,00 € | **8,50 €** | |
-| Roma | Roma 72H 18,00 € | **22,00 €** | acrescentados o de 48 h (15,00 €) e o semanal CIS (29,00 €) |
-| Roma | Leonardo Express 14,00 € | **retirado** | é da Trenitalia, não da ATAC |
-| Nova Iorque | metro 2,90 USD | **3,00 USD** | |
-| Nova Iorque | tecto semanal 34,80 USD | **35,00 USD** | acrescentado o do autocarro expresso (7,25 e tecto de 67) |
-| Nova Iorque | «OMNY ou MetroCard» | **só OMNY** | o MetroCard deixou de se vender a 1 de Janeiro de 2026 |
-| Nova Iorque | AirTrain JFK 11,15 USD | **retirado** | é da Port Authority, não da MTA |
-| Londres | tecto diário zonas 1–2 8,90 £ | **8,90 £** | não mexeu; acrescentados o tecto semanal (44,70) e o Day Travelcard (16,60) |
-| Londres | metro zona 1 2,90 £ | **retirado** | o «single fare finder» da TfL não chega a mostrar valores |
-| Londres | Elizabeth line Heathrow 12,80 £ | **retirado** | pela mesma razão |
-| Tóquio | passe 24 h 600 ¥ | **700 ¥** | |
-| Tóquio | Narita Express 3 070 ¥ | **retirado** | é da JR East; o operador passa a dizer só Tokyo Metro, que é o que se conferiu |
-| Istambul | viagem 27 ₺ | **46,20 ₺** | quase o dobro; lido no Metro İstanbul, que é quem os publica em HTML |
-| Istambul | cartão 130 ₺ e M11 54 ₺ | **retirados** | não vinham em nenhuma página do operador; ficam ditos sem número |
-
-E sete cidades que estavam em «só operador» passaram a ter preços, mais seis
-que nem sequer estavam na tabela:
-
-| Cidade | Estava | Agora |
-|---|---|---|
-| Valência | só operador | sencillo 1,50 € (zona A) e os passes SUMA T de 24, 48 e 72 h |
-| Palma de Maiorca | só operador | 2,00 € urbano, 5,00 € o aeroporto |
-| Estocolmo | só operador | simples 43 SEK, fecha a dúvida dos guias entre 42 e 43 |
-| Manchester | só operador | 2,00 £ o autocarro, tectos de 9,50 e 41,00 £ |
-| Hong Kong | só operador | Tourist Day Pass 75 HKD e a Airport Express a 120 |
-| Kuala Lumpur | só operador | Rapid Kembara 25 e 55 MYR (o Kota, mais barato, é só para malaios) |
-| Deli | só operador | tabela por distância e os cartões turísticos de 200 e 500 ₹ |
-| Málaga | **sem operador** | EMT Málaga: 1,40 €, e 4,00 € o aeroporto |
-| Lyon | **sem operador** | TCL: 2,10 € e os passes de 24, 48 e 72 h |
-| Helsínquia | **sem operador** | HSL: 3,30 € na aplicação, 10,60 € o dia |
-| Dubai | **sem operador** | RTA: nol Silver por zonas, 3,00 a 7,50 AED |
-| Melbourne | **sem operador** | PTV: 2,85 AUD as 2 h, e o eléctrico grátis no centro |
-| Frankfurt | **sem operador** | RMV: operador e ligação, ainda sem valores |
-
-Duas coisas dignas de nota, porque não são «o preço subiu»:
-
-**Lyon vem com data.** O guia tarifário que a TCL publica diz, na capa, «à
-partir du 1er septembre 2026», dois dias depois desta ronda. São as tarifas
-que vão entrar em vigor, e a nota da cidade di-lo por palavras, para que
-ninguém as leia como as de hoje.
-
-**Kuala Lumpur tem um passe que não serve.** O Rapid Kota custa 10 MYR ao
-dia contra os 25 do Kembara, e era o que se poria aqui se não se lesse a
-página até ao fim: diz «exclusively for Malaysians only». Um passe mais
-barato que o utilizador não pode comprar é pior do que passe nenhum.
-
-### Endereços partidos, que o utilizador via
-
-Sete ligações «Ver tarifário oficial» davam **404**. Um tarifário certo atrás
-de uma ligação morta não serve de nada, e nenhuma destas se via sem ir lá.
-
-| Cidade | Dava 404 | Agora |
-|---|---|---|
-| Porto | `metrodoporto.pt/pages/389` | `metrodoporto.pt/pages/357` |
-| Barcelona | `tmb.cat/pt/tarifas-metro-bus-barcelona` | `tmb.cat/en/barcelona-fares-metro-bus` |
-| Milão | `atm.it/…/SceltaBiglietto.aspx` | `atm.it/en/Pages/default.aspx` |
-| Berlim | `bvg.de/en/tickets-and-fares` | `bvg.de/en` |
-| Singapura | `lta.gov.sg/content/…` | `lta.gov.sg/` |
-| Munique | `mvv-muenchen.de/en/tickets-and-fares/` | `mvg.de` (é o MVG que opera a rede da cidade) |
-| Bogotá e Auckland | caminhos apanhados na sondagem | raízes confirmadas |
-| Porto | `metrodoporto.pt/pages/357` | `metrodoporto.pt/pages/287` (o antigo respondia 200 mas era a página do capital social, não o tarifário; ver a regra «200 não quer dizer página certa») |
+O registo cidade a cidade de todas as correcções feitas, com as datas e as
+razões, fica em [`TRANSPORTES-HISTORICO.md`](TRANSPORTES-HISTORICO.md).
 
 ### O que trava as que faltam
 
@@ -328,16 +229,24 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
   in our timetable information»: o RMV não publica tabela nenhuma, só
   calcula o percurso. Fica com operador e ligação, sem valores.
 - **Tarifas por distância, sem valor único**: MTR de Hong Kong, Rapid KL,
-  Delhi Metro, Tokyo Metro. Aqui não há bloqueio nenhum: há uma tabela
-  estação a estação, e pôr «a viagem custa X» seria inventar uma média.
-  Entram os títulos de preço fixo (passes, aeroporto) e a faixa de distância
-  fica dita na nota.
+  Delhi Metro, Tokyo Metro, SBS Transit de Singapura. Aqui não há bloqueio
+  nenhum: há uma tabela estação a estação ou por escalão de distância, e
+  pôr «a viagem custa X» seria inventar uma média. Entram os títulos de
+  preço fixo (passes, aeroporto) ou alguns escalões representativos, e a
+  faixa de distância fica dita na nota.
 - **Certificados que não validam** (não se desliga a verificação): Seoul
   Metro, Metro do Cairo.
 - **Cidades sem rede urbana formal** ou sem operador com sítio próprio:
   Ibiza, Phuket, Bali, Cancún, Sal, Praia, Luanda, Maputo.
+- **Página de procura filtrada, sem tabela**: CRTM de Madrid. O tarifário
+  não é uma tabela, é um formulário que só devolve mínimos agregados por
+  categoria: «Sencillos y 10 viajes» dá «desde 1,50 €» a juntar o bilhete
+  simples e o carnet de 10 viagens num único número, e «Billete turístico»
+  dá «desde 5 €» a juntar as durações de 1 a 7 dias. Não há como separar o
+  valor de cada bilhete sem simular os filtros um a um, e um mínimo
+  agregado não é o preço de nenhum bilhete em concreto. Fica **por
+  reconferir**, sem se carimbar uma data de hoje sobre números que não se
+  confirmaram um a um.
 
-As que continuam por reconferir (Madrid, Milão e Singapura) não estão
-nesta lista por bloqueio nenhum: ficaram de fora do âmbito desta ronda e
-esperam a próxima. O `--url` do `ferramentas/transportes.js` dá a lista
-pronta a colar.
+O `--url` do `ferramentas/transportes.js` dá a lista das que faltam,
+pronta a colar num navegador.
