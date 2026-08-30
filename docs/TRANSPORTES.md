@@ -143,17 +143,33 @@ Há operadores que respondem **403** ao `curl` (TfL, MTA, Île-de-France
 Mobilités, Tokyo Metro, TUSSAM): bloqueiam agentes automáticos. Esses ficam
 para uma ronda feita à mão, num navegador normal.
 
-## Estado em 24 de Agosto de 2026
+## Estado em 30 de Agosto de 2026
 
-95 cidades no site. Começámos o dia com 17 na tabela e nenhuma com data de
-conferência.
+95 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+nenhuma com data de conferência.
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas hoje** | **27** | Amesterdão, Atenas, Barcelona, Boston, Bruxelas, Budapeste, Copenhaga, Dublin, Edimburgo, Florença, Genebra, Hamburgo, Lisboa, Los Angeles, Miami, Montreal, Orlando, Rio de Janeiro, Salvador, São Francisco, São Paulo, Sydney, Toronto, Varsóvia, Veneza, Viena, Zurique |
-| Com tarifas **por reconferir** | 12 | Porto, Madrid, Paris, Londres, Roma, Milão, Berlim, Praga, Istambul, Nova Iorque, Tóquio, Singapura |
+| Com tarifas **confirmadas** | **30** | Amesterdão, Atenas, Barcelona, Berlim, Boston, Bruxelas, Budapeste, Copenhaga, Dublin, Edimburgo, Florença, Genebra, Hamburgo, Lisboa, Los Angeles, Miami, Montreal, Orlando, Porto, Praga, Rio de Janeiro, Salvador, São Francisco, São Paulo, Sydney, Toronto, Varsóvia, Veneza, Viena, Zurique |
+| Com tarifas **por reconferir** | 9 | Madrid, Paris, Londres, Roma, Milão, Istambul, Nova Iorque, Tóquio, Singapura |
 | **Só operador**, sem valores | 30 | Sevilha, Valência, Nápoles, Estocolmo, Oslo, Munique, Funchal, Faro, Tenerife, Palma de Maiorca, Nice, Marselha, Manchester, Cracóvia, Zagreb, Reiquiavique, Bogotá, Santiago, Cidade do Cabo, Auckland, Hong Kong, Osaka, Kuala Lumpur, Deli, Banguecoque, Buenos Aires, Dubrovnik, Recife, Casablanca, Hanói |
 | **Sem operador** | 26 | Ponta Delgada, Málaga, Ibiza, Lyon, Frankfurt, Santorini, Helsínquia, Marraquexe, Cairo, Dubai, Doha, Fortaleza, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Melbourne, Luanda, Maputo, Sal, Praia |
+
+### Sobre os bloqueios: mudam de um dia para o outro
+
+O acesso a partir desta caixa não é estável. Entre a ronda de 24 e a de 30
+de Agosto, sem nenhuma alteração de configuração, o MTA de Nova Iorque, o
+DPP de Praga, o Istanbulkart e a EMT Palma deixaram de recusar o `curl`. Foi
+assim que Porto, Berlim e Praga saíram da lista «por reconferir» nesta
+ronda: não porque se tenha destrancado nada de propósito, mas porque um
+operador que bloqueava ontem pode não bloquear hoje. Vale a pena voltar a
+tentar as bloqueadas a cada ronda, em vez de as dar por perdidas de vez.
+
+O que não mudou nesse intervalo foi o Chromium: continua com
+`ERR_CONNECTION_RESET`, com e sem proxy, exactamente como antes. É esse
+bloqueio, ao nível do sandbox e não da política de rede, que trava as
+páginas que montam os preços em JavaScript, mesmo nos sítios (MTA,
+Istanbulkart, EMT Palma) que já deixam o `curl` entrar.
 
 ### Correcções em cidades que já cá estavam
 
@@ -176,6 +192,14 @@ Todas lidas na página do operador.
 | Amesterdão | 24 h 9,00 € | **10,00 €** | |
 | Amesterdão | 72 h 21,00 € | **21,50 €** | acrescentados os de 48 h e 7 dias |
 | Amesterdão | Schiphol 5,90 € | **retirado** | é da NS, não do GVB |
+| Porto | Andante 24 Z2 4,80 € | **5,35 €** | endereço trocado: o antigo era a página do capital social, não o tarifário |
+| Porto | Z4 aeroporto 2,25 € | **2,30 €** | acrescentados o Andante 24 Z4 e os Andante Tour de 1 e 3 dias |
+| Berlim | simples AB 3,80 € | **4,00 €** | |
+| Berlim | diário AB 10,60 € | **11,20 €** | passe de 7 dias e tarifa do aeroporto retirados: não vêm nesta página |
+| Praga | 30 min 30 CZK | **39 CZK** | |
+| Praga | 90 min 40 CZK | **50 CZK** | |
+| Praga | 24 h 120 CZK | **150 CZK** | |
+| Praga | 72 h 330 CZK | **350 CZK** | |
 
 ### Endereços partidos, que o utilizador via
 
@@ -191,19 +215,22 @@ de uma ligação morta não serve de nada, e nenhuma destas se via sem ir lá.
 | Singapura | `lta.gov.sg/content/…` | `lta.gov.sg/` |
 | Munique | `mvv-muenchen.de/en/tickets-and-fares/` | `mvg.de` (é o MVG que opera a rede da cidade) |
 | Bogotá e Auckland | caminhos apanhados na sondagem | raízes confirmadas |
+| Porto | `metrodoporto.pt/pages/357` | `metrodoporto.pt/pages/287` (o antigo respondia 200 mas era a página do capital social, não o tarifário; ver a regra «200 não quer dizer página certa») |
 
-### O que trava as 56 que faltam
+### O que trava as que faltam
 
-Nada que se resolva a insistir:
+Nada que se resolva a insistir, e a fronteira muda de ronda para ronda (ver
+a nota acima sobre bloqueios instáveis):
 
-- **Páginas em JavaScript.** Sem Chromium não se lê o SL de Estocolmo, a
-  ATAC de Roma, o DPP de Praga, o Istanbulkart, a EMT Palma, a TfGM de
-  Manchester, o MTR de Hong Kong, o Rapid KL nem o Delhi Metro. Vêm sem
-  números.
-- **Operadores que recusam agentes automáticos** (403 ou ligação cortada):
-  TfL, MTA, Île-de-France Mobilités, Tokyo Metro, TUSSAM, HSL de
-  Helsínquia, TCL de Lyon, RMV de Frankfurt, EMT Málaga, RTA do Dubai,
-  Metro CDMX, PTV de Melbourne, Metrovalencia.
+- **Páginas em JavaScript**, mesmo quando o `curl` já entra: MTA de Nova
+  Iorque, Istanbulkart, EMT Palma, SL de Estocolmo, ATAC de Roma, TfGM de
+  Manchester, MTR de Hong Kong, Rapid KL, Delhi Metro. Vêm sem números
+  porque os preços só existem depois do JavaScript correr, e o Chromium
+  desta caixa continua bloqueado.
+- **Operadores que recusam o `curl`** (403 ou ligação cortada): TfL,
+  Île-de-France Mobilités, Tokyo Metro, TUSSAM, HSL de Helsínquia, TCL de
+  Lyon, RMV de Frankfurt, EMT Málaga, RTA do Dubai, Metro CDMX, PTV de
+  Melbourne, Metrovalencia.
 - **Certificados que não validam** (não se desliga a verificação): Seoul
   Metro, Metro do Cairo.
 - **Cidades sem rede urbana formal** ou sem operador com sítio próprio:

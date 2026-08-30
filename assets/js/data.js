@@ -374,13 +374,15 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 72 h', preco:21.50, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','barco']},
       {nome:'Passe 7 dias', preco:43.00, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico','barco']}
     ]},
-  'Praga': {operador:'DPP', url:'https://www.dpp.cz/en/fares', actualizado:'2026-01-01', moeda:'CZK',
+  /* Lido no DPP a 30/08/2026. Os quatro títulos estavam abaixo do real:
+     30 min 30 -> 39, 90 min 40 -> 50, 24 h 120 -> 150, 72 h 330 -> 350. */
+  'Praga': {operador:'DPP', url:'https://www.dpp.cz/en/fares/fare-pricelist', comprar:'https://www.dpp.cz/en/fares/fare-pricelist', actualizado:'2026-08-30', fonte:'https://www.dpp.cz/en/fares/fare-pricelist', moeda:'CZK',
     nota:'Um dos sistemas mais baratos da Europa. Valide o bilhete à entrada, nas máquinas amarelas.',
     bilhetes:[
-      {nome:'Bilhete de 30 minutos', preco:30, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
-      {nome:'Bilhete de 90 minutos', preco:40, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
-      {nome:'Passe 24 h', preco:120, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
-      {nome:'Passe 72 h', preco:330, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']}
+      {nome:'Bilhete de 30 minutos', preco:39, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Bilhete de 90 minutos', preco:50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
+      {nome:'Passe 24 h', preco:150, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
+      {nome:'Passe 72 h', preco:350, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']}
     ]},
   /* A Wiener Linien mudou a estrutura tarifária a 1 de Janeiro de 2026 e
      acabou com os passes de 48 h e de 72 h. A tabela ainda tinha o de 72 h
