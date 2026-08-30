@@ -6,7 +6,7 @@ Preencha as colunas a **negrito** e devolva a folha. Regras:
 - se um título já não existir, escreva «extinto» na última coluna;
 - se a página não for clara, deixe em branco: melhor vazio do que errado.
 
-## 1. Têm preços no site e estão por reconferir (10)
+## 1. Têm preços no site e estão por reconferir (9)
 
 Estas são as urgentes: o site está a mostrar estes números a quem o visita.
 
@@ -63,17 +63,6 @@ Abrir: <https://www.atm.it/en/Pages/default.aspx>
 | Bilhete urbano (90 minutos) | 2.2 EUR | por viagem | | |
 | Passe 24 h | 7.6 EUR | por 24 h | | |
 | Passe 3 dias | 13 EUR | por 3 dias | | |
-
-### Praga  ·  DPP
-
-Abrir: <https://www.dpp.cz/en/fares>
-
-| Título | Temos | Unidade | **É** | **Ainda existe?** |
-|---|---|---|---|---|
-| Bilhete de 30 minutos | 30 CZK | por viagem | | |
-| Bilhete de 90 minutos | 40 CZK | por viagem | | |
-| Passe 24 h | 120 CZK | por 24 h | | |
-| Passe 72 h | 330 CZK | por 72 h | | |
 
 ### Istambul  ·  İETT / Metro İstanbul
 
