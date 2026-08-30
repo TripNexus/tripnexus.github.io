@@ -142,21 +142,6 @@ function cotacoesAlojamento(cidade, ida, volta, pax, tipos){
   return resultado;
 }
 
-/* ── carro alugado ────────────────────────────────────────────── */
-function cotacoesCarro(cidade, ida, volta){
-  const dias = Math.max(1, Math.round((volta - ida) / 86400000));
-  return parceirosDe('carro').map(chave => {
-    const p = PARCEIROS[chave];
-    const r = semente('carro|' + chave + cidade.i + chaveData(ida));
-    const dia = (24 + r() * 34) * (cidade.c * 0.6 + 0.4) * p.fx * (0.8 + factorEpoca(ida) * 0.35);
-    const total = dia * dias;
-    const cupao = procurarCupao(chave, 'carro' + cidade.i + chaveData(ida), total);
-    const carros = ['Fiat 500 ou similar','VW Polo ou similar','Renault Clio ou similar','Opel Corsa ou similar'];
-    return {parceiro:chave, dias, preco:arred(total), cupao, precoFinal:arred(cupao ? cupao.depois : total),
-            descricao: carros[Math.floor(r()*carros.length)] + ' · seguro básico', porDia:arred(dia)};
-  }).sort((a,b) => a.precoFinal - b.precoFinal);
-}
-
 /* ── comboio / autocarro (ir por terra em vez de voar) ─────────
    ESTES PREÇOS ERAM INVENTADOS, e este era o último sítio do site onde
    ainda o eram. Saíam de uma fórmula por quilómetro (0,105 €/km no
@@ -367,23 +352,6 @@ function perfisTransporte(cidade, dias, pax){
   for(const p of perfis) p.maisBarato = p.total === min;
   return {perfis, moeda: t.moeda || 'EUR', operador: t.operador, url: t.url,
           ano: t.ano, nota: t.nota, cartao: t.cartao, dias, pessoas};
-}
-
-/* ── actividades ──────────────────────────────────────────────── */
-const NOMES_ACT = [
-  'Visita guiada ao centro histórico','Excursão de dia inteiro aos arredores',
-  'Bilhete sem filas para a atracção principal','Passeio gastronómico com provas',
-  'Cruzeiro panorâmico ao pôr-do-sol','Espectáculo tradicional com jantar'
-];
-function cotacoesActividades(cidade, pax){
-  const pessoas = pax.adultos + pax.criancas;
-  return parceirosDe('actividade').map((chave, idx) => {
-    const r = semente('act|' + chave + cidade.i);
-    const preco = (17 + r() * 46) * (cidade.c * 0.5 + 0.5) * PARCEIROS[chave].fx * pessoas;
-    const cupao = procurarCupao(chave, 'act' + cidade.i, preco);
-    return {parceiro:chave, preco:arred(preco), cupao, precoFinal:arred(cupao ? cupao.depois : preco),
-            descricao: NOMES_ACT[Math.floor(r() * NOMES_ACT.length)], pessoas};
-  }).sort((a,b) => a.precoFinal - b.precoFinal);
 }
 
 /* ── pacotes (voo + hotel, opcionalmente + carro) ─────────────── */

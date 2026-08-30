@@ -264,7 +264,7 @@ function desenharExploracao(){
       <h3 class="bloco-titulo">🗺 Destinos no mapa (preço por passageiro)</h3>
       <div id="mapa-explorar" class="mapa mapa-alto"></div>
     </div>
-    <p class="sub-seccao" style="margin:1.2rem 0 .3rem">Os 24 destinos mais baratos. Carregue num para ver a viagem completa.</p>
+    <p class="nota-estimativa" style="margin:1.2rem 0 .3rem"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para ordenar os destinos por preço. Escolha um para ver as tarifas reais dessa rota.</span></p>
     <div class="grelha-ofertas" id="grelha-explorar">
       ${top.map(x => `
         <div class="cartao-oferta">
@@ -274,7 +274,7 @@ function desenharExploracao(){
           </div>
           <div class="oferta-corpo">
             <span class="oferta-datas">✈ ${o.n} → ${x.cidade.n} · ${x.cidade.p}</span>
-            <div class="oferta-precos"><span class="oferta-agora">${euros(x.preco)}</span><span class="oferta-tipico" style="text-decoration:none">${idaVolta ? 'ida e volta' : 'só ida'}</span></div>
+            <div class="oferta-precos"><span class="oferta-agora">≈ ${euros(x.preco)}</span><span class="oferta-tipico" style="text-decoration:none">${idaVolta ? 'ida e volta' : 'só ida'}</span></div>
             <button type="button" class="btn-oferta" data-iata="${x.cidade.i}">Ver esta viagem</button>
           </div>
         </div>`).join('')}
@@ -297,8 +297,8 @@ function desenharMapaExplorar(o, destinos, idaVolta){
   destinos.forEach(x => {
     pontos.push([x.cidade.la, x.cidade.lo]);
     const m = L.marker([x.cidade.la, x.cidade.lo]).addTo(mapaExplorar);
-    m.bindTooltip(`${euros(x.preco)}`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
-    m.bindPopup(`<strong>${x.cidade.f} ${x.cidade.n}</strong><br>${euros(x.preco)} ${idaVolta ? 'ida e volta' : 'só ida'}<br><em>carregue para ver a viagem</em>`);
+    m.bindTooltip(`≈ ${euros(x.preco)}`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
+    m.bindPopup(`<strong>${x.cidade.f} ${x.cidade.n}</strong><br>≈ ${euros(x.preco)} ${idaVolta ? 'ida e volta' : 'só ida'} · estimativa<br><em>carregue para ver a viagem</em>`);
     m.on('click', () => escolherDestinoExplorado(x.cidade));
   });
   mapaExplorar.fitBounds(L.latLngBounds(pontos).pad(0.15));
