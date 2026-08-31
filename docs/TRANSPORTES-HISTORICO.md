@@ -176,3 +176,34 @@ inalcançáveis ou bloqueados ao `curl`, sem alternativa achada), Mumbai
 achou nele) e Cidade do México e Cancún, ambas em domínios `.gob.mx`
 bloqueados pela política de rede deste ambiente, não pelos próprios
 sítios.
+
+### Ronda das cidades sem aeroporto, a 31 de Agosto: 11 cidades confirmadas, 2 só operador
+
+As viagens nacionais para cidades portuguesas sem aeroporto comercial
+(`semAeroporto:true`, ver `data.js`) tornaram Coimbra, Aveiro, Guarda e
+Covilhã pesquisáveis como destino, e a mesma ronda foi atrás de mais oito
+cidades no mesmo caso: os distritos-capital do continente sem aeroporto
+(Braga, Castelo Branco, Évora, Leiria, Portalegre, Santarém, Setúbal, Viana
+do Castelo) e Beja, que tem aeródromo mas sem voos comerciais regulares.
+Todas as datas de confirmação ficaram em 2026-08-31.
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Coimbra | não estava na tabela | entrou confirmada: bilhete de motorista 2,00 €; passe intermodal (SMTUC + Metro Mondego) de 1, 3 e 7 dias, 5,00 a 15,00 €, tarifário em vigor desde 30/04/2026 (SMTUC) |
+| Aveiro | não estava na tabela | entrou confirmada: tarifa de motorista 2,00 €, ida e volta zona 1 2,05 €, bilhete turístico 1 e 2 dias 10,00 e 18,00 € (Aveiro Bus); preços de 2024, mantidos sem aumento em 2026 |
+| Guarda | não estava na tabela | entrou confirmada: bilhete simples 1,30 €, pré-comprados (10 bilhetes) 10,00 € (ETUG); tarifário aprovado em 23/12/2025 |
+| Covilhã | não estava na tabela | entrou confirmada: bilhete de bordo urbano 1,85 €, bilhete diário pré-comprado 4,35 € (Covilhã Mobilidade); a página oficial monta a tabela em JavaScript, os valores vieram do cartaz tarifário 2026 em PDF, da mesma empresa (Transdev) |
+| Braga | não estava na tabela | entrou confirmada: bilhete de bordo (1 coroa) 1,55 €, pré-comprado digital 0,75 €, bilhete turístico 1 e 3 dias 3,35 e 8,05 € (TUB); tarifário em vigor desde 21/02/2026 |
+| Viana do Castelo | não estava na tabela | entrou confirmada: bilhete a bordo 1,50 €, pré-comprado 1,00 €, bilhete de 1 e 3 dias 5,00 e 12,00 € (TUViana); serviço muito recente, cobrança física só arrancou a 13/04/2026, sem página de tarifário dedicada ainda achada, só o comunicado oficial da câmara |
+| Leiria | não estava na tabela | entrou confirmada: tarifa de motorista 1,60 €, bilhete diário 3,65 €, pré-comprados (10 viagens) 9,50 € (Mobilis/Rodoviária do Lis); preços em vigor desde 1/01/2026 |
+| Santarém | não estava na tabela | entrou confirmada: tarifa de motorista 1,70 €, pré-comprado 1,20 €, passe urbano mensal 10,25 € (Scalabus/RodoLeziria); preços em vigor desde 1/01/2026 |
+| Setúbal | não estava na tabela | entrou confirmada: tarifa de bordo, Linha Próxima, 1,30 €, pré-pago 0,85 €, passe Navegante Municipal 30,00 € (Carris Metropolitana); a página oficial de tarifários ainda mostra os valores de 2025, o aumento de 2026 confirmado numa notícia da Lisboa Para Pessoas, com fonte na AMT |
+| Castelo Branco | não estava na tabela | entrou confirmada: bilhete simples 1,10 €, bilhete diário 3,85 €, pré-comprado (10 viagens) 9,70 € (Mobicab) |
+| Évora | não estava na tabela | entrou confirmada: bilhete de motorista 1,55 €, tarifa diária LinhAzul 1,20 €, pré-comprado (10 viagens) 6,10 €, passe urbano mensal 9,90 € (Trevo/E-BUS); valores da deliberação camarária de 17/12/2025, em vigor desde 1/01/2026 |
+| Portalegre | não estava na tabela | entrou como «só operador»: SMAT. A página de tarifários diz «Atualizado em 19/01/2023»; sem confirmação de que os valores ainda são os actuais, fica sem preço |
+| Beja | não estava na tabela | entrou como «só operador»: Rodoviária do Alentejo. O único tarifário urbano achado está datado de julho de 2025, um ano antes do aumento nacional de 2026 (2,28 %, AMT) que todos os outros operadores portugueses já reflectiam; sem versão 2026 confirmada, fica sem preço |
+
+Bragança, Vila Real e Viseu, que passaram a cidades normais (com aeroporto
+e código IATA real: BGC, VRL, VSE) nesta mesma ronda por terem serviço
+aéreo comercial PSO da Sevenair, ficaram **sem operador**: ainda não se foi
+à procura de quem opera os transportes públicos locais nestas três.

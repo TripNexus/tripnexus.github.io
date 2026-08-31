@@ -221,17 +221,74 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
   tecto, no mesmo espírito do fare cap de Auckland, sem inventar o preço
   do bilhete.
 
-## Estado em 31 de Agosto de 2026, depois da ronda por curl
+## Estado em 31 de Agosto de 2026, depois da ronda das cidades sem aeroporto
 
-95 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+111 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | **67** | Amesterdão, Atenas, Barcelona, Berlim, Bogotá, Boston, Bruxelas, Budapeste, Buenos Aires, Casablanca, Cidade do Cabo, Copenhaga, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Frankfurt, Funchal, Genebra, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Lisboa, Londres, Los Angeles, Lyon, Málaga, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Nova Iorque, Orlando, Osaka, Palma de Maiorca, Paris, Porto, Praga, Recife, Rio de Janeiro, Roma, Salvador, Santiago, Santorini, São Francisco, São Paulo, Singapura, Sydney, Tenerife, Tóquio, Toronto, Valência, Varsóvia, Veneza, Viena, Zagreb, Zurique |
+| Com tarifas **confirmadas** | **78** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nova Iorque, Orlando, Osaka, Palma de Maiorca, Paris, Porto, Praga, Recife, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 1 | Madrid |
-| **Só operador**, sem valores | 13 | Sevilha, Nápoles, Oslo, Faro, Nice, Reiquiavique, Auckland, Banguecoque, Hanói, Fortaleza, Ponta Delgada, Marraquexe, Doha |
-| **Sem operador** | 14 | Cairo, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia |
+| **Só operador**, sem valores | 15 | Sevilha, Nápoles, Oslo, Faro, Nice, Reiquiavique, Auckland, Banguecoque, Hanói, Fortaleza, Ponta Delgada, Marraquexe, Doha, Portalegre, Beja |
+| **Sem operador** | 17 | Cairo, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia, Bragança, Vila Real, Viseu |
+
+### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
+
+Esta ronda não veio da revisão mensal: veio de uma funcionalidade nova, as
+viagens nacionais para cidades portuguesas sem aeroporto comercial (ver o
+`semAeroporto:true` em `data.js` e o histórico de features do site). Passar
+Coimbra, Aveiro, Guarda e Covilhã a poderem ser pesquisadas como destino
+tornava-as candidatas naturais a esta tabela, e a pesquisa ficou por
+descobrir mais oito cidades no mesmo caso (os distritos-capital do
+continente sem aeroporto: Braga, Castelo Branco, Évora, Leiria, Portalegre,
+Santarém, Setúbal, Viana do Castelo) mais Beja, que tem aeródromo mas sem
+voos comerciais regulares.
+
+- **Uma cidade pode ter várias empresas com o mesmo tarifário.** Leiria e
+  Santarém são operadas por marcas diferentes (Mobilis/Rodoviária do Lis;
+  Scalabus/RodoLeziria) do mesmo grupo (Rodoviária do Tejo), cada uma com o
+  seu PDF «Aumento tarifário 2026» publicado a 29/12/2025. Achá-los exigiu
+  descobrir primeiro o grupo por trás da marca visível na cidade: o
+  operador que aparece nos autocarros nem sempre é quem publica o
+  tarifário.
+- **Um `http://` pode estar bloqueado onde o `https://` do mesmo domínio não
+  está.** O `www.rodotejo.pt` recusou os PDFs por `http://` com
+  `403 Host not in allowlist`; o mesmo caminho por `https://` respondeu
+  200. Vale a pena tentar as duas variantes antes de desistir de um
+  endereço.
+- **Um PDF de tarifário pode vir com as colunas fora de ordem no texto
+  simples.** O `smtuc.pt` e o `covilhamobilidade.pt` (via Transdev) davam
+  nomes de título e depois todos os preços em bloco, sem correspondência
+  óbvia entre uns e outros no texto corrido. Resolveu-se lendo o PDF com
+  `pymupdf` em modo `blocks`, que devolve a posição (x, y) de cada bloco de
+  texto: ordenar por posição reconstrói a tabela como está desenhada na
+  página, não como o extractor de texto a devolveu.
+  ```
+  page.get_text('blocks')  # cada bloco vem com (x0, y0, x1, y1, texto)
+  ```
+- **A data escrita no documento não é o mesmo que a data em que o preço
+  está em vigor.** O tarifário urbano de Beja que se achou está datado de
+  julho de 2025; todos os outros operadores portugueses subiram os preços
+  a 1 de Janeiro de 2026 (taxa nacional de actualização de 2,28 %, fixada
+  pela AMT). Sem uma versão 2026 confirmada para Beja, e sem forma de saber
+  se o aumento nacional já lá está reflectido, a cidade ficou em «só
+  operador»: mostrar os números de 2025 como actuais arriscava um valor
+  errado. O mesmo aconteceu a Portalegre, cuja página diz no rodapé
+  «Atualizado em 19/01/2023».
+- **Um aumento de tarifa pode ser anunciado antes de a página do operador o
+  reflectir.** O `backoffice.carrismetropolitana.pt` (Setúbal) ainda
+  mostrava os valores de 2025 (1,25 € / 4,50 €); a confirmação do aumento
+  para 2026 (1,30 € / 4,65 €) veio de uma notícia da Lisboa Para Pessoas,
+  publicada a 30/12/2025, com fonte no regulador (AMT) e nas próprias
+  operadoras. Uma notícia datada, com números específicos e a citar a
+  fonte regulatória, é mais fiável aqui do que a página institucional que
+  ainda não foi actualizada.
+- **Das treze cidades desta ronda, onze ficaram com preço confirmado**: as
+  quatro da Fase 1 (Coimbra, Aveiro, Guarda, Covilhã) mais sete dos oito
+  distritos-capital novos (Braga, Castelo Branco, Évora, Leiria, Santarém,
+  Setúbal, Viana do Castelo); só Beja e Portalegre, pelas razões acima,
+  ficaram em «só operador».
 
 Das 21 cidades que a ronda em navegador foi buscar, **18 ficaram com
 preços**: doze que já cá estavam e seis que nem sequer apareciam na
