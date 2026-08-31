@@ -55,7 +55,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css?v=81">
+<link rel="stylesheet" href="assets/css/style.css?v=82">
 </head>
 <body>
 
@@ -342,32 +342,32 @@
   window.TRIPNEXUS_MARKER = '552141';   /* marker de afiliado Travelpayouts */
   /* mesma versão dos ?v= dos ficheiros: no diagnóstico, denuncia um
      navegador a servir ficheiros antigos de cache */
-  window.TRIPNEXUS_VERSAO = 'v81';
+  window.TRIPNEXUS_VERSAO = 'v82';
   /* Widget de actividades do Klook: mesma ideia. O «city_id» é trocado pelo
      da cidade pesquisada (tabela ACTIVIDADES_KLOOK em live.js). Vazio:
      mantém-se o bloco anterior. */
   window.TRIPNEXUS_ACTIVIDADES_WIDGET_SRC = 'https://tpwdgt.com/content?currency=EUR&trs=552141&shmarker=752935.actividades&locale=en&city_id=705748&category=2&amount=3&powered_by=true&campaign_id=137&promo_id=4497';
 </script>
-<script src="assets/js/analytics.js?v=81"></script>
-<script src="assets/js/data.js?v=81"></script>
-<script src="assets/js/engine.js?v=81"></script>
-<script src="assets/js/calendar.js?v=81"></script>
-<script src="assets/js/live.js?v=81"></script>
-<script src="assets/js/alertas.js?v=81"></script>
-<script src="assets/js/roteiro.js?v=81"></script>
+<script src="assets/js/analytics.js?v=82"></script>
+<script src="assets/js/data.js?v=82"></script>
+<script src="assets/js/engine.js?v=82"></script>
+<script src="assets/js/calendar.js?v=82"></script>
+<script src="assets/js/live.js?v=82"></script>
+<script src="assets/js/alertas.js?v=82"></script>
+<script src="assets/js/roteiro.js?v=82"></script>
 <!-- O que era o app.js, por assunto. São scripts normais, não módulos:
      partilham o âmbito global, e a ordem conta. Declarações primeiro,
      ligações depois: o ui.js declara o ESTADO e as peças que os outros usam,
      o form.js liga os controlos e pinta o estado inicial (o que já chama o
      search.js), e o app.js arranca a página. Ver o cabeçalho de cada um. -->
-<script src="assets/js/ui.js?v=81"></script>
-<script src="assets/js/blocks.js?v=81"></script>
-<script src="assets/js/filters.js?v=81"></script>
-<script src="assets/js/results.js?v=81"></script>
-<script src="assets/js/offers.js?v=81"></script>
-<script src="assets/js/search.js?v=81"></script>
-<script src="assets/js/form.js?v=81"></script>
-<script src="assets/js/app.js?v=81"></script>
+<script src="assets/js/ui.js?v=82"></script>
+<script src="assets/js/blocks.js?v=82"></script>
+<script src="assets/js/filters.js?v=82"></script>
+<script src="assets/js/results.js?v=82"></script>
+<script src="assets/js/offers.js?v=82"></script>
+<script src="assets/js/search.js?v=82"></script>
+<script src="assets/js/form.js?v=82"></script>
+<script src="assets/js/app.js?v=82"></script>
 <script>
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
