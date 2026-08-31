@@ -14,7 +14,7 @@
 const TP = 'https://api.travelpayouts.com';
 /* Actualize sempre que mexer neste ficheiro: /estado devolve este valor e é
    assim que se percebe, de fora, se o Worker publicado é o do repositório. */
-const VERSAO_WORKER = 'v72';
+const VERSAO_WORKER = 'v73';
 
 function resposta(corpo, estado, semCache){
   return new Response(JSON.stringify(corpo), {
@@ -1065,6 +1065,61 @@ async function ofertas(url, env){
                    base:'mediana dos preços diários da rota neste mês'});
 }
 
+/* /explorar: «para onde ir?», com tarifas reais.
+
+   Esta vista mostrava os 24 destinos mais baratos a partir da origem,
+   calculados pelo motor local (`cotacaoVoo`, gerador com semente) para as
+   95 cidades do site: nenhum desses preços vinha de lado nenhum.
+
+   Ao contrário de `/ofertas` (que compara o mês inteiro e usa a mediana
+   como termo de comparação), aqui as datas são as que o utilizador
+   escolheu na pesquisa — o mesmo princípio do `/voos`, «as datas são as do
+   utilizador» — por isso usa-se o mesmo `prices_for_dates`, só que uma vez
+   por destino, guardando apenas o mais barato de cada um.
+
+   Um Worker no plano gratuito da Cloudflare tem um limite de sub-pedidos
+   por invocação (50, à data desta escrita); com 95 cidades no site, uma
+   só chamada não chega com margem confortável. Por isso este endpoint
+   aceita `destinos` em qualquer quantidade e é o `search.js` que reparte
+   as 95 em grupos mais pequenos e chama isto várias vezes em paralelo,
+   juntando os resultados do lado do site — nenhuma cidade fica de fora,
+   e nenhuma invocação se aproxima do limite. */
+async function explorar(url, env){
+  const q = url.searchParams;
+  const origem = q.get('origem');
+  const ida = q.get('ida');
+  if(!origem || !ida) return resposta({erro:'faltam parâmetros: origem, ida'}, 400);
+  const token = obterToken(env);
+  if(!token) return resposta({destinos:[], nota:'TP_TOKEN não definido no Worker (ver /estado)'}, 200, true);
+  const destinos = String(q.get('destinos') || '').split(',').map(s => s.trim().toUpperCase())
+    .filter(Boolean).slice(0, 40);
+  if(!destinos.length) return resposta({erro:'parâmetro necessário: destinos (códigos IATA separados por vírgula)'}, 400);
+  const volta = q.get('volta') || '';
+  const pax = Math.max(1, (+q.get('adultos') || 1) + (+q.get('criancas') || 0) * 0.75);
+
+  const porDestino = async destino => {
+    const ps = new URLSearchParams({
+      origin: origem, destination: destino, departure_at: ida,
+      currency: 'eur', sorting: 'price', unique: 'false', limit: '5',
+      one_way: volta ? 'false' : 'true', token
+    });
+    if(volta) ps.set('return_at', volta);
+    try{
+      const r = await fetch(TP + '/aviasales/v3/prices_for_dates?' + ps,
+        {headers:{'X-Access-Token': token}, cf:{cacheTtl: 10800, cacheEverything: true}});
+      if(!r.ok) return null;
+      const j = await r.json();
+      if(!j || j.success === false || !Array.isArray(j.data) || !j.data.length) return null;
+      const barato = j.data.reduce((m, v) => (+v.price < +m.price ? v : m));
+      if(!(+barato.price > 0)) return null;
+      return {destino, preco: Math.round(+barato.price * pax)};
+    }catch(e){ return null; }
+  };
+
+  const lista = (await Promise.all(destinos.map(porDestino))).filter(Boolean);
+  return resposta({destinos: lista, moeda:'EUR', fonte:'travelpayouts'});
+}
+
 /* /hoteis: preços reais de hotéis via SerpApi (motor google_hotels), com
    chave gratuita (o plano actual dá 250 pesquisas/mês; o número exacto
    que resta vem em /estado). Falha sempre de forma graciosa
@@ -1259,6 +1314,7 @@ export default {
       if(url.pathname === '/voos') return await voos(url, env);
       if(url.pathname === '/calendario') return await calendario(url, env);
       if(url.pathname === '/ofertas') return await ofertas(url, env);
+      if(url.pathname === '/explorar') return await explorar(url, env);
       if(url.pathname === '/hoteis') return await hoteis(url, env);
       if(url.pathname === '/casas') return await casas(url, env);
       if(url.pathname === '/carros') return await carros(url, env);
@@ -1266,7 +1322,7 @@ export default {
       if(url.pathname === '/assistente') return await assistente(pedido, env);
       if(url.pathname === '/modelos') return await modelos(env);
       if(url.pathname === '/estado') return await estado(env, url);
-      return resposta({erro:'rotas disponíveis: /voos, /calendario, /ofertas, /hoteis, /casas, /carros, /actividades, /assistente, /modelos, /estado'}, 404);
+      return resposta({erro:'rotas disponíveis: /voos, /calendario, /ofertas, /explorar, /hoteis, /casas, /carros, /actividades, /assistente, /modelos, /estado'}, 404);
     }catch(e){
       return resposta({erro: String(e.message || e)}, 500);
     }
