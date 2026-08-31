@@ -786,6 +786,108 @@ const TRANSPORTES_DESTINO = {
      tarifários é montada em JavaScript, sem preços no HTML estático. */
   'Ponta Delgada': {operador:'AzoresBus', url:'https://azoresbus.pt/Tariff', actualizado:'2026-08-31', fonte:'https://azoresbus.pt/Tariff',
     bilhetes:[]},
+  /* Ronda das cidades sem aeroporto acrescentadas a este ficheiro (ver
+     CIDADES): lidas todas a 31/08/2026. */
+  'Coimbra': {operador:'SMTUC', url:'https://www.smtuc.pt/tabela-tarifaria/', actualizado:'2026-08-31', fonte:'https://www.smtuc.pt/wp-content/uploads/2026/04/TARIFARIO-2026-versao-30-abril-2026-.pdf',
+    nota:'O passe intermodal de 1 dia cobre a rede SMTUC e o Metro Mondego; o preço «municipal» vale só dentro do concelho de Coimbra.',
+    bilhetes:[
+      {nome:'Bilhete de motorista (avulso)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Passe intermodal, 1 dia (municipal)', preco:5.00, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Passe intermodal, 3 dias (municipal)', preco:10.00, unidade:'3 dias', quando:'chegada', modos:['autocarro']},
+      {nome:'Passe intermodal, 7 dias (municipal)', preco:15.00, unidade:'7 dias', quando:'chegada', modos:['autocarro']}
+    ]},
+  'Aveiro': {operador:'Aveiro Bus', url:'https://www.aveirobus.pt/gama-tarifaria', actualizado:'2026-08-31', fonte:'https://www.aveirobus.pt/gama-tarifaria',
+    nota:'Preços em vigor desde agosto de 2024, mantidos sem aumento em 2026 por decisão da câmara. O Bilhete Turístico dá viagens ilimitadas no circuito urbano e fluvial.',
+    bilhetes:[
+      {nome:'Tarifa de motorista, circuito urbano (avulso)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete ida e volta, circuito urbano (zona 1)', preco:2.05, unidade:'ida e volta', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete turístico, 1 dia', preco:10.00, unidade:'dia', quando:'chegada', modos:['autocarro','barco']},
+      {nome:'Bilhete turístico, 2 dias', preco:18.00, unidade:'2 dias', quando:'chegada', modos:['autocarro','barco']}
+    ]},
+  'Guarda': {operador:'ETUG (Empresa Transportes Urbanos da Guarda)', url:'https://transportes.mun-guarda.pt/Tarifario', actualizado:'2026-08-31', fonte:'https://transportes.mun-guarda.pt/Tarifario',
+    nota:'Tarifário aprovado em reunião do executivo municipal de 23/12/2025, em vigor em 2026.',
+    bilhetes:[
+      {nome:'Bilhete simples (avulso)', preco:1.30, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Pré-comprados (10 bilhetes)', preco:10.00, unidade:'10 viagens', quando:'antes', modos:['autocarro']}
+    ]},
+  /* A página oficial (covilhamobilidade.pt) monta a tabela em JavaScript,
+     sem preços no HTML estático; o cartaz tarifário 2026 em PDF, da mesma
+     empresa (Transdev), tem os mesmos títulos com texto a sério. */
+  'Covilhã': {operador:'Covilhã Mobilidade', url:'https://covilhamobilidade.pt/Tariff', actualizado:'2026-08-31', fonte:'https://www.transdev.pt/sites/default/files/downloads/covilhamobilidade-tarifariocartaz-a4-2026_001.pdf',
+    bilhetes:[
+      {nome:'Bilhete de bordo urbano (avulso)', preco:1.85, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete diário urbano pré-comprado', preco:4.35, unidade:'dia', quando:'antes', modos:['autocarro']}
+    ]},
+  'Braga': {operador:'TUB (Transportes Urbanos de Braga)', url:'https://tub.pt/templates/frontoffice/commerce/pdf/tarifario_2026.pdf', actualizado:'2026-08-31', fonte:'https://tub.pt/templates/frontoffice/commerce/pdf/tarifario_2026.pdf',
+    nota:'Em vigor desde 21/02/2026. «Coroa» é a zona: 1 coroa cobre o essencial da cidade.',
+    bilhetes:[
+      {nome:'Bilhete de bordo (1 coroa)', preco:1.55, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete pré-comprado digital (1 coroa)', preco:0.75, unidade:'viagem', quando:'antes', modos:['autocarro']},
+      {nome:'Bilhete turístico, 1 dia', preco:3.35, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete turístico, 3 dias', preco:8.05, unidade:'3 dias', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* O TUViana é muito recente (cobrança física só arrancou a 13/04/2026):
+     não achámos uma página de tarifário dedicada, só o comunicado oficial
+     da câmara, com os valores no próprio texto. */
+  'Viana do Castelo': {operador:'TUViana (Transportes Urbanos de Viana)', url:'https://www.cm-viana-castelo.pt/areas-de-atividade/comunicacao/noticias/noticia/tuviana-transportes-urbanos-de-viana-iniciam-cobranca-fisica-a-13-de-abril', actualizado:'2026-08-31', fonte:'https://www.cm-viana-castelo.pt/areas-de-atividade/comunicacao/noticias/noticia/tuviana-transportes-urbanos-de-viana-iniciam-cobranca-fisica-a-13-de-abril',
+    bilhetes:[
+      {nome:'Bilhete a bordo', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete pré-comprado', preco:1.00, unidade:'viagem', quando:'antes', modos:['autocarro']},
+      {nome:'Bilhete, 1 dia', preco:5.00, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete, 3 dias', preco:12.00, unidade:'3 dias', quando:'chegada', modos:['autocarro']}
+    ]},
+  'Leiria': {operador:'Mobilis (Rodoviária do Lis)', url:'https://www.rodoviariadolis.pt/precos-titulos/', actualizado:'2026-08-31', fonte:'https://www.rodoviariadolis.pt/wp-content/uploads/RDL_Informa_Aumento-tarifário-2026_Mobilis.pdf',
+    nota:'Preços em vigor desde 1/01/2026, publicados a 29/12/2025.',
+    bilhetes:[
+      {nome:'Tarifa de motorista (avulso)', preco:1.60, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete diário', preco:3.65, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Pré-comprados (mín. 10 viagens)', preco:9.50, unidade:'10 viagens', quando:'antes', modos:['autocarro']}
+    ]},
+  'Santarém': {operador:'Scalabus (RodoLeziria)', url:'https://www.scalabus.pt/?opc=tarifa', actualizado:'2026-08-31', fonte:'https://www.rodotejo.pt/wp-content/uploads/RLZ_Informa_Aumento-tarifário-2026_scalabus-1.pdf',
+    nota:'Preços em vigor desde 1/01/2026, publicados a 29/12/2025.',
+    bilhetes:[
+      {nome:'Tarifa de motorista (avulso)', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Pré-comprado (mín. 10 viagens)', preco:1.20, unidade:'viagem', quando:'antes', modos:['autocarro']},
+      {nome:'Passe urbano mensal', preco:10.25, unidade:'mês', quando:'antes', modos:['autocarro']}
+    ]},
+  /* Setúbal é servida pela Carris Metropolitana (zona «Linha Próxima»,
+     tarifa 1). A própria página de tarifários ainda mostra os valores de
+     2025 (1,25 € / 4,50 €); o aumento de 2026 está confirmado num artigo
+     da Lisboa Para Pessoas, publicado a 30/12/2025, com fonte no regulador
+     (AMT, taxa de actualização de 2,28 %) e nas operadoras. */
+  'Setúbal': {operador:'Carris Metropolitana', url:'https://backoffice.carrismetropolitana.pt/tarifarios/', actualizado:'2026-08-31', fonte:'https://lisboaparapessoas.pt/2025/12/30/transportes-2026-lisboa/',
+    nota:'A tarifa de bordo da zona «Linha Próxima» subiu de 1,25 € para 1,30 € em 2026; o pré-pago (zapping) não subiu. Os passes Navegante cobrem toda a Área Metropolitana de Lisboa, não só Setúbal.',
+    bilhetes:[
+      {nome:'Tarifa de bordo, Linha Próxima (avulso)', preco:1.30, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Navegante pré-pago, Linha Próxima', preco:0.85, unidade:'viagem', quando:'antes', modos:['autocarro']},
+      {nome:'Passe Navegante Municipal', preco:30.00, unidade:'mês', quando:'antes', modos:['autocarro']}
+    ]},
+  'Castelo Branco': {operador:'Mobicab', url:'https://mobicab.pt/tarifarios/', actualizado:'2026-08-31', fonte:'https://mobicab.pt/tarifarios/',
+    bilhetes:[
+      {nome:'Bilhete simples (avulso)', preco:1.10, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete diário', preco:3.85, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Pré-comprado, 10 viagens', preco:9.70, unidade:'10 viagens', quando:'antes', modos:['autocarro']}
+    ]},
+  /* A página de tarifários da SMAT diz, no fundo, «Atualizado em
+     19/01/2023»: um preço com quase quatro anos não passa no crivo deste
+     site. Fica só o operador, à espera de alguém confirmar o actual. */
+  'Portalegre': {operador:'SMAT (Serviços Municipalizados de Águas e Transportes de Portalegre)', url:'https://www.cm-portalegre.pt/municipes/servicos-municipalizados/transportes/tarifarios/', actualizado:'2026-08-31', fonte:'https://www.cm-portalegre.pt/municipes/servicos-municipalizados/transportes/tarifarios/',
+    bilhetes:[]},
+  'Évora': {operador:'Trevo (E-BUS)', url:'https://www.trevo.com.pt/', actualizado:'2026-08-31', fonte:'https://www.cm-evora.pt/wp-content/uploads/2025/12/5-Certidao-ponto-10.3-RPC-17-12-2025.pdf',
+    nota:'Valores da deliberação camarária de 17/12/2025, em vigor desde 1/01/2026. A LinhAzul é a linha turística do centro histórico.',
+    bilhetes:[
+      {nome:'Bilhete de motorista (avulso)', preco:1.55, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Tarifa diária LinhAzul', preco:1.20, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Pré-comprado, 10 viagens', preco:6.10, unidade:'10 viagens', quando:'antes', modos:['autocarro']},
+      {nome:'Passe urbano mensal', preco:9.90, unidade:'mês', quando:'antes', modos:['autocarro']}
+    ]},
+  /* O único tarifário urbano que achámos está datado de julho de 2025, e
+     todos os outros operadores portugueses subiram os preços em Janeiro
+     de 2026 (taxa nacional de actualização, 2,28 %). Sem uma versão 2026
+     confirmada, mostrar aqueles números como actuais seria arriscar um
+     valor errado: melhor vazio do que errado. */
+  'Beja': {operador:'Rodoviária do Alentejo', url:'https://cm-beja.pt/pt/menu/521/transportes-urbanos-e-transportes-a-pedido--taxis-coletivos.aspx', actualizado:'2026-08-31', fonte:'https://cm-beja.pt/pt/menu/521/transportes-urbanos-e-transportes-a-pedido--taxis-coletivos.aspx',
+    bilhetes:[]},
   /* Lido a 31/08/2026: o bilhete avulso é calculado por uma calculadora de
      tarifas (linha, origem e destino), sem preço fixo nenhum, tal como o
      bilhete simples de Madrid; a nota di-lo. Os passes têm preço fixo. */
