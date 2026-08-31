@@ -572,7 +572,13 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete do aeroporto (linha A)', preco:4.00, unidade:'viagem', quando:'chegada', modos:['autocarro','aeroporto']},
       {nome:'Recarga de 10 viagens', preco:5.00, unidade:'10 viagens', quando:'chegada', modos:['autocarro']}
     ]},
-  'Nápoles': {operador:'ANM', url:'https://www.anm.it/index.php?option=com_content&task=view&id=1344', actualizado:'2026-08-24', fonte:'https://www.anm.it/index.php?option=com_content&task=view&id=1344',
+  /* O url antigo (task=view&id=1344) já não existe: o site da ANM mudou
+     para um portal Salesforce («anm.it/s/…») que monta tudo em JavaScript,
+     sem preços na página estática. As tarifas de Nápoles são geridas pelo
+     consórcio regional UnicoCampania, cujo site também não mostrou preço
+     nenhum ao `curl` (o achador só encontrou páginas de assinaturas
+     anuais). Verificado a 31/08/2026. */
+  'Nápoles': {operador:'ANM', url:'https://www.anm.it/s/biglietti-e-abbonamenti', actualizado:'2026-08-31', fonte:'https://www.anm.it/s/biglietti-e-abbonamenti',
     bilhetes:[]},
   /* Lido na SL a 30/08/2026, nas três sub-páginas de «Visitor tickets».
      Resolve a contradição que a ronda anterior apanhou nos guias, que davam
@@ -603,8 +609,17 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* O endereço da MVV que aqui estava dava 404. O MVG é quem opera a
      rede dentro de Munique e o sítio responde. */
-  'Munique': {operador:'MVG', url:'https://www.mvg.de/', actualizado:'2026-08-24', fonte:'https://www.mvg.de/',
-    bilhetes:[]},
+  /* Lida a 31/08/2026. Há também a Streifenkarte (10 tiras, 18,70 €, 1 a 2
+     tiras por viagem consoante a distância), mas fica de fora por ser mais
+     difícil de explicar sem inventar uma equivalência; os bilhetes e o
+     diário «a partir de» já dão a ideia do custo para quem visita. */
+  'Munique': {operador:'MVG', url:'https://www.mvg.de/abos-tickets/einzel-und-tageskarten.html', actualizado:'2026-08-31', fonte:'https://www.mvg.de/abos-tickets/einzel-und-tageskarten.html',
+    nota:'O preço do bilhete e do diário depende das zonas atravessadas; o valor aqui é o «a partir de», para a zona central (M). Cobre metro, autocarro e eléctrico.',
+    bilhetes:[
+      {nome:'Einzelfahrkarte Kurzstrecke (até 4 paragens)', preco:2.10, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Einzelfahrkarte (a partir de)', preco:2.70, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Tageskarte (a partir de)', preco:7.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']}
+    ]},
   /* Frankfurt não estava na tabela: passa a ter operador e ligação, ainda
      sem valores. O RMV não publica o preço do simples nem do diário em
      lado nenhum do sítio: as páginas dos dois títulos dizem, à letra,
@@ -613,9 +628,19 @@ const TRANSPORTES_DESTINO = {
      30/08/2026, é o do Deutschland-Ticket, que é subscrição mensal e não
      serve a quem passa lá três dias: fica dito na nota, sem entrar na
      conta da viagem. */
-  'Frankfurt': {operador:'RMV', url:'https://www.rmv.de/c/en/tickets', actualizado:'2026-08-30', fonte:'https://www.rmv.de/c/en/tickets/your-ticket/tickets-overview/single-tickets/single-ticket',
-    nota:'O RMV só diz o preço do bilhete depois de saber o percurso: introduza a origem e o destino no planeador do operador. O Deutschland-Ticket, que cobre todos os transportes regionais da Alemanha, custa 63 € por mês e só se vende por subscrição.',
-    bilhetes:[]},
+  /* A nota anterior dizia que o RMV só dava o preço através do planeador de
+     percursos; lendo com mais cuidado, a 31/08/2026, a mesma página tinha
+     mais abaixo uma excepção: a tarifa própria de Frankfurt (zona 5000),
+     com preços fixos para quem não sai da cidade. Fora dessa zona continua
+     a ser preciso o planeador, e a nota di-lo. */
+  'Frankfurt': {operador:'RMV', url:'https://www.rmv.de/c/en/tickets', actualizado:'2026-08-31', fonte:'https://www.rmv.de/c/en/tickets/your-ticket/tickets-overview/single-tickets/single-ticket',
+    nota:'Tarifa própria da cidade (zona 5000). Para viagens que saiam de Frankfurt, incluindo o aeroporto, o preço já não é fixo: introduza o percurso no planeador do operador. O Deutschland-Ticket, que cobre todos os transportes regionais da Alemanha, custa 63 € por mês e só se vende por subscrição.',
+    bilhetes:[
+      {nome:'Kurzstrecke (viagem curta)', preco:2.35, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Einzelfahrt (bilhete simples)', preco:3.80, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'Tageskarte (diário)', preco:7.75, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
+      {nome:'FrankfurtCard, 1 dia (com aeroporto e descontos turísticos)', preco:13.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']}
+    ]},
   /* Lida a tabela oficial do ZVV a 24/08/2026, 2.ª classe, adulto. A
      cidade de Zurique é a zona 110, que conta como 2 zonas. */
   'Zurique': {operador:'ZVV', url:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/single-tickets.html', comprar:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/24h-tickets.html', actualizado:'2026-08-24', fonte:'https://www.zvv.ch/en/travelcards-and-tickets/tickets/24h-tickets.html', moeda:'CHF',
@@ -704,12 +729,38 @@ const TRANSPORTES_DESTINO = {
       {nome:'myki Money, tecto ao fim-de-semana e feriados', preco:4.00, unidade:'dia', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
       {nome:'myki Pass de 7 dias (zonas 1+2)', preco:28.50, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']}
     ]},
-  'Funchal': {operador:'Horários do Funchal', url:'https://www.horariosdofunchal.pt/', actualizado:'2026-08-24', fonte:'https://www.horariosdofunchal.pt/',
-    bilhetes:[]},
+  /* A Horários do Funchal aponta para o tarifário comum a toda a Madeira, a
+     TIIM (GIRO), que é onde os preços estão mesmo. Lida a 31/08/2026: os
+     bilhetes normais têm dois valores (municipal | intermunicipal), mas o
+     que serve quem visita é o Bilhete Regional Turístico, sem esse limite. O
+     tiim.pt respondeu sem o certificado intermédio ao `curl` (a ligação
+     completa-se na mesma, só falha a verificação estrita); num navegador
+     normal costuma passar sem aviso. */
+  'Funchal': {operador:'Horários do Funchal / TIIM', url:'https://tiim.pt/index.php/tarifarios/bilhetes', actualizado:'2026-08-31', fonte:'https://tiim.pt/index.php/tarifarios/bilhetes',
+    nota:'O Bilhete de Bordo tem dois preços consoante o percurso ficar dentro do concelho (municipal) ou passar para outro (intermunicipal); o Regional Turístico não tem essa distinção e cobre toda a Madeira, aerobus incluído.',
+    bilhetes:[
+      {nome:'Bilhete de bordo (avulso, no veículo)', preco:2.05, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete Regional Turístico, 24 h', preco:13.75, unidade:'24 h', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete Regional Turístico, 3 dias', preco:23.00, unidade:'3 dias', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete Regional Turístico, 7 dias', preco:36.00, unidade:'7 dias', quando:'chegada', modos:['autocarro']}
+    ]},
   'Faro': {operador:'Vamus Algarve', url:'https://www.vamusalgarve.pt/', actualizado:'2026-08-24', fonte:'https://www.vamusalgarve.pt/',
     bilhetes:[]},
-  'Tenerife': {operador:'TITSA', url:'https://www.titsa.com/index.php/en/', actualizado:'2026-08-24', fonte:'https://www.titsa.com/index.php/en/',
+  /* Não estava na tabela. A AzoresBus (Vale do Ave Açores) tomou conta de
+     toda a rede de autocarros de São Miguel a 1 de Setembro de 2025,
+     substituindo três operadores antigos; achada a 31/08/2026. A página de
+     tarifários é montada em JavaScript, sem preços no HTML estático. */
+  'Ponta Delgada': {operador:'AzoresBus', url:'https://azoresbus.pt/Tariff', actualizado:'2026-08-31', fonte:'https://azoresbus.pt/Tariff',
     bilhetes:[]},
+  /* Lido a 31/08/2026: o bilhete avulso é calculado por uma calculadora de
+     tarifas (linha, origem e destino), sem preço fixo nenhum, tal como o
+     bilhete simples de Madrid; a nota di-lo. Os passes têm preço fixo. */
+  'Tenerife': {operador:'TITSA', url:'https://www.titsa.com/index.php/en/your-buses/fares-and-discounts', actualizado:'2026-08-31', fonte:'https://www.titsa.com/index.php/en/your-buses/fares-and-discounts',
+    nota:'O bilhete avulso depende da linha e do percurso, calculado numa ferramenta própria do operador; os passes cobrem autocarro e eléctrico em toda a ilha. É preciso um cartão Ten+ (2 €, à parte) para os carregar.',
+    bilhetes:[
+      {nome:'Day Travelcard (Ten+), 24 h', preco:10.00, unidade:'24 h', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'7 Days Travelcard (Ten+), 7 dias', preco:50.00, unidade:'7 dias', quando:'chegada', modos:['autocarro','eletrico']}
+    ]},
   /* Lido na EMT Palma a 30/08/2026, em navegador: a página monta a tabela
      em JavaScript e por isso vinha vazia às rondas anteriores. São as
      tarifas ordinárias, pagas a bordo. A targeta ciutadana é para
@@ -723,9 +774,17 @@ const TRANSPORTES_DESTINO = {
     ]},
   'Nice': {operador:"Lignes d'Azur", url:'https://www.lignesdazur.com/', actualizado:'2026-08-24', fonte:'https://www.lignesdazur.com/',
     bilhetes:[]},
-  'Marselha': {operador:'RTM', url:'https://www.rtm.fr/tarifs', actualizado:'2026-08-24', fonte:'https://www.rtm.fr/tarifs',
-    nota:'A página do operador monta os preços num configurador; escolha o título para ver o valor.',
-    bilhetes:[]},
+  /* Lida a 31/08/2026: a página filtra por 160 produtos espalhados por 5
+     páginas, sem URL fixo por título. Achados o bilhete avulso e o carnet de
+     10; o CityPass turístico de 24/48/72 h existe (visto no catálogo), mas
+     só apareceu com o preço de criança (6-12 anos): sem o preço de adulto
+     confirmado, fica de fora. */
+  'Marselha': {operador:'RTM', url:'https://www.rtm.fr/tarifs', actualizado:'2026-08-31', fonte:'https://www.rtm.fr/tarifs?page=2',
+    nota:'Há também um CityPass turístico de 24, 48 e 72 horas, mas só se confirmou o preço da versão de criança (6-12 anos); por isso não entra aqui. Cobre autocarro, metro, eléctrico e o ferry do Vieux-Port.',
+    bilhetes:[
+      {nome:'Carte 1 voyage', preco:1.70, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Carte 10 voyages (carnet)', preco:15.00, unidade:'10 viagens', quando:'chegada', modos:['metro','autocarro','eletrico']}
+    ]},
   /* Lyon não estava na tabela. O sítio da TCL só mostra «a partir de»
      porque o preço varia com as zonas, mas o operador publica o guia
      tarifário completo em PDF, e é de lá que vem isto (páginas 18 e 19),
@@ -753,20 +812,49 @@ const TRANSPORTES_DESTINO = {
       {nome:'Tecto diário, autocarro e eléctrico', preco:9.50, unidade:'dia', quando:'chegada', modos:['autocarro','eletrico']},
       {nome:'Tecto semanal, autocarro e eléctrico', preco:41.00, unidade:'semana', quando:'chegada', modos:['autocarro','eletrico']}
     ]},
-  'Cracóvia': {operador:'MPK Kraków', url:'https://mpk.krakow.pl/', actualizado:'2026-08-24', fonte:'https://mpk.krakow.pl/', moeda:'PLN',
-    bilhetes:[]},
-  'Zagreb': {operador:'ZET', url:'https://www.zet.hr/', actualizado:'2026-08-24', fonte:'https://www.zet.hr/',
-    bilhetes:[]},
+  'Cracóvia': {operador:'MPK Kraków', url:'https://mpk.krakow.pl/en/kmk-tickets', actualizado:'2026-08-31', fonte:'https://mpk.krakow.pl/en/kmk-tickets', moeda:'PLN',
+    nota:'A zona I cobre o centro; a I+II+III chega aos arredores. O bilhete de 24 h da zona I é mais barato do que o das três zonas juntas.',
+    bilhetes:[
+      {nome:'Bilhete de 30 minutos ou viagem única', preco:6.00, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Bilhete de 24 h, zona I', preco:20.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Bilhete de 72 h, zonas I+II+III', preco:55.00, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','eletrico']}
+    ]},
+  'Zagreb': {operador:'ZET', url:'https://www.zet.hr/cijene-prodaja-i-placanje/cijene-karata-grad-zagreb/400', actualizado:'2026-08-31', fonte:'https://www.zet.hr/cijene-prodaja-i-placanje/cijene-karata-grad-zagreb/400',
+    nota:'Comprado ao condutor custa mais: o bilhete de 90 minutos, por exemplo, sobe de 1,33 € para 1,99 €. Os valores aqui são os de pré-compra (máquina, aplicação ou quiosque).',
+    bilhetes:[
+      {nome:'Bilhete de 90 minutos', preco:1.33, unidade:'viagem', quando:'antes', modos:['autocarro','eletrico']},
+      {nome:'Bilhete diário', preco:3.98, unidade:'24 h', quando:'antes', modos:['autocarro','eletrico']},
+      {nome:'Bilhete de 3 dias', preco:9.29, unidade:'3 dias', quando:'antes', modos:['autocarro','eletrico']}
+    ]},
   'Reiquiavique': {operador:'Strætó', url:'https://straeto.is/', actualizado:'2026-08-24', fonte:'https://straeto.is/', moeda:'ISK',
     bilhetes:[]},
-  'Bogotá': {operador:'TransMilenio', url:'https://www.transmilenio.gov.co/', actualizado:'2026-08-24', fonte:'https://www.transmilenio.gov.co/', moeda:'COP',
-    bilhetes:[]},
-  'Santiago': {operador:'Red Movilidad', url:'https://www.red.cl/', actualizado:'2026-08-24', fonte:'https://www.red.cl/', moeda:'CLP',
-    bilhetes:[]},
-  'Cidade do Cabo': {operador:'MyCiTi', url:'https://www.myciti.org.za/en/myconnect-fares/pay-as-you-go/', actualizado:'2026-08-24', fonte:'https://www.myciti.org.za/en/myconnect-fares/pay-as-you-go/', moeda:'ZAR',
-    nota:'A tarifa depende da distância: a página do operador tem uma calculadora.',
-    bilhetes:[]},
-  'Auckland': {operador:'Auckland Transport', url:'https://at.govt.nz/', actualizado:'2026-08-24', fonte:'https://at.govt.nz/', moeda:'NZD',
+  'Bogotá': {operador:'TransMilenio', url:'https://www.transmilenio.gov.co/viaje-en-transmi/medios-de-pago/tarifas-del-sistema-transmilenio', actualizado:'2026-08-31', fonte:'https://www.transmilenio.gov.co/viaje-en-transmi/medios-de-pago/tarifas-del-sistema-transmilenio',
+    moeda:'COP', nota:'Tarifa única, sem zonas, o dia inteiro. É preciso o cartão tullave (8.000 COP à parte) para viajar.',
+    bilhetes:[
+      {nome:'TransMilenio / TransMiZonal / TransMiCable', preco:3550, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']}
+    ]},
+  'Santiago': {operador:'Red Movilidad', url:'https://www.red.cl/tarifas-y-recargas/conoce-las-tarifas/', actualizado:'2026-08-31', fonte:'https://www.red.cl/tarifas-y-recargas/conoce-las-tarifas/', moeda:'CLP',
+    nota:'O metro muda de preço consoante a hora: 735 CLP fora de horas (6h-7h e 20h45-23h), 815 CLP em horário valle (o resto do dia e fins-de-semana, valor usado aqui) e 895 CLP nas horas de ponta (7h-9h e 18h-20h). O autocarro é sempre 795 CLP. Precisa do cartão bip! para pagar.',
+    bilhetes:[
+      {nome:'Autocarro', preco:795, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Metro (horário valle)', preco:815, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Lido a 31/08/2026: a calculadora referida na nota anterior tinha, mais
+     abaixo na mesma página, a tabela completa por escalão de distância.
+     Entram três escalões, tarifa Mover fora de hora de ponta (a mais
+     barata das quatro combinações possíveis). */
+  'Cidade do Cabo': {operador:'MyCiTi', url:'https://www.myciti.org.za/en/myconnect-fares/pay-as-you-go/', actualizado:'2026-08-31', fonte:'https://www.myciti.org.za/en/myconnect-fares/pay-as-you-go/', moeda:'ZAR',
+    nota:'Tarifa por distância, com cartão myconnect pré-carregado (Mover). Fora da hora de ponta (06:45-08:00 e 16:15-17:30 em dias úteis) é mais barato; aos fins-de-semana é sempre este preço mais baixo. Sem carregar um pacote Mover, paga-se a tarifa Standard, mais cara.',
+    bilhetes:[
+      {nome:'0 a 5 km', preco:15.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'10 a 20 km', preco:25.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Mais de 60 km', preco:46.00, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Lido a 31/08/2026: a tarifa é por zona atravessada, mas a tabela por
+     zona está numa imagem/widget, não em texto. Achado real e sem número
+     inventado: o tecto de gasto (fare cap), esse sim em texto simples. */
+  'Auckland': {operador:'Auckland Transport', url:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', actualizado:'2026-08-31', fonte:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', moeda:'NZD',
+    nota:'A tarifa é por zonas atravessadas (até 4), e a tabela por zona não veio em texto simples. O que se confirmou foi o tecto de gasto: no máximo 20 NZD por dia a pagar por contactless, ou 50 NZD por 7 dias com o cartão AT HOP.',
     bilhetes:[]},
   /* Lido no MTR a 30/08/2026. A tarifa normal do metro é por distância,
      estação a estação, e o operador não publica nenhum valor único que se
@@ -780,8 +868,16 @@ const TRANSPORTES_DESTINO = {
       {nome:'Airport Express, aeroporto ↔ Hong Kong (Octopus ou cartão bancário)', preco:120, unidade:'viagem', quando:'chegada', modos:['comboio','aeroporto']},
       {nome:'Airport Express, aeroporto ↔ Hong Kong, ida e volta', preco:215, unidade:'viagem', quando:'chegada', modos:['comboio','aeroporto']}
     ]},
-  'Osaka': {operador:'Osaka Metro', url:'https://subway.osakametro.co.jp/', actualizado:'2026-08-24', fonte:'https://subway.osakametro.co.jp/', moeda:'JPY',
-    bilhetes:[]},
+  /* Lido a 31/08/2026: tarifa por distância, como Hong Kong, Deli e Tóquio.
+     Entram três escalões representativos; a faixa completa (cinco
+     escalões, de 190 a 390 ienes) fica dita na nota. */
+  'Osaka': {operador:'Osaka Metro', url:'https://subway.osakametro.co.jp/guide/fare/fare/price.php', actualizado:'2026-08-31', fonte:'https://subway.osakametro.co.jp/guide/fare/fare/price.php', moeda:'JPY',
+    nota:'A tarifa é por distância, com cartão IC (ICOCA): de 190 ienes até 3 km a 390 ienes acima de 19 km, em cinco escalões.',
+    bilhetes:[
+      {nome:'Até 3 km', preco:190, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'7 a 13 km', preco:290, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Acima de 19 km', preco:390, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
   /* Lido no Rapid KL a 30/08/2026. A tarifa avulsa é por distância e o
      operador só a publica em tabelas em imagem, estação a estação: não
      entra. O passe Rapid Kota (10 e 25 RM) também não, porque a página
@@ -804,7 +900,9 @@ const TRANSPORTES_DESTINO = {
       {nome:'Cartão turístico, 1 dia (com caução)', preco:200, unidade:'dia', quando:'chegada', modos:['metro']},
       {nome:'Cartão turístico, 3 dias (com caução)', preco:500, unidade:'3 dias', quando:'chegada', modos:['metro']}
     ]},
-  'Banguecoque': {operador:'BTS SkyTrain', url:'https://www.bts.co.th/', actualizado:'2026-08-24', fonte:'https://www.bts.co.th/', moeda:'THB',
+  /* A página é um formulário de procura por estação (origem/destino), sem
+     tabela nenhuma na página estática. Verificado a 31/08/2026. */
+  'Banguecoque': {operador:'BTS SkyTrain', url:'https://www.bts.co.th/', actualizado:'2026-08-31', fonte:'https://www.bts.co.th/', moeda:'THB',
     bilhetes:[]},
   /* Dubai não estava na tabela. Lido na RTA a 30/08/2026. É por zonas (são
      sete), e o preço depende de quantas atravessa, por isso ficam as três
@@ -836,15 +934,48 @@ const TRANSPORTES_DESTINO = {
     bilhetes:[
       {nome:'Metrô, uma viagem', preco:4.10, unidade:'viagem', quando:'chegada', modos:['metro']}
     ]},
-  'Buenos Aires': {operador:'Subte (Buenos Aires Ciudad)', url:'https://buenosaires.gob.ar/subte', actualizado:'2026-08-24', fonte:'https://buenosaires.gob.ar/subte', moeda:'ARS',
-    bilhetes:[]},
-  'Dubrovnik': {operador:'Libertas Dubrovnik', url:'https://www.libertasdubrovnik.hr/', actualizado:'2026-08-24', fonte:'https://www.libertasdubrovnik.hr/',
-    bilhetes:[]},
-  'Recife': {operador:'Grande Recife Consórcio de Transporte', url:'https://www.granderecife.pe.gov.br/', actualizado:'2026-08-24', fonte:'https://www.granderecife.pe.gov.br/', moeda:'BRL',
-    bilhetes:[]},
-  'Casablanca': {operador:'Casa Tramway', url:'https://www.casatramway.ma/', actualizado:'2026-08-24', fonte:'https://www.casatramway.ma/', moeda:'MAD',
-    bilhetes:[]},
-  'Hanói': {operador:'Hanoi Metro', url:'https://www.hanoimetro.net.vn/', actualizado:'2026-08-24', fonte:'https://www.hanoimetro.net.vn/', moeda:'VND',
+  /* O url antigo (buenosaires.gob.ar/subte) passou a reencaminhar para o
+     arquivo histórico da Cidade («gcaba_historico»): deixou de ser a
+     tarifa em vigor. A fonte actual é a Secretaria de Transporte
+     (argentina.gob.ar), que publica a tabela de todo o transporte da AMBA.
+     Lida a 31/08/2026. */
+  'Buenos Aires': {operador:'SBASE (Subte)', url:'https://www.argentina.gob.ar/redsube/tarifas-de-transporte-publico-amba', actualizado:'2026-08-31', fonte:'https://www.argentina.gob.ar/redsube/tarifas-de-transporte-publico-amba', moeda:'ARS',
+    nota:'Com cartão SUBE registada, o preço desce com o número de viagens no mês (de 1.684 até 1.010 ARS); sem registar, que é o caso de quem visita, é sempre 2.526 ARS.',
+    bilhetes:[
+      {nome:'Subte, SUBE sem registar', preco:2526.00, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  'Dubrovnik': {operador:'Libertas Dubrovnik', url:'https://www.libertasdubrovnik.hr/cjenik', actualizado:'2026-08-31', fonte:'https://www.libertasdubrovnik.hr/cjenik',
+    nota:'O bilhete comprado no veículo custa mais do que o de 1 hora pré-comprado.',
+    bilhetes:[
+      {nome:'Bilhete de 1 hora (pré-comprado)', preco:1.73, unidade:'viagem', quando:'antes', modos:['autocarro']},
+      {nome:'Bilhete comprado no autocarro', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete diário', preco:5.31, unidade:'24 h', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete de 3 dias', preco:11.95, unidade:'3 dias', quando:'chegada', modos:['autocarro']}
+    ]},
+  'Recife': {operador:'Grande Recife Consórcio de Transporte', url:'https://www.granderecife.pe.gov.br/transporte/tarifas/', actualizado:'2026-08-31', fonte:'https://www.granderecife.pe.gov.br/transporte/tarifas/',
+    moeda:'BRL',
+    bilhetes:[
+      {nome:'Bilhete único (autocarro urbano)', preco:4.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Tarifa do metro', preco:4.25, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. O operador é a ETUFOR (empresa municipal); vários
+     jornais e a própria Prefeitura anunciaram R$ 5,40 a partir de Janeiro
+     de 2026, mas não se achou uma página oficial só com o valor, em texto,
+     para citar como fonte (a página do catálogo de serviços falhou a
+     ligação, e a da Prefeitura monta o conteúdo em JavaScript). Sem uma
+     fonte primária legível, fica só o operador. Verificado a 31/08/2026. */
+  'Fortaleza': {operador:'ETUFOR', url:'https://mobilidade.fortaleza.ce.gov.br/transporte/etufor.html', actualizado:'2026-08-31', fonte:'https://mobilidade.fortaleza.ce.gov.br/transporte/etufor.html',
+    moeda:'BRL', bilhetes:[]},
+  'Casablanca': {operador:'Casa Tramway', url:'https://www.casatramway.ma/ticket-abonnement/nos-offres', actualizado:'2026-08-31', fonte:'https://www.casatramway.ma/ticket-abonnement/nos-offres',
+    moeda:'MAD', nota:'O cartão recarregável baixa o preço por viagem para 6 dh, mas exige 15 dh à parte pelo cartão (válido 5 anos).',
+    bilhetes:[
+      {nome:'Ticket unitário, 1 viagem', preco:8, unidade:'viagem', quando:'chegada', modos:['eletrico']},
+      {nome:'Ticket unitário, 2 viagens', preco:14, unidade:'2 viagens', quando:'chegada', modos:['eletrico']}
+    ]},
+  /* O url antigo redirecciona para metrohanoi.vn; a página das tarifas
+     (afc-tickets/metro-fares-1/) monta os preços em JavaScript. Verificado
+     a 31/08/2026. */
+  'Hanói': {operador:'Hanoi Metro', url:'https://metrohanoi.vn/afc-tickets/metro-fares-1/', actualizado:'2026-08-31', fonte:'https://metrohanoi.vn/afc-tickets/metro-fares-1/', moeda:'VND',
     bilhetes:[]},
 };
 

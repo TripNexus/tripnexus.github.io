@@ -125,3 +125,35 @@ de uma ligação morta não serve de nada, e nenhuma destas se via sem ir lá.
 | Bogotá e Auckland | caminhos apanhados na sondagem | raízes confirmadas |
 | Porto | `metrodoporto.pt/pages/357` | `metrodoporto.pt/pages/287` (o antigo respondia 200 mas era a página do capital social, não o tarifário; ver a regra «200 não quer dizer página certa») |
 | Milão | `atm.it/en/Pages/default.aspx` (200, não é o tarifário) | `HowtogetaroundMilanbypublictransport.aspx` (também descoberto na raiz; ver a correcção de 30 de Agosto acima) |
+
+### Ronda por `curl`, a 31 de Agosto: 15 cidades confirmadas, 2 operadores novos
+
+Sem navegador, só com `curl`, `achar.py` e pesquisa para achar operadores.
+Todas as datas de confirmação ficaram em 2026-08-31.
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Funchal | operador, sem valores (`horariosdofunchal.pt`) | bilhete de bordo 2,05 €; Regional Turístico 13,75 a 36,00 € (24 h a 7 dias), na TIIM, o tarifário comum a toda a Madeira |
+| Tenerife | operador, sem valores | Day Travelcard 10 €, 7 Days Travelcard 50 € (TITSA, Ten+); o avulso continua sem preço fixo, por depender de uma calculadora |
+| Marselha | operador, sem valores | Carte 1 voyage 1,70 €, Carte 10 voyages (carnet) 15,00 € (RTM); o CityPass turístico ficou de fora, por só ter aparecido o preço de criança |
+| Frankfurt | «só dá o preço no planeador» | Kurzstrecke 2,35 €, Einzelfahrt 3,80 €, Tageskarte 7,75 €, FrankfurtCard 1 dia 13,00 € (RMV, tarifa própria da cidade, zona 5000) |
+| Munique | operador, sem valores | Einzelfahrkarte Kurzstrecke 2,10 €, Einzelfahrkarte «a partir de» 2,70 €, Tageskarte «a partir de» 7,00 € (MVG/MVV) |
+| Cracóvia | operador, sem valores | bilhete de 30 min ou viagem única 6 PLN, diário zona I 20 PLN, 72 h zonas I+II+III 55 PLN (MPK Kraków) |
+| Zagreb | operador, sem valores | 90 min 1,33 €, diário 3,98 €, 3 dias 9,29 € (ZET, pré-compra; ao condutor custa mais) |
+| Dubrovnik | operador, sem valores | 1 hora pré-comprado 1,73 €, comprado no autocarro 2,50 €, diário 5,31 €, 3 dias 11,95 € (Libertas Dubrovnik) |
+| Casablanca | operador, sem valores | Ticket Unitaire 8 dh (1 viagem) / 14 dh (2 viagens) (Casa Tramway) |
+| Recife | operador, sem valores | Bilhete único (autocarro) 4,50 BRL, tarifa do metro 4,25 BRL (Grande Recife) |
+| Bogotá | operador, sem valores | tarifa única, todo o dia, 3.550 COP (TransMilenio); o `url` também mudou, para a página certa do sistema de tarifas |
+| Buenos Aires | operador, sem valores (`url` a redireccionar para o arquivo histórico da Cidade) | Subte, SUBE sem registar, 2.526 ARS (fonte trocada para a Secretaria de Transporte, `argentina.gob.ar`) |
+| Santiago | operador, sem valores | autocarro 795 CLP, metro em horário valle 815 CLP (Red Movilidad); o metro muda de preço consoante a hora, dito na nota |
+| Osaka | operador, sem valores | tarifa por distância, 190 a 390 ienes em 5 escalões, como Hong Kong e Deli (Osaka Metro) |
+| Cidade do Cabo | operador, sem valores | tarifa por distância, tarifa Mover fora de hora de ponta, 15 a 46 ZAR consoante o escalão (MyCiTi) |
+| Fortaleza | não estava na tabela | entrou como «só operador»: ETUFOR, achado por pesquisa. O valor (R$ 5,40 desde Janeiro de 2026) só apareceu em notícias e no anúncio da Prefeitura, nunca numa página oficial legível ao `curl`; sem fonte primária em texto, fica sem preço |
+| Ponta Delgada | não estava na tabela | entrou como «só operador»: AzoresBus (Vale do Ave Açores), que tomou conta da rede de São Miguel a 1 de Setembro de 2025. A página de tarifários monta os preços em JavaScript |
+
+Ficaram por resolver, ainda «só operador» ou pior: Sevilha (Cloudflare),
+Nápoles (o `url` antigo dá 404; o novo, num portal Salesforce, monta tudo
+em JavaScript), Oslo, Reiquiavique, Nice, Banguecoque e Hanói (todas
+páginas em JavaScript, sem PDF alternativo achado) e Auckland (a tabela
+por zona está numa imagem, só o tecto de gasto diário, 20 NZD, veio em
+texto).

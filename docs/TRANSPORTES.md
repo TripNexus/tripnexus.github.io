@@ -170,25 +170,70 @@ conseguia ler foram todas visitadas. O que se aprendeu, para a próxima vez:
 - **Um navegador real não vence uma verificação de bot.** O TUSSAM de Sevilha
   responde com o desafio da Cloudflare e não o larga, com ou sem interface.
 
-## Estado em 30 de Agosto de 2026, depois da ronda em navegador
+### A ronda por `curl`, feita a 31 de Agosto de 2026
+
+Voltou-se às 24 cidades «só operador», desta vez sem navegador, só com o
+que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
+`WebSearch` para achar operadores novos. O que se aprendeu:
+
+- **Um `url` guardado pode ter deixado de existir.** A raiz do
+  `buenosaires.gob.ar/subte` passou a redireccionar para
+  `gcaba_historico`, o arquivo da Cidade: as tarifas lá eram antigas por
+  definição. A fonte certa passou a ser a Secretaria de Transporte
+  (`argentina.gob.ar`), que publica a tabela de todo o transporte da AMBA.
+  O mesmo aconteceu ao `url` da ANM de Nápoles, que dá 404 e reencaminha
+  para uma página de início de sessão.
+- **Uma nota antiga pode estar incompleta, não errada.** O RMV de
+  Frankfurt tinha ficado registado como «só dá o preço no planeador», por
+  dizer isso mesmo na página do bilhete simples. A mesma página, mais
+  abaixo, tinha uma excepção: a tarifa própria da cidade (zona 5000), fixa.
+  A lição: quando uma página diz que não há tabela, vale a pena ler até ao
+  fim antes de aceitar isso.
+- **Uma tabela de preços pode estar espalhada por várias páginas
+  paginadas.** O tarifário da RTM de Marselha tem 160 produtos em 5
+  páginas (`?page=1` a `?page=5`), sem um único URL com tudo. O bilhete
+  avulso (1,70 €) estava na página 2; o CityPass turístico, só a versão de
+  criança apareceu, nunca a de adulto, apesar de as 5 páginas darem os 160
+  produtos completos, e por isso ficou de fora.
+- **Nem todo o PDF tem texto.** O PDF de tarifário da RTM de Marselha
+  (`rtm_grille_tarifaire.pdf`) é um cartaz com a grelha de preços desenhada
+  como imagem: a extracção de texto devolveu duas linhas soltas (14,00 € e
+  6,70 €, tarifas de navete) e mais nada. A regra «PDF é fonte de
+  primeira» só vale quando o PDF tem texto a sério, não uma imagem dentro
+  de um PDF.
+- **Um operador achado por pesquisa não é o mesmo que uma tarifa achada
+  por pesquisa.** A ronda achou dois operadores novos, nunca antes na
+  tabela, por `WebSearch` (a AzoresBus de Ponta Delgada, que só começou a
+  operar em Setembro de 2025, e a ETUFOR de Fortaleza). O nome do operador
+  é fácil de confirmar por várias fontes independentes a dizerem o mesmo;
+  um valor em euros não é: por isso entrou o operador, mas não o preço, da
+  ETUFOR.
+
+## Estado em 31 de Agosto de 2026, depois da ronda por curl
 
 95 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | **53** | Amesterdão, Atenas, Barcelona, Berlim, Boston, Bruxelas, Budapeste, Copenhaga, Deli, Dubai, Dublin, Edimburgo, Estocolmo, Florença, Genebra, Hamburgo, Helsínquia, Hong Kong, Istambul, Kuala Lumpur, Lisboa, Londres, Los Angeles, Lyon, Málaga, Manchester, Melbourne, Miami, Milão, Montreal, Nova Iorque, Orlando, Palma de Maiorca, Paris, Porto, Praga, Rio de Janeiro, Roma, Salvador, São Francisco, São Paulo, Singapura, Sydney, Tóquio, Toronto, Valência, Varsóvia, Veneza, Viena, Zurique (e Lisboa, Porto e Barcelona da ronda anterior) |
+| Com tarifas **confirmadas** | **65** | Amesterdão, Atenas, Barcelona, Berlim, Bogotá, Boston, Bruxelas, Budapeste, Buenos Aires, Casablanca, Cidade do Cabo, Copenhaga, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Frankfurt, Funchal, Genebra, Hamburgo, Helsínquia, Hong Kong, Istambul, Kuala Lumpur, Lisboa, Londres, Los Angeles, Lyon, Málaga, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Nova Iorque, Orlando, Osaka, Palma de Maiorca, Paris, Porto, Praga, Recife, Rio de Janeiro, Roma, Salvador, Santiago, São Francisco, São Paulo, Singapura, Sydney, Tenerife, Tóquio, Toronto, Valência, Varsóvia, Veneza, Viena, Zagreb, Zurique |
 | Com tarifas **por reconferir** | 1 | Madrid |
-| **Só operador**, sem valores | 24 | Sevilha, Frankfurt, Nápoles, Oslo, Munique, Funchal, Faro, Tenerife, Nice, Marselha, Cracóvia, Zagreb, Reiquiavique, Bogotá, Santiago, Cidade do Cabo, Auckland, Osaka, Banguecoque, Buenos Aires, Dubrovnik, Recife, Casablanca, Hanói |
-| **Sem operador** | 20 | Ponta Delgada, Ibiza, Santorini, Marraquexe, Cairo, Doha, Fortaleza, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia |
+| **Só operador**, sem valores | 11 | Sevilha, Nápoles, Oslo, Faro, Nice, Reiquiavique, Auckland, Banguecoque, Hanói, Fortaleza, Ponta Delgada |
+| **Sem operador** | 18 | Ibiza, Santorini, Marraquexe, Cairo, Doha, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia |
 
-Das 21 cidades que esta ronda foi buscar, **18 ficaram com preços**: doze
-que já cá estavam e seis que nem sequer apareciam na tabela. Uma passou a
-ter operador e ligação (Frankfurt) e duas ficaram como estavam, pelas
-razões que estão mais abaixo (Sevilha e Cidade do México). Milão e
-Singapura, que tinham ficado de fora do âmbito dessa ronda, foram
-conferidas a seguir, a 30 de Agosto: ver a razão de cada correcção no
-histórico.
+Das 21 cidades que a ronda em navegador foi buscar, **18 ficaram com
+preços**: doze que já cá estavam e seis que nem sequer apareciam na
+tabela. Uma passou a ter operador e ligação (Frankfurt) e duas ficaram
+como estavam (Sevilha e Cidade do México). Milão e Singapura, fora do
+âmbito dessa ronda, foram confirmadas a seguir, a 30 de Agosto.
+
+A 31 de Agosto, uma ronda inteira por `curl` (sem navegador) foi às 24
+cidades que ainda estavam «só operador» e a algumas das 20 «sem
+operador»: **15 ficaram com preços confirmados**, uma revelou-se afinal
+com tarifa fixa numa excepção da mesma página que antes só parecia ter um
+planeador de percurso (Frankfurt), e duas entraram na tabela pela
+primeira vez com operador achado por pesquisa (Fortaleza e Ponta Delgada,
+ainda sem preço). O registo cidade a cidade fica no histórico.
 
 ### Sobre os bloqueios: mudam de um dia para o outro
 
@@ -224,10 +269,6 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
   `metrobus.` e o `www.`. Como não se conseguiu confirmar que endereço
   algum responde, a cidade fica **sem operador**: guardar uma ligação que
   não se abriu seria inventar um endereço.
-- **Preço só no planeador de viagem**: RMV de Frankfurt. As páginas do
-  simples e do diário dizem, à letra, «you can find the price of your ticket
-  in our timetable information»: o RMV não publica tabela nenhuma, só
-  calcula o percurso. Fica com operador e ligação, sem valores.
 - **Tarifas por distância, sem valor único**: MTR de Hong Kong, Rapid KL,
   Delhi Metro, Tokyo Metro, SBS Transit de Singapura. Aqui não há bloqueio
   nenhum: há uma tabela estação a estação ou por escalão de distância, e
@@ -247,6 +288,26 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
   agregado não é o preço de nenhum bilhete em concreto. Fica **por
   reconferir**, sem se carimbar uma data de hoje sobre números que não se
   confirmaram um a um.
+- **Páginas em JavaScript, sem navegador nesta ronda**: a ronda de 31 de
+  Agosto foi feita só por `curl`, sem a máquina com Chromium real que a
+  ronda anterior usou. Ficaram por resolver a Vamus Algarve (Faro), a
+  Lignes d'Azur (Nice), o portal da ANM (Nápoles, migrado para um Salesforce
+  Experience Cloud desde a última ronda: o `url` antigo dá 404 e o novo
+  monta tudo em JavaScript) e a UnicoCampania, a Ruter (Oslo), a Strætó
+  (Reiquiavique), o BTS SkyTrain (Banguecoque), a Hanoi Metro e a AzoresBus
+  (Ponta Delgada, nova nesta ronda). Ficam «só operador»; a próxima ronda em
+  navegador deve começar por elas.
+- **Tabela existe, mas é imagem ou widget**: Auckland Transport. A página
+  diz «Bus and train ticket prices are based on how many fare zones you
+  travel through» e tem uma tabela por zona, mas essa tabela não vem em
+  texto simples nenhures do HTML: só o tecto de gasto (fare cap, 20 NZD por
+  dia com contactless) apareceu como texto. Fica esse valor, sem inventar
+  os das zonas.
+- **Operador achado, preço só em fontes secundárias**: ETUFOR, em
+  Fortaleza. Vários jornais e a própria Prefeitura anunciaram R$ 5,40 a
+  partir de Janeiro de 2026, mas nenhuma página oficial legível ao `curl`
+  tinha esse número em texto para citar como fonte. O operador entra, sem
+  valor.
 
 O `--url` do `ferramentas/transportes.js` dá a lista das que faltam,
 pronta a colar num navegador.
