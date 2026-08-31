@@ -10,6 +10,19 @@ const CIDADES = [
   {n:'Faro',          p:'Portugal',        f:'🇵🇹', i:'FAO', la:37.019, lo:-7.930, c:0.95},
   {n:'Funchal',       p:'Portugal',        f:'🇵🇹', i:'FNC', la:32.650, lo:-16.908,c:0.95},
   {n:'Ponta Delgada', p:'Portugal',        f:'🇵🇹', i:'PDL', la:37.741, lo:-25.680,c:0.88},
+  /* Cidades do interior português, sem aeroporto comercial: entram só para
+     quem procura alojamento, actividades ou como chegar lá por terra. O
+     «i» não é um código IATA real (esses têm sempre três letras; estes têm
+     quatro de propósito, para nunca colidir com um verdadeiro), serve só
+     de identificador interno. `semAeroporto:true` é o que despoleta, em
+     results.js, a troca do bloco de voos por uma explicação e a exibição
+     forçada do bloco «Ir por terra», mesmo sem o utilizador marcar
+     comboio/autocarro na pesquisa. */
+  {n:'Coimbra',       p:'Portugal',        f:'🇵🇹', i:'COIM',la:40.203, lo:-8.410, c:0.85, semAeroporto:true},
+  {n:'Aveiro',        p:'Portugal',        f:'🇵🇹', i:'AVEI',la:40.641, lo:-8.654, c:0.85, semAeroporto:true},
+  {n:'Viseu',         p:'Portugal',        f:'🇵🇹', i:'VISU',la:40.657, lo:-7.912, c:0.78, semAeroporto:true},
+  {n:'Guarda',        p:'Portugal',        f:'🇵🇹', i:'GRDA',la:40.537, lo:-7.268, c:0.75, semAeroporto:true},
+  {n:'Covilhã',       p:'Portugal',        f:'🇵🇹', i:'COVI',la:40.280, lo:-7.504, c:0.75, semAeroporto:true},
   {n:'Madrid',        p:'Espanha',         f:'🇪🇸', i:'MAD', la:40.417, lo:-3.703, c:1.05},
   {n:'Barcelona',     p:'Espanha',         f:'🇪🇸', i:'BCN', la:41.385, lo: 2.173, c:1.10},
   {n:'Sevilha',       p:'Espanha',         f:'🇪🇸', i:'SVQ', la:37.389, lo:-5.984, c:0.95},
