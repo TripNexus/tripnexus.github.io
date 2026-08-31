@@ -10,19 +10,40 @@ const CIDADES = [
   {n:'Faro',          p:'Portugal',        f:'🇵🇹', i:'FAO', la:37.019, lo:-7.930, c:0.95},
   {n:'Funchal',       p:'Portugal',        f:'🇵🇹', i:'FNC', la:32.650, lo:-16.908,c:0.95},
   {n:'Ponta Delgada', p:'Portugal',        f:'🇵🇹', i:'PDL', la:37.741, lo:-25.680,c:0.88},
-  /* Cidades do interior português, sem aeroporto comercial: entram só para
-     quem procura alojamento, actividades ou como chegar lá por terra. O
-     «i» não é um código IATA real (esses têm sempre três letras; estes têm
-     quatro de propósito, para nunca colidir com um verdadeiro), serve só
-     de identificador interno. `semAeroporto:true` é o que despoleta, em
-     results.js, a troca do bloco de voos por uma explicação e a exibição
-     forçada do bloco «Ir por terra», mesmo sem o utilizador marcar
-     comboio/autocarro na pesquisa. */
-  {n:'Coimbra',       p:'Portugal',        f:'🇵🇹', i:'COIM',la:40.203, lo:-8.410, c:0.85, semAeroporto:true},
-  {n:'Aveiro',        p:'Portugal',        f:'🇵🇹', i:'AVEI',la:40.641, lo:-8.654, c:0.85, semAeroporto:true},
-  {n:'Viseu',         p:'Portugal',        f:'🇵🇹', i:'VISU',la:40.657, lo:-7.912, c:0.78, semAeroporto:true},
-  {n:'Guarda',        p:'Portugal',        f:'🇵🇹', i:'GRDA',la:40.537, lo:-7.268, c:0.75, semAeroporto:true},
-  {n:'Covilhã',       p:'Portugal',        f:'🇵🇹', i:'COVI',la:40.280, lo:-7.504, c:0.75, semAeroporto:true},
+  /* Bragança, Vila Real e Viseu têm aeródromo municipal com código IATA
+     real (BGC, VRL, VSE) e uma ligação aérea PSO regular operada pela
+     Sevenair (ex-AeroVIP), de segunda a sábado, ligando as três a Cascais
+     e Portimão. Por terem voo comercial a sério, não levam semAeroporto:
+     entram como qualquer outra cidade e a pesquisa de voos tenta mesmo
+     encontrar tarifas reais (a Sevenair pode não estar indexada nos
+     motores de pesquisa que usamos; nesse caso o resultado é «sem voos
+     para estas datas», não uma alegação de que a cidade não tem aeroporto). */
+  {n:'Bragança',      p:'Portugal',        f:'🇵🇹', i:'BGC', la:41.807, lo:-6.757, c:0.75},
+  {n:'Vila Real',     p:'Portugal',        f:'🇵🇹', i:'VRL', la:41.301, lo:-7.741, c:0.78},
+  {n:'Viseu',         p:'Portugal',        f:'🇵🇹', i:'VSE', la:40.657, lo:-7.912, c:0.78},
+  /* Cidades do interior/centro/norte português sem qualquer aeroporto
+     comercial (Beja tem aeródromo, mas sem voos regulares: só aviação
+     executiva, com plano para reabrir a comercial não antes de 2028).
+     Entram só para quem procura alojamento, actividades ou como chegar lá
+     por terra. O «i» não é um código IATA real (esses têm sempre três
+     letras; estes têm quatro de propósito, para nunca colidir com um
+     verdadeiro), serve só de identificador interno. `semAeroporto:true` é
+     o que despoleta, em results.js, a troca do bloco de voos por uma
+     explicação e a exibição forçada do bloco «Ir por terra», mesmo sem o
+     utilizador marcar comboio/autocarro na pesquisa. */
+  {n:'Coimbra',           p:'Portugal',    f:'🇵🇹', i:'COIM',la:40.203, lo:-8.410, c:0.85, semAeroporto:true},
+  {n:'Aveiro',            p:'Portugal',    f:'🇵🇹', i:'AVEI',la:40.641, lo:-8.654, c:0.85, semAeroporto:true},
+  {n:'Guarda',            p:'Portugal',    f:'🇵🇹', i:'GRDA',la:40.537, lo:-7.268, c:0.75, semAeroporto:true},
+  {n:'Covilhã',           p:'Portugal',    f:'🇵🇹', i:'COVI',la:40.280, lo:-7.504, c:0.75, semAeroporto:true},
+  {n:'Braga',             p:'Portugal',    f:'🇵🇹', i:'BRAG',la:41.545, lo:-8.427, c:0.85, semAeroporto:true},
+  {n:'Viana do Castelo',  p:'Portugal',    f:'🇵🇹', i:'VDCT',la:41.693, lo:-8.834, c:0.85, semAeroporto:true},
+  {n:'Leiria',            p:'Portugal',    f:'🇵🇹', i:'LEIR',la:39.749, lo:-8.807, c:0.82, semAeroporto:true},
+  {n:'Santarém',          p:'Portugal',    f:'🇵🇹', i:'SNTR',la:39.236, lo:-8.686, c:0.78, semAeroporto:true},
+  {n:'Setúbal',           p:'Portugal',    f:'🇵🇹', i:'STBL',la:38.524, lo:-8.893, c:0.90, semAeroporto:true},
+  {n:'Castelo Branco',    p:'Portugal',    f:'🇵🇹', i:'CTBR',la:39.822, lo:-7.491, c:0.72, semAeroporto:true},
+  {n:'Portalegre',        p:'Portugal',    f:'🇵🇹', i:'PTLG',la:39.294, lo:-7.430, c:0.70, semAeroporto:true},
+  {n:'Évora',             p:'Portugal',    f:'🇵🇹', i:'EVRA',la:38.571, lo:-7.907, c:0.85, semAeroporto:true},
+  {n:'Beja',              p:'Portugal',    f:'🇵🇹', i:'BEJA',la:38.015, lo:-7.863, c:0.72, semAeroporto:true},
   {n:'Madrid',        p:'Espanha',         f:'🇪🇸', i:'MAD', la:40.417, lo:-3.703, c:1.05},
   {n:'Barcelona',     p:'Espanha',         f:'🇪🇸', i:'BCN', la:41.385, lo: 2.173, c:1.10},
   {n:'Sevilha',       p:'Espanha',         f:'🇪🇸', i:'SVQ', la:37.389, lo:-5.984, c:0.95},
