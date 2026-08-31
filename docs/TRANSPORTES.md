@@ -202,12 +202,24 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
   primeira» só vale quando o PDF tem texto a sério, não uma imagem dentro
   de um PDF.
 - **Um operador achado por pesquisa não é o mesmo que uma tarifa achada
-  por pesquisa.** A ronda achou dois operadores novos, nunca antes na
-  tabela, por `WebSearch` (a AzoresBus de Ponta Delgada, que só começou a
-  operar em Setembro de 2025, e a ETUFOR de Fortaleza). O nome do operador
-  é fácil de confirmar por várias fontes independentes a dizerem o mesmo;
-  um valor em euros não é: por isso entrou o operador, mas não o preço, da
-  ETUFOR.
+  por pesquisa.** A ronda achou operadores novos, nunca antes na tabela,
+  por `WebSearch`: a AzoresBus de Ponta Delgada (a operar desde Setembro
+  de 2025), a ETUFOR de Fortaleza e a ALSA de Marraquexe. O nome do
+  operador é fácil de confirmar por várias fontes independentes a dizerem
+  o mesmo; um valor em euros não é: por isso entrou o operador, mas não o
+  preço, nestas três.
+- **`.gob.mx` está bloqueado ao nível do ambiente, não só a Cidade do
+  México.** Uma segunda tentativa, desta vez ao `imoveqroo.gob.mx`
+  (Cancún), devolveu `connect_rejected`, com a mensagem do proxy a dizer
+  «organization policy»: não é um problema do sítio, é uma política desta
+  caixa a barrar o domínio `.gob.mx` inteiro. Não vale a pena voltar a
+  tentar nenhum sítio deste domínio a partir daqui.
+- **Autoridades de turismo confirmam tectos de gasto, não tarifas por
+  bilhete.** O Visit Qatar (o organismo oficial de turismo do Catar, não o
+  operador do metro) confirma um tecto de 6 QAR por dia, mas nunca o preço
+  de uma viagem avulsa: o próprio Qatar Rail recusou o `curl`. Fica o
+  tecto, no mesmo espírito do fare cap de Auckland, sem inventar o preço
+  do bilhete.
 
 ## Estado em 31 de Agosto de 2026, depois da ronda por curl
 
@@ -216,10 +228,10 @@ nenhuma com data de conferência.
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | **65** | Amesterdão, Atenas, Barcelona, Berlim, Bogotá, Boston, Bruxelas, Budapeste, Buenos Aires, Casablanca, Cidade do Cabo, Copenhaga, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Frankfurt, Funchal, Genebra, Hamburgo, Helsínquia, Hong Kong, Istambul, Kuala Lumpur, Lisboa, Londres, Los Angeles, Lyon, Málaga, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Nova Iorque, Orlando, Osaka, Palma de Maiorca, Paris, Porto, Praga, Recife, Rio de Janeiro, Roma, Salvador, Santiago, São Francisco, São Paulo, Singapura, Sydney, Tenerife, Tóquio, Toronto, Valência, Varsóvia, Veneza, Viena, Zagreb, Zurique |
+| Com tarifas **confirmadas** | **67** | Amesterdão, Atenas, Barcelona, Berlim, Bogotá, Boston, Bruxelas, Budapeste, Buenos Aires, Casablanca, Cidade do Cabo, Copenhaga, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Frankfurt, Funchal, Genebra, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Lisboa, Londres, Los Angeles, Lyon, Málaga, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Nova Iorque, Orlando, Osaka, Palma de Maiorca, Paris, Porto, Praga, Recife, Rio de Janeiro, Roma, Salvador, Santiago, Santorini, São Francisco, São Paulo, Singapura, Sydney, Tenerife, Tóquio, Toronto, Valência, Varsóvia, Veneza, Viena, Zagreb, Zurique |
 | Com tarifas **por reconferir** | 1 | Madrid |
-| **Só operador**, sem valores | 11 | Sevilha, Nápoles, Oslo, Faro, Nice, Reiquiavique, Auckland, Banguecoque, Hanói, Fortaleza, Ponta Delgada |
-| **Sem operador** | 18 | Ibiza, Santorini, Marraquexe, Cairo, Doha, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia |
+| **Só operador**, sem valores | 13 | Sevilha, Nápoles, Oslo, Faro, Nice, Reiquiavique, Auckland, Banguecoque, Hanói, Fortaleza, Ponta Delgada, Marraquexe, Doha |
+| **Sem operador** | 14 | Cairo, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia |
 
 Das 21 cidades que a ronda em navegador foi buscar, **18 ficaram com
 preços**: doze que já cá estavam e seis que nem sequer apareciam na
@@ -229,11 +241,12 @@ como estavam (Sevilha e Cidade do México). Milão e Singapura, fora do
 
 A 31 de Agosto, uma ronda inteira por `curl` (sem navegador) foi às 24
 cidades que ainda estavam «só operador» e a algumas das 20 «sem
-operador»: **15 ficaram com preços confirmados**, uma revelou-se afinal
+operador»: **17 ficaram com preços confirmados**, uma revelou-se afinal
 com tarifa fixa numa excepção da mesma página que antes só parecia ter um
-planeador de percurso (Frankfurt), e duas entraram na tabela pela
-primeira vez com operador achado por pesquisa (Fortaleza e Ponta Delgada,
-ainda sem preço). O registo cidade a cidade fica no histórico.
+planeador de percurso (Frankfurt), e quatro entraram na tabela pela
+primeira vez com operador achado por pesquisa (Fortaleza, Ponta Delgada,
+Marraquexe e Doha, ainda sem preço confirmado nas três últimas). O
+registo cidade a cidade fica no histórico.
 
 ### Sobre os bloqueios: mudam de um dia para o outro
 
@@ -264,11 +277,15 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
   JavaScript que trava, é o desafio, e ele não cede a um navegador real.
   Fica em «só operador», com a nota a dizer ao utilizador que abra a página
   no navegador dele.
-- **Sítio inalcançável daqui**: Cidade do México. Todo o domínio
-  `cdmx.gob.mx` dá `ERR_CONNECTION_TIMED_OUT`: `metro.`, `semovi.`,
-  `metrobus.` e o `www.`. Como não se conseguiu confirmar que endereço
-  algum responde, a cidade fica **sem operador**: guardar uma ligação que
-  não se abriu seria inventar um endereço.
+- **Domínio `.gob.mx` bloqueado pela política de rede deste ambiente**:
+  Cidade do México (`cdmx.gob.mx`: `metro.`, `semovi.`, `metrobus.` e o
+  `www.`, todos com `ERR_CONNECTION_TIMED_OUT`) e Cancún
+  (`imoveqroo.gob.mx`, desta vez com `connect_rejected` e a mensagem do
+  proxy a dizer «organization policy»). Não é um problema dos sítios: é
+  esta caixa a barrar o domínio `.gob.mx` inteiro. Como não se consegue
+  confirmar sequer que endereço responde, as cidades ficam **sem
+  operador**: guardar uma ligação que não se abriu seria inventar um
+  endereço.
 - **Tarifas por distância, sem valor único**: MTR de Hong Kong, Rapid KL,
   Delhi Metro, Tokyo Metro, SBS Transit de Singapura. Aqui não há bloqueio
   nenhum: há uma tabela estação a estação ou por escalão de distância, e
@@ -278,7 +295,8 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
 - **Certificados que não validam** (não se desliga a verificação): Seoul
   Metro, Metro do Cairo.
 - **Cidades sem rede urbana formal** ou sem operador com sítio próprio:
-  Ibiza, Phuket, Bali, Cancún, Sal, Praia, Luanda, Maputo.
+  Phuket, Bali, Sal, Praia, Luanda, Maputo. (Ibiza saiu desta lista: afinal
+  tinha operador, a ALSA, só não tinha sido achado numa ronda anterior.)
 - **Página de procura filtrada, sem tabela**: CRTM de Madrid. O tarifário
   não é uma tabela, é um formulário que só devolve mínimos agregados por
   categoria: «Sencillos y 10 viajes» dá «desde 1,50 €» a juntar o bilhete

@@ -772,6 +772,16 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete simples, porto', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'Bilhete do aeroporto (linhas A1 e A2)', preco:5.00, unidade:'viagem', quando:'chegada', modos:['autocarro','aeroporto']}
     ]},
+  /* Não estava na tabela. Achado o operador (ALSA) por pesquisa; a página
+     de tarifas tinha a tabela completa, por escalão de distância. Entram
+     dois escalões representativos, pagos por cartão ou QR (mais barato do
+     que em dinheiro a bordo). Lido a 31/08/2026. */
+  'Ibiza': {operador:'ALSA', url:'https://www.alsaibiza.es/en/fares', actualizado:'2026-08-31', fonte:'https://www.alsaibiza.es/en/fares',
+    nota:'Tarifa por escalão de distância. Pago em dinheiro a bordo custa mais (2,40 a 3,60 € consoante o escalão); os valores aqui são a pagar por cartão ou QR na aplicação Mobi4U.',
+    bilhetes:[
+      {nome:'0 a 9 km', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Mais de 18 km', preco:2.60, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   'Nice': {operador:"Lignes d'Azur", url:'https://www.lignesdazur.com/', actualizado:'2026-08-24', fonte:'https://www.lignesdazur.com/',
     bilhetes:[]},
   /* Lida a 31/08/2026: a página filtra por 160 produtos espalhados por 5
@@ -916,6 +926,14 @@ const TRANSPORTES_DESTINO = {
       {nome:'nol Silver, mais de 2 zonas', preco:7.50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'Passe de 7 dias, todas as zonas (nol Silver)', preco:110, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico']}
     ]},
+  /* Não estava na tabela. O Visit Qatar (autoridade oficial de turismo,
+     não o operador em si) confirma o tecto de gasto diário; a viagem
+     avulsa (2 QAR, citada em vários guias) não veio confirmada em nenhuma
+     página do próprio Qatar Rail, que recusou o `curl`. Fica só o tecto,
+     não um bilhete. Verificado a 31/08/2026. */
+  'Doha': {operador:'Qatar Rail (Doha Metro)', url:'https://visitqatar.com/intl-en/plan-your-trip/getting-around/doha-metro', actualizado:'2026-08-31', fonte:'https://visitqatar.com/intl-en/plan-your-trip/getting-around/doha-metro',
+    moeda:'QAR', nota:'O Visit Qatar (autoridade de turismo) confirma um tecto de 6 QAR por dia na classe Standard, sem limite de viagens; o valor de cada viagem avulsa não veio confirmado numa página do operador.',
+    bilhetes:[]},
   'Miami': {operador:'Miami-Dade Transit', url:'https://www.miamidade.gov/global/transportation/transit-pass.page', actualizado:'2026-08-24', fonte:'https://www.miamidade.gov/global/transportation/transit-pass.page', moeda:'USD',
     nota:'O Metromover, no centro, é gratuito.',
     bilhetes:[
@@ -952,6 +970,17 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete diário', preco:5.31, unidade:'24 h', quando:'chegada', modos:['autocarro']},
       {nome:'Bilhete de 3 dias', preco:11.95, unidade:'3 dias', quando:'chegada', modos:['autocarro']}
     ]},
+  /* Não estava na tabela. Achado o operador (KTEL Santorini) por pesquisa;
+     a tabela completa de rotas estava numa página em grego, com preços em
+     texto simples. A maioria das rotas a partir de Fira, o centro nodal da
+     ilha, custa o mesmo. Lido a 31/08/2026. */
+  'Santorini': {operador:'KTEL Santorini', url:'https://ktel-santorini.gr/pricetable/', actualizado:'2026-08-31', fonte:'https://ktel-santorini.gr/pricetable/',
+    nota:'A maioria das linhas a partir de Fira, o centro da rede, custa o mesmo; as rotas mais longas (ao porto de Athinios, a Períssa) custam um pouco mais. Preço nocturno (00:30-05:00) tem um acréscimo de 25%.',
+    bilhetes:[
+      {nome:'Fira - Oia', preco:2.20, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Fira - Aeroporto', preco:2.20, unidade:'viagem', quando:'chegada', modos:['autocarro','aeroporto']},
+      {nome:'Fira - Porto de Athinios', preco:2.70, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   'Recife': {operador:'Grande Recife Consórcio de Transporte', url:'https://www.granderecife.pe.gov.br/transporte/tarifas/', actualizado:'2026-08-31', fonte:'https://www.granderecife.pe.gov.br/transporte/tarifas/',
     moeda:'BRL',
     bilhetes:[
@@ -972,6 +1001,16 @@ const TRANSPORTES_DESTINO = {
       {nome:'Ticket unitário, 1 viagem', preco:8, unidade:'viagem', quando:'chegada', modos:['eletrico']},
       {nome:'Ticket unitário, 2 viagens', preco:14, unidade:'2 viagens', quando:'chegada', modos:['eletrico']}
     ]},
+  /* Não estava na tabela. O operador dos autocarros urbanos é a ALSA
+     (a mesma que já opera em Ibiza e noutras cidades), confirmado por
+     várias fontes independentes; o valor mais citado é 4 DH em dinheiro ou
+     3,50 DH com o cartão Ikhlas, mas nenhuma delas é a página oficial: a
+     página de tarifários da ALSA para Marraquexe (alsa.ma/en/marrakech/
+     prices) está partida no próprio sítio, a redireccionar para
+     «not-found». Sem uma fonte primária legível, fica só o operador.
+     Verificado a 31/08/2026. */
+  'Marraquexe': {operador:'ALSA', url:'https://www.alsa.ma/en', actualizado:'2026-08-31', fonte:'https://www.alsa.ma/en',
+    moeda:'MAD', bilhetes:[]},
   /* O url antigo redirecciona para metrohanoi.vn; a página das tarifas
      (afc-tickets/metro-fares-1/) monta os preços em JavaScript. Verificado
      a 31/08/2026. */
