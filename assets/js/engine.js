@@ -428,16 +428,33 @@ function serieHistoricaVoo(origem, destino, ida, precoHoje){
 }
 
 /* ── extras: bagagem e seguro (somam ao total) ────────────────
-   Valores de referência por passageiro (adultos + crianças). */
+   Não há aqui fonte real: nenhum dos fornecedores já ligados (Travelpayouts,
+   SerpApi, RapidAPI) devolve preço de bagagem por tarifa nem cotação de
+   seguro, e integrar isso a sério exigia uma conta nova (ver
+   backend/README.md). Continuam a ser valores de referência por passageiro,
+   mas verificados contra preços publicados a 31/08/2026:
+
+   - Mala de porão: Ryanair 20 kg comprado com a reserva, 20,99-39,99 €;
+     TAP dentro da Europa, «a partir de 30 €»; Vueling, a subir com o peso a
+     partir de ~10 €. 38 € fica entre a TAP e o Ryanair mais caro, sem ir
+     aos preços de última hora (Ryanair no balcão chega a 70 €).
+   - Cabina extra: Vueling, 24-59 € online; easyJet, «a partir de» 7,99 €
+     (tarifa promocional, não a típica). 28 € fica perto do preço de
+     entrada da Vueling.
+   - Seguro: a AXA Portugal (axa-schengen.com, viagemsegura.pt) vende desde
+     2,05 €/dia (básico) até 8,90 €/dia (Essential, cobertura fora do
+     espaço Schengen). A fórmula já cá estava, (9 + 4,2 × dias)/dias, dá
+     entre 4,8 e 7,2 €/dia consoante a duração: fica dentro desse
+     intervalo, mais perto do Basic, por isso sem alteração. */
 function custoExtras(extras, pax, temVolta, dias){
   const p = pax.adultos + pax.criancas;
   const legs = temVolta ? 2 : 1;
   const linhas = [];
   if(extras.includes('porao'))
-    linhas.push({chave:'porao', nome:'🧳 Mala de porão (23 kg)', total: arred(42 * p * legs),
+    linhas.push({chave:'porao', nome:'🧳 Mala de porão (23 kg)', total: arred(38 * p * legs),
                  detalhe:`${p} ${p === 1 ? 'passageiro' : 'passageiros'} × ${legs} ${legs === 1 ? 'voo' : 'voos'}`});
   if(extras.includes('cabina'))
-    linhas.push({chave:'cabina', nome:'🎒 Bagagem de cabina extra', total: arred(26 * p * legs),
+    linhas.push({chave:'cabina', nome:'🎒 Bagagem de cabina extra', total: arred(28 * p * legs),
                  detalhe:`${p} ${p === 1 ? 'passageiro' : 'passageiros'} × ${legs} ${legs === 1 ? 'voo' : 'voos'}`});
   if(extras.includes('seguro'))
     linhas.push({chave:'seguro', nome:'🛡 Seguro de viagem', total: arred((9 + 4.2 * dias) * p),
