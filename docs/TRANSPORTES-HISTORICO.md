@@ -157,3 +157,22 @@ em JavaScript), Oslo, Reiquiavique, Nice, Banguecoque e Hanói (todas
 páginas em JavaScript, sem PDF alternativo achado) e Auckland (a tabela
 por zona está numa imagem, só o tecto de gasto diário, 20 NZD, veio em
 texto).
+
+### Continuação da ronda por `curl`, ainda a 31 de Agosto: mais 4 cidades
+
+Depois de fechar as 24 «só operador», a ronda foi a algumas das «sem
+operador», atrás de operadores que ainda não tinham sido achados.
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Ibiza | não estava na tabela | entrou confirmada: ALSA, tarifa por escalão de distância, 1,70 a 2,60 € por cartão ou QR (2,40 a 3,60 € em dinheiro a bordo) |
+| Santorini | não estava na tabela | entrou confirmada: KTEL Santorini, a maioria das linhas a partir de Fira a 2,20 €, incluindo a do aeroporto; ao porto de Athinios, 2,70 € |
+| Marraquexe | não estava na tabela | entrou como «só operador»: ALSA (a mesma companhia de Ibiza e Casablanca), mas a página de tarifários para Marraquexe está partida no próprio sítio (`alsa.ma/en/marrakech/prices` dá «not-found»); o valor mais citado (4 DH) só veio de guias, nunca do operador |
+| Doha | não estava na tabela | entrou como «só operador»: Qatar Rail / Doha Metro. O Visit Qatar (autoridade oficial de turismo) confirma um tecto de 6 QAR por dia; o preço da viagem avulsa (2 QAR, citado em vários guias) não veio confirmado numa página do operador, que recusou o `curl` |
+
+Tentadas e sem resultado: Lima, Xangai e Pequim (sítios oficiais
+inalcançáveis ou bloqueados ao `curl`, sem alternativa achada), Mumbai
+(o operador BEST tem sítio, mas a página de tarifas de autocarro não se
+achou nele) e Cidade do México e Cancún, ambas em domínios `.gob.mx`
+bloqueados pela política de rede deste ambiente, não pelos próprios
+sítios.
