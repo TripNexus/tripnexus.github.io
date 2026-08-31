@@ -299,7 +299,7 @@ async function desenharExploracao(){
         <h2>🌍 Para onde ir a partir de ${o.f} ${o.n}?</h2>
       </div>
       <div class="bloco" style="margin-top:1rem">
-        <p class="bloco-sub">${o.n} não tem aeroporto comercial, por isso não há voos a partir daí para explorar. Escolha um destino directamente na pesquisa para ver alojamento, actividades e como chegar por terra.</p>
+        <p class="bloco-sub">${fraseSemVoo(o)}, por isso não há voos a partir daí para explorar. Escolha um destino directamente na pesquisa para ver alojamento, actividades e como chegar por terra.</p>
       </div>`;
     sec.hidden = false;
     return;
