@@ -121,14 +121,20 @@ document.querySelectorAll('input[name="extra"]').forEach(cb =>
 const elSugestoes = document.getElementById('sugestoes');
 let sugActivas = [], sugIndice = -1, sugInput = null, sugAoEscolher = null;
 
-function ligarAutocomplete(input, aoEscolher){
+/* «filtro», facultativo, tira cidades da lista: a viagem por várias
+   cidades é sempre voada perna a perna, e uma cidade sem aeroporto nessa
+   posição só daria uma estimativa local a fingir de voo, tal como as que
+   já saíram do resto do site. Fica de fora só aí; a pesquisa simples, que
+   sabe mostrar «não há voos» em vez de inventar, continua a aceitá-las. */
+function ligarAutocomplete(input, aoEscolher, filtro){
   input.addEventListener('input', () => {
     input.dataset.cidade = '';
     const t = normalizar(input.value.trim());
     if(t.length < 1){ esconderSugestoes(); return; }
-    sugActivas = CIDADES.filter(c =>
+    const lista = filtro ? CIDADES.filter(filtro) : CIDADES;
+    sugActivas = lista.filter(c =>
       normalizar(c.n).startsWith(t) || normalizar(c.p).startsWith(t) || c.i.toLowerCase() === t
-    ).concat(CIDADES.filter(c =>
+    ).concat(lista.filter(c =>
       !normalizar(c.n).startsWith(t) && !normalizar(c.p).startsWith(t) && (normalizar(c.n).includes(t) || normalizar(c.p).includes(t))
     )).slice(0, 7);
     if(!sugActivas.length){ esconderSugestoes(); return; }
@@ -231,12 +237,12 @@ function desenharTrocos(){
 
   zona.querySelectorAll('.troco').forEach(linha => {
     const i = +linha.dataset.i;
-    ligarAutocomplete(linha.querySelector('.troco-origem'), c => { ESTADO.trocos[i].origem = c; reactualizarResultados(); });
+    ligarAutocomplete(linha.querySelector('.troco-origem'), c => { ESTADO.trocos[i].origem = c; reactualizarResultados(); }, c => !c.semAeroporto);
     ligarAutocomplete(linha.querySelector('.troco-destino'), c => {
       ESTADO.trocos[i].destino = c;
       if(ESTADO.trocos[i+1] && !ESTADO.trocos[i+1].origem){ ESTADO.trocos[i+1].origem = c; desenharTrocos(); }
       reactualizarResultados();
-    });
+    }, c => !c.semAeroporto);
     linha.querySelector('.troco-data').addEventListener('click', () => {
       const t = ESTADO.trocos[i];
       t.origem = cidadePorNome(linha.querySelector('.troco-origem').value) || t.origem;

@@ -286,7 +286,26 @@ async function desenharExploracao(){
   const o = ESTADO.origem, ida = ESTADO.ida, volta = ESTADO.tipo === 'so-ida' ? null : ESTADO.volta;
   const n = totalPax();
   const idaVolta = !!volta;
-  const cidades = CIDADES.filter(c => c.i !== o.i);
+  /* «para onde ir de avião a partir daqui?» não faz sentido quando a
+     origem não tem aeroporto: mostrar 24 cartões com preços inventados
+     para lá de uma cidade sem voos seria exactamente o que se tirou do
+     resto do site. Fica dito porque não há lista, sem sugerir nada em
+     cima disso (isso é para mais tarde, juntar um troço terrestre até um
+     aeroporto). */
+  if(o.semAeroporto){
+    const sec = document.getElementById('resultados');
+    sec.innerHTML = `
+      <div class="res-cabecalho">
+        <h2>🌍 Para onde ir a partir de ${o.f} ${o.n}?</h2>
+      </div>
+      <div class="bloco" style="margin-top:1rem">
+        <p class="bloco-sub">${o.n} não tem aeroporto comercial, por isso não há voos a partir daí para explorar. Escolha um destino directamente na pesquisa para ver alojamento, actividades e como chegar por terra.</p>
+      </div>`;
+    sec.hidden = false;
+    return;
+  }
+  /* «para onde ir de avião» não faz sentido para cidades sem aeroporto */
+  const cidades = CIDADES.filter(c => c.i !== o.i && !c.semAeroporto);
   /* real primeiro, para todas as cidades de uma vez; o que não vier real
      cai no motor local, cidade a cidade, e leva o «≈» a dizê-lo */
   const reais = await precosExploracaoReais(o, cidades, ida, volta, ESTADO.pax);

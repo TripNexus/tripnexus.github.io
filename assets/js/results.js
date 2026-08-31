@@ -6,8 +6,25 @@
    por que as coisas aparecem.
    ═════════════════════════════════════════════════════════════ */
 
+/* A frase que explica porque não há voos, sem sugerir nada em cima disso
+   (nem juntar um troço aéreo a partir do aeroporto mais próximo): isso
+   fica para um passo seguinte, ainda por desenhar. */
+function motivoSemVoo(o, d){
+  if(o.semAeroporto && d.semAeroporto)
+    return `Nem ${o.n} nem ${d.n} têm aeroporto comercial: esta viagem não tem voos para comparar.`;
+  if(o.semAeroporto)
+    return `${o.n} não tem aeroporto comercial: não há voos a partir daí para comparar nesta pesquisa.`;
+  return `${d.n} não tem aeroporto comercial: não há voos para lá para comparar nesta pesquisa.`;
+}
+
 /* ── resultados: pesquisa simples ────────────────────────────── */
 function desenharResultados(){
+  /* Sem isto, um preço real de uma pesquisa anterior (voo, alojamento ou
+     carro) ficava em PRECOS_REAIS e vazava para esta pesquisa nova antes
+     de as fontes reais responderem outra vez: o resumo inicial podia
+     mostrar um voo real de outra rota, nem que essa rota agora nem tivesse
+     voo nenhum para comparar. */
+  if(typeof limparPrecosReais === 'function') limparPrecosReais();
   const o = ESTADO.origem, d = ESTADO.destino;
   const ida = ESTADO.ida, volta = ESTADO.tipo === 'so-ida' ? null : ESTADO.volta;
   const ctx = {origem:o, destino:d, ida, volta, adultos:ESTADO.pax.adultos, criancas:ESTADO.pax.criancas, classe:ESTADO.classe};
@@ -15,17 +32,27 @@ function desenharResultados(){
   const noites = Math.max(1, Math.round((fimEstadia - ida) / 86400000));
   ctx.fim = fimEstadia;
 
+  /* Coimbra, Guarda e outras cidades do interior não têm aeroporto
+     comercial: gerar uma estimativa de voo, ou pior, tentar uma tarifa
+     real, para uma rota que não existe seria voltar a inventar. */
+  const semVoo = !!(o.semAeroporto || d.semAeroporto);
+
   /* voos (com filtros e ordenação aplicados) */
-  const todosVoos = parceirosDe('voo')
+  const todosVoos = semVoo ? [] : parceirosDe('voo')
     .map(c => cotacaoVoo(c, o, d, ida, volta, ESTADO.classe, ESTADO.pax))
     .sort((a,b) => a.precoFinal - b.precoFinal);
   const companhias = [...new Set(todosVoos.map(q => q.companhia))].sort();
   const voos = aplicarFiltrosVoos(todosVoos);
-  const melhorVoo = voos.length ? voos.reduce((m, q) => q.precoFinal < m.precoFinal ? q : m) : todosVoos[0];
+  const melhorVoo = voos.length ? voos.reduce((m, q) => q.precoFinal < m.precoFinal ? q : m) : (todosVoos[0] || null);
 
   /* ir por terra (comboio / autocarro): só a rota e quem vende o bilhete.
-     Os preços saíam de uma fórmula por quilómetro com ruído aleatório. */
-  const meiosTerrestres = ESTADO.transportes.filter(t => t === 'comboio' || t === 'autocarro');
+     Sem aeroporto de um dos lados, é a única forma de chegar, por isso
+     mostra-se sempre, mesmo que a pesquisa não tenha marcado nem comboio
+     nem autocarro: esconder a única alternativa atrás de uma caixa por
+     marcar não fazia sentido nenhum. */
+  const meiosTerrestres = semVoo
+    ? ['comboio', 'autocarro']
+    : ESTADO.transportes.filter(t => t === 'comboio' || t === 'autocarro');
   const terrestre = meiosTerrestres.length ? rotaTerrestre(o, d, meiosTerrestres) : null;
 
   /* alojamento, carro, transportes públicos, actividades */
@@ -49,9 +76,10 @@ function desenharResultados(){
 
   /* total e pacotes */
   const extras = ESTADO.extras.length ? custoExtras(ESTADO.extras, ESTADO.pax, !!volta, noites) : [];
-  /* o pacote compara-se com voo + alojamento; o carro deixou de ter preço */
-  const somaPacote = melhorVoo.precoFinal + (melhorAloj ? melhorAloj.precoFinal : 0);
-  const pacotes = (volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, false) : [];
+  /* o pacote compara-se com voo + alojamento; o carro deixou de ter preço.
+     Sem voo não há pacote nenhum para comparar. */
+  const somaPacote = (melhorVoo ? melhorVoo.precoFinal : 0) + (melhorAloj ? melhorAloj.precoFinal : 0);
+  const pacotes = (!semVoo && volta && melhorAloj) ? cotacoesPacote(o, d, ida, volta, ESTADO.classe, ESTADO.pax, somaPacote, false) : [];
   const melhorPacote = pacotes[0] || null;
 
   const nCupoes = [...todosVoos, ...todosAloj, ...(carros || []), ...pacotes]
@@ -63,7 +91,7 @@ function desenharResultados(){
   /* o que o resumo precisa de saber; o live.js acrescenta-lhe os preços reais */
   RESUMO = {
     ctx, melhorVoo, pax: n, extras,
-    voo:  {preco: melhorVoo.precoFinal, nome: PARCEIROS[melhorVoo.parceiro].nome},
+    voo:  melhorVoo ? {preco: melhorVoo.precoFinal, nome: PARCEIROS[melhorVoo.parceiro].nome} : null,
     aloj: melhorAloj ? {preco: melhorAloj.precoFinal, nome: PARCEIROS[melhorAloj.parceiro].nome} : null,
     alojRotulo: melhorAloj ? tiposAloj[melhorAloj.tipo] : 'Alojamento',
     carro: null,   /* sem fonte de preço: só entra se o widget o assumir */
@@ -73,7 +101,7 @@ function desenharResultados(){
 
   let html = `
     <div class="res-cabecalho">
-      <h2>${o.f} ${o.n} ✈ ${d.f} ${d.n}</h2>
+      <h2>${o.f} ${o.n} ${semVoo ? '→' : '✈'} ${d.f} ${d.n}</h2>
       <span class="res-detalhe">${formatarDataCurta(ida)}${volta ? ' - ' + formatarDataCurta(volta) : ' (só ida)'} ·
         ${n} ${n === 1 ? 'passageiro' : 'passageiros'} · ${NOME_CLASSE[ESTADO.classe]}
         ${nCupoes ? ` · <strong>🎟 ${nCupoes} ${nCupoes === 1 ? 'cupão encontrado' : 'cupões encontrados'}</strong>` : ''}</span>
@@ -82,6 +110,11 @@ function desenharResultados(){
     <div class="res-grelha">
       <div class="res-coluna">
 
+        ${semVoo ? `
+        <div class="bloco" id="bloco-voos" data-aba="voos">
+          <h3 class="bloco-titulo">✈ Voos</h3>
+          <p class="bloco-sub">${motivoSemVoo(o, d)} Veja abaixo como chegar por terra.</p>
+        </div>` : `
         <div class="bloco" id="bloco-voos" data-aba="voos">
           <h3 class="bloco-titulo">✈ Voos · ${todosVoos.length} sites comparados</h3>
           ${barraFiltros(companhias)}
@@ -90,7 +123,7 @@ function desenharResultados(){
             detalhe: `${q.companhia} · ${q.escalas === 0 ? 'directo' : q.escalas + (q.escalas === 1 ? ' escala' : ' escalas')} · ${q.duracao} · partida ${q.partida}`,
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'voo'})
           })).join('') : '<p class="bloco-sub">Nenhum voo cumpre os filtros escolhidos. <button type="button" class="btn-suave" id="repor-filtros">Repor filtros</button></p>'}
-        </div>
+        </div>`}
 
         ${terrestre ? `
         <div class="bloco" data-aba="voos">
@@ -152,7 +185,7 @@ function desenharResultados(){
       <div class="res-coluna">
         <div class="bloco resumo" id="bloco-resumo">${blocoResumo()}</div>
 
-        ${blocoEvolucao(o, d, ida, melhorVoo.precoFinal)}
+        ${semVoo ? '' : blocoEvolucao(o, d, ida, melhorVoo.precoFinal)}
 
         ${pacotes.length ? `
         <div class="bloco" data-aba="viagem">
@@ -199,14 +232,17 @@ function desenharResultados(){
   if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, melhorVoo);
   /* a evolução do preço só arranca depois dos voos reais, para usar o preço
      de hoje mais fresco que houver (o real, se tiver vindo; a estimativa
-     local, senão) em vez do valor com que a página abriu */
+     local, senão) em vez do valor com que a página abriu. Sem voo nenhum
+     para comparar, nem vale a pena perguntar. */
   const evolucaoComPrecoHoje = () => {
     if(typeof actualizarEvolucaoReal !== 'function') return;
     const real = typeof PRECOS_REAIS !== 'undefined' && PRECOS_REAIS.voo && PRECOS_REAIS.voo.preco;
     actualizarEvolucaoReal(ctx, real || melhorVoo.precoFinal);
   };
-  if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx).then(evolucaoComPrecoHoje);
-  else evolucaoComPrecoHoje();
+  if(!semVoo){
+    if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx).then(evolucaoComPrecoHoje);
+    else evolucaoComPrecoHoje();
+  }
   if(typeof actualizarAlojamentoReal === 'function') actualizarAlojamentoReal(ctx);
   if(typeof actualizarActividadesReais === 'function') actualizarActividadesReais(ctx);
   if(typeof actualizarCarrosReais === 'function') actualizarCarrosReais(ctx);
