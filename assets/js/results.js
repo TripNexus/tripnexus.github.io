@@ -6,15 +6,28 @@
    por que as coisas aparecem.
    ═════════════════════════════════════════════════════════════ */
 
+/* A frase para uma cidade só: diz que não há aeroporto nenhum, ou, para as
+   três com PSO da Sevenair (Bragança, Vila Real, Viseu: ver `vooLimitado`
+   em data.js), diz a verdade sem esconder o aeroporto que existe. Essas
+   três continuam a forçar o modelo «Ir por terra», porque a Sevenair não
+   está indexada nas fontes de voos deste site e uma pesquisa aqui nunca ia
+   encontrar essas tarifas; mas a mensagem não pode dizer que não têm
+   aeroporto, que seria falso. */
+function fraseSemVoo(cidade){
+  if(!cidade.vooLimitado) return `${cidade.n} não tem aeroporto comercial`;
+  const {operador, url} = cidade.vooLimitado;
+  return `${cidade.n} só tem um pequeno serviço aéreo regional, da <a href="${escaparHtml(url)}" target="_blank" rel="noopener">${escaparHtml(operador)}</a>, que este site não compara`;
+}
+
 /* A frase que explica porque não há voos, sem sugerir nada em cima disso
    (nem juntar um troço aéreo a partir do aeroporto mais próximo): isso
    fica para um passo seguinte, ainda por desenhar. */
 function motivoSemVoo(o, d){
   if(o.semAeroporto && d.semAeroporto)
-    return `Nem ${o.n} nem ${d.n} têm aeroporto comercial: esta viagem não tem voos para comparar.`;
+    return `${fraseSemVoo(o)}, e ${fraseSemVoo(d)}: esta viagem não tem voos para comparar aqui.`;
   if(o.semAeroporto)
-    return `${o.n} não tem aeroporto comercial: não há voos a partir daí para comparar nesta pesquisa.`;
-  return `${d.n} não tem aeroporto comercial: não há voos para lá para comparar nesta pesquisa.`;
+    return `${fraseSemVoo(o)}: não há voos a partir daí para comparar nesta pesquisa.`;
+  return `${fraseSemVoo(d)}: não há voos para lá para comparar nesta pesquisa.`;
 }
 
 /* ── resultados: pesquisa simples ────────────────────────────── */

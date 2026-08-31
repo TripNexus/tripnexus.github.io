@@ -13,14 +13,21 @@ const CIDADES = [
   /* Bragança, Vila Real e Viseu têm aeródromo municipal com código IATA
      real (BGC, VRL, VSE) e uma ligação aérea PSO regular operada pela
      Sevenair (ex-AeroVIP), de segunda a sábado, ligando as três a Cascais
-     e Portimão. Por terem voo comercial a sério, não levam semAeroporto:
-     entram como qualquer outra cidade e a pesquisa de voos tenta mesmo
-     encontrar tarifas reais (a Sevenair pode não estar indexada nos
-     motores de pesquisa que usamos; nesse caso o resultado é «sem voos
-     para estas datas», não uma alegação de que a cidade não tem aeroporto). */
-  {n:'Bragança',      p:'Portugal',        f:'🇵🇹', i:'BGC', la:41.807, lo:-6.757, c:0.75},
-  {n:'Vila Real',     p:'Portugal',        f:'🇵🇹', i:'VRL', la:41.301, lo:-7.741, c:0.78},
-  {n:'Viseu',         p:'Portugal',        f:'🇵🇹', i:'VSE', la:40.657, lo:-7.912, c:0.78},
+     e Portimão: por isso o «i» é o código a sério, não um inventado. Mas a
+     Sevenair é uma companhia pequena de mais para as fontes de voos deste
+     site (Travelpayouts e semelhantes): uma pesquisa aqui nunca vai
+     encontrar essas tarifas. Em vez de mostrar sempre «nenhum voo
+     encontrado» (verdade, mas inútil), levam `semAeroporto:true` na mesma,
+     para forçar o modelo «Ir por terra»; o que muda é a mensagem, que diz
+     a verdade (têm voo, só não o comparamos) em vez de negar o aeroporto,
+     com uma ligação ao site da Sevenair para quem quiser essa via. Ver
+     `vooLimitado` e a frase em `fraseSemVoo()`, results.js. */
+  {n:'Bragança',      p:'Portugal',        f:'🇵🇹', i:'BGC', la:41.807, lo:-6.757, c:0.75, semAeroporto:true,
+    vooLimitado:{operador:'Sevenair', url:'https://www.flysevenair.com/'}},
+  {n:'Vila Real',     p:'Portugal',        f:'🇵🇹', i:'VRL', la:41.301, lo:-7.741, c:0.78, semAeroporto:true,
+    vooLimitado:{operador:'Sevenair', url:'https://www.flysevenair.com/'}},
+  {n:'Viseu',         p:'Portugal',        f:'🇵🇹', i:'VSE', la:40.657, lo:-7.912, c:0.78, semAeroporto:true,
+    vooLimitado:{operador:'Sevenair', url:'https://www.flysevenair.com/'}},
   /* Cidades do interior/centro/norte português sem qualquer aeroporto
      comercial (Beja tem aeródromo, mas sem voos regulares: só aviação
      executiva, com plano para reabrir a comercial não antes de 2028).
