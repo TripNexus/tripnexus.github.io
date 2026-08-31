@@ -194,9 +194,12 @@ function mostrarCarregamento(aoTerminar, passos){
     barra.style.width = Math.min(100, pct) + '%';
     if(pct >= 100){
       clearInterval(intervalo);
-      setTimeout(() => {
+      /* «aoTerminar» pode ser assíncrona (uma pesquisa real no backend): o
+         véu só se levanta quando ela mesmo terminar, para não mostrar uma
+         grelha a meio de encher por baixo da barra já a 100 %. */
+      setTimeout(async () => {
+        await aoTerminar();
         overlay.hidden = true;
-        aoTerminar();
         document.getElementById('resultados').scrollIntoView({behavior:'smooth'});
       }, 250);
     }
@@ -211,6 +214,9 @@ function executarPesquisa(){
 }
 
 /* ── explorar destinos («Para onde?» vazio) ──────────────────── */
+/* Recurso: preço do motor local, para quando a fonte real não trouxer nada
+   para aquele destino em concreto. Fica sempre disponível, mas só entra
+   cidade a cidade, nunca em bloco: ver `precosExploracaoReais`. */
 function melhorPrecoVoo(o, d, ida, volta, classe, pax){
   let melhor = Infinity;
   for(const c of parceirosDe('voo')){
@@ -218,6 +224,38 @@ function melhorPrecoVoo(o, d, ida, volta, classe, pax){
     if(q.precoFinal < melhor) melhor = q.precoFinal;
   }
   return melhor;
+}
+
+/* Tarifas reais para «Para onde ir?», via `/explorar` (Travelpayouts, as
+   mesmas datas que o utilizador escolheu). Um Worker no plano gratuito da
+   Cloudflare tem um tecto de sub-pedidos por invocação, e o site tem mais
+   cidades do que esse tecto aguenta numa só chamada (ver backend/README.md);
+   por isso reparte-se a lista em grupos e pede-se cada grupo em paralelo,
+   juntando os resultados aqui. Devolve um mapa IATA→preço só com o que veio
+   real; o que não vier fica para `melhorPrecoVoo` decidir, cidade a cidade. */
+async function precosExploracaoReais(o, cidades, ida, volta, pax){
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
+  if(!base) return {};
+  const GRUPO = 40;
+  const grupos = [];
+  for(let i = 0; i < cidades.length; i += GRUPO) grupos.push(cidades.slice(i, i + GRUPO));
+  const pedirGrupo = async grupo => {
+    const ps = new URLSearchParams({
+      origem: o.i, destinos: grupo.map(c => c.i).join(','), ida: fISO(ida),
+      adultos: pax.adultos || 1, criancas: pax.criancas || 0
+    });
+    if(volta) ps.set('volta', fISO(volta));
+    try{
+      const r = await fetch(base + '/explorar?' + ps);
+      if(!r.ok) return [];
+      const d = await r.json();
+      return (d && Array.isArray(d.destinos)) ? d.destinos : [];
+    }catch(e){ return []; }
+  };
+  const resultados = (await Promise.all(grupos.map(pedirGrupo))).flat();
+  const mapa = {};
+  for(const r of resultados) if(r && r.destino && r.preco > 0) mapa[r.destino] = r.preco;
+  return mapa;
 }
 function urlDaExploracao(){
   const ps = new URLSearchParams();
@@ -244,16 +282,25 @@ function escolherDestinoExplorado(d){
   actualizarRotulos();
   executarPesquisa();
 }
-function desenharExploracao(){
+async function desenharExploracao(){
   const o = ESTADO.origem, ida = ESTADO.ida, volta = ESTADO.tipo === 'so-ida' ? null : ESTADO.volta;
   const n = totalPax();
   const idaVolta = !!volta;
-  const destinos = CIDADES.filter(c => c.i !== o.i).map((c, idx) => ({
-    cidade: c,
-    preco: Math.round(melhorPrecoVoo(o, c, ida, volta, ESTADO.classe, ESTADO.pax)),
-    gradiente: GRADIENTES[idx % GRADIENTES.length]
-  })).sort((a, b) => a.preco - b.preco);
+  const cidades = CIDADES.filter(c => c.i !== o.i);
+  /* real primeiro, para todas as cidades de uma vez; o que não vier real
+     cai no motor local, cidade a cidade, e leva o «≈» a dizê-lo */
+  const reais = await precosExploracaoReais(o, cidades, ida, volta, ESTADO.pax);
+  const destinos = cidades.map((c, idx) => {
+    const real = reais[c.i];
+    return {
+      cidade: c,
+      real: real != null,
+      preco: real != null ? real : Math.round(melhorPrecoVoo(o, c, ida, volta, ESTADO.classe, ESTADO.pax)),
+      gradiente: GRADIENTES[idx % GRADIENTES.length]
+    };
+  }).sort((a, b) => a.preco - b.preco);
   const top = destinos.slice(0, 24);
+  const algumaEstimativa = top.some(x => !x.real);
 
   const html = `
     <div class="res-cabecalho">
@@ -264,7 +311,7 @@ function desenharExploracao(){
       <h3 class="bloco-titulo">🗺 Destinos no mapa (preço por passageiro)</h3>
       <div id="mapa-explorar" class="mapa mapa-alto"></div>
     </div>
-    <p class="nota-estimativa" style="margin:1.2rem 0 .3rem"><span aria-hidden="true">≈</span><span><strong>Valores estimados</strong> para ordenar os destinos por preço. Escolha um para ver as tarifas reais dessa rota.</span></p>
+    ${algumaEstimativa ? `<p class="nota-estimativa" style="margin:1.2rem 0 .3rem"><span aria-hidden="true">≈</span><span>Os destinos marcados com «≈» não têm tarifa real registada para estas datas: <strong>é uma estimativa</strong>. Os restantes já são tarifas reais.</span></p>` : ''}
     <div class="grelha-ofertas" id="grelha-explorar">
       ${top.map(x => `
         <div class="cartao-oferta">
@@ -274,7 +321,7 @@ function desenharExploracao(){
           </div>
           <div class="oferta-corpo">
             <span class="oferta-datas">✈ ${o.n} → ${x.cidade.n} · ${x.cidade.p}</span>
-            <div class="oferta-precos"><span class="oferta-agora">≈ ${euros(x.preco)}</span><span class="oferta-tipico" style="text-decoration:none">${idaVolta ? 'ida e volta' : 'só ida'}</span></div>
+            <div class="oferta-precos"><span class="oferta-agora">${x.real ? '' : '≈ '}${euros(x.preco)}</span><span class="oferta-tipico" style="text-decoration:none">${idaVolta ? 'ida e volta' : 'só ida'}</span></div>
             <button type="button" class="btn-oferta" data-iata="${x.cidade.i}">Ver esta viagem</button>
           </div>
         </div>`).join('')}
@@ -297,8 +344,9 @@ function desenharMapaExplorar(o, destinos, idaVolta){
   destinos.forEach(x => {
     pontos.push([x.cidade.la, x.cidade.lo]);
     const m = L.marker([x.cidade.la, x.cidade.lo]).addTo(mapaExplorar);
-    m.bindTooltip(`≈ ${euros(x.preco)}`, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
-    m.bindPopup(`<strong>${x.cidade.f} ${x.cidade.n}</strong><br>≈ ${euros(x.preco)} ${idaVolta ? 'ida e volta' : 'só ida'} · estimativa<br><em>carregue para ver a viagem</em>`);
+    const preco = (x.real ? '' : '≈ ') + euros(x.preco);
+    m.bindTooltip(preco, {permanent:true, direction:'top', offset:[-15,-8], className:'tooltip-preco'});
+    m.bindPopup(`<strong>${x.cidade.f} ${x.cidade.n}</strong><br>${preco} ${idaVolta ? 'ida e volta' : 'só ida'}${x.real ? '' : ' · estimativa'}<br><em>carregue para ver a viagem</em>`);
     m.on('click', () => escolherDestinoExplorado(x.cidade));
   });
   mapaExplorar.fitBounds(L.latLngBounds(pontos).pad(0.15));

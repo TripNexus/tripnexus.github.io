@@ -386,6 +386,168 @@ async function actualizarVoosReais(ctx){
   }
 }
 
+/* ── evolução do preço: preços reais por data, mesmo mês ───────
+   O gráfico mostrava sempre uma curva sintética, ancorada no preço real de
+   hoje mas inventada em todos os outros pontos: não há como reconstruir
+   «como este preço mudou nas últimas 8 semanas» sem o termos andado a
+   registar nós próprios, o que nunca aconteceu. O que já existe, ligado ao
+   mesmo `/calendario` que alimenta a grelha de datas, é o preço real de
+   OUTRAS datas de partida deste mês, para a mesma duração de viagem — uma
+   pergunta diferente («compensa mudar de dia?», em vez de «subiu ou
+   desceu?»), mas real, e mais útil para decidir.
+
+   Só troca a curva sintética por esta quando há pontos reais que cheguem
+   para dizer alguma coisa (5 ou mais dias com tarifa este mês); com menos,
+   fica a estimativa, que por isso nunca deixa de existir — é o recurso de
+   último caso, não uma coisa que se apaga. */
+async function actualizarEvolucaoReal(ctx, precoHoje){
+  const bloco = document.getElementById('bloco-evolucao');
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
+  if(!bloco || !(precoHoje > 0)) return;
+  if(!base){ registarFonte('Evolução do preço (Travelpayouts)', 'estimativas', 'TRIPNEXUS_API não está configurado no index.html'); return; }
+  if(!ctx.origem || !ctx.destino || !ctx.ida) return;
+  const mes = ctx.ida.getFullYear() + '-' + String(ctx.ida.getMonth() + 1).padStart(2, '0');
+  const ps = new URLSearchParams({origem: ctx.origem.i, destino: ctx.destino.i, mes});
+  if(ctx.volta) ps.set('dias', String(Math.max(1, Math.round((ctx.volta - ctx.ida) / 86400000))));
+  else ps.set('soIda', '1');
+  registarFonte('Evolução do preço (Travelpayouts)', 'a consultar');
+  let d;
+  try{
+    const r = await fetch(base + '/calendario?' + ps);
+    if(!r.ok){ registarFonte('Evolução do preço (Travelpayouts)', 'estimativas', 'backend devolveu ' + r.status); return; }
+    d = await r.json();
+  }catch(e){ registarFonte('Evolução do preço (Travelpayouts)', 'estimativas', 'sem ligação ao backend'); return; }
+
+  const precos = (d && d.precos) || {};
+  /* /calendario devolve o preço de uma pessoa; o resto da página soma o
+     grupo todo (`/voos` faz o mesmo cálculo), por isso escala-se aqui para
+     os dois lados do gráfico falarem da mesma coisa */
+  const pax = Math.max(1, (ctx.adultos || 1) + (ctx.criancas || 0) * 0.75);
+  const chaveIda = dataISO(ctx.ida);
+  const outrosDias = Object.keys(precos).filter(k => k !== chaveIda && precos[k] > 0).sort();
+  if(outrosDias.length < 5){
+    registarFonte('Evolução do preço (Travelpayouts)', 'estimativas',
+      'poucos dias com tarifa registada este mês (' + outrosDias.length + ')');
+    return;   /* fica a curva sintética, que já estava desenhada */
+  }
+
+  /* o dia escolhido usa o preço acabado de confirmar (real, se tiver vindo;
+     a estimativa local, senão), nunca o do calendário: evita duas fontes
+     diferentes a dizer números diferentes para a mesma data, na mesma página */
+  const todosOsDias = [...outrosDias, chaveIda].sort();
+  const pontos = todosOsDias.map(k => k === chaveIda ? Math.round(precoHoje) : Math.round(precos[k] * pax));
+  const destaque = todosOsDias.indexOf(chaveIda);
+  const ordenados = [...pontos].sort((a, b) => a - b);
+  const tipico = ordenados[Math.floor(ordenados.length / 2)];
+  const dif = Math.round((precoHoje / tipico - 1) * 100);
+  const tipo = dif <= -8 ? 'bom' : (dif >= 8 ? 'alto' : 'neutro');
+  registarFonte('Evolução do preço (Travelpayouts)', 'reais',
+    todosOsDias.length + ' dias deste mês, mesma duração de viagem');
+
+  const eixo = [diaCurto(todosOsDias[0]), diaCurto(todosOsDias[Math.floor(todosOsDias.length / 2)]), diaCurto(chaveIda)];
+  const serie = {pontos, tipico, tipo, destaque, eixo, real: true};
+  const texto = tipo === 'bom'
+    ? `✅ Bom momento para comprar: o preço está ${-dif} % abaixo do típico deste mês, para esta duração de viagem.`
+    : tipo === 'alto'
+      ? `⚠️ Preço alto: está ${dif} % acima do típico deste mês, para esta duração de viagem. Veja outras datas no calendário.`
+      : `➖ Preço dentro do típico deste mês, para esta duração de viagem.`;
+  bloco.innerHTML = `
+    <h3 class="bloco-titulo">📈 Preços por data · tarifas reais</h3>
+    <p class="bloco-sub tempo-real">⚡ ${todosOsDias.length} dias deste mês, mesma duração de viagem (Travelpayouts).</p>
+    <div class="veredicto ${tipo}">${texto}</div>
+    ${typeof graficoEvolucao === 'function' ? graficoEvolucao(serie) : ''}
+    <p class="bloco-sub" style="margin:.5rem 0 0">Comparado com outras datas de partida deste mês, não com o histórico desta. Para ver o mês inteiro, abra o calendário na caixa de pesquisa.</p>`;
+}
+
+/* ── viagem por várias cidades: tarifas reais, perna a perna ──
+   A viagem multi-cidade nunca tinha ligação ao backend: todos os voos e
+   todo o alojamento vinham sempre do motor local. Aqui o real entra perna
+   a perna e estadia a estadia, e o que não vier real fica na estimativa já
+   calculada por `desenharResultadosMulti` — nunca em bloco, para uma cidade
+   sem tarifa registada não apagar as que têm. */
+async function vooRealDeTroco(origem, destino, ida, adultos, criancas, classe){
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
+  if(!base || !origem || !destino || !ida) return null;
+  const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+  const ps = new URLSearchParams({origem: origem.i, destino: destino.i, ida: f(ida),
+    adultos: adultos || 1, criancas: criancas || 0, classe: classe || 'economica'});
+  if(window.TRIPNEXUS_MARKER) ps.set('marker', window.TRIPNEXUS_MARKER);
+  try{
+    const r = await fetch(base + '/voos?' + ps);
+    if(!r.ok) return null;
+    const d = await r.json();
+    if(!d || !Array.isArray(d.ofertas) || !d.ofertas.length) return null;
+    return d.ofertas.reduce((m, v) => v.preco < m.preco ? v : m);
+  }catch(e){ return null; }
+}
+
+/* Mesma fonte e o mesmo par de pedidos (hotéis + casas) que
+   `actualizarAlojamentoReal`, mas para uma estadia isolada: a viagem
+   multi-cidade pede uma vez por cidade, não uma vez só para o destino
+   final. Devolve o mais barato que respeite os tipos escolhidos, ou null. */
+async function alojamentoRealDeEstadia(cidade, ida, fim, adultos, tipos){
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
+  if(!base || !cidade || !ida || !fim) return null;
+  const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+  const nomePesquisa = (typeof WIKI_EN !== 'undefined' && WIKI_EN[cidade.n]) || cidade.n;
+  const ps = new URLSearchParams({cidade: nomePesquisa, checkin: f(ida), checkout: f(fim), adultos: adultos || 2});
+  const buscar = async rota => {
+    try{
+      const r = await fetch(base + rota + '?' + ps);
+      if(!r.ok) return [];
+      const d = await r.json();
+      return (d && Array.isArray(d.ofertas)) ? d.ofertas : [];
+    }catch(e){ return []; }
+  };
+  const daPesquisaDeHoteis = ['hotel','hostel','aparthotel','pensao','resort','rural','campismo'];
+  const [hoteis, casas] = await Promise.all([
+    (tipos || []).some(t => daPesquisaDeHoteis.includes(t)) ? buscar('/hoteis') : Promise.resolve([]),
+    (tipos || []).includes('casa') ? buscar('/casas') : Promise.resolve([])
+  ]);
+  const todos = [...hoteis.map(h => ({...h, cat:'hotel'})), ...casas.map(h => ({...h, cat:'casa'}))]
+    .sort((a, b) => a.preco - b.preco);
+  const lista = todos.filter(h => (tipos || []).includes(categoriaAlojamento(h)));
+  return lista[0] || null;
+}
+
+/* Orquestra as duas fontes acima para todos os trocos e estadias de
+   `RESUMO_MULTI` (montado por `desenharResultadosMulti`, em results.js) e
+   manda redesenhar quando tiver o que há. */
+async function actualizarMultiReais(){
+  const R = RESUMO_MULTI;
+  if(!R) return;
+  const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');
+  if(!base){ registarFonte('Viagem multi-cidade', 'estimativas', 'TRIPNEXUS_API não está configurado no index.html'); return; }
+  registarFonte('Viagem multi-cidade', 'a consultar');
+
+  await Promise.all(R.pernas.map(async p => {
+    const v = await vooRealDeTroco(p.troco.origem, p.troco.destino, p.troco.data, R.ctx.adultos, R.ctx.criancas, R.ctx.classe);
+    if(v && v.preco > 0) Object.assign(p, {
+      real: true, precoFinal: Math.round(v.preco), companhia: v.companhia,
+      codigo: v.codigo, escalas: v.escalas, duracao: v.duracao, url: v.url
+    });
+  }));
+
+  if(R.tiposAloj && R.tiposAloj.length){
+    await Promise.all(R.estadias.map(async e => {
+      if(!e.melhor) return;   /* esta estadia não pediu alojamento */
+      const h = await alojamentoRealDeEstadia(e.cidade, e.inicio, e.fim, R.ctx.adultos, R.tiposAloj);
+      if(h && h.preco > 0) Object.assign(e, {
+        real: true,
+        melhor: {nome: h.nome, imagem: h.imagem, preco: h.preco, precoFinal: Math.round(h.preco * e.noites),
+                 estrelas: h.estrelas, cat: categoriaAlojamento(h)}
+      });
+    }));
+  }
+
+  const algumaReal = R.pernas.some(p => p.real) || R.estadias.some(e => e.real);
+  registarFonte('Viagem multi-cidade', algumaReal ? 'reais' : 'estimativas',
+    algumaReal ? (R.pernas.filter(p => p.real).length + ' de ' + R.pernas.length + ' trocos'
+      + (R.tiposAloj && R.tiposAloj.length ? ' · ' + R.estadias.filter(e => e.real).length + ' de ' + R.estadias.length + ' estadias' : ''))
+      : 'sem tarifas reais para estes trocos ou estas datas');
+  if(typeof renderizarMulti === 'function') renderizarMulti();
+}
+
 /* ── widgets de parceiro (preços reais embebidos) ─────────────
    Alguns fornecedores não têm API aberta, mas oferecem um widget que
    mostra preços reais. Injecta-se o script do parceiro no bloco; se

@@ -239,8 +239,9 @@ utilizador.
 | Rota | Parâmetros | Devolve |
 |---|---|---|
 | `/voos` | `origem`, `destino` (IATA), `ida`, `volta` (AAAA-MM-DD), `adultos`, `criancas`, `marker` | `{ofertas:[{preco, companhia, escalas, duracao, partida, url}], classe, fonte}` |
-| `/calendario` | `origem`, `destino` (IATA), `mes` (AAAA-MM), e depois `dias` (duração da viagem) **ou** `ida` (AAAA-MM-DD, para agrupar por dia de regresso) **ou** `soIda=1` | `{precos:{"2026-09-09":171, …}, mes, dias, fonte}`: o preço real mais baixo por dia. É o que alimenta a grelha de datas, que antes mostrava valores inventados por um gerador com semente |
+| `/calendario` | `origem`, `destino` (IATA), `mes` (AAAA-MM), e depois `dias` (duração da viagem) **ou** `ida` (AAAA-MM-DD, para agrupar por dia de regresso) **ou** `soIda=1` | `{precos:{"2026-09-09":171, …}, mes, dias, fonte}`: o preço real mais baixo por dia, **por pessoa**. Alimenta a grelha de datas e, desde que o bloco «Evolução do preço» passou a comparar datas reais deste mês em vez de uma curva inventada, também esse gráfico |
 | `/ofertas` | `origem` (IATA), `destinos` (IATA separados por vírgula), `mes` (AAAA-MM), `dias` | `{ofertas:[{destino, agora, tipico, queda, ida, volta, diasComTarifa}]}`: o dia mais barato do mês por destino e a **mediana dos preços diários da rota** como termo de comparação. Alimenta a página «Ofertas em conta», que mostrava descontos inventados |
+| `/explorar` | `origem` (IATA), `destinos` (IATA separados por vírgula, até 40 por pedido), `ida` (AAAA-MM-DD), `volta` (AAAA-MM-DD, opcional), `adultos`, `criancas` | `{destinos:[{destino, preco}]}`: o mais barato do `prices_for_dates` para as datas exactas, um pedido por destino. Alimenta a vista «Para onde ir?», que mostrava preços do motor local para as 95 cidades do site |
 | `/hoteis` | `cidade` (nome), `checkin`, `checkout` (AAAA-MM-DD), `adultos` | `{ofertas:[{nome, preco, estrelas}], fonte:"serpapi"}` (preços do Google Hotels, via SerpApi) |
 | `/casas` | os mesmos de `/hoteis` | alojamento local: mesmo motor e **mesma chave**, com `vacation_rentals=true` |
 | `/carros` | `lat`, `lon`, `ida`, `volta` (AAAA-MM-DD), `debug` | `{ofertas:[{nome, preco, fornecedor, detalhe}], fonte:"booking"}` |
@@ -252,7 +253,19 @@ utilizador.
 As respostas são guardadas em cache 10 minutos no navegador. Os pedidos à
 SerpApi ficam 6 h na cache da Cloudflare e os da Travelpayouts 30 minutos: sem
 isto, repetir a mesma pesquisa gastava duas das pesquisas mensais gratuitas
-de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas.
+de cada vez, e a quota esgotava-se em poucas dezenas de pesquisas. Os do
+`/explorar` ficam 3 h, como os do `/ofertas`.
+
+> **Porque é que o `/explorar` limita a 40 destinos por pedido.** Um Worker
+> no plano gratuito da Cloudflare tem um tecto de sub-pedidos por invocação
+> (50, à data desta escrita); o site tem 95 cidades, e uma só chamada com
+> todas não ficaria com margem nenhuma. Em vez de escolher 40 cidades e
+> descartar as outras, é o `search.js` que reparte as 95 em grupos e chama
+> `/explorar` várias vezes em paralelo, juntando os resultados no
+> navegador: nenhuma cidade fica de fora da comparação, e cada invocação do
+> Worker fica bem abaixo do tecto. Se a conta estiver num plano pago, sem
+> esse limite, o `40` no Worker e o tamanho dos grupos no `search.js` podem
+> subir.
 
 > **A pesquisa ao vivo precisa de acesso pedido à parte.** Com o `TP_MARKER`
 > definido, o primeiro teste devolveu **HTTP 403 «Forbidden»** em texto

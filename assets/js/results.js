@@ -197,7 +197,16 @@ function desenharResultados(){
   ligarFiltrosVoos(sec, desenharResultados);
   ligarFiltrosAloj(sec, desenharResultados);
   if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, melhorVoo);
-  if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx);
+  /* a evolução do preço só arranca depois dos voos reais, para usar o preço
+     de hoje mais fresco que houver (o real, se tiver vindo; a estimativa
+     local, senão) em vez do valor com que a página abriu */
+  const evolucaoComPrecoHoje = () => {
+    if(typeof actualizarEvolucaoReal !== 'function') return;
+    const real = typeof PRECOS_REAIS !== 'undefined' && PRECOS_REAIS.voo && PRECOS_REAIS.voo.preco;
+    actualizarEvolucaoReal(ctx, real || melhorVoo.precoFinal);
+  };
+  if(typeof actualizarVoosReais === 'function') actualizarVoosReais(ctx).then(evolucaoComPrecoHoje);
+  else evolucaoComPrecoHoje();
   if(typeof actualizarAlojamentoReal === 'function') actualizarAlojamentoReal(ctx);
   if(typeof actualizarActividadesReais === 'function') actualizarActividadesReais(ctx);
   if(typeof actualizarCarrosReais === 'function') actualizarCarrosReais(ctx);
@@ -272,25 +281,78 @@ function montarAbas(sec){
 }
 
 /* ── resultados: várias cidades ──────────────────────────────── */
+/* Cotação mais barata do motor local para UM troço (não a soma da viagem
+   inteira): é o que serve de recurso, perna a perna, enquanto o real não
+   chega — ver `RESUMO_MULTI` e `actualizarMultiReais` em live.js. */
+function cotacaoMaisBarataTroco(o, d, ida, classe, pax){
+  let melhor = null;
+  for(const c of parceirosDe('voo')){
+    const q = cotacaoVoo(c, o, d, ida, null, classe, pax);
+    if(!melhor || q.precoFinal < melhor.precoFinal) melhor = q;
+  }
+  return melhor;
+}
+
+/* Guarda o estado desta viagem para o live.js poder actualizar perna a
+   perna, e para `renderizarMulti` o poder redesenhar depois de o real
+   chegar, sem recalcular nada do motor local outra vez. */
+let RESUMO_MULTI = null;
+
+function linhaPernaMulti(p, ctx){
+  const rota = p.troco.origem.n + ' → ' + p.troco.destino.n;
+  if(p.real){
+    return `<div class="linha-oferta">
+      ${iconeCompanhia(p.codigo, p.companhia)}
+      <div class="oferta-info">
+        <div class="oferta-nome">${escaparHtml(p.companhia || 'Companhia aérea')}</div>
+        <div class="oferta-detalhe">${escaparHtml(rota + ' · ' + textoEscalas(p.escalas) + (p.duracao ? ' · ' + p.duracao : ''))}</div>
+      </div>
+      <div class="oferta-preco"><div class="preco-actual">${euros(p.precoFinal)}</div></div>
+      <a class="btn-ver" href="${escaparHtml(p.url || ligacaoParceiro('skyscanner', {...ctx, origem:p.troco.origem, destino:p.troco.destino, ida:p.troco.data, seccao:'voo'}))}" target="_blank" rel="noopener">Reservar</a>
+    </div>`;
+  }
+  return linhaOferta(p, {
+    detalhe: `${rota} · ${p.companhia} · ${textoEscalas(p.escalas)}`,
+    url: ligacaoParceiro(p.parceiro, {...ctx, origem:p.troco.origem, destino:p.troco.destino, ida:p.troco.data, seccao:'voo'})
+  });
+}
+
+function linhaEstadiaMulti(e, ctx){
+  if(!e.melhor) return '';
+  if(e.real){
+    const h = e.melhor;
+    const liga = ligacaoParceiro(h.cat === 'casa' ? 'airbnb' : 'booking',
+      {destino:e.cidade, ida:e.inicio, volta:e.fim, adultos:ctx.adultos, criancas:ctx.criancas, classe:ctx.classe, seccao:'hotel'});
+    const detalhe = [h.estrelas ? '★'.repeat(Math.min(5, Math.round(h.estrelas))) : '',
+      e.noites + (e.noites === 1 ? ' noite' : ' noites') + ' desde ' + formatarDataCurta(e.inicio)].filter(Boolean).join(' · ');
+    return `<div class="linha-oferta">
+      ${caixaLogotipo([h.imagem], h.nome || 'Alojamento', {foto:true})}
+      <div class="oferta-info">
+        <div class="oferta-nome">${escaparHtml(h.nome || 'Alojamento')} <span class="alt-tag">${escaparHtml(e.cidade.n)}</span></div>
+        <div class="oferta-detalhe">${escaparHtml(detalhe)}</div>
+      </div>
+      <div class="oferta-preco"><div class="preco-actual">${euros(h.precoFinal)}</div></div>
+      <a class="btn-ver" href="${liga}" target="_blank" rel="noopener">Reservar</a>
+    </div>`;
+  }
+  return linhaOferta(e.melhor, {
+    tag: e.cidade.n,
+    detalhe: `${e.melhor.descricao} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} desde ${formatarDataCurta(e.inicio)}`,
+    url: ligacaoParceiro(e.melhor.parceiro, {destino:e.cidade, ida:e.inicio, volta:e.fim, adultos:ctx.adultos, criancas:ctx.criancas, classe:ctx.classe, seccao:'hotel'})
+  });
+}
+
 function desenharResultadosMulti(){
   const trocos = ESTADO.trocos;
   const n = totalPax();
   const ctx = {origem:trocos[0].origem, destino:trocos[trocos.length-1].destino, ida:trocos[0].data, volta:null, adultos:ESTADO.pax.adultos, criancas:ESTADO.pax.criancas, classe:ESTADO.classe};
 
-  /* por parceiro: soma das cotações de todos os trocos */
-  const voos = parceirosDe('voo').map(c => {
-    let total = 0, cupoes = 0, detalhes = [];
-    for(const t of trocos){
-      const q = cotacaoVoo(c, t.origem, t.destino, t.data, null, ESTADO.classe, ESTADO.pax);
-      total += q.precoFinal;
-      if(q.cupao) cupoes += q.cupao.desconto;
-      detalhes.push(t.origem.i + '→' + t.destino.i);
-    }
-    return {parceiro:c, preco:arred(total + cupoes), precoFinal:arred(total),
-            cupao: cupoes > 0 ? {codigo:'cupões', texto:'−' + Math.round(cupoes) + ' €', nota:'soma dos trocos', desconto:cupoes} : null,
-            detalhe: detalhes.join(' · ')};
-  }).sort((a,b) => a.precoFinal - b.precoFinal);
-  const melhorVoo = voos[0];
+  /* estimativa local, perna a perna: fica logo pronta a mostrar, e é o
+     recurso que sobra onde o real (pedido a seguir, em live.js) não chegar */
+  const pernas = trocos.map(t => ({
+    troco: t, real: false,
+    ...cotacaoMaisBarataTroco(t.origem, t.destino, t.data, ESTADO.classe, ESTADO.pax)
+  }));
 
   /* alojamento por cidade (noites entre trocos; 3 noites na última) */
   const estadias = [];
@@ -303,14 +365,33 @@ function desenharResultadosMulti(){
     const noites = Math.max(1, Math.round((fim - inicio) / 86400000));
     if(ESTADO.alojamento.length){
       const melhores = cotacoesAlojamento(cidade, inicio, fim, ESTADO.pax, tiposAlojamento());
-      estadias.push({cidade, noites, melhor: melhores[0], inicio, fim});
-    } else estadias.push({cidade, noites, melhor:null, inicio, fim});
+      estadias.push({cidade, noites, melhor: melhores[0], real:false, inicio, fim});
+    } else estadias.push({cidade, noites, melhor:null, real:false, inicio, fim});
   }
-  const totalAloj = estadias.reduce((s, e) => s + (e.melhor ? e.melhor.precoFinal : 0), 0);
-  const total = melhorVoo.precoFinal + totalAloj;
-  const tiposAloj = {hotel:'Hotel', casa:'Casa / apartamento', hostel:'Hostel'};
 
-  let html = `
+  RESUMO_MULTI = {ctx, trocos, pernas, estadias, tiposAloj: ESTADO.alojamento.length ? tiposAlojamento() : []};
+
+  document.getElementById('resultados').hidden = false;
+  renderizarMulti();
+  if(typeof actualizarMultiReais === 'function') actualizarMultiReais();
+}
+
+/* Redesenha os blocos de voos, alojamento e o resumo a partir do que
+   `RESUMO_MULTI` tiver agora: chamada uma vez com tudo estimado, e outra
+   vez por live.js quando o real (perna a perna) tiver chegado. */
+function renderizarMulti(){
+  const R = RESUMO_MULTI;
+  if(!R) return;
+  const {ctx, trocos, pernas, estadias} = R;
+  const n = totalPax();
+  const totalVoo = pernas.reduce((s, p) => s + p.precoFinal, 0);
+  const totalAloj = estadias.reduce((s, e) => s + (e.melhor ? e.melhor.precoFinal : 0), 0);
+  const total = totalVoo + totalAloj;
+  const vooTodoReal = pernas.every(p => p.real);
+  const alojTodoReal = estadias.every(e => !e.melhor || e.real);
+  const totalTodoReal = vooTodoReal && alojTodoReal;
+
+  const html = `
     <div class="res-cabecalho">
       <h2>🌍 Viagem por ${trocos.length + 1} cidades</h2>
       <span class="res-detalhe">${trocos.map(t => t.origem.n).join(' → ')} → ${trocos[trocos.length-1].destino.n} ·
@@ -319,26 +400,26 @@ function desenharResultadosMulti(){
     <div class="res-grelha">
       <div class="res-coluna">
         <div class="bloco">
-          <h3 class="bloco-titulo">✈ Voos (todos os trocos) · ${voos.length} sites comparados</h3>
-          ${voos.map((q, idx) => linhaOferta(q, {melhor: idx === 0, detalhe: q.detalhe, url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'voo'})})).join('')}
+          <h3 class="bloco-titulo">✈ Voos (todos os trocos)</h3>
+          ${!vooTodoReal ? `<p class="nota-estimativa"><span aria-hidden="true">≈</span><span>Os trocos marcados com «≈» não têm tarifa real registada para estas datas: <strong>é uma estimativa</strong>.</span></p>` : ''}
+          ${pernas.map(p => linhaPernaMulti(p, ctx)).join('')}
         </div>
         ${ESTADO.alojamento.length ? `
         <div class="bloco">
           <h3 class="bloco-titulo">🏨 Alojamento por cidade</h3>
-          ${estadias.map(e => e.melhor ? linhaOferta(e.melhor, {
-            tag: e.cidade.n,
-            detalhe: `${e.melhor.descricao} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} desde ${formatarDataCurta(e.inicio)}`,
-            url: ligacaoParceiro(e.melhor.parceiro, {destino:e.cidade, ida:e.inicio, volta:e.fim, adultos:ESTADO.pax.adultos, criancas:ESTADO.pax.criancas, classe:ESTADO.classe, seccao:'hotel'})
-          }) : '').join('')}
+          ${!alojTodoReal ? `<p class="nota-estimativa"><span aria-hidden="true">≈</span><span>As estadias marcadas com «≈» não têm tarifa real (Google Hotels) para estas datas: <strong>é uma estimativa</strong>.</span></p>` : ''}
+          ${estadias.map(e => linhaEstadiaMulti(e, ctx)).join('')}
         </div>` : ''}
       </div>
       <div class="res-coluna">
         <div class="bloco resumo">
-          <h3 class="bloco-titulo">🧾 Total estimado da viagem</h3>
-          <div class="resumo-linha"><span>✈ Voos · ${trocos.length} trocos (${PARCEIROS[melhorVoo.parceiro].nome})</span><strong>${euros(melhorVoo.precoFinal)}</strong></div>
-          ${estadias.filter(e => e.melhor).map(e => `<div class="resumo-linha"><span>🏨 ${e.cidade.n} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'} (${PARCEIROS[e.melhor.parceiro].nome})</span><strong>${euros(e.melhor.precoFinal)}</strong></div>`).join('')}
-          <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${euros(total)}</span></div>
-          <p class="resumo-nota">Os pacotes e o aluguer de carro estão disponíveis nas pesquisas de ida e volta. Valores estimados.</p>
+          <h3 class="bloco-titulo">🧾 Total ${totalTodoReal ? '' : 'estimado '}da viagem</h3>
+          <div class="resumo-linha"><span>✈ Voos · ${trocos.length} trocos</span><strong>${vooTodoReal ? '' : '≈ '}${euros(totalVoo)}</strong></div>
+          ${estadias.filter(e => e.melhor).map(e => `<div class="resumo-linha"><span>🏨 ${e.cidade.n} · ${e.noites} ${e.noites === 1 ? 'noite' : 'noites'}</span><strong>${e.real ? '' : '≈ '}${euros(e.melhor.precoFinal)}</strong></div>`).join('')}
+          <div class="resumo-total"><span>Total (${n} ${n === 1 ? 'passageiro' : 'passageiros'})</span><span class="valor-total">${totalTodoReal ? '' : '≈ '}${euros(total)}</span></div>
+          <p class="resumo-nota">${totalTodoReal
+            ? '<strong>Todas as parcelas são preços reais.</strong>'
+            : 'As parcelas marcadas com «≈» ainda são estimativas; as restantes são preços reais.'} Os pacotes e o aluguer de carro estão disponíveis nas pesquisas de ida e volta.</p>
           <div class="accoes-resumo" id="accoes-resumo"></div>
         </div>
         <div class="bloco">
@@ -350,7 +431,6 @@ function desenharResultadosMulti(){
 
   const sec = document.getElementById('resultados');
   sec.innerHTML = html;
-  sec.hidden = false;
   desenharMapaResultados([trocos[0].origem, ...trocos.map(t => t.destino)]);
   if(typeof montarAccoesResumo === 'function') montarAccoesResumo(sec, ctx, null);
 }

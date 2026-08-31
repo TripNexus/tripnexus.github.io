@@ -86,25 +86,33 @@ function blocoResumo(){
     <div class="accoes-resumo" id="accoes-resumo"></div>`;
 }
 
-/* ── gráfico de evolução do preço (SVG, sem bibliotecas) ─────── */
+/* ── gráfico de evolução do preço (SVG, sem bibliotecas) ───────
+   Serve dois casos: a curva sintética de sempre (destaque no último ponto,
+   eixo em semanas) e a real por data (destaque no dia escolhido, que pode
+   estar no meio da série; eixo com as datas verdadeiras). `destaque` e
+   `eixo` são opcionais, com os valores de sempre por omissão, para o
+   caminho sintético não mudar nada. */
 function graficoEvolucao(serie){
   const n = serie.pontos.length;
   const min = Math.min(...serie.pontos), max = Math.max(...serie.pontos);
   const amp = Math.max(1, max - min);
-  const X = i => 8 + (i / (n - 1)) * 304;
+  const X = i => 8 + (n > 1 ? (i / (n - 1)) * 304 : 152);
   const Y = p => 12 + (1 - (p - min) / amp) * 86;
   const linha = serie.pontos.map((p, i) => `${X(i).toFixed(1)},${Y(p).toFixed(1)}`).join(' ');
   const yTipico = Y(serie.tipico).toFixed(1);
   const corPonto = serie.tipo === 'bom' ? '#0e9f6e' : (serie.tipo === 'alto' ? '#f59e0b' : '#4353ff');
-  return `<svg class="grafico-preco" viewBox="0 0 320 132" role="img" aria-label="Evolução estimada do preço do voo">
+  const destaque = serie.destaque != null ? serie.destaque : n - 1;
+  const eixo = serie.eixo || ['há 8 semanas', 'há 4 semanas', 'hoje'];
+  const rotulo = serie.real ? 'Preços reais por data desta rota' : 'Evolução estimada do preço do voo';
+  return `<svg class="grafico-preco" viewBox="0 0 320 132" role="img" aria-label="${rotulo}">
     <polygon points="8,104 ${linha} 312,104" fill="rgba(67,83,255,.10)"/>
     <line x1="8" y1="${yTipico}" x2="312" y2="${yTipico}" stroke="#a9b0c8" stroke-dasharray="4 4" stroke-width="1"/>
     <text x="310" y="${(+yTipico - 4).toFixed(1)}" text-anchor="end" class="g-tipico">típico: ${euros(serie.tipico)}</text>
     <polyline points="${linha}" fill="none" stroke="#4353ff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
-    <circle cx="${X(n - 1).toFixed(1)}" cy="${Y(serie.pontos[n - 1]).toFixed(1)}" r="4.2" fill="${corPonto}"/>
-    <text x="8" y="124" class="g-eixo">há 8 semanas</text>
-    <text x="160" y="124" text-anchor="middle" class="g-eixo">há 4 semanas</text>
-    <text x="312" y="124" text-anchor="end" class="g-eixo">hoje</text>
+    <circle cx="${X(destaque).toFixed(1)}" cy="${Y(serie.pontos[destaque]).toFixed(1)}" r="4.2" fill="${corPonto}"/>
+    <text x="8" y="124" class="g-eixo">${escaparHtml(eixo[0])}</text>
+    <text x="160" y="124" text-anchor="middle" class="g-eixo">${escaparHtml(eixo[1])}</text>
+    <text x="312" y="124" text-anchor="end" class="g-eixo">${escaparHtml(eixo[2])}</text>
   </svg>`;
 }
 function blocoEvolucao(o, d, ida, precoHoje){
