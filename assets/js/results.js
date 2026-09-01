@@ -19,9 +19,10 @@ function fraseSemVoo(cidade){
   return `${cidade.n} só tem um pequeno serviço aéreo regional, da <a href="${escaparHtml(url)}" target="_blank" rel="noopener">${escaparHtml(operador)}</a>, que este site não compara`;
 }
 
-/* A frase que explica porque não há voos, sem sugerir nada em cima disso
-   (nem juntar um troço aéreo a partir do aeroporto mais próximo): isso
-   fica para um passo seguinte, ainda por desenhar. */
+/* A frase que explica porque não há voos daqui. A alternativa de juntar um
+   troço terrestre até ao aeroporto mais próximo e voar de lá (Fase 2) é o
+   bloco #bloco-troco-aereo, mais abaixo em desenharResultados(): só entra
+   para destinos fora de Portugal, onde o «Ir por terra» sozinho não chega. */
 function motivoSemVoo(o, d){
   if(o.semAeroporto && d.semAeroporto)
     return `${fraseSemVoo(o)}, e ${fraseSemVoo(d)}: esta viagem não tem voos para comparar aqui.`;
@@ -78,6 +79,32 @@ function desenharResultados(){
      sentido mostrar uma gama de preço para um meio que não escolheu */
   const estBus = (rotaPT && terrestre && terrestre.viavel && meiosTerrestres.includes('autocarro'))
     ? estimativaAutocarro(terrestre.km) : null;
+
+  /* Fase 2: para quem parte de uma cidade sem voo comparável rumo a fora
+     de Portugal, a alternativa é chegar por terra ao aeroporto mais perto
+     (gatewayMaisProximo, engine.js) e voar de lá. Só faz sentido para
+     destinos fora do país: dentro de Portugal, o «Ir por terra» sozinho já
+     resolve. O troço aéreo é sempre só ida (vooRealDeTroco, tal como nas
+     viagens de várias cidades, não tem tarifa de ida e volta), mesmo numa
+     pesquisa de ida e volta: quem quiser o regresso confere-o à parte. */
+  const gateway = (semVoo && d.p !== 'Portugal') ? gatewayMaisProximo(o) : null;
+  const kmGateway = gateway ? Math.round(distanciaKm(o, gateway)) : 0;
+  const terraGateway = gateway ? {
+    cp: tarifaComboioReal(o, gateway),
+    bus: estimativaAutocarro(kmGateway)
+  } : null;
+  const precoTerraGateway = gateway ? (terraGateway.cp ? terraGateway.cp.preco : terraGateway.bus.tipico) : 0;
+  /* o preço do voo começa como a estimativa do motor local (a mesma lógica
+     de qualquer voo antes de a tarifa real chegar; ver `melhorVoo` acima)
+     e troca-se pelo real assim que actualizarTrocoAereoReal() responder,
+     em live.js. `linhaPernaMulti` (definida mais abaixo) já sabe desenhar
+     as duas formas, porque é a mesma função que a viagem por várias
+     cidades usa perna a perna. */
+  const pernaVooGateway = gateway ? Object.assign(
+    {troco:{origem:gateway, destino:d, data:ida}, real:false},
+    parceirosDe('voo').map(c => cotacaoVoo(c, gateway, d, ida, null, ESTADO.classe, ESTADO.pax))
+      .reduce((m, q) => q.precoFinal < m.precoFinal ? q : m)
+  ) : null;
 
   /* alojamento, carro, transportes públicos, actividades */
   const todosAloj = ESTADO.alojamento.length ? cotacoesAlojamento(d, ida, fimEstadia, ESTADO.pax, tiposAlojamento()) : [];
@@ -191,6 +218,23 @@ function desenharResultados(){
           })).join('') : ''}
         </div>` : ''}
 
+        ${gateway ? `
+        <div class="bloco" id="bloco-troco-aereo" data-aba="voos" data-preco-terra="${precoTerraGateway}">
+          <h3 class="bloco-titulo">✈ Voo com troço terrestre até ${escaparHtml(gateway.n)}</h3>
+          <p class="bloco-sub">${escaparHtml(o.n)} não tem voo comparável para ${escaparHtml(d.n)}: uma alternativa é chegar por terra a ${gateway.f} ${escaparHtml(gateway.n)} (${kmGateway.toLocaleString('pt-PT')} km) e voar de lá. São duas reservas separadas, em sítios diferentes: a ligação entre as duas é da sua conta. Preços só de ida.</p>
+          ${terraGateway.cp ? linhaOferta({parceiro:'cp', preco:terraGateway.cp.preco, precoFinal:terraGateway.cp.preco, cupao:null}, {
+            estimativa:false,
+            detalhe: `1. Por terra · ${escaparHtml(terraGateway.cp.servico)} · ${escaparHtml(o.n)} → ${escaparHtml(gateway.n)}`,
+            url: ligacaoParceiro('cp', {...ctx, seccao:'terrestre', meio:'Comboio'})
+          }) + procedenciaTransportes(terraGateway.cp) : linhaOferta({parceiro:'redeexpressos', preco:terraGateway.bus.tipico, precoFinal:terraGateway.bus.tipico, cupao:null}, {
+            estimativa:true,
+            detalhe: `1. Por terra · Autocarro · ${escaparHtml(o.n)} → ${escaparHtml(gateway.n)} · entre ${euros(terraGateway.bus.min)} e ${euros(terraGateway.bus.max)}`,
+            url: ligacaoParceiro('redeexpressos', {...ctx, seccao:'terrestre', meio:'Autocarro'})
+          })}
+          <div id="troco-aereo-voo">${linhaPernaMulti(pernaVooGateway, ctx)}</div>
+          <p class="bloco-sub" id="troco-aereo-total"><strong>Total, só ida: ${euros(precoTerraGateway + pernaVooGateway.precoFinal)}</strong></p>
+        </div>` : ''}
+
         ${todosAloj.length ? `
         <div class="bloco" id="bloco-alojamento" data-aba="alojamento">
           <h3 class="bloco-titulo">🏨 Alojamento em ${d.n} · ${noites} ${noites === 1 ? 'noite' : 'noites'}</h3>
@@ -292,6 +336,7 @@ function desenharResultados(){
   if(typeof actualizarActividadesReais === 'function') actualizarActividadesReais(ctx);
   if(typeof actualizarCarrosReais === 'function') actualizarCarrosReais(ctx);
   if(typeof actualizarActividadesWidget === 'function') actualizarActividadesWidget(ctx);
+  if(gateway && typeof actualizarTrocoAereoReal === 'function') actualizarTrocoAereoReal(ctx, gateway, precoTerraGateway);
   if(typeof desenharRoteiro === 'function') desenharRoteiro(d, noites);
 }
 
