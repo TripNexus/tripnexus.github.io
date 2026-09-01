@@ -794,6 +794,12 @@ a.btn-resumo{text-decoration:none;display:inline-block;cursor:pointer}
   /* ── alvos maiores que 44px, mínimo recomendado para o dedo ── */
   #btn-tema,#btn-alertas{min-width:2.75rem;min-height:2.75rem}
   .btn-cookie-nao,.btn-cookie-sim{min-height:2.75rem}
+  .dd-btn{min-height:2.75rem}
+  .btn-trocar{width:2.75rem;height:2.75rem}
+  .btn-remover{width:2.75rem;height:2.75rem}
+  .chat-fechar,.chip-x,.aviso-fechar,.alerta-remover,#fechar-alertas{
+    min-width:2.75rem;min-height:2.75rem;display:inline-flex;align-items:center;justify-content:center;
+  }
 }
 
 
