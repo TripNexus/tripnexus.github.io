@@ -240,15 +240,16 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
   tecto, no mesmo espírito do fare cap de Auckland, sem inventar o preço
   do bilhete.
 
-## Estado em 31 de Agosto de 2026, depois da ronda das cidades sem aeroporto
+## Estado em 01 de Setembro de 2026, depois de Madrid reconferida
 
 111 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
-nenhuma com data de conferência.
+nenhuma com data de conferência. Pela primeira vez, `node
+ferramentas/transportes.js` não tem nenhuma a dizer «por rever».
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | **78** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nova Iorque, Orlando, Osaka, Palma de Maiorca, Paris, Porto, Praga, Recife, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Zagreb, Zurique, Évora |
-| Com tarifas **por reconferir** | 1 | Madrid |
+| Com tarifas **confirmadas** | **79** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nova Iorque, Orlando, Osaka, Palma de Maiorca, Paris, Porto, Praga, Recife, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Zagreb, Zurique, Évora |
+| Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 15 | Sevilha, Nápoles, Oslo, Faro, Nice, Reiquiavique, Auckland, Banguecoque, Hanói, Fortaleza, Ponta Delgada, Marraquexe, Doha, Portalegre, Beja |
 | **Sem operador** | 17 | Cairo, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia, Bragança, Vila Real, Viseu |
 

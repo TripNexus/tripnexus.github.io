@@ -207,3 +207,26 @@ Bragança, Vila Real e Viseu, que passaram a cidades normais (com aeroporto
 e código IATA real: BGC, VRL, VSE) nesta mesma ronda por terem serviço
 aéreo comercial PSO da Sevenair, ficaram **sem operador**: ainda não se foi
 à procura de quem opera os transportes públicos locais nestas três.
+
+### Madrid reconferida, a 01 de Setembro: primeira cidade a sair do «por rever» desde sempre
+
+Madrid tinha o `actualizado` posto a `2026-01-01`, o dia em que a tarifa
+entrara em vigor, não o dia em que alguém a fora ver: o hábito exacto que
+este sistema existe para acabar, por isso estava sempre marcada como «por
+rever» desde o primeiro dia. A página institucional (`crtm.es/billetes-y-
+tarifas`) só resume os preços como «Desde X €», sem discriminar por zona
+ou duração; a fonte usada foi o Boletín Oficial da Comunidad de Madrid de
+31/12/2025 (BOCM), com a tabela tarifária completa aprovada a 29/12/2025,
+em vigor desde 1/01/2026.
+
+| Cidade | Estava | É |
+|---|---|---|
+| Madrid | Bilhete simples (zona A) 1,50 € | **sem alteração** |
+| Madrid | Bilhete de 10 viagens 12,20 € | **12,50 €** |
+| Madrid | Abono turístico 1 dia (zona A) 8,40 € | **10,30 €** |
+| Madrid | Abono turístico 5 dias (zona A) 26,80 € | **33,40 €** |
+| Madrid | Suplemento de aeroporto (metro) 3,00 € | **sem alteração** |
+| Madrid | Preço do cartão Tarjeta Multi 2,50 € | **sem alteração**, confirmado nas FAQ da mesma página |
+
+Com isto, `node ferramentas/transportes.js` passa a mostrar «POR REVER:
+nenhuma» pela primeira vez desde que este sistema existe.
