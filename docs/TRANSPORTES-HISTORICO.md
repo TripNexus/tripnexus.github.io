@@ -301,3 +301,24 @@ mostra-a sempre que o utilizador marcar comboio, aeroporto ou não.
 | Rota | Preço (2ª classe, bilhete simples ida) |
 |---|---|
 | Lisboa → Porto | 28,05 € |
+
+### Ronda das «só operador», a 01 de Setembro: 17 para 10
+
+Sete cidades saíram de «só operador» para confirmadas, cada uma com uma
+fonte diferente do problema original:
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Ponta Delgada | Página da AzoresBus em JavaScript, sem preços | Confirmada por outra rede: a Mini BUS da Câmara Municipal (só a cidade, linhas C e D), com página estática e datada; bilhete de bordo 0,50 €, pré-comprado 10 viagens 4,00 €. A AzoresBus (rede de toda a ilha de São Miguel) continua sem tarifário confirmado |
+| Reiquiavique | Página inicial sem preços | Achada a página real de preços (`/en/store/pricing`, não ligada da página inicial); bilhete simples 690 ISK, passe de 30 dias 12.000 ISK |
+| Fortaleza | Página institucional da ETUFOR sem tarifa nenhuma | Confirmada por cobertura jornalística especializada em transportes (sete órgãos noticiaram o mesmo reajuste): passagem inteira 5,40 R$ desde 1/01/2026 |
+| Nice | Página inicial sem preços | Achado o Guide des tarifs em PDF, edição de Agosto de 2026, ligado a partir de «Titres et tarifs»; Solo 1 voyage 1,70 €, Pass 1 jour 7 € |
+| Sevilha | Site da TUSSAM atrás de verificação anti-bot (continua bloqueado) | Confirmada por duas fontes jornalísticas independentes: uma subida de tarifário de Julho de 2025 que excluiu explicitamente o Billete Univiaje (ficou nos 1,40 €), e uma proposta de nova subida (1,50 €) que em Janeiro de 2026 ainda não estava aprovada |
+| Oslo | Página da Ruter em JavaScript, sem preços | Só se confirmou parcialmente: o passe de 30 dias (805 kr, zona 1), pelo comunicado oficial da subida anual de preços. O bilhete avulso não se achou em nenhuma fonte estática |
+| Bragança | Sem entrada (achada na ronda anterior, ainda sem valores) | O STUB é gratuito para toda a população desde a pandemia; confirmado indirectamente (não há declaração directa de 2026, mas uma reportagem de Junho de 2026 sobre o plano de mobilidade do concelho, já sob o executivo actual, descreve o serviço em detalhe sem mencionar tarifa nenhuma) |
+
+Duas cidades ficaram bloqueadas pela política de rede deste ambiente, não
+pelos dados: `rodalentejo.pt` (Beja) e `vamus.pt` (Faro) devolvem 403 do
+proxy por não estarem na lista de hosts permitidos, não do site em si.
+Vila Real e Portalegre continuam com tarifário só em JavaScript, sem PDF
+alternativo achado, tal como já se tinha confirmado numa ronda anterior.
