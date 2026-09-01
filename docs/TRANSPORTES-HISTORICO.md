@@ -288,3 +288,16 @@ texto simples não conseguia posicionar com fiabilidade.
 
 O hash do PDF (`HASHES_CP`) não mudou desde a última leitura, por isso
 manteve-se o mesmo.
+
+### Lisboa → Porto, a 01 de Setembro: a rota que faltava no tarifário
+
+Ao ler a tabela em cascata para as tarifas do Porto (secção anterior),
+reparou-se que o mesmo PDF já continha a tarifa Lisboa-Porto, dentro do
+bloco de origem Lisboa, e que nunca tinha sido levada para `TARIFAS_CP`.
+É a rota doméstica mais pesquisada do país e ambas as cidades têm
+aeroporto, por isso não passa pela Fase 2, mas o bloco «Ir por terra»
+mostra-a sempre que o utilizador marcar comboio, aeroporto ou não.
+
+| Rota | Preço (2ª classe, bilhete simples ida) |
+|---|---|
+| Lisboa → Porto | 28,05 € |
