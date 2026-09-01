@@ -1389,6 +1389,7 @@ const ROTA_DIRECTA = new Set(['rome2rio', 'omio']);
    se reconferir os valores, tal como já se faz com o TRANSPORTES_DESTINO. */
 const TARIFAS_CP = {
   'Lisboa': {
+    'Porto':            {preco:28.05, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
     'Coimbra':          {preco:22.20, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
     'Aveiro':           {preco:23.45, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
     'Braga':            {preco:29.70, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
