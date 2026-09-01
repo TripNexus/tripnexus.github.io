@@ -78,6 +78,25 @@ Para cada cidade da lista 1:
 Uma cidade que não mudou nada leva na mesma data nova: o que se está a
 registar é a conferência, não a alteração.
 
+## O tarifário da CP (rotas, não cidades)
+
+O `TARIFAS_CP` (assets/js/data.js) é parecido, mas é outra coisa: não são
+transportes locais dentro de uma cidade, são bilhetes de comboio entre um
+par de cidades, lidos dos PDFs de preços que a CP publica por linha. Não
+tem estado «só operador»: ou a rota está na tabela com preço real, ou não
+está, e o bloco «Ir por terra» di-lo.
+
+```
+node ferramentas/tarifas-cp.js   # compara o hash de cada PDF ao que está guardado
+```
+
+Corre-se na mesma ronda mensal. Um PDF cujo hash mudou não diz o que
+mudou, só que a CP publicou algo novo: reabra-se com `ferramentas/ler.py`
+ou pymupdf (ver secção seguinte), reconfira-se o valor da rota, e
+actualize-se `TARIFAS_CP` (o preço e o `actualizado`) e `HASHES_CP` (o
+hash novo) em conjunto. Um hash desactualizado sem o preço reconferido não
+serve de nada.
+
 ## Regras que não se quebram
 
 **Não se inventa um número.** Se a página do operador não for clara, ou se as

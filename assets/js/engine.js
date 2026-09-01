@@ -151,15 +151,24 @@ function cotacoesAlojamento(cidade, ida, volta, pax, tipos){
    inventa o preço da alternativa está a decidir pelo utilizador.
 
    Não há hoje fonte gratuita de tarifas reais de comboio e autocarro que
-   possamos consultar: a Travelpayouts dá voos (Aviasales) e hotéis, a
-   Booking não vende comboios pela API que usamos, e a SerpApi não tem
-   motor de comboios. A Omio, a Trainline, a FlixBus e a Busbud têm API de
-   parceiro, mas exigem contrato aprovado (ver backend/README.md).
+   possamos consultar por API: a Travelpayouts dá voos (Aviasales) e
+   hotéis, a Booking não vende comboios pela API que usamos, e a SerpApi
+   não tem motor de comboios. A Omio, a Trainline, a FlixBus e a Busbud têm
+   API de parceiro, mas exigem contrato aprovado (ver backend/README.md).
 
-   Até haver essa fonte, o bloco mostra só o que sabemos mesmo: a
-   distância, calculada das coordenadas reais das duas cidades, e quem
-   vende o bilhete, com a ligação já apontada à rota certa. Preço nenhum.
-   Quando houver fonte, entra aqui em «ofertas», como nos voos. */
+   O que mudou a 01/09/2026: a CP publica o tarifário do Intercidades em
+   PDF, estação a estação, com texto a sério (não uma imagem) e preço
+   fixo, o mesmo em qualquer dia. Isso é fonte real, e entra em
+   TARIFAS_CP (data.js), não aqui. A Rede Expressos é o oposto: bloqueia
+   qualquer acesso automático e não publica tarifário nenhum, porque o
+   preço muda por lugares vendidos, como um voo. Para o autocarro fica só
+   a estimativa de `estimativaAutocarro()` abaixo, calibrada e marcada
+   como tal, nunca como preço confirmado.
+
+   Para as rotas e os meios sem nenhuma das duas fontes, o bloco mostra só
+   o que sabemos mesmo: a distância, calculada das coordenadas reais das
+   duas cidades, e quem vende o bilhete, com a ligação já apontada à rota
+   certa quando o parceiro a documenta. */
 function rotaTerrestre(origem, destino, meios){
   const km = Math.round(distanciaKm(origem, destino));
   /* um parceiro que venda comboio e autocarro aparece uma vez só, com os
@@ -177,6 +186,24 @@ function rotaTerrestre(origem, destino, meios){
   const operadores = [...porParceiro.values()]
     .sort((a, b) => (ROTA_DIRECTA.has(b.parceiro) ? 1 : 0) - (ROTA_DIRECTA.has(a.parceiro) ? 1 : 0));
   return {viavel: km <= 1500, km, operadores};
+}
+
+/* Estimativa do autocarro (Rede Expressos e semelhantes), por km. Não é
+   tarifário: é preço dinâmico, por lugares vendidos, e a Rede Expressos
+   bloqueia qualquer acesso automático (sem tarifário nem API a que se
+   chegue). Por isso é sempre uma gama, nunca um valor único, calibrada a
+   01/09/2026 contra preços publicados para Lisboa-Coimbra (~206 km):
+   Rede Expressos, 4,99 a 20 € consoante saída e antecedência; FlixBus,
+   «desde» 7,50 €; ComparaBUS, média à volta de 7 €. Isso dá, por km,
+   qualquer coisa entre 0,025 € (promocional) e 0,10 € (última hora),
+   com o típico perto de 0,04 €. Fora deste intervalo é a mesma
+   incerteza: não há segunda rota calibrada para confirmar a fórmula. */
+function estimativaAutocarro(km){
+  return {
+    min:    Math.max(3, Math.round(km * 0.025)),
+    tipico: Math.max(4, Math.round(km * 0.04)),
+    max:    Math.max(5, Math.round(km * 0.10))
+  };
 }
 
 /* ── transportes públicos no destino ──────────────────────────── */
@@ -355,6 +382,15 @@ function perfisTransporte(cidade, dias, pax){
 }
 
 /* ── pacotes (voo + hotel, opcionalmente + carro) ─────────────── */
+/* Também aqui não há fonte real por reserva: um pacote de voo+hotel é
+   negociado à parte entre o parceiro e o fornecedor, sem tarifário
+   público. O intervalo é uma estimativa, verificada a 01/09/2026 contra o
+   que os próprios parceiros anunciam: a Expedia publica «até 15%» de
+   desconto ao combinar hotel e voo. 0.86 (-14%) fica mesmo dentro desse
+   valor. O tecto de 1.06 (+6%) não é erro: um pacote às vezes fica ao
+   preço da soma ou pouco acima, por isso a recomendação ao utilizador só
+   aparece quando o pacote sai mesmo mais barato (ver «recomendado» em
+   results.js), nunca por default. */
 function cotacoesPacote(origem, destino, ida, volta, classe, pax, somaSeparado, incluiCarro){
   return parceirosDe('pacote').map(chave => {
     const r = semente('pacote|' + chave + origem.i + destino.i + chaveData(ida));
