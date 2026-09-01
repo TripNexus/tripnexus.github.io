@@ -230,3 +230,28 @@ em vigor desde 1/01/2026.
 
 Com isto, `node ferramentas/transportes.js` passa a mostrar «POR REVER:
 nenhuma» pela primeira vez desde que este sistema existe.
+
+### Bragança, Vila Real e Viseu, a 01 de Setembro: a última lacuna das cidades sem entrada
+
+Estas três ficaram sem entrada em `TRANSPORTES_DESTINO` desde 31 de
+Agosto, quando passaram de `semAeroporto:true` a cidades normais (por
+terem voo comercial PSO real, da Sevenair). Eram as últimas três cidades
+do site ainda por pesquisar.
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Viseu | não estava na tabela | entrou confirmada: bilhete de motorista (1 zona) 0,75 €, pré-comprado 10 viagens 6,65 €, bilhete turístico 1 e 3 dias 3,10 e 6,15 € (MUV); tarifário 2026 em vigor desde 1/01/2026 |
+| Bragança | não estava na tabela | entrou como «só operador»: STUB. Página de tarifários em JavaScript, sem PDF alternativo achado |
+| Vila Real | não estava na tabela | entrou como «só operador»: Urbanos de Vila Real (TUVR). Página de tarifários em JavaScript, sem PDF alternativo achado |
+
+Viseu por pouco não ficou com um valor errado: o primeiro PDF achado
+(`tarifas_muv.pdf`, ligado a partir da própria página da Câmara) dizia
+«TARIFÁRIOS PARA 2021» no rodapé, cinco anos desactualizado; o segundo
+(`web_tarifas_muv_2025.pdf`) dizia «TARIFÁRIOS 2025», já melhor mas ainda
+não o corrente, sobretudo depois de o operador ter mudado em junho de
+2025. Só o terceiro (`web_tarifario_muv_2026.pdf`, achado a listar os
+ficheiros da página de tarifários e horários da Câmara, não por pesquisa)
+tinha a data certa: «Em vigor a partir de 1 de janeiro de 2026». A lição:
+um PDF ligado a partir de uma página institucional pode não ser o mais
+recente que essa mesma instituição já publicou; vale a pena listar todos
+os ficheiros da página, não só seguir a primeira ligação óbvia.

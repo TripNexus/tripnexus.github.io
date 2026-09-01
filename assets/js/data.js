@@ -911,6 +911,28 @@ const TRANSPORTES_DESTINO = {
      valor errado: melhor vazio do que errado. */
   'Beja': {operador:'Rodoviária do Alentejo', url:'https://cm-beja.pt/pt/menu/521/transportes-urbanos-e-transportes-a-pedido--taxis-coletivos.aspx', actualizado:'2026-08-31', fonte:'https://cm-beja.pt/pt/menu/521/transportes-urbanos-e-transportes-a-pedido--taxis-coletivos.aspx',
     bilhetes:[]},
+  /* Bragança, Vila Real e Viseu (agora cidades normais, com voo PSO da
+     Sevenair: ver `vooLimitado` acima) ficaram sem entrada em 31/08/2026,
+     quando passaram a poder ser pesquisadas. Reconferido a 01/09/2026. */
+  /* Site em JavaScript, sem PDF de tarifário achado (site novo, app
+     Bragança Bus): fica o operador, sem preço. */
+  'Bragança': {operador:'STUB (Serviço de Transportes Urbanos de Bragança)', url:'https://bus.cm-braganca.pt/', actualizado:'2026-09-01', fonte:'https://bus.cm-braganca.pt/',
+    bilhetes:[]},
+  /* Idem: página de tarifários em JavaScript, sem PDF alternativo achado. */
+  'Vila Real': {operador:'Urbanos de Vila Real (TUVR)', url:'https://www.urbanosvilareal.pt/pt/tarifarios/', actualizado:'2026-09-01', fonte:'https://www.urbanosvilareal.pt/pt/tarifarios/',
+    bilhetes:[]},
+  /* O primeiro PDF achado dizia «TARIFÁRIOS PARA 2021»; o segundo,
+     «TARIFÁRIOS 2025». Só o tarifário 2026 da própria Câmara de Viseu
+     (publicado à parte dos horários, que mudaram a 1 de março de 2026)
+     tinha a data certa: «Em vigor a partir de 1 de janeiro de 2026». */
+  'Viseu': {operador:'MUV (Mobilidade Urbana de Viseu)', url:'https://www.cm-viseu.pt/pt/areas-servicos/mobilidade-urbana-estacionamento/tarifarios-e-horarios/', actualizado:'2026-09-01', fonte:'https://www.cm-viseu.pt/fotos/editor2/mobilidade/web_tarifario_muv_2026.pdf',
+    nota:'Preços da zona 1 (a maior parte da cidade). Outras zonas custam mais, consoante a distância.',
+    bilhetes:[
+      {nome:'Bilhete de motorista (avulso, 1 zona)', preco:0.75, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Pré-comprado, 10 viagens (1 zona)', preco:6.65, unidade:'10 viagens', quando:'antes', modos:['autocarro']},
+      {nome:'Bilhete turístico, 1 dia', preco:3.10, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete turístico, 3 dias', preco:6.15, unidade:'3 dias', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Lido a 31/08/2026: o bilhete avulso é calculado por uma calculadora de
      tarifas (linha, origem e destino), sem preço fixo nenhum, tal como o
      bilhete simples de Madrid; a nota di-lo. Os passes têm preço fixo. */
