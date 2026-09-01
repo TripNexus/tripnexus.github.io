@@ -67,6 +67,17 @@ function desenharResultados(){
     ? ['comboio', 'autocarro']
     : ESTADO.transportes.filter(t => t === 'comboio' || t === 'autocarro');
   const terrestre = meiosTerrestres.length ? rotaTerrestre(o, d, meiosTerrestres) : null;
+  /* a CP e a Rede Expressos só operam dentro de Portugal: mostrar um dos
+     dois numa rota internacional (Lisboa-Paris, por exemplo) sugeriria
+     uma ligação que não existe. */
+  const rotaPT = o.p === 'Portugal' && d.p === 'Portugal';
+  /* preço real do comboio (CP), quando a rota está no tarifário; senão
+     null, e o bloco não afirma nada sobre o comboio. */
+  const tarifaCP = (rotaPT && terrestre && meiosTerrestres.includes('comboio')) ? tarifaComboioReal(o, d) : null;
+  /* estimativa do autocarro, só quando o utilizador o pediu: não faz
+     sentido mostrar uma gama de preço para um meio que não escolheu */
+  const estBus = (rotaPT && terrestre && terrestre.viavel && meiosTerrestres.includes('autocarro'))
+    ? estimativaAutocarro(terrestre.km) : null;
 
   /* alojamento, carro, transportes públicos, actividades */
   const todosAloj = ESTADO.alojamento.length ? cotacoesAlojamento(d, ida, fimEstadia, ESTADO.pax, tiposAlojamento()) : [];
@@ -142,19 +153,40 @@ function desenharResultados(){
         <div class="bloco" data-aba="voos">
           <h3 class="bloco-titulo">🚆 Ir por terra (comboio / autocarro)</h3>
           <p class="bloco-sub">${o.n} a ${d.n}: ${terrestre.km.toLocaleString('pt-PT')} km em linha recta${terrestre.viavel ? '' : ', distância a que a viagem por terra deixa de fazer sentido'}.</p>
-          <p class="bloco-sub">${terrestre.viavel
-            ? 'Não temos fonte de tarifas reais de comboio e de autocarro, por isso <strong>não mostramos preço nenhum aqui</strong>: cada operador tem o dele, na página abaixo.'
-            : 'A esta distância a ligação por terra, quando existe, é uma sucessão de troços de vários operadores. O Rome2Rio mostra-os todos, com a duração e o preço de cada um.'}</p>
+          ${terrestre.viavel ? '' : '<p class="bloco-sub">A esta distância a ligação por terra, quando existe, é uma sucessão de troços de vários operadores. O Rome2Rio mostra-os todos, com a duração e o preço de cada um.</p>'}
+          ${tarifaCP ? linhaOferta({parceiro:'cp', preco:tarifaCP.preco, precoFinal:tarifaCP.preco, cupao:null}, {
+            estimativa:false,
+            detalhe: `${escaparHtml(tarifaCP.servico)} · bilhete simples, 2ª classe · ${escaparHtml(o.n)} → ${escaparHtml(d.n)}`,
+            url: ligacaoParceiro('cp', {...ctx, seccao:'terrestre', meio:'Comboio'})
+          }) + procedenciaTransportes(tarifaCP) : ''}
+          ${estBus ? linhaOferta({parceiro:'redeexpressos', preco:estBus.tipico, precoFinal:estBus.tipico, cupao:null}, {
+            estimativa:true,
+            detalhe: `Autocarro · ${escaparHtml(o.n)} → ${escaparHtml(d.n)} · entre ${euros(estBus.min)} e ${euros(estBus.max)}, consoante a antecedência`,
+            url: ligacaoParceiro('redeexpressos', {...ctx, seccao:'terrestre', meio:'Autocarro'})
+          }) : ''}
+          ${terrestre.viavel && (!tarifaCP && meiosTerrestres.includes('comboio') || !estBus && meiosTerrestres.includes('autocarro')) ? `
+          <p class="bloco-sub">${rotaPT
+            ? (!tarifaCP && meiosTerrestres.includes('comboio') ? 'Não temos tarifário confirmado da CP para esta rota. ' : '') + (!estBus && meiosTerrestres.includes('autocarro') ? 'Não temos preço de autocarro para esta rota. ' : '')
+            : 'A CP e a Rede Expressos só operam dentro de Portugal, por isso não têm preço aqui. '}<strong>Não mostramos números que não tenhamos</strong>: cada operador tem o dele, na página abaixo.</p>` : ''}
           <div class="linha-oferta">${iconeParceiro('rome2rio')}
             <div class="oferta-info"><div class="oferta-nome">Rome2Rio</div><div class="oferta-detalhe">Todas as formas de ir de ${escaparHtml(o.n)} a ${escaparHtml(d.n)}, com duração e preço</div></div>
             <a class="btn-ver" href="${ligacaoParceiro('rome2rio', ctx)}" target="_blank" rel="noopener">Ver rotas</a>
           </div>
-          ${terrestre.viavel ? terrestre.operadores.slice(0, 6).map(q => linhaSemPreco(q.parceiro, {
-            /* só se diz «abre na rota» quando o endereço da rota é mesmo o
-               que o parceiro documenta; nos outros abre a página de entrada */
-            detalhe: q.meios.join(' e ') + (ROTA_DIRECTA.has(q.parceiro)
-              ? ' · abre em ' + escaparHtml(o.n) + ' a ' + escaparHtml(d.n)
-              : ' · procure a rota no site'),
+          ${terrestre.viavel ? terrestre.operadores.filter(q => {
+            /* a CP e a Rede Expressos só vendem rotas dentro de Portugal;
+               fora disso nem a ligação de reserva à página inicial se mostra,
+               que sugeriria uma venda que estes dois não fazem */
+            if((q.parceiro === 'cp' || q.parceiro === 'redeexpressos') && !rotaPT) return false;
+            if(q.parceiro === 'cp' && tarifaCP) return false;
+            if(q.parceiro === 'redeexpressos' && estBus) return false;
+            return true;
+          }).slice(0, 6).map(q => linhaSemPreco(q.parceiro, {
+            /* a rota mostra-se sempre, mesmo quando a ligação só abre a
+               página inicial: chegar lá sem saber o que procurar não ajuda
+               ninguém, e a rota é informação que já temos, não inventada */
+            detalhe: q.meios.join(' e ') + ' · ' + escaparHtml(o.n) + ' → ' + escaparHtml(d.n) + (ROTA_DIRECTA.has(q.parceiro)
+              ? ' (a página já abre nesta rota)'
+              : ' (procure esta rota no site)'),
             url: ligacaoParceiro(q.parceiro, {...ctx, seccao:'terrestre', meio:q.meios[0]})
           })).join('') : ''}
         </div>` : ''}

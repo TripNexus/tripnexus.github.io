@@ -184,6 +184,13 @@ const PARCEIROS = {
                 cup:[{codigo:'OMIO10',    tipo:'pct', valor:10, nota:'nova conta'}]},
   trainline:   {nome:'Trainline',     dom:'thetrainline.com',  cat:['comboio','autocarro'], fx:0.97, desc:'A aplicação principal para comboios e autocarros na Europa.'},
   flixbus:     {nome:'FlixBus',       dom:'flixbus.pt',        cat:['autocarro'],      fx:0.85, desc:'O maior operador de autocarros low-cost de longo curso.'},
+  /* Os únicos dois operadores directos (não agregadores) em Portugal: a
+     CP tem o preço real em TARIFAS_CP (data.js), sem passar pelo `fx`
+     desta tabela. A Rede Expressos bloqueia acesso automático (403), por
+     isso nunca tem preço confirmado, só a estimativa de
+     estimativaAutocarro() (engine.js). */
+  cp:          {nome:'CP',            dom:'cp.pt',             cat:['comboio'],        fx:1.00, desc:'Comboios de Portugal: a operadora ferroviária nacional.'},
+  redeexpressos:{nome:'Rede Expressos',dom:'rede-expressos.pt', cat:['autocarro'],      fx:1.00, desc:'A maior rede de autocarros expresso de Portugal.'},
 
   // ── parceiros adicionais (adicionar novos aqui: ver nota abaixo) ──
   priceline:      {nome:'Priceline',       dom:'priceline.com',       cat:['voo','hotel','carro','pacote'], fx:0.96, tp:true, desc:'Descontos «Name Your Own Price» e pacotes de hotéis.'},
@@ -1336,6 +1343,52 @@ function ligacaoParceiro(chave, ctx){
    é a página de entrada, e o site diz isso na linha em vez de prometer uma
    pesquisa já feita. */
 const ROTA_DIRECTA = new Set(['rome2rio', 'omio']);
+
+/* ── tarifário real da CP, por rota ───────────────────────────────
+   Ao contrário do TRANSPORTES_DESTINO (transportes locais dentro de uma
+   cidade), isto é por par origem-destino: a CP publica um PDF com texto a
+   sério por linha, com o preço fixo por estação (Intercidades, bilhete
+   simples ida, 2ª classe, tarifa inteira), em vigor até à próxima
+   actualização tarifária nacional (normalmente 1 de Janeiro). Lido a
+   01/09/2026. Não é dinâmico como o Alfa Pendular pode ser em época alta:
+   é o preço de balcão, o mesmo em qualquer dia.
+
+   `fonte` é o PDF onde o valor foi lido; `ferramentas/tarifas-cp.js`
+   compara o hash desse PDF a cada ronda e avisa se a CP o actualizou, para
+   se reconferir os valores, tal como já se faz com o TRANSPORTES_DESTINO. */
+const TARIFAS_CP = {
+  'Lisboa': {
+    'Coimbra':          {preco:22.20, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
+    'Aveiro':           {preco:23.45, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
+    'Braga':            {preco:29.70, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
+    'Viana do Castelo': {preco:31.95, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
+    'Évora':            {preco:13.90, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-evora-beja'},
+    'Beja':             {preco:15.70, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-evora-beja'},
+    'Castelo Branco':   {preco:17.05, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-covilha-guarda'},
+    'Covilhã':          {preco:19.80, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-covilha-guarda'},
+    'Guarda':           {preco:23.65, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-covilha-guarda'},
+    'Santarém':         {preco:13.55, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-covilha-guarda'}
+  }
+};
+
+/* Procura a tarifa nos dois sentidos: a CP cobra o mesmo preço de A para B
+   e de B para A na mesma linha, mas só temos o par guardado numa ordem. */
+function tarifaComboioReal(origem, destino){
+  return (TARIFAS_CP[origem.n] && TARIFAS_CP[origem.n][destino.n])
+      || (TARIFAS_CP[destino.n] && TARIFAS_CP[destino.n][origem.n])
+      || null;
+}
+
+/* Hash (SHA-256) de cada PDF de origem, tirado a 01/09/2026, para
+   `ferramentas/tarifas-cp.js` detectar quando a CP publica valores novos
+   sem se precisar de ler o PDF todo outra vez de propósito: só quando o
+   hash mudar é que vale a pena reconferir os números à mão. Uma chave por
+   PDF, não por rota (vários destinos partilham o mesmo ficheiro). */
+const HASHES_CP = {
+  'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca': '8ddcde6fbbe1f7d623c6ca1214924d964050097cff7c8ae98bfdc411e2df4539',
+  'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-evora-beja':                    '9fe695bb81ef077ef78ef0520723e6852907dcd7ee6fd1c9fbba9455f25563a2',
+  'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-covilha-guarda':                '6f27bddfb5e6151eeddb327d2e615a722267045bcb7be0b7ce6c4618b51bc658'
+};
 
 /* Companhias aéreas plausíveis para atribuir às cotações. */
 const COMPANHIAS = ['TAP Air Portugal','Ryanair','easyJet','Vueling','Iberia','Lufthansa','Air France','KLM','British Airways','SWISS','Emirates','Qatar Airways','LATAM','United','Delta'];
