@@ -603,9 +603,19 @@ const TRANSPORTES_DESTINO = {
   /* Tentado outra vez a 30/08/2026, em navegador real: o tussam.es responde
      com o desafio de bot da Cloudflare e nunca chega a servir a página.
      Não é o JavaScript que trava, é a verificação. Fica sem valores. */
-  'Sevilha': {operador:'TUSSAM', url:'https://www.tussam.es/en/node/1442', actualizado:'2026-08-30', fonte:'https://www.tussam.es/en/node/1442',
-    nota:'A página de tarifário da TUSSAM está atrás de uma verificação de bot que não nos deixou lá chegar. Abra-a no seu navegador para ver os preços.',
-    bilhetes:[]},
+  /* O site da TUSSAM continua atrás de uma verificação de bot que o curl
+     não passa. Os valores confirmaram-se por duas fontes jornalísticas
+     independentes: uma subida de tarifário de Julho de 2025 que excluiu
+     explicitamente o Billete Univiaje (ficou nos 1,40 €), e uma proposta
+     de nova subida (para 1,50 €) que, em Janeiro de 2026, ainda não tinha
+     sido aprovada pela Câmara; sem confirmação de que entrou em vigor. */
+  'Sevilha': {operador:'TUSSAM', url:'https://www.tussam.es/en/node/1442', actualizado:'2026-09-01', fonte:'https://www.elespanol.com/sevilla/20250627/nuevos-precios-autobuses-tussam-partir-julio-viaje-caro/1003743824338_0.html',
+    bilhetes:[
+      {nome:'Billete Univiaje', preco:1.40, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Tarjeta turística, 1 día', preco:5.00, unidade:'dia', quando:'chegada', modos:['autocarro']},
+      {nome:'Tarjeta turística, 3 días', preco:10.00, unidade:'3 dias', quando:'chegada', modos:['autocarro']},
+      {nome:'Tarjeta, 30 días', preco:21.20, unidade:'30 dias', quando:'antes', modos:['autocarro']}
+    ]},
   /* Lida a tabela do Metrovalencia a 30/08/2026. É por zonas: a cidade é a
      zona A, e os títulos SUMA T valem na combinação AB. São os valores da
      rede de metro e eléctrico; a EMT (autocarros) tem tarifário próprio,
@@ -650,8 +660,14 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe 7 dias', preco:470, unidade:'7 dias', quando:'chegada', modos:['metro','autocarro','eletrico','comboio','barco']},
       {nome:'Aeroporto de Arlanda, viagem simples com passagem', preco:200, unidade:'viagem', quando:'chegada', modos:['comboio','aeroporto']}
     ]},
-  'Oslo': {operador:'Ruter', url:'https://ruter.no/en/', actualizado:'2026-08-24', fonte:'https://ruter.no/en/', moeda:'NOK',
-    bilhetes:[]},
+  /* O site da Ruter descreve os bilhetes mas não põe o preço no HTML
+     estático (widget de preços em JavaScript); só se confirmou o valor do
+     passe de 30 dias, publicado no comunicado oficial da subida anual de
+     preços (em vigor desde 25/01/2026). O preço do bilhete avulso não se
+     conseguiu confirmar por nenhuma fonte estática. */
+  'Oslo': {operador:'Ruter', url:'https://ruter.no/en/om-vare-billetter/ticket-prices', actualizado:'2026-09-01', fonte:'https://www.mynewsdesk.com/no/ruter/pressreleases/nye-billettpriser-fra-25-januar-3423950', moeda:'NOK',
+    nota:'Só se confirmou o preço do passe de 30 dias; o do bilhete avulso não está publicado em texto simples nem em nenhuma fonte que se tenha achado.',
+    bilhetes:[{nome:'Passe de 30 dias, zona 1 (Oslo)', preco:805, unidade:'30 dias', quando:'antes', modos:['autocarro','eletrico','metro']}]},
   /* Helsínquia não estava na tabela. Lido na HSL a 30/08/2026: o simples
      em /single-tickets, os passes em /day-tickets. São os valores de
      adulto na zona AB, que é a cidade. */
@@ -803,12 +819,19 @@ const TRANSPORTES_DESTINO = {
     ]},
   'Faro': {operador:'Vamus Algarve', url:'https://www.vamusalgarve.pt/', actualizado:'2026-08-24', fonte:'https://www.vamusalgarve.pt/',
     bilhetes:[]},
-  /* Não estava na tabela. A AzoresBus (Vale do Ave Açores) tomou conta de
-     toda a rede de autocarros de São Miguel a 1 de Setembro de 2025,
-     substituindo três operadores antigos; achada a 31/08/2026. A página de
-     tarifários é montada em JavaScript, sem preços no HTML estático. */
-  'Ponta Delgada': {operador:'AzoresBus', url:'https://azoresbus.pt/Tariff', actualizado:'2026-08-31', fonte:'https://azoresbus.pt/Tariff',
-    bilhetes:[]},
+  /* A AzoresBus (Vale do Ave Açores) tomou conta de toda a rede de
+     autocarros de São Miguel a 1 de Setembro de 2025, mas a página de
+     tarifários dela é montada em JavaScript, sem preços no HTML estático.
+     A rede que se confirmou foi outra: a Mini BUS, da Câmara Municipal,
+     que serve só a cidade (linhas C e D), com página oficial estática. */
+  'Ponta Delgada': {operador:'Mini BUS (Câmara Municipal de Ponta Delgada)', url:'https://www.cm-pontadelgada.pt/p/pdlminibus', actualizado:'2026-08-19', fonte:'https://www.cm-pontadelgada.pt/p/pdlminibus',
+    nota:'Serve só a cidade de Ponta Delgada (linhas C e D). Para o resto da ilha de São Miguel, a rede é a AzoresBus, cujo tarifário não está confirmado.',
+    bilhetes:[
+      {nome:'Bilhete de bordo (avulso)', preco:0.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete pré-comprado, 10 viagens', preco:4.00, unidade:'10 viagens', quando:'antes', modos:['autocarro']},
+      {nome:'Passe semanal', preco:5.00, unidade:'semana', quando:'antes', modos:['autocarro']},
+      {nome:'Passe geral, mensal', preco:16.00, unidade:'mês', quando:'antes', modos:['autocarro']}
+    ]},
   /* Ronda das cidades sem aeroporto acrescentadas a este ficheiro (ver
      CIDADES): lidas todas a 31/08/2026. */
   'Coimbra': {operador:'SMTUC', url:'https://www.smtuc.pt/tabela-tarifaria/', actualizado:'2026-08-31', fonte:'https://www.smtuc.pt/wp-content/uploads/2026/04/TARIFARIO-2026-versao-30-abril-2026-.pdf',
@@ -916,8 +939,17 @@ const TRANSPORTES_DESTINO = {
      quando passaram a poder ser pesquisadas. Reconferido a 01/09/2026. */
   /* Site em JavaScript, sem PDF de tarifário achado (site novo, app
      Bragança Bus): fica o operador, sem preço. */
-  'Bragança': {operador:'STUB (Serviço de Transportes Urbanos de Bragança)', url:'https://bus.cm-braganca.pt/', actualizado:'2026-09-01', fonte:'https://bus.cm-braganca.pt/',
-    bilhetes:[]},
+  /* O STUB é gratuito para toda a população desde a pandemia, uma medida
+     que a autarquia manteve (declaração do então presidente, 2023). Desde
+     essa data houve duas mudanças de executivo (Março de 2024 e Outubro
+     de 2025); não há uma declaração directa de 2026 a confirmar que a
+     gratuitidade continua, mas uma reportagem de 08/06/2026 sobre o plano
+     de mobilidade do concelho, já sob a presidente actual, descreve
+     linhas, horários e autocarros novos sem mencionar tarifa nenhuma, o
+     que seria de esperar se a tivessem reintroduzido. O site oficial não
+     publica tarifário porque, precisamente, não há preço a cobrar. */
+  'Bragança': {operador:'STUB (Serviço de Transportes Urbanos de Bragança)', url:'https://bus.cm-braganca.pt/', actualizado:'2026-09-01', fonte:'https://www.mdb.pt/noticia/plano-de-mobilidade-preve-novas-rotas-de-autocarros-e-mais-eletricos',
+    bilhetes:[{nome:'Todas as linhas urbanas e rurais', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro']}]},
   /* Idem: página de tarifários em JavaScript, sem PDF alternativo achado. */
   'Vila Real': {operador:'Urbanos de Vila Real (TUVR)', url:'https://www.urbanosvilareal.pt/pt/tarifarios/', actualizado:'2026-09-01', fonte:'https://www.urbanosvilareal.pt/pt/tarifarios/',
     bilhetes:[]},
@@ -963,8 +995,13 @@ const TRANSPORTES_DESTINO = {
       {nome:'0 a 9 km', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'Mais de 18 km', preco:2.60, unidade:'viagem', quando:'chegada', modos:['autocarro']}
     ]},
-  'Nice': {operador:"Lignes d'Azur", url:'https://www.lignesdazur.com/', actualizado:'2026-08-24', fonte:'https://www.lignesdazur.com/',
-    bilhetes:[]},
+  'Nice': {operador:"Lignes d'Azur", url:'https://www.lignesdazur.com/fr/titres-et-tarifs', actualizado:'2026-09-01', fonte:'https://www.lignesdazur.com/uploads/Guide_des_tarifs_FR_Septembre_2026_1_0d72c9757b.pdf',
+    bilhetes:[
+      {nome:'Solo, 1 voyage', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Pass 1 jour', preco:7.00, unidade:'dia', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Pass 7 jours', preco:20.00, unidade:'7 dias', quando:'antes', modos:['autocarro','eletrico']},
+      {nome:'Pass 30 jours', preco:60.00, unidade:'30 dias', quando:'antes', modos:['autocarro','eletrico']}
+    ]},
   /* Lida a 31/08/2026: a página filtra por 160 produtos espalhados por 5
      páginas, sem URL fixo por título. Achados o bilhete avulso e o carnet de
      10; o CityPass turístico de 24/48/72 h existe (visto no catálogo), mas
@@ -1017,8 +1054,14 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete diário', preco:3.98, unidade:'24 h', quando:'antes', modos:['autocarro','eletrico']},
       {nome:'Bilhete de 3 dias', preco:9.29, unidade:'3 dias', quando:'antes', modos:['autocarro','eletrico']}
     ]},
-  'Reiquiavique': {operador:'Strætó', url:'https://straeto.is/', actualizado:'2026-08-24', fonte:'https://straeto.is/', moeda:'ISK',
-    bilhetes:[]},
+  'Reiquiavique': {operador:'Strætó', url:'https://straeto.is/en/store/pricing', actualizado:'2026-09-01', fonte:'https://straeto.is/en/store/pricing', moeda:'ISK',
+    nota:'Zona da capital (Reiquiavique e concelhos vizinhos); o preço avulso paga-se por contactless, pela app ou com o cartão Klapp.',
+    bilhetes:[
+      {nome:'Bilhete simples (adulto)', preco:690, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Passe de 24 horas', preco:2750, unidade:'24 h', quando:'antes', modos:['autocarro']},
+      {nome:'Passe de 72 horas', preco:6000, unidade:'72 h', quando:'antes', modos:['autocarro']},
+      {nome:'Passe de 30 dias', preco:12000, unidade:'30 dias', quando:'antes', modos:['autocarro']}
+    ]},
   'Bogotá': {operador:'TransMilenio', url:'https://www.transmilenio.gov.co/viaje-en-transmi/medios-de-pago/tarifas-del-sistema-transmilenio', actualizado:'2026-08-31', fonte:'https://www.transmilenio.gov.co/viaje-en-transmi/medios-de-pago/tarifas-del-sistema-transmilenio',
     moeda:'COP', nota:'Tarifa única, sem zonas, o dia inteiro. É preciso o cartão tullave (8.000 COP à parte) para viajar.',
     bilhetes:[
@@ -1174,8 +1217,16 @@ const TRANSPORTES_DESTINO = {
      para citar como fonte (a página do catálogo de serviços falhou a
      ligação, e a da Prefeitura monta o conteúdo em JavaScript). Sem uma
      fonte primária legível, fica só o operador. Verificado a 31/08/2026. */
-  'Fortaleza': {operador:'ETUFOR', url:'https://mobilidade.fortaleza.ce.gov.br/transporte/etufor.html', actualizado:'2026-08-31', fonte:'https://mobilidade.fortaleza.ce.gov.br/transporte/etufor.html',
-    moeda:'BRL', bilhetes:[]},
+  /* A página institucional da ETUFOR não publica o valor da tarifa; o
+     reajuste para 2026 foi noticiado por vários órgãos de imprensa
+     especializados em transportes, com a mesma fonte (a própria ETUFOR),
+     por isso usa-se essa cobertura em vez do site oficial. */
+  'Fortaleza': {operador:'ETUFOR', url:'https://mobilidade.fortaleza.ce.gov.br/transporte/etufor.html', actualizado:'2026-09-01', fonte:'https://diariodotransporte.com.br/2025/11/22/fortaleza-ce-tera-reajuste-na-tarifa-de-onibus-a-partir-de-1o-de-janeiro-de-2026-informa-etufor/',
+    moeda:'BRL',
+    bilhetes:[
+      {nome:'Passagem inteira', preco:5.40, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Passagem estudantil', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   'Casablanca': {operador:'Casa Tramway', url:'https://www.casatramway.ma/ticket-abonnement/nos-offres', actualizado:'2026-08-31', fonte:'https://www.casatramway.ma/ticket-abonnement/nos-offres',
     moeda:'MAD', nota:'O cartão recarregável baixa o preço por viagem para 6 dh, mas exige 15 dh à parte pelo cartão (válido 5 anos).',
     bilhetes:[
