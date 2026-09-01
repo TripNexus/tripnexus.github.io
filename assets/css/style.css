@@ -800,6 +800,13 @@ a.btn-resumo{text-decoration:none;display:inline-block;cursor:pointer}
   .chat-fechar,.chip-x,.aviso-fechar,.alerta-remover,#fechar-alertas{
     min-width:2.75rem;min-height:2.75rem;display:inline-flex;align-items:center;justify-content:center;
   }
+
+  /* ── o mesmo dentro dos painéis dos dropdowns do formulário: as
+     linhas de opção rondavam os 41px, e os botões +/- do contador de
+     passageiros os 32px, ambos abaixo do mínimo ── */
+  .opcao-radio,.opcao-check{min-height:2.75rem}
+  .contador-ctl button{width:2.75rem;height:2.75rem}
+  .painel-ok{min-height:2.75rem;display:flex;align-items:center;justify-content:center}
 }
 
 
