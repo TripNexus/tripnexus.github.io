@@ -346,14 +346,23 @@ const TRANSPORTES_DESTINO = {
       {nome:'Andante Tour 1 (toda a rede)', preco:7.75, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','comboio','aeroporto']},
       {nome:'Andante Tour 3 (toda a rede)', preco:16.55, unidade:'72 h', quando:'chegada', modos:['metro','autocarro','comboio','aeroporto']}
     ]},
-  'Madrid': {operador:'Metro de Madrid / CRTM', url:'https://www.crtm.es/billetes-y-tarifas/', actualizado:'2026-01-01',
+  /* Estava com `actualizado` no dia em que a tarifa entrou em vigor, não no
+     dia em que alguém a foi ver: exactamente o hábito que este sistema
+     existe para acabar. Reconferido a 01/09/2026 contra o BOCM de
+     31/12/2025 (fonte), não contra a página institucional (que só resume
+     «desde X €», sem discriminar por zona/duração): o bilhete de 10
+     viagens estava em 12,20 e são 12,50; o turístico de 1 dia estava em
+     8,40 e são 10,30; o de 5 dias estava em 26,80 e são 33,40. O simples e
+     o suplemento de aeroporto não mudaram. */
+  'Madrid': {operador:'Metro de Madrid / CRTM', url:'https://www.crtm.es/billetes-y-tarifas/', actualizado:'2026-09-01',
+    fonte:'https://www.crtm.es/media/sjqj4ggj/bocm-20251231-tarifas_transporte.pdf',
     cartao:{nome:'Tarjeta Multi', preco:2.50, nota:'obrigatória para carregar bilhetes'},
     nota:'O suplemento de aeroporto é 3 € por viagem e não está incluído nos bilhetes simples.',
     bilhetes:[
       {nome:'Bilhete simples (zona A)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
-      {nome:'Bilhete de 10 viagens', preco:12.20, unidade:'10 viagens', quando:'chegada', modos:['metro','autocarro']},
-      {nome:'Abono turístico 1 dia (zona A)', preco:8.40, unidade:'dia', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']},
-      {nome:'Abono turístico 5 dias (zona A)', preco:26.80, unidade:'5 dias', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']}
+      {nome:'Bilhete de 10 viagens (zona A)', preco:12.50, unidade:'10 viagens', quando:'chegada', modos:['metro','autocarro']},
+      {nome:'Abono turístico 1 dia (zona A)', preco:10.30, unidade:'dia', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']},
+      {nome:'Abono turístico 5 dias (zona A)', preco:33.40, unidade:'5 dias', quando:'antes', modos:['metro','autocarro','comboio','aeroporto']}
     ]},
   /* O endereço que aqui estava dava 404. Lido no tarifário da TMB a
      18/08/2026: simples 2,65 -> 2,90, T-casual 12,55 -> 13,00. Os Hola
