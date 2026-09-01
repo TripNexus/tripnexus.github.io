@@ -27,6 +27,17 @@ function distanciaKm(a, b){
   return 2 * R * Math.asin(Math.sqrt(s));
 }
 
+/* Fase 2: para uma cidade sem voo comparável (semAeroporto ou
+   vooLimitado), qual dos três aeroportos internacionais de Portugal fica
+   mais perto, por distância real às coordenadas. É sempre um dos três: não
+   se está a inventar um quarto aeroporto, só a escolher entre os que já
+   existem no site. */
+const AEROPORTOS_PORTUGAL = ['Lisboa', 'Porto', 'Faro'];
+function gatewayMaisProximo(cidade){
+  const gateways = AEROPORTOS_PORTUGAL.map(n => cidadePorNome(n));
+  return gateways.reduce((mais, g) => distanciaKm(cidade, g) < distanciaKm(cidade, mais) ? g : mais);
+}
+
 const MULT_CLASSE = {economica:1, premium:1.55, executiva:2.6, primeira:3.8};
 const NOME_CLASSE = {economica:'Económica', premium:'Económica premium', executiva:'Executiva', primeira:'Primeira classe'};
 

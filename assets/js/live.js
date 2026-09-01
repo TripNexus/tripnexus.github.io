@@ -481,6 +481,27 @@ async function vooRealDeTroco(origem, destino, ida, adultos, criancas, classe){
   }catch(e){ return null; }
 }
 
+/* Fase 2: troca a estimativa do troço aéreo (gateway → destino, dentro do
+   #bloco-troco-aereo que desenharResultados() já desenhou) pela tarifa
+   real, assim que ela chegar. Usa o mesmo vooRealDeTroco() da viagem por
+   várias cidades, e a mesma linhaPernaMulti() para desenhar a linha: é a
+   forma que já existe de mostrar «perna com tarifa real», não se inventou
+   nada de novo só para isto. */
+async function actualizarTrocoAereoReal(ctx, gateway, precoTerra){
+  const zona = document.getElementById('troco-aereo-voo');
+  if(!zona) return;
+  const v = await vooRealDeTroco(gateway, ctx.destino, ctx.ida, ctx.adultos, ctx.criancas, ctx.classe);
+  if(!v || !(v.preco > 0)) return;   /* sem tarifa real: a estimativa já lá está, fica */
+  const perna = {
+    troco: {origem: gateway, destino: ctx.destino, data: ctx.ida}, real: true,
+    precoFinal: Math.round(v.preco), companhia: v.companhia, codigo: v.codigo,
+    escalas: v.escalas, duracao: v.duracao, url: v.url
+  };
+  zona.innerHTML = linhaPernaMulti(perna, ctx);
+  const total = document.getElementById('troco-aereo-total');
+  if(total) total.innerHTML = `<strong>Total, só ida: ${euros(precoTerra + perna.precoFinal)}</strong> (voo com tarifa real)`;
+}
+
 /* Mesma fonte e o mesmo par de pedidos (hotéis + casas) que
    `actualizarAlojamentoReal`, mas para uma estadia isolada: a viagem
    multi-cidade pede uma vez por cidade, não uma vez só para o destino
