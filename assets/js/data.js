@@ -1399,6 +1399,12 @@ const TARIFAS_CP = {
     'Covilhã':          {preco:19.80, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-covilha-guarda'},
     'Guarda':           {preco:23.65, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-covilha-guarda'},
     'Santarém':         {preco:13.55, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-covilha-guarda'}
+  },
+  'Porto': {
+    'Coimbra':          {preco:15.25, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
+    'Aveiro':           {preco:13.55, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
+    'Braga':            {preco:13.55, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'},
+    'Viana do Castelo': {preco:13.55, servico:'Intercidades', actualizado:'2026-09-01', fonte:'https://www.cp.pt/info/documents/d/cp/precos-intercidades-lisboa-porto-braga-guimaraes-valenca'}
   }
 };
 

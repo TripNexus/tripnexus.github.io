@@ -255,3 +255,36 @@ tinha a data certa: «Em vigor a partir de 1 de janeiro de 2026». A lição:
 um PDF ligado a partir de uma página institucional pode não ser o mais
 recente que essa mesma instituição já publicou; vale a pena listar todos
 os ficheiros da página, não só seguir a primeira ligação óbvia.
+
+### Etapa 2, a 01 de Setembro: tarifário real da CP a partir do Porto
+
+O `TARIFAS_CP` só tinha rotas com origem em Lisboa; Braga, Viana do
+Castelo, Aveiro e Coimbra têm o Porto como aeroporto mais próximo
+(`gatewayMaisProximo`), não Lisboa, por isso o troço terrestre da Fase 2
+caía sempre na estimativa do autocarro em vez do preço real do comboio.
+Faltava ler as tarifas com origem no Porto do mesmo PDF já usado
+(`precos-intercidades-lisboa-porto-braga-guimaraes-valenca`), tentativa
+que tinha ficado por fazer numa ronda anterior por o PDF listar todas as
+estações da linha numa única tabela em cascata, sem repetir o nome da
+origem em texto simples por cada bloco.
+
+A tabela acabou por ceder a uma leitura por posição (pymupdf,
+`get_text("dict")`, coordenadas x/y de cada palavra): o nome de cada
+estação-destino e o preço da mesma linha alinham sempre à mesma coordenada
+x, o que dá uma lista de linhas em ordem; e como esta é a matriz
+triangular clássica de tarifário ferroviário (a origem N lista sempre as
+estações a jusante da origem N-1, uma a menos de cada vez: 31, 30, 29...),
+bastou partir essa lista em blocos de tamanho decrescente para saber a que
+origem cada bloco pertence, sem precisar de ler as etiquetas verticais
+(rodadas 90°) que o PDF usa para o nome da origem, que o extractor de
+texto simples não conseguia posicionar com fiabilidade.
+
+| Rota | Preço (2ª classe, bilhete simples ida) |
+|---|---|
+| Porto → Braga | 13,55 € |
+| Porto → Viana do Castelo | 13,55 € |
+| Porto → Aveiro | 13,55 € |
+| Porto → Coimbra | 15,25 € |
+
+O hash do PDF (`HASHES_CP`) não mudou desde a última leitura, por isso
+manteve-se o mesmo.
