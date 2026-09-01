@@ -34,6 +34,26 @@ if(aplicarURL()){ if(ESTADO.explorar) executarExploracao(); else executarPesquis
   document.getElementById('cookies-nao').onclick = () => decidir('nao');
 })();
 
+/* ── menu do telemóvel (o nav-principal vira painel, ver o CSS
+   abaixo de 720px) ──────────────────────────────────────────── */
+(function(){
+  const btn = document.getElementById('btn-menu-movel');
+  const nav = document.getElementById('nav-principal');
+  if(!btn || !nav) return;
+  const fechar = () => { nav.classList.remove('aberto'); btn.setAttribute('aria-expanded', 'false'); };
+  const alternar = () => {
+    const aberto = nav.classList.toggle('aberto');
+    btn.setAttribute('aria-expanded', String(aberto));
+  };
+  btn.addEventListener('click', alternar);
+  /* qualquer botão do menu que o utilizador escolha fecha-o a seguir:
+     ficar aberto por cima do resultado da escolha só atrapalhava */
+  nav.addEventListener('click', e => { if(e.target.closest('.nav-btn')) fechar(); });
+  document.addEventListener('click', e => {
+    if(nav.classList.contains('aberto') && !nav.contains(e.target) && e.target !== btn && !btn.contains(e.target)) fechar();
+  });
+})();
+
 /* ── tema claro/escuro ───────────────────────────────────────── */
 (function(){
   const btn = document.getElementById('btn-tema');

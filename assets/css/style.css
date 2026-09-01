@@ -71,6 +71,16 @@ img{max-width:100%}
 .nav-btn:hover{background:rgba(255,255,255,.1);color:#fff}
 .nav-btn.activo{background:var(--indigo);color:#fff}
 .fogo{font-size:.85em}
+/* botão de menu (hambúrguer): só existe visualmente abaixo de 720px,
+   ver media query no fim do ficheiro. Em ecrã largo o nav-principal já
+   cabe todo na barra, não há nada para esconder. */
+.btn-menu-movel{
+  display:none;background:transparent;border:0;padding:.5rem;border-radius:.5rem;
+  width:2.75rem;height:2.75rem;align-items:center;justify-content:center;flex-shrink:0;
+}
+.btn-menu-movel:hover{background:rgba(255,255,255,.1)}
+.icone-hamburger{display:flex;flex-direction:column;gap:.28rem;width:1.35rem}
+.icone-hamburger span{display:block;height:2px;border-radius:2px;background:#fff}
 
 /* ── herói e cartão de pesquisa ─────────────────────────────── */
 .hero{
@@ -750,6 +760,40 @@ a.btn-resumo{text-decoration:none;display:inline-block;cursor:pointer}
   .linha-oferta{flex-wrap:wrap}
   .oferta-preco{margin-left:auto}
   .troco{border-bottom:1px dashed #e2e5f0;padding-bottom:.6rem}
+
+  /* ── cabeçalho tipo app: uma barra compacta, o resto num painel ──
+     Sem isto o cabeçalho de desktop, só empilhado, ocupava mais de
+     metade do ecrã de um telemóvel antes de haver conteúdo nenhum. */
+  .topbar-inner{padding:.55rem .9rem;position:relative}
+  .logo{font-size:1.15rem}
+  .logo-icone{width:1.85rem;height:1.85rem}
+  .btn-menu-movel{display:inline-flex}
+  .nav-principal{
+    display:none;position:absolute;left:0;right:0;top:100%;
+    flex-direction:column;align-items:stretch;gap:.15rem;
+    background:#14163a;border-bottom:1px solid rgba(255,255,255,.08);
+    padding:.6rem .9rem calc(.9rem + env(safe-area-inset-bottom));
+    box-shadow:0 12px 24px rgba(0,0,0,.25);
+    max-height:calc(100vh - 100%);overflow-y:auto;
+  }
+  .nav-principal.aberto{display:flex}
+  .nav-principal .nav-btn{
+    text-align:left;border-radius:.6rem;padding:.8rem .7rem;font-size:1rem;
+    min-height:2.75rem;display:flex;align-items:center;
+  }
+  .nav-principal .sel-moeda{width:100%;padding:.8rem .7rem;min-height:2.75rem;border-radius:.6rem}
+
+  /* ── abas dos resultados: uma faixa que desliza, não que quebra ── */
+  .abas-resultados{
+    flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+    margin-left:-1rem;margin-right:-1rem;padding-left:1rem;padding-right:1rem;
+  }
+  .abas-resultados::-webkit-scrollbar{display:none}
+  .aba{flex-shrink:0;min-height:2.75rem;display:inline-flex;align-items:center}
+
+  /* ── alvos maiores que 44px, mínimo recomendado para o dedo ── */
+  #btn-tema,#btn-alertas{min-width:2.75rem;min-height:2.75rem}
+  .btn-cookie-nao,.btn-cookie-sim{min-height:2.75rem}
 }
 
 
