@@ -3,7 +3,21 @@
    ═══════════════════════════════════════════════════════════════ */
 
 /* Cidades disponíveis no autocomplete (nome, país, bandeira, IATA, lat, lng,
-   índice de custo local de 0.6 a 1.6 usado nas estimativas de alojamento). */
+   índice de custo local de 0.6 a 1.6 usado nas estimativas de alojamento).
+
+   14 cidades acrescentadas a 03/09/2026, depois de um utilizador reportar
+   que faltavam aeroportos: cruzou-se a rede real de destinos da TAP (a
+   companhia de bandeira, o sinal mais relevante para quem usa este site)
+   com a lista aqui, e ficaram de fora Bissau, São Tomé, Mindelo, Chicago,
+   Washington D.C., Bilbau, Santiago de Compostela, Brasília, Belo
+   Horizonte, Dakar, Acra, Argel, Luxemburgo e Bolonha, todas com voo TAP
+   real e activo. Não é uma lista exaustiva de todos os 84+ destinos da
+   TAP: ficaram por acrescentar dezenas de rotas menores (a maioria no
+   Brasil e na rede regional espanhola), que podem entrar numa próxima
+   ronda se fizer sentido. Nomes em português: onde a TAP/Wikipédia lista
+   a cidade só em inglês, usa-se o exónimo português corrente (Bilbau,
+   Acra, Argel, Bolonha), tal como já se fazia para Londres ou Genebra;
+   ver `WIKI_EN` para a forma inglesa usada nas pesquisas de alojamento. */
 const CIDADES = [
   {n:'Lisboa',        p:'Portugal',        f:'🇵🇹', i:'LIS', la:38.716, lo:-9.139, c:1.00},
   {n:'Porto',         p:'Portugal',        f:'🇵🇹', i:'OPO', la:41.149, lo:-8.611, c:0.92},
@@ -59,6 +73,8 @@ const CIDADES = [
   {n:'Palma de Maiorca',p:'Espanha',       f:'🇪🇸', i:'PMI', la:39.570, lo: 2.650, c:1.08},
   {n:'Ibiza',         p:'Espanha',         f:'🇪🇸', i:'IBZ', la:38.907, lo: 1.420, c:1.25},
   {n:'Tenerife',      p:'Espanha',         f:'🇪🇸', i:'TFS', la:28.044, lo:-16.572,c:1.00},
+  {n:'Bilbau',        p:'Espanha',         f:'🇪🇸', i:'BIO', la:43.301, lo:-2.911, c:0.90},
+  {n:'Santiago de Compostela',p:'Espanha', f:'🇪🇸', i:'SCQ', la:42.896, lo:-8.415, c:0.88},
   {n:'Paris',         p:'França',          f:'🇫🇷', i:'CDG', la:48.857, lo: 2.352, c:1.35},
   {n:'Nice',          p:'França',          f:'🇫🇷', i:'NCE', la:43.710, lo: 7.262, c:1.25},
   {n:'Lyon',          p:'França',          f:'🇫🇷', i:'LYS', la:45.764, lo: 4.836, c:1.10},
@@ -72,12 +88,14 @@ const CIDADES = [
   {n:'Veneza',        p:'Itália',          f:'🇮🇹', i:'VCE', la:45.440, lo:12.316, c:1.30},
   {n:'Nápoles',       p:'Itália',          f:'🇮🇹', i:'NAP', la:40.852, lo:14.268, c:0.98},
   {n:'Florença',      p:'Itália',          f:'🇮🇹', i:'FLR', la:43.770, lo:11.258, c:1.20},
+  {n:'Bolonha',       p:'Itália',          f:'🇮🇹', i:'BLQ', la:44.535, lo:11.289, c:1.15},
   {n:'Berlim',        p:'Alemanha',        f:'🇩🇪', i:'BER', la:52.520, lo:13.405, c:1.15},
   {n:'Munique',       p:'Alemanha',        f:'🇩🇪', i:'MUC', la:48.135, lo:11.582, c:1.25},
   {n:'Frankfurt',     p:'Alemanha',        f:'🇩🇪', i:'FRA', la:50.110, lo: 8.682, c:1.18},
   {n:'Hamburgo',      p:'Alemanha',        f:'🇩🇪', i:'HAM', la:53.551, lo: 9.994, c:1.15},
   {n:'Amesterdão',    p:'Países Baixos',   f:'🇳🇱', i:'AMS', la:52.370, lo: 4.895, c:1.40},
   {n:'Bruxelas',      p:'Bélgica',         f:'🇧🇪', i:'BRU', la:50.850, lo: 4.352, c:1.15},
+  {n:'Luxemburgo',    p:'Luxemburgo',      f:'🇱🇺', i:'LUX', la:49.623, lo: 6.204, c:1.35},
   {n:'Zurique',       p:'Suíça',           f:'🇨🇭', i:'ZRH', la:47.377, lo: 8.541, c:1.60},
   {n:'Genebra',       p:'Suíça',           f:'🇨🇭', i:'GVA', la:46.204, lo: 6.143, c:1.55},
   {n:'Viena',         p:'Áustria',         f:'🇦🇹', i:'VIE', la:48.208, lo:16.374, c:1.15},
@@ -97,7 +115,10 @@ const CIDADES = [
   {n:'Istambul',      p:'Turquia',         f:'🇹🇷', i:'IST', la:41.008, lo:28.978, c:0.70},
   {n:'Marraquexe',    p:'Marrocos',        f:'🇲🇦', i:'RAK', la:31.630, lo:-7.981, c:0.60},
   {n:'Casablanca',    p:'Marrocos',        f:'🇲🇦', i:'CMN', la:33.573, lo:-7.590, c:0.62},
+  {n:'Argel',         p:'Argélia',         f:'🇩🇿', i:'ALG', la:36.691, lo: 3.215, c:0.58},
   {n:'Cairo',         p:'Egipto',          f:'🇪🇬', i:'CAI', la:30.044, lo:31.236, c:0.55},
+  {n:'Dakar',         p:'Senegal',         f:'🇸🇳', i:'DSS', la:14.671, lo:-17.067,c:0.62},
+  {n:'Acra',          p:'Gana',            f:'🇬🇭', i:'ACC', la:5.605,  lo:-0.167, c:0.58},
   {n:'Dubai',         p:'Emiratos Árabes Unidos', f:'🇦🇪', i:'DXB', la:25.204, lo:55.271, c:1.30},
   {n:'Doha',          p:'Catar',           f:'🇶🇦', i:'DOH', la:25.285, lo:51.531, c:1.25},
   {n:'Nova Iorque',   p:'Estados Unidos',  f:'🇺🇸', i:'JFK', la:40.712, lo:-74.006,c:1.60},
@@ -106,10 +127,14 @@ const CIDADES = [
   {n:'São Francisco', p:'Estados Unidos',  f:'🇺🇸', i:'SFO', la:37.775, lo:-122.419,c:1.60},
   {n:'Orlando',       p:'Estados Unidos',  f:'🇺🇸', i:'MCO', la:28.538, lo:-81.379,c:1.25},
   {n:'Boston',        p:'Estados Unidos',  f:'🇺🇸', i:'BOS', la:42.360, lo:-71.059,c:1.45},
+  {n:'Chicago',       p:'Estados Unidos',  f:'🇺🇸', i:'ORD', la:41.979, lo:-87.905,c:1.40},
+  {n:'Washington D.C.',p:'Estados Unidos', f:'🇺🇸', i:'IAD', la:38.944, lo:-77.456,c:1.45},
   {n:'Toronto',       p:'Canadá',          f:'🇨🇦', i:'YYZ', la:43.653, lo:-79.383,c:1.30},
   {n:'Montreal',      p:'Canadá',          f:'🇨🇦', i:'YUL', la:45.502, lo:-73.567,c:1.20},
   {n:'São Paulo',     p:'Brasil',          f:'🇧🇷', i:'GRU', la:-23.551,lo:-46.633,c:0.80},
   {n:'Rio de Janeiro',p:'Brasil',          f:'🇧🇷', i:'GIG', la:-22.907,lo:-43.173,c:0.85},
+  {n:'Brasília',      p:'Brasil',          f:'🇧🇷', i:'BSB', la:-15.871,lo:-47.919,c:0.78},
+  {n:'Belo Horizonte',p:'Brasil',          f:'🇧🇷', i:'CNF', la:-19.624,lo:-43.972,c:0.72},
   {n:'Salvador',      p:'Brasil',          f:'🇧🇷', i:'SSA', la:-12.977,lo:-38.502,c:0.70},
   {n:'Recife',        p:'Brasil',          f:'🇧🇷', i:'REC', la:-8.058, lo:-34.883,c:0.68},
   {n:'Fortaleza',     p:'Brasil',          f:'🇧🇷', i:'FOR', la:-3.732, lo:-38.527,c:0.66},
@@ -138,8 +163,11 @@ const CIDADES = [
   {n:'Auckland',      p:'Nova Zelândia',   f:'🇳🇿', i:'AKL', la:-36.849,lo:174.763,c:1.25},
   {n:'Cidade do Cabo',p:'África do Sul',   f:'🇿🇦', i:'CPT', la:-33.925,lo:18.424, c:0.75},
   {n:'Luanda',        p:'Angola',          f:'🇦🇴', i:'LAD', la:-8.839, lo:13.289, c:1.10},
+  {n:'Bissau',        p:'Guiné-Bissau',    f:'🇬🇼', i:'OXB', la:11.895, lo:-15.654,c:0.55},
   {n:'Maputo',        p:'Moçambique',      f:'🇲🇿', i:'MPM', la:-25.966,lo:32.573, c:0.75},
+  {n:'São Tomé',      p:'São Tomé e Príncipe', f:'🇸🇹', i:'TMS', la:0.378, lo:6.712, c:0.85},
   {n:'Sal',           p:'Cabo Verde',      f:'🇨🇻', i:'SID', la:16.741, lo:-22.949,c:0.80},
+  {n:'Mindelo',       p:'Cabo Verde',      f:'🇨🇻', i:'VXE', la:16.833, lo:-25.057,c:0.78},
   {n:'Praia',         p:'Cabo Verde',      f:'🇨🇻', i:'RAI', la:14.933, lo:-23.513,c:0.75}
 ];
 
@@ -1489,7 +1517,9 @@ const WIKI_EN = {
   'Roma':'Rome', 'Atenas':'Athens', 'Budapeste':'Budapest',
   'Marraquexe':'Marrakesh', 'Rio de Janeiro':'Rio de Janeiro',
   'Barcelona':'Barcelona', 'Paris':'Paris', 'Funchal':'Funchal',
-  'Ponta Delgada':'Ponta Delgada'
+  'Ponta Delgada':'Ponta Delgada',
+  'Bilbau':'Bilbao', 'Acra':'Accra', 'Argel':'Algiers', 'Bolonha':'Bologna',
+  'Luxemburgo':'Luxembourg'
 };
 
 /* Destinos considerados na aba «Ofertas em conta». */
