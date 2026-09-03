@@ -242,7 +242,7 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
 
 ## Estado em 03 de Setembro de 2026
 
-249 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+261 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 A partir daqui, a lista de cidades já não é uma lista fechada: está a
@@ -256,7 +256,7 @@ contagem, não os nomes todos: a lista completa está sempre em
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 152 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 164 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -422,6 +422,26 @@ a Mongólia: o código IATA antigo (ULN) ficou preso ao aeroporto antigo,
 hoje sem voos comerciais; o aeroporto novo, Chinggis Khaan (2021), usa
 o código UBN, confirmado contra várias fontes por haver confusão
 generalizada online entre os dois.
+
+**Lote 5, 03 de Setembro: capitais da Oceânia (12 cidades).** Nadi
+(Fiji), Tarawa (Quiribáti), Majuro (Ilhas Marshall), Pohnpei
+(Micronésia), Yaren (Nauru), Koror (Palau), Port Moresby (Papua-Nova
+Guiné), Apia (Samoa), Honiara (Ilhas Salomão), Nuku'alofa (Tonga),
+Funafuti (Tuvalu), Port Vila (Vanuatu). Fecha-se aqui o projecto: já não
+falta nenhuma capital de nenhum continente.
+
+Três casos onde a capital oficial não tem o aeroporto internacional
+real, mesma lógica já usada em África e na Ásia: **Fiji** tem Suva como
+capital, mas 97% do tráfego internacional passa por Nadi, não pelo
+aeroporto de Suva; **Palau** tem Ngerulmud (em Melekeok) como capital
+desde 2006, mas o aeroporto fica em Koror, a antiga capital, ainda o
+destino a que todas as fontes de viagem associam o código ROR; a
+**Micronésia** tem Palikir como capital, sem aeroporto próprio, servida
+pelo aeroporto de Pohnpei a 10 km, junto a Kolonia.
+
+**Nauru** é um caso à parte: é a única república do mundo sem capital
+oficial. Yaren, onde ficam o governo e o aeroporto, funciona como
+capital de facto, por isso é a que entra aqui.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 

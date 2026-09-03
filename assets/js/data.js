@@ -337,7 +337,31 @@ const CIDADES = [
   {n:'Islamabad',          p:'Paquistão',       f:'🇵🇰', i:'ISB', la:33.549, lo:72.826, c:0.50},
   {n:'Manila',             p:'Filipinas',       f:'🇵🇭', i:'MNL', la:14.508, lo:121.020,c:0.65},
   {n:'Colombo',            p:'Sri Lanka',       f:'🇱🇰', i:'CMB', la:7.181,  lo:79.884, c:0.55},
-  {n:'Dili',               p:'Timor-Leste',     f:'🇹🇱', i:'DIL', la:-8.546, lo:125.525,c:0.60}
+  {n:'Dili',               p:'Timor-Leste',     f:'🇹🇱', i:'DIL', la:-8.546, lo:125.525,c:0.60},
+  /* Lote 5 (capitais da Oceânia), 03/09/2026. Três casos onde a capital
+     oficial/constitucional não tem o aeroporto internacional real, mesma
+     lógica já usada em África e na Ásia: Fiji tem Suva como capital, mas
+     97% do tráfego internacional passa por Nadi, não pelo aeroporto de
+     Suva; Palau tem Ngerulmud (Melekeok) como capital desde 2006, mas o
+     aeroporto fica em Koror, a antiga capital e ainda o destino a que
+     todas as fontes de viagem associam o código ROR; a Micronésia tem
+     Palikir como capital, sem aeroporto próprio, servida pelo aeroporto
+     de Pohnpei a 10 km, junto a Kolonia. Nauru é um caso à parte: é a
+     única república do mundo sem capital oficial; Yaren, onde ficam o
+     governo e o aeroporto, funciona como capital de facto, por isso é a
+     que entra aqui. */
+  {n:'Nadi',          p:'Fiji',             f:'🇫🇯', i:'NAN', la:-17.755,lo:177.443,c:1.30},
+  {n:'Tarawa',        p:'Quiribáti',        f:'🇰🇮', i:'TRW', la:1.382,  lo:173.147,c:1.00},
+  {n:'Majuro',        p:'Ilhas Marshall',   f:'🇲🇭', i:'MAJ', la:7.065,  lo:171.272,c:1.05},
+  {n:'Pohnpei',       p:'Micronésia',       f:'🇫🇲', i:'PNI', la:6.985,  lo:158.209,c:1.05},
+  {n:'Yaren',         p:'Nauru',            f:'🇳🇷', i:'INU', la:-0.547, lo:166.919,c:1.10},
+  {n:'Koror',         p:'Palau',            f:'🇵🇼', i:'ROR', la:7.367,  lo:134.544,c:1.15},
+  {n:'Port Moresby',  p:'Papua-Nova Guiné', f:'🇵🇬', i:'POM', la:-9.443, lo:147.220,c:0.95},
+  {n:'Apia',          p:'Samoa',            f:'🇼🇸', i:'APW', la:-13.830,lo:-172.008,c:1.10},
+  {n:'Honiara',       p:'Ilhas Salomão',    f:'🇸🇧', i:'HIR', la:-9.428, lo:160.055,c:0.90},
+  {n:'Nuku\'alofa',   p:'Tonga',            f:'🇹🇴', i:'TBU', la:-21.241,lo:-175.149,c:1.05},
+  {n:'Funafuti',      p:'Tuvalu',           f:'🇹🇻', i:'FUN', la:-8.525, lo:179.196,c:1.15},
+  {n:'Port Vila',     p:'Vanuatu',          f:'🇻🇺', i:'VLI', la:-17.699,lo:168.320,c:1.10}
 ];
 
 /* Parceiros de comparação.
