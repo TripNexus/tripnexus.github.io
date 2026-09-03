@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
+| Com tarifas **confirmadas** | 91 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 171 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 167 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -606,3 +606,30 @@ duas. O que sobra é outra coisa, e não se resolve com melhor ferramenta:
 
 O `--url` do `ferramentas/transportes.js` dá a lista das que faltam,
 pronta a colar num navegador.
+
+## Fase 2, a partir de 03 de Setembro de 2026: tarifas locais para as capitais do projecto das capitais do mundo
+
+Terminado o projecto de acrescentar todas as capitais em falta (ver a
+secção acima), começa a segunda fase: dar tarifas locais reais às
+cidades que entraram só como registo em `CIDADES`, sem operador nem
+preços. São 167 cidades nesta fase (mais 10 já com operador, sem
+tarifas), por isso avança por lotes mais pequenos do que a primeira
+fase, dado o esforço de investigação por cidade ser bem maior do que
+confirmar coordenadas e código IATA.
+
+Nesta fase a investigação de várias cidades em paralelo é feita por
+subagentes, cada um a cruzar fontes independentes antes de aceitar um
+número; quem escreve as entradas em `data.js` (e confirma que não há
+número nem URL inventados) continua a ser sempre a sessão principal.
+
+**Lote 1, 03 de Setembro (4 cidades): Bilbau, Santiago de Compostela,
+Bolonha, Luxemburgo.** Bilbau (Metro Bilbao/CTB): zona 1 com cartão
+Barik a 0,95€, sem cartão a 1,60€, diário a 4,90€, confirmado por três
+pesquisas cruzadas. Santiago de Compostela (Tussa): bilhete avulso a
+1€ estável há anos; o bono com cartão desce para 0,36€ por viagem a
+partir de Janeiro de 2026, com subsídio do governo espanhol. Bolonha
+(TPER): tarifário em vigor desde Março de 2025, bilhete comprado antes
+mais barato (2,30€) do que a bordo (2,50€). Luxemburgo: caso especial,
+os transportes públicos são gratuitos em todo o país desde Março de
+2020 (excepto a 1ª classe do comboio, sem preço confirmado); entra com
+um bilhete a 0€, uma tarifa real, não a ausência de uma.

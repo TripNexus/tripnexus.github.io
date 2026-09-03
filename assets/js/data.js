@@ -1479,6 +1479,51 @@ const TRANSPORTES_DESTINO = {
      a 31/08/2026. */
   'Hanói': {operador:'Hanoi Metro', url:'https://metrohanoi.vn/afc-tickets/metro-fares-1/', actualizado:'2026-08-31', fonte:'https://metrohanoi.vn/afc-tickets/metro-fares-1/', moeda:'VND',
     bilhetes:[]},
+  /* Segunda fase do projecto das capitais do mundo: tarifas locais para as
+     cidades que entraram por lotes geográficos. Bilbau não estava na
+     tabela. Tarifário CTB confirmado por três pesquisas cruzadas a
+     03/09/2026: zona 1 com cartão Barik (pré-carregado, mínimo 5€, numa
+     máquina na estação) fica a 0,95€; sem cartão, o avulso em dinheiro
+     fica a 1,60€; o diário fica a 4,90€. */
+  'Bilbau': {operador:'Metro Bilbao / CTB', url:'https://www.ctb.eus/en/metro-service-fares', actualizado:'2026-09-03', fonte:'https://www.ctb.eus/en/metro-service-fares',
+    moeda:'EUR', nota:'É preciso o cartão Barik (pré-carregado, mínimo 5€) para a tarifa mais barata; sem cartão paga-se mais no bilhete avulso.',
+    bilhetes:[
+      {nome:'Bilhete avulso, sem cartão (zona 1)', preco:1.60, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Bilhete com cartão Barik (zona 1)', preco:0.95, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Bilhete diário', preco:4.90, unidade:'24 h', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Bilhete avulso a dinheiro (1€) estável há vários
+     anos, confirmado por duas fontes. O bono (cartão recarregável) desce
+     de 0,60€ para 0,36€ por viagem a partir de Janeiro de 2026, com
+     subsídio do governo espanhol. Verificado a 03/09/2026. */
+  'Santiago de Compostela': {operador:'Tussa (Transportes Urbanos de Santiago)', url:'https://tussa.gal/es/estacion/tarifas', actualizado:'2026-09-03', fonte:'https://www.elespanol.com/quincemil/santiago/20250630/quedan-precios-autobus-urbano-santiago-compostela-partir-julio/1003743827097_0.html',
+    moeda:'EUR', nota:'O bono (cartão recarregável) tem subsídio do governo espanhol e baixa o preço por viagem; sem cartão paga-se o bilhete avulso ao condutor.',
+    bilhetes:[
+      {nome:'Bilhete avulso (dinheiro, ao condutor)', preco:1.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bono ordinário, por viagem (com cartão, com subsídio)', preco:0.36, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Tarifário TPER em vigor desde 1 de Março de
+     2025, confirmado por duas fontes jornalísticas independentes: o
+     bilhete comprado antes (quiosque/tabacaria) é mais barato do que a
+     bordo. Verificado a 03/09/2026. */
+  'Bolonha': {operador:'TPER (Trasporto Passeggeri Emilia-Romagna)', url:'https://www.tper.it/content/tariffe', actualizado:'2026-09-03', fonte:'https://www.ilrestodelcarlino.it/bologna/economia/sch-aumento-biglietti-bus-cosa-cambia-oggi-dllsxnxw/i-dettagli-sui-nuovi-prezzi-tper-biglietti-e-abbonamenti',
+    moeda:'EUR', nota:'O bilhete comprado antes de embarcar (quiosque, tabacaria, TPER Point) é mais barato do que a bordo, onde só se paga com dinheiro ou contactless.',
+    bilhetes:[
+      {nome:'Bilhete urbano, comprado antes', preco:2.30, unidade:'viagem', quando:'antes', modos:['autocarro']},
+      {nome:'Bilhete urbano, comprado a bordo', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Tecto diário com contactless', preco:9, unidade:'24 h', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Desde 1 de Março de 2020 os transportes
+     públicos são gratuitos em todo o país (autocarro, comboio em 2ª
+     classe, eléctrico), confirmado por fonte governamental e reafirmado
+     num balanço de cinco anos (Fevereiro de 2025); só a 1ª classe do
+     comboio continua paga, sem preço confirmado com confiança
+     suficiente para entrar aqui. Verificado a 03/09/2026. */
+  'Luxemburgo': {operador:'Mobiliteit.lu / Ville de Luxembourg (rede AVL/RGTR/CFL)', url:'https://www.mobiliteit.lu/en/tickets-page/fares/', actualizado:'2026-09-03', fonte:'https://gouvernement.lu/fr/actualites.gouvernement2024+fr+actualites+toutes_actualites+communiques+2025+02-fevrier+28-bilan-transport-gratuit.html',
+    moeda:'EUR', nota:'Os transportes públicos são gratuitos em todo o país desde Março de 2020; a única excepção é a 1ª classe do comboio, que continua paga.',
+    bilhetes:[
+      {nome:'Bilhete (transporte público gratuito)', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro','metro','eletrico']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
