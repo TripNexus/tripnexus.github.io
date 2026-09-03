@@ -1742,6 +1742,115 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete simples', preco:30, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
       {nome:'Bilhete com transbordo (90 min)', preco:60, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']}
     ]},
+  /* Início da ronda das Caraíbas/América Central. Não estava na tabela.
+     Não há operadora municipal única: são "jitneys", minibus privados
+     licenciados, regulados pelo Road Traffic Department (site oficial
+     bloqueado ao acesso), tarifa confirmada por dois jornais
+     independentes. Verificado a 03/09/2026. */
+  'Nassau': {operador:'"Jitneys" (minibus privados licenciados, regulados pelo Road Traffic Department)', url:'https://www.tribune242.com/', actualizado:'2026-09-03', fonte:'https://www.tribune242.com/',
+    moeda:'BSD', nota:'Tarifa em vigor desde Maio de 2024; há relatos de cobrança inconsistente por alguns motoristas.',
+    bilhetes:[
+      {nome:'Bilhete simples, adulto', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete simples, estudante uniformizado', preco:1.25, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Minibus privados e "route taxis" ZR cobram a
+     mesma tarifa regulada pelo Transport Board, confirmada pela sua
+     própria página oficial. Verificado a 03/09/2026. */
+  'Bridgetown': {operador:'Barbados Transport Board', url:'https://www.transportboard.com/about-us/fare-policy/', actualizado:'2026-09-03', fonte:'https://www.transportboard.com/about-us/fare-policy/',
+    moeda:'BBD', nota:'Grátis para maiores de 65 anos e crianças de uniforme; minibus e "ZR" route taxis privados cobram a mesma tarifa.',
+    bilhetes:[
+      {nome:'Bilhete simples, adulto', preco:3.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Ómnibus Metropolitanos é a empresa estatal;
+     sem página oficial de tarifário dedicada, mas o valor (subsidiado,
+     sem alterações) está confirmado por três fontes de imprensa
+     independentes. Verificado a 03/09/2026. */
+  'Havana': {operador:'Ómnibus Metropolitanos', url:'https://oncubanews.com/cuba/precios-en-cuba-tarifas-de-omnibus-urbanos-y-trenes-locales-no-se-tocan-el-resto-sube-con-creces/', actualizado:'2026-09-03', fonte:'https://oncubanews.com/cuba/precios-en-cuba-tarifas-de-omnibus-urbanos-y-trenes-locales-no-se-tocan-el-resto-sube-con-creces/',
+    moeda:'CUP',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:2, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Minibus privados (matrícula "H"), com tarifas
+     fixadas pelo Cabinet (governo) da Commonwealth of Dominica; fonte
+     oficial (news.gov.dm) de Março de 2023, a mais recente encontrada,
+     sem confirmação de actualização posterior. Verificado a 03/09/2026. */
+  'Roseau': {operador:'Minibus privados (matrícula "H"), tarifário fixado pelo Cabinet da Commonwealth of Dominica', url:'https://www.news.gov.dm/news/news-items/cabinet-approves-the-implementation-of-new-bus-fares-and-taxi-rates-2', actualizado:'2026-09-03', fonte:'https://www.news.gov.dm/news/news-items/cabinet-approves-the-implementation-of-new-bus-fares-and-taxi-rates-2',
+    moeda:'XCD', nota:'O preço depende da distância; o tarifário oficial mais recente encontrado é de Março de 2023.',
+    bilhetes:[
+      {nome:'Percurso curto, junto a Roseau', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Percurso mais longo', preco:11.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. OMSA opera os autocarros, OPRET o Metro de
+     Santo Domingo. Nalguns corredores (como o 27 de Febrero) a tarifa
+     OMSA isolada de RD$15 foi substituída pela tarifa integrada de
+     RD$35; confirmado por três fontes dominicanas de 2025/2026.
+     Verificado a 03/09/2026. */
+  'Santo Domingo': {operador:'OMSA (autocarros) / OPRET (Metro de Santo Domingo)', url:'https://www.omsa.gob.do/categoria/servicios/transporte-de-pasajeros', actualizado:'2026-09-03', fonte:'https://www.elcaribe.com.do/panorama/pais/pasaje-metro-rd20-tarifa-integrada-rd35/',
+    moeda:'DOP', nota:'Nalguns corredores (como o 27 de Febrero) a tarifa OMSA isolada de RD$15 foi substituída pela tarifa integrada.',
+    bilhetes:[
+      {nome:'Metro, isolado', preco:20, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Tarifa integrada (Metro+Teleférico+corredores OMSA, até 90 min)', preco:35, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']}
+    ]},
+  /* Não estava na tabela. ARESEP regula dezenas de empresas privadas,
+     cada uma com tarifa própria por rota (não há tarifa única citadina);
+     um valor de uma rota específica apareceu só numa fonte, sem
+     confirmação cruzada, por isso fica só o operador. Verificado a
+     03/09/2026. */
+  'San José': {operador:'Autocarros privados concessionados, regulados pela ARESEP', url:'https://aresep.go.cr/autobus/tarifas/', actualizado:'2026-09-03', fonte:'https://aresep.go.cr/autobus/tarifas/',
+    moeda:'CRC', bilhetes:[]},
+  /* Não estava na tabela. O Viceministerio de Transporte (VMT) regula
+     autocarros e microbuses privados concessionados; a tarifa varia por
+     rota ($0.20 a $1.86) e exige consulta por matrícula do veículo, sem
+     valor único citadino. Verificado a 03/09/2026. */
+  'San Salvador': {operador:'Autocarros/microbuses privados concessionados, regulados pelo Viceministerio de Transporte (VMT)', url:'https://www.vmt.gob.sv/servicios/consulta-de-tarifa-de-transporte/', actualizado:'2026-09-03', fonte:'https://www.vmt.gob.sv/servicios/consulta-de-tarifa-de-transporte/',
+    moeda:'USD', bilhetes:[]},
+  /* Não estava na tabela. Transmetro (BRT) e TuBus são sistemas
+     municipais distintos com tarifas próprias; o Transmetro está fixo em
+     Q1,50 desde 2007, o TuBus em Q5,00 desde 2023. Verificado a
+     03/09/2026. */
+  'Cidade da Guatemala': {operador:'Transmetro / TuBus (Municipalidad de Guatemala)', url:'https://www.muniguate.com/movilidadurbana/transmetro/', actualizado:'2026-09-03', fonte:'https://www.muniguate.com/movilidadurbana/transmetro/',
+    moeda:'GTQ', nota:'Transmetro (BRT) e TuBus são sistemas municipais distintos, com tarifas próprias.',
+    bilhetes:[
+      {nome:'Transmetro (BRT)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'TuBus', preco:5, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. O IHTT regula empresas privadas de autocarro
+     urbano ("rapiditos"); fontes de Maio de 2026 divergem entre 13 e 15
+     lempiras conforme a rota/veículo, sem página oficial de tarifário
+     única, por isso fica só o operador. Verificado a 03/09/2026. */
+  'Tegucigalpa': {operador:'Autocarros urbanos privados ("rapiditos"), regulados pelo IHTT', url:'https://www.transporte.gob.hn/', actualizado:'2026-09-03', fonte:'https://www.transporte.gob.hn/',
+    moeda:'HNL', bilhetes:[]},
+  /* Não estava na tabela. JUTC é a operadora estatal. Há também uma
+     tarifa reduzida com o cartão SmartFare, mas era uma medida temporária
+     até Dezembro de 2025 sem confirmação de que continua em vigor, por
+     isso fica só o bilhete a dinheiro. Verificado a 03/09/2026. */
+  'Kingston': {operador:'Jamaica Urban Transit Company (JUTC)', url:'https://jutc.gov.jm/faq/', actualizado:'2026-09-03', fonte:'https://jutc.gov.jm/faq/',
+    moeda:'JMD',
+    bilhetes:[
+      {nome:'Bilhete simples, adulto (dinheiro)', preco:100, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. TUC é regulado pelo IRTRAMMA, sob a Alcaldia
+     de Managua; o site oficial do IRTRAMMA não resolveu, por isso a
+     fonte é de imprensa, sem página oficial de tarifário confirmada.
+     Verificado a 03/09/2026. */
+  'Manágua': {operador:'Transporte Urbano Colectivo (TUC), regulado pelo IRTRAMMA', url:'https://www.managua.gob.ni/', actualizado:'2026-09-03', fonte:'https://www.vivanicaragua.com.ni/2026/02/20/sociales/pasaje-transporte-publico-centroamerica/',
+    moeda:'NIO',
+    bilhetes:[
+      {nome:'Bilhete simples (subsidiado)', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Metro de Panamá (linhas 1 e 2) e MiBus
+     (autocarros) têm tarifas próprias, confirmadas por várias fontes de
+     2025/2026; a Linha 3 do metro ainda não tem tarifa própria
+     confirmada. PAB (balboa) tem paridade 1:1 com o dólar americano.
+     Verificado a 03/09/2026. */
+  'Cidade do Panamá': {operador:'Metro de Panamá / MiBus', url:'https://elmetrodepanama.com/tarifa-del-metro/', actualizado:'2026-09-03', fonte:'https://elmetrodepanama.com/tarifa-del-metro/',
+    moeda:'PAB', nota:'PAB (balboa) tem paridade fixa 1:1 com o dólar americano.',
+    bilhetes:[
+      {nome:'Metro, Linha 1', preco:0.35, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Metro, Linha 2', preco:0.50, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'MiBus, troncal', preco:0.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'MiBus, corredor', preco:0.75, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
