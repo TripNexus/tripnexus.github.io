@@ -240,17 +240,44 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
   tecto, no mesmo espírito do fare cap de Auckland, sem inventar o preço
   do bilhete.
 
-## Estado em 01 de Setembro de 2026, depois da ronda das «só operador»
+## Estado em 03 de Setembro de 2026, depois das 14 cidades da TAP
 
-111 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
-nenhuma com data de conferência.
+125 cidades no site (mais 14 desde a ronda anterior: ver a secção
+seguinte). Começámos, na primeira ronda, com 17 na tabela e nenhuma com
+data de conferência.
 
 | | Cidades | |
 |---|---:|---|
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 14 | Cairo, Cidade do México, Cancún, Lima, Pequim, Xangai, Seul, Phuket, Bali, Bombaim, Luanda, Maputo, Sal, Praia |
+| **Sem operador** | 28 | Acra, Argel, Bali, Belo Horizonte, Bilbau, Bissau, Bolonha, Bombaim, Brasília, Cairo, Cancún, Chicago, Cidade do México, Dakar, Lima, Luanda, Luxemburgo, Maputo, Mindelo, Pequim, Phuket, Praia, Sal, Santiago de Compostela, Seul, São Tomé, Washington D.C., Xangai |
+
+### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
+
+Um utilizador reportou que faltavam vários aeroportos. A lista de cidades
+nunca pretendeu ser exaustiva, mas cruzá-la com a rede real de destinos da
+TAP (a companhia de bandeira, o sinal mais objectivo de que uma cidade
+devia estar aqui) mostrou lacunas genuínas: Bissau e São Tomé (destinos
+lusófonos com voo TAP directo, que fazia todo o sentido incluir num site
+deste género), Chicago e Washington D.C. (faltavam dos EUA), Bilbau e
+Santiago de Compostela (Espanha), Brasília e Belo Horizonte (Brasil),
+Dakar, Acra e Argel (África, rede da TAP), Luxemburgo, Bolonha e Mindelo
+(São Vicente, Cabo Verde).
+
+Todos os códigos IATA e coordenadas foram verificados um a um contra
+fontes de aviação (Wikipédia, sites de aeroportos). Os nomes em português
+seguem o exónimo corrente onde a TAP/Wikipédia só lista o nome inglês:
+Bilbau, Acra, Argel, Bolonha (o mesmo critério já usado para Londres ou
+Genebra); `WIKI_EN` (data.js) ganhou as formas inglesas correspondentes,
+para as pesquisas de alojamento (anglófonas) continuarem a encontrar a
+cidade certa.
+
+Não é a lista completa da TAP: ficam de fora dezenas de rotas menores
+(sobretudo no Brasil e na rede regional espanhola/francesa/alemã), que
+podem entrar numa próxima ronda. Estas 14 entram só em `CIDADES`, sem
+transportes locais confirmados (ficam em «sem operador», como qualquer
+cidade nova): é matéria para uma ronda de transportes à parte, não desta.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 
