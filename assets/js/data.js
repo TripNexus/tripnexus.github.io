@@ -1851,6 +1851,120 @@ const TRANSPORTES_DESTINO = {
       {nome:'MiBus, troncal', preco:0.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'MiBus, corredor', preco:0.75, unidade:'viagem', quando:'chegada', modos:['autocarro']}
     ]},
+  /* Início da ronda da América do Sul e México/Peru. Não estava na
+     tabela. Mi Teleférico é a empresa estatal do sistema de teleféricos;
+     os autocarros municipais PumaKatari/ChikiTiti complementam a rede
+     (micros/trufis privados existem mas sem tarifário centralizado).
+     Confirmado pelo site oficial e por imprensa governamental/
+     independente. Verificado a 03/09/2026. */
+  'La Paz': {operador:'Mi Teleférico / PumaKatari', url:'https://www.miteleferico.bo/pcymt/horarios-y-tarifas', actualizado:'2026-09-03', fonte:'https://www.miteleferico.bo/pcymt/horarios-y-tarifas',
+    moeda:'BOB', nota:'O teleférico cobra um valor extra por transbordo entre linhas.',
+    bilhetes:[
+      {nome:'Mi Teleférico, geral', preco:3, unidade:'viagem', quando:'chegada', modos:['funicular']},
+      {nome:'PumaKatari, dinheiro', preco:3.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Metro de Quito (EPM) e Trolebús/Ecovía (EPMTPQ)
+     são sistemas municipais distintos. Uma tarifa integrada única de
+     USD 0,60 chegou a ser anunciada para 2025, mas fontes de 2026
+     confirmam que as tarifas separadas se mantiveram. Verificado a
+     03/09/2026. */
+  'Quito': {operador:'Metro de Quito (EPM) / Trolebús-Ecovía (EPMTPQ)', url:'https://metrodequito.gob.ec/etiqueta/tarifas/', actualizado:'2026-09-03', fonte:'https://metrodequito.gob.ec/etiqueta/tarifas/',
+    moeda:'USD', nota:'Uma tarifa integrada única chegou a ser anunciada para 2025, mas não avançou: os dois sistemas continuam com tarifas separadas.',
+    bilhetes:[
+      {nome:'Metro', preco:0.45, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Trolebús/Ecovía', preco:0.35, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Rede fragmentada de empresas privadas
+     licenciadas ("líneas permisionarias"), tarifa fixada pela
+     Municipalidade de Assunção; subida aprovada pela Junta Municipal em
+     Dezembro de 2025, confirmada por três fontes independentes.
+     Verificado a 03/09/2026. */
+  'Assunção': {operador:'Líneas permisionarias (Municipalidade de Assunción)', url:'https://www.asuncion.gov.py/transito/reajuste-del-costo-del-pasaje-para-lineas-permisionarias-de-asuncion', actualizado:'2026-09-03', fonte:'https://www.asuncion.gov.py/transito/reajuste-del-costo-del-pasaje-para-lineas-permisionarias-de-asuncion',
+    moeda:'PYG',
+    bilhetes:[
+      {nome:'Bilhete avulso (autocarro interno)', preco:3400, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. STM é o sistema metropolitano, operado sobretudo
+     pela CUTCSA; tarifa em vigor desde 5 de Janeiro de 2026, confirmada
+     pelo site oficial da câmara e por várias notícias independentes.
+     Verificado a 03/09/2026. */
+  'Montevideu': {operador:'Sistema de Transporte Metropolitano (STM) / CUTCSA', url:'https://montevideo.gub.uy/areas-tematicas/sistema-de-transporte-metropolitano/tarifas-del-transporte-colectivo-urbano', actualizado:'2026-09-03', fonte:'https://montevideo.gub.uy/areas-tematicas/sistema-de-transporte-metropolitano/tarifas-del-transporte-colectivo-urbano',
+    moeda:'UYU', nota:'O bilhete com cartão STM é mais barato do que pago em dinheiro.',
+    bilhetes:[
+      {nome:'Boleto comum, com cartão STM', preco:52, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Boleto comum, dinheiro', preco:64, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Metro de Caracas gere também o Metrobús. Sem
+     página de tarifário oficial funcional (o domínio está "em
+     construção"), mas o valor está confirmado por cinco fontes de
+     imprensa independentes, todas de Maio de 2026. Nota importante: a
+     Venezuela tem inflação muito elevada, e a tarifa pode já ter subido
+     de novo depois da verificação; o preço do transporte urbano privado
+     (fora do Metro) já tinha subido de novo em Setembro de 2026.
+     Verificado a 03/09/2026. */
+  'Caracas': {operador:'Metro de Caracas (C.A. Metro de Caracas)', url:'https://talcualdigital.com/metro-de-caracas-subio-el-pasaje-de-80-a-90-bolivares-sin-previo-aviso-a-los-usuarios/', actualizado:'2026-09-03', fonte:'https://talcualdigital.com/metro-de-caracas-subio-el-pasaje-de-80-a-90-bolivares-sin-previo-aviso-a-los-usuarios/',
+    moeda:'VES', nota:'Inflação muito elevada na Venezuela: a tarifa subiu de 60 para 80 e depois para 90 bolívares só entre Março e Maio de 2026, e pode voltar a mudar a qualquer momento.',
+    bilhetes:[
+      {nome:'Bilhete geral', preco:90, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Bilhete estudante', preco:45, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Metrô-DF e DFTrans, sob a SEMOB-DF; tarifas
+     congeladas até final de 2026, confirmadas por fontes oficiais e de
+     imprensa sem contradições. Há também autocarro e metro gratuitos aos
+     domingos e feriados desde Março de 2025 ("Vai de Graça"), não
+     representado aqui por não ser o caso comum de um dia de semana.
+     Verificado a 03/09/2026. */
+  'Brasília': {operador:'Metrô-DF / DFTrans (SEMOB-DF)', url:'https://www.semob.df.gov.br/precos-das-passagens', actualizado:'2026-09-03', fonte:'https://www.semob.df.gov.br/precos-das-passagens',
+    moeda:'BRL', nota:'Autocarro e metro são gratuitos aos domingos e feriados desde Março de 2025 ("Vai de Graça").',
+    bilhetes:[
+      {nome:'Metrô-DF', preco:5.50, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Autocarro, curta distância', preco:2.70, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. BHTrans gere os autocarros, o Metrô BH é uma
+     concessão privada (Grupo Comporte) desde Março de 2023; valores bem
+     cruzados por fontes institucionais e de imprensa. Verificado a
+     03/09/2026. */
+  'Belo Horizonte': {operador:'BHTrans (autocarros) / Metrô BH', url:'https://prefeitura.pbh.gov.br/sumob/onibus/tarifas-e-integracoes', actualizado:'2026-09-03', fonte:'https://prefeitura.pbh.gov.br/sumob/onibus/tarifas-e-integracoes',
+    moeda:'BRL',
+    bilhetes:[
+      {nome:'Autocarro convencional', preco:6.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Metrô BH', preco:6.00, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Metro STC, Metrobús (BRT) e Trolebús (STE) são
+     três sistemas geridos pelo Governo da CDMX, cada um com tarifa
+     própria; confirmado por várias fontes institucionais e de imprensa,
+     mantidas de 2025 para 2026. Verificado a 03/09/2026. */
+  'Cidade do México': {operador:'Metro STC / Metrobús / Trolebús (Governo da CDMX)', url:'https://metro.cdmx.gob.mx/acerca-del-metro/mas-informacion/costo-del-boleto_boletos', actualizado:'2026-09-03', fonte:'https://metro.cdmx.gob.mx/acerca-del-metro/mas-informacion/costo-del-boleto_boletos',
+    moeda:'MXN',
+    bilhetes:[
+      {nome:'Metro STC', preco:5, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Metrobús', preco:6, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Trolebús', preco:4, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Rede de autocarros urbanos, regulada pelo
+     IMOVEQROO; fontes contradizem-se sobre o valor actual (12, 13 ou
+     15 MXN conforme a fonte e a zona), com um novo sistema "MOBI" ainda
+     em implementação, sem forma clara de saber qual está em vigor.
+     Verificado a 03/09/2026. */
+  'Cancún': {operador:'Autocarros urbanos (rutas R1/R2...), regulados pelo IMOVEQROO', url:'https://imoveqroo.qroo.gob.mx/', actualizado:'2026-09-03', fonte:'https://imoveqroo.qroo.gob.mx/',
+    moeda:'MXN', bilhetes:[]},
+  /* Não estava na tabela. Metropolitano (BRT, gerido pela ATU) e Metro
+     de Lima Linha 1 são sistemas distintos, ambos com tarifário oficial
+     bem confirmado por várias fontes de 2025/2026. Verificado a
+     03/09/2026. */
+  'Lima': {operador:'Metropolitano (ATU) / Metro de Lima, Linha 1', url:'https://portal.atu.gob.pe/', actualizado:'2026-09-03', fonte:'https://portal.atu.gob.pe/',
+    moeda:'PEN',
+    bilhetes:[
+      {nome:'Metropolitano, troncal', preco:3.20, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Metro, Linha 1', preco:1.50, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. NVB é a operadora estatal (existe também a
+     rede privada PLO), mas não há tarifário oficial dedicado online, e
+     as fontes de imprensa desactualizam-se depressa (inflação, SRD
+     instável); o último valor concreto encontrado é de Fevereiro de
+     2025, sem confirmação fiável de 2026. Verificado a 03/09/2026. */
+  'Paramaribo': {operador:'NVB (Nationaal Vervoer Bedrijf)', url:'https://gov.sr/thema/nationaal-vervoer-bedrijf-nvb/', actualizado:'2026-09-03', fonte:'https://gov.sr/thema/nationaal-vervoer-bedrijf-nvb/',
+    moeda:'SRD', bilhetes:[]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
