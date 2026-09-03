@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 97 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 110 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 161 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 11 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland, Bucareste |
+| **Sem operador** | 147 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -648,3 +648,23 @@ trólei), passou de leva para euro a 1 de Janeiro de 2026. Nicósia
 (CPT): subida de 2,40€ para 2,70€ a 3 de Agosto de 2026, sem passe
 diário só a dinheiro (o único existente exige um cartão). Bratislava
 (DPB): tarifário oficial sem contradição entre fontes.
+
+**Lote 3, 03 de Setembro (14 cidades): Liubliana, Taline, Tbilisi,
+Riga, Vilnius, Escópia, Valeta, Chisinau, Mónaco, Podgorica, Bucareste,
+Moscovo, Belgrado, Kiev.** Fecha as capitais europeias do Lote 1 do
+projecto das capitais do mundo. Casos com nota: Taline e Valeta são
+gratuitas só para residentes registados, o preço que entra é sempre o
+que um visitante paga. Belgrado é o inverso: os transportes urbanos e
+suburbanos normais são gratuitos desde Janeiro de 2025 (medida
+confirmada por várias fontes, incluindo o anúncio oficial), só as
+linhas de minibus expresso (aeroporto, linhas E) continuam pagas.
+Moscovo tem preço a variar com o meio de pagamento (mais barato por
+biometria, mais caro por cartão bancário sem Troika); entra o valor do
+cartão Troika, o mais comum. Kiev: o metro e os autocarros continuam
+operacionais apesar da lei marcial, sem relação com a falta de voos
+internacionais (essa já estava tratada à parte). **Bucareste** ficou só
+com o operador: as fontes jornalísticas davam valores diferentes (7, 9,
+12, 14 ou 18 lei, conforme a fonte e a data, com sucessivas subidas
+anunciadas entre Setembro de 2025 e Maio de 2026) sem forma clara de
+saber qual estava em vigor à data da verificação, por isso não se
+escolheu nenhum.

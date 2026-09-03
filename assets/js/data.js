@@ -1598,6 +1598,150 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete simples, 60 min', preco:1.80, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
       {nome:'Passe diário 24h', preco:5.40, unidade:'24 h', quando:'chegada', modos:['eletrico','autocarro']}
     ]},
+  /* Não estava na tabela. LPP é a operadora municipal. Duas fontes (o
+     próprio operador e o turismo oficial de Liubliana) coincidem sem
+     contradição. Verificado a 03/09/2026. */
+  'Liubliana': {operador:'LPP (Ljubljanski potniški promet)', url:'https://www.lpp.si/en/payment-methods/', actualizado:'2026-09-03', fonte:'https://www.lpp.si/en/payment-methods/',
+    moeda:'EUR', cartao:{nome:'Urbana', preco:2.00, nota:'recarregável, reembolsável; sem ela só se paga (sem transbordo grátis) com cartão bancário directo no validador'},
+    bilhetes:[
+      {nome:'Bilhete simples (90 min)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Taline tem transportes gratuitos para
+     residentes registados, mas não para visitantes: o preço aqui é o que
+     um turista paga. O site oficial (tallinn.ee) bloqueou o acesso
+     directo (anti-bot), confirmado em vez disso pelo espelho oficial de
+     turismo e pelo operador do eléctrico, sem contradição entre os dois.
+     Verificado a 03/09/2026. */
+  'Taline': {operador:'TLT (Tallinna Linnatransport) / Câmara de Taline', url:'https://www.tallinn.ee/en/pilet/public-transport-tickets-tallinn', actualizado:'2026-09-03', fonte:'https://visittallinn.ee/eng/visitor/plan/transport/public-transport',
+    moeda:'EUR', nota:'Os transportes são gratuitos para residentes registados de Taline; um visitante paga sempre o bilhete normal.',
+    bilhetes:[
+      {nome:'Bilhete 1 hora (contactless/QR)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Passe diário (24 h)', preco:5.50, unidade:'24 h', quando:'chegada', modos:['autocarro','eletrico']}
+    ]},
+  /* Não estava na tabela. TTC (Tbilisi Transport Company) opera
+     metro/autocarro/minibus, sistema sem dinheiro (só MetroMoney ou
+     cartão bancário). Valor em vigor desde Fevereiro de 2022, sem
+     contradição nas fontes actuais. Verificado a 03/09/2026. */
+  'Tbilisi': {operador:'Tbilisi Transport Company (TTC)', url:'https://ttc.com.ge/en/tariff/10', actualizado:'2026-09-03', fonte:'https://ttc.com.ge/en/tariff/10',
+    moeda:'GEL', nota:'Sistema totalmente sem dinheiro: paga-se com o cartão MetroMoney ou cartão bancário.',
+    bilhetes:[
+      {nome:'Bilhete único (90 min ilimitados)', preco:1, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
+      {nome:'Passe diário', preco:3, unidade:'24 h', quando:'chegada', modos:['metro','autocarro']}
+    ]},
+  /* Não estava na tabela. Rīgas satiksme é a autoridade municipal. Desde
+     Dezembro de 2022 o bilhete de 90 minutos substituiu o bilhete simples
+     tradicional para a generalidade dos passageiros; confirmado pelo
+     operador e pela câmara de Riga, sem contradição. Verificado a
+     03/09/2026. */
+  'Riga': {operador:'Rīgas satiksme', url:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/', actualizado:'2026-09-03', fonte:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/',
+    moeda:'EUR',
+    bilhetes:[
+      {nome:'Bilhete 90 minutos (e-talon)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Passe diário (24 h)', preco:5.00, unidade:'24 h', quando:'chegada', modos:['autocarro','eletrico']}
+    ]},
+  /* Não estava na tabela. VVT é a operadora municipal. Tarifas em vigor
+     desde 1 de Julho de 2025 (aumento aprovado pela câmara); sem
+     contradição entre fontes. Verificado a 03/09/2026. */
+  'Vilnius': {operador:'Vilniaus viešasis transportas (VVT)', url:'https://www.vilniausviesasistransportas.lt/bilietu-kainos/', actualizado:'2026-09-03', fonte:'https://www.vilniausviesasistransportas.lt/bilietu-kainos/',
+    moeda:'EUR',
+    bilhetes:[
+      {nome:'Bilhete 30 min', preco:1.00, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Bilhete 60 min', preco:1.25, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Passe diário', preco:7.50, unidade:'24 h', quando:'chegada', modos:['autocarro','eletrico']}
+    ]},
+  /* Não estava na tabela. JSP Skopje é a operadora municipal, sistema
+     tornou-se cashless. Não se confirmou um preço em numerário ao
+     motorista (um valor de 60 MKD encontrado numa página turística vinha
+     de uma notícia de 2016, descartado por desactualizado). Verificado a
+     03/09/2026. */
+  'Escópia': {operador:'JSP Skopje', url:'https://skopjebus.mk/en/price-list/', actualizado:'2026-09-03', fonte:'https://skopjebus.mk/en/price-list/',
+    moeda:'MKD', nota:'Sistema cashless: o bilhete paga-se com o cartão Skopska ou por telemóvel, não há tarifa em numerário confirmada.',
+    bilhetes:[
+      {nome:'Bilhete simples (cartão Skopska)', preco:35, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Passe diário', preco:120, unidade:'24 h', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Malta Public Transport (Tallinja) é gratuito só
+     para residentes com cartão Tallinja pessoal; um visitante paga
+     sempre. Tem duas épocas de preço: a de Verão (14 Jun-18 Out) é a que
+     está em vigor a 03/09/2026, dia da verificação. */
+  'Valeta': {operador:'Malta Public Transport (Tallinja)', url:'https://www.publictransport.com.mt/fares-and-tickets/', actualizado:'2026-09-03', fonte:'https://www.publictransport.com.mt/fares-and-tickets/',
+    moeda:'EUR', nota:'Gratuito só para residentes com cartão Tallinja pessoal; um visitante paga sempre o bilhete. Preço sazonal: mais caro na época de Verão (14 Jun-18 Out) do que no Inverno.',
+    bilhetes:[
+      {nome:'Bilhete simples, época de Verão (2 h)', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete simples, época de Inverno (2 h)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Explore Card, 7 dias', preco:25, unidade:'7 dias', quando:'antes', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. RTEC é a operadora municipal. Tarifa em vigor
+     desde 1 de Maio de 2026 (subiu de 6 para 7 MDL), confirmada por
+     várias notícias, sem contradição. Verificado a 03/09/2026. */
+  'Chisinau': {operador:'Regia Transport Electric Chișinău (RTEC)', url:'https://rtec.md/tarife/', actualizado:'2026-09-03', fonte:'https://rtec.md/tarife/',
+    moeda:'MDL',
+    bilhetes:[
+      {nome:'Bilhete simples (autocarro/troleibuz)', preco:7, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. CAM é a operadora do país. O acesso directo ao
+     site oficial foi bloqueado pelo proxy da rede, mas o valor coincide
+     em várias fontes secundárias independentes (turismo oficial,
+     operador do cartão Monapass, guias locais). Verificado a 03/09/2026. */
+  'Mónaco': {operador:'CAM (Compagnie des Autobus de Monaco)', url:'https://www.cam.mc/tarifs', actualizado:'2026-09-03', fonte:'https://www.cam.mc/tarifs',
+    moeda:'EUR', nota:'O bilhete pago com o cartão/app Monapass é mais barato do que pago ao motorista.',
+    bilhetes:[
+      {nome:'Bilhete simples, ao motorista (30 min)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete simples, com Monapass', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Passe diário (Monapass)', preco:5.50, unidade:'24 h', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Putevi d.o.o. gere o "Gradski prevoz" de
+     Podgorica. Bilhete simples confirmado por três fontes independentes;
+     um passe diário apareceu só numa fonte, menos seguro, por isso não
+     entra. Verificado a 03/09/2026. */
+  'Podgorica': {operador:'Putevi d.o.o. (Gradski prevoz Podgorica)', url:'https://putevi.me/cjenovnik-gradski-prevoz-podgorica/', actualizado:'2026-09-03', fonte:'https://putevi.me/cjenovnik-gradski-prevoz-podgorica/',
+    moeda:'EUR',
+    bilhetes:[
+      {nome:'Bilhete simples (90 min)', preco:0.90, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Operador dividido entre STB (autocarro/
+     eléctrico/trólei) e Metrorex (metro). Fontes jornalísticas
+     contraditórias sobre o valor actual (7, 9, 12, 14 ou 18 lei conforme
+     a fonte e a data, com sucessivas subidas anunciadas entre Set/2025 e
+     Mai/2026), sem forma clara de saber qual está em vigor a 03/09/2026.
+     Fica só o operador, sem inventar qual dos números é o certo. */
+  'Bucareste': {operador:'STB (Societatea de Transport București) / Metrorex', url:'https://www.stbsa.ro/', actualizado:'2026-09-03', fonte:'https://www.stbsa.ro/',
+    moeda:'RON', bilhetes:[]},
+  /* Não estava na tabela. Mosgortrans (autocarro/eléctrico/trólei) e
+     Mosmetro (metro) partilham o cartão Troika. Preços em vigor desde 2
+     de Janeiro de 2026, confirmados por três fontes de imprensa
+     independentes. Verificado a 03/09/2026. */
+  'Moscovo': {operador:'Mosgortrans / Mosmetro (cartão Troika)', url:'https://troika.transport.vtb.ru/tariffs', actualizado:'2026-09-03', fonte:'https://troika.transport.vtb.ru/tariffs',
+    moeda:'RUB', nota:'O preço varia com o meio de pagamento: mais barato por biometria (71 RUB), mais caro por cartão bancário/telemóvel sem Troika (83 RUB).',
+    bilhetes:[
+      {nome:'Bilhete simples (cartão Troika)', preco:75, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Bilhete "90 minutos"', preco:112, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']}
+    ]},
+  /* Não estava na tabela. GSP Beograd é a operadora municipal. Os
+     transportes urbanos e suburbanos são gratuitos desde 1 de Janeiro de
+     2025 (medida invulgar mas bem confirmada por várias fontes,
+     incluindo o anúncio oficial); a excepção são as linhas de minibus
+     expresso (aeroporto e linhas E), que continuam pagas. Verificado a
+     03/09/2026. */
+  'Belgrado': {operador:'GSP Beograd', url:'https://www.gsp.rs', actualizado:'2026-09-03', fonte:'https://beinbelgrade.com/free-belgrade-public-transport/',
+    moeda:'RSD', nota:'O transporte urbano e suburbano normal é gratuito desde Janeiro de 2025; só as linhas de minibus expresso (aeroporto, linhas E) continuam pagas.',
+    bilhetes:[
+      {nome:'Autocarro/eléctrico/trólei urbano (gratuito)', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Minibus expresso do aeroporto (A1)', preco:400, unidade:'viagem', quando:'chegada', modos:['autocarro','aeroporto']}
+    ]},
+  /* Não estava na tabela. Kyivpastrans (autocarro/eléctrico/trólei) e o
+     Metropolitano de Kiev partilham tarifa unificada, definida pela
+     câmara (KMDA). Subida recente (15 de Julho de 2026, de 8 para 30
+     UAH) confirmada pela fonte oficial da câmara e por três órgãos de
+     imprensa. O metro continua operacional apesar da lei marcial;
+     não há relação com a falta de voos internacionais, tratada à parte.
+     Verificado a 03/09/2026. */
+  'Kiev': {operador:'Kyivpastrans / Metropolitano de Kiev', url:'https://kyivcity.gov.ua/', actualizado:'2026-09-03', fonte:'https://kyivcity.gov.ua/news/iz_15_lipnya_vartist_razovogo_prozdu_v_komunalnomu_transporti_stanovitime_30_grn_dlya_postiynikh_pasazhiriv_diyatime_sistema_znizhok/',
+    moeda:'UAH',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:30, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Bilhete com transbordo (90 min)', preco:60, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
