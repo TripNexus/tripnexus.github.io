@@ -242,7 +242,7 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
 
 ## Estado em 03 de Setembro de 2026
 
-195 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+216 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 A partir daqui, a lista de cidades já não é uma lista fechada: está a
@@ -256,7 +256,7 @@ contagem, não os nomes todos: a lista completa está sempre em
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 98 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 119 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -363,6 +363,23 @@ entrada real, por isso fica ela; o **Essuatíni** tem Mbabane como
 capital administrativa, mas o aeroporto internacional (Matsapha) fica
 junto a Manzini, por isso a cidade é Manzini, para não sugerir uma
 ligação que o aeroporto não tem.
+
+**Lote 3b, 03 de Setembro: capitais de África, segunda metade (21
+cidades).** Antananarivo (Madagáscar), Lilongwe (Malawi), Bamako (Mali),
+Nouakchott (Mauritânia), Port Louis (Maurícia), Rabat (Marrocos),
+Windhoek (Namíbia), Niamey (Níger), Abuja (Nigéria), Kigali (Ruanda),
+Victoria (Seicheles), Freetown (Serra Leoa), Mogadíscio (Somália), Juba
+(Sudão do Sul), Cartum (Sudão), Dar es Salaam (Tanzânia), Lomé (Togo),
+Tunes (Tunísia), Entebbe (Uganda), Lusaka (Zâmbia), Harare (Zimbabué).
+
+Rabat entra separada de Casablanca e Marraquexe, que já estavam no site
+mas não eram a capital de Marrocos. Mais dois casos de aeroporto fora da
+capital administrativa: o **Uganda** tem Kampala como capital, mas o
+aeroporto internacional é o de Entebbe, cidade distinta; a **Tanzânia**
+tem Dodoma como capital oficial, mas quem tem o aeroporto internacional
+real é Dar es Salaam, que continua a ser a porta de entrada do país.
+Com África completa, fecham-se estes dois lotes com todas as 44
+capitais africanas que faltavam.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 

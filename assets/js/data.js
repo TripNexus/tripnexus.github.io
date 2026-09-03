@@ -256,6 +256,33 @@ const CIDADES = [
   {n:'Maseru',        p:'Lesoto',          f:'🇱🇸', i:'MSU', la:-29.462,lo:27.553, c:0.55},
   {n:'Monróvia',      p:'Libéria',         f:'🇱🇷', i:'ROB', la:6.234,  lo:-10.362,c:0.55},
   {n:'Trípoli',       p:'Líbia',           f:'🇱🇾', i:'MJI', la:32.900, lo:13.283, c:0.60},
+  /* Lote 3b (capitais de África, segunda metade), 03/09/2026. Uganda: o
+     aeroporto internacional é o de Entebbe, cidade distinta de Kampala
+     (a capital), por isso a cidade é Entebbe, mesma lógica do Lote 3a
+     para o Essuatíni. Tanzânia: a capital oficial é Dodoma, mas quem tem
+     o aeroporto internacional real é Dar es Salaam, que continua a ser
+     a porta de entrada do país. */
+  {n:'Antananarivo',  p:'Madagáscar',      f:'🇲🇬', i:'TNR', la:-18.797,lo:47.479, c:0.60},
+  {n:'Lilongwe',      p:'Malawi',          f:'🇲🇼', i:'LLW', la:-13.789,lo:33.781, c:0.55},
+  {n:'Bamako',        p:'Mali',            f:'🇲🇱', i:'BKO', la:12.538, lo:-7.943, c:0.50},
+  {n:'Nouakchott',    p:'Mauritânia',      f:'🇲🇷', i:'NKC', la:18.310, lo:-15.970,c:0.55},
+  {n:'Port Louis',    p:'Maurícia',        f:'🇲🇺', i:'MRU', la:-20.430,lo:57.683, c:0.90},
+  {n:'Rabat',         p:'Marrocos',        f:'🇲🇦', i:'RBA', la:34.051, lo:-6.751, c:0.65},
+  {n:'Windhoek',      p:'Namíbia',         f:'🇳🇦', i:'WDH', la:-22.487,lo:17.463, c:0.70},
+  {n:'Niamey',        p:'Níger',           f:'🇳🇪', i:'NIM', la:13.482, lo:2.170,  c:0.50},
+  {n:'Abuja',         p:'Nigéria',         f:'🇳🇬', i:'ABV', la:9.007,  lo:7.263,  c:0.60},
+  {n:'Kigali',        p:'Ruanda',          f:'🇷🇼', i:'KGL', la:-1.968, lo:30.138, c:0.55},
+  {n:'Victoria',      p:'Seicheles',       f:'🇸🇨', i:'SEZ', la:-4.674, lo:55.522, c:1.15},
+  {n:'Freetown',      p:'Serra Leoa',      f:'🇸🇱', i:'FNA', la:8.616,  lo:-13.195,c:0.50},
+  {n:'Mogadíscio',    p:'Somália',         f:'🇸🇴', i:'MGQ', la:2.014,  lo:45.305, c:0.45},
+  {n:'Juba',          p:'Sudão do Sul',    f:'🇸🇸', i:'JUB', la:4.872,  lo:31.601, c:0.50},
+  {n:'Cartum',        p:'Sudão',           f:'🇸🇩', i:'KRT', la:15.589, lo:32.553, c:0.50},
+  {n:'Dar es Salaam', p:'Tanzânia',        f:'🇹🇿', i:'DAR', la:-6.878, lo:39.203, c:0.55},
+  {n:'Lomé',          p:'Togo',            f:'🇹🇬', i:'LFW', la:6.166,  lo:1.255,  c:0.50},
+  {n:'Tunes',         p:'Tunísia',         f:'🇹🇳', i:'TUN', la:36.851, lo:10.227, c:0.65},
+  {n:'Entebbe',       p:'Uganda',          f:'🇺🇬', i:'EBB', la:0.045,  lo:32.443, c:0.55},
+  {n:'Lusaka',        p:'Zâmbia',          f:'🇿🇲', i:'LUN', la:-15.332,lo:28.434, c:0.55},
+  {n:'Harare',        p:'Zimbabué',        f:'🇿🇼', i:'HRE', la:-17.932,lo:31.093, c:0.55},
   {n:'Bissau',        p:'Guiné-Bissau',    f:'🇬🇼', i:'OXB', la:11.895, lo:-15.654,c:0.55},
   {n:'Maputo',        p:'Moçambique',      f:'🇲🇿', i:'MPM', la:-25.966,lo:32.573, c:0.75},
   {n:'São Tomé',      p:'São Tomé e Príncipe', f:'🇸🇹', i:'TMS', la:0.378, lo:6.712, c:0.85},
@@ -1621,7 +1648,8 @@ const WIKI_EN = {
   'Cidade da Guatemala':'Guatemala City', 'Cidade de Belize':'Belize City',
   'Porto de Espanha':'Port of Spain',
   'Jibuti':'Djibouti', 'Adis Abeba':'Addis Ababa', 'Conacri':'Conakry',
-  'Nairóbi':'Nairobi', 'Monróvia':'Monrovia', 'Trípoli':'Tripoli'
+  'Nairóbi':'Nairobi', 'Monróvia':'Monrovia', 'Trípoli':'Tripoli',
+  'Mogadíscio':'Mogadishu', 'Cartum':'Khartoum', 'Tunes':'Tunis'
 };
 
 /* Destinos considerados na aba «Ofertas em conta». */
