@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 119 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 128 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 14 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 135 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 16 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 124 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -695,3 +695,21 @@ cobrança inconsistente. Santo Domingo e Cidade da Guatemala têm dois
 sistemas distintos em paralelo (Metro/Teleférico + OMSA; Transmetro +
 TuBus), cada um com tarifa própria. Cidade do Panamá: PAB (balboa) tem
 paridade fixa 1:1 com o dólar americano.
+
+**Lote 5, 03 de Setembro: América do Sul, México e Peru (9 cidades com
+tarifa, 2 só operador, 1 de fora).** La Paz, Quito, Assunção,
+Montevideu, Caracas, Brasília, Belo Horizonte, Cidade do México, Lima
+entram com tarifas confirmadas; Cancún (fontes contraditórias sobre o
+valor actual) e Paramaribo (última tarifa concreta de Fevereiro de
+2025, sem confirmação fiável de 2026) ficam só com o operador.
+Georgetown (Guiana) fica de fora: sem operador formal identificável, a
+última estrutura tarifária oficial por zonas é de 2018, e há um
+conflito activo em 2026 entre motoristas e governo sobre o valor
+legalmente aprovado.
+
+Caso com nota especial: **Caracas** tem tarifa confirmada por cinco
+fontes de imprensa independentes, mas a inflação da Venezuela é tão
+elevada que o valor pode já ter mudado outra vez entre a verificação e
+a leitura desta ficha; a tarifa subiu de 60 para 90 bolívares só entre
+Março e Maio de 2026. Fica registada como a fonte mais recente
+encontrada, sujeita à revisão mensal como qualquer outra.
