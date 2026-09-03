@@ -143,6 +143,30 @@ const CIDADES = [
   {n:'Belgrado',      p:'Sérvia',          f:'🇷🇸', i:'BEG', la:44.819, lo:20.307, c:0.65},
   {n:'Kiev',          p:'Ucrânia',         f:'🇺🇦', i:'KBP', la:50.345, lo:30.893, c:0.55},
   {n:'Istambul',      p:'Turquia',         f:'🇹🇷', i:'IST', la:41.008, lo:28.978, c:0.70},
+  /* Lote 4a (capitais do Médio Oriente e Ásia Central), 03/09/2026.
+     Damasco, Cartum (lote 3b) e Kiev (lote 1) partilham a mesma nota: o
+     preço de voo vem de uma fonte real, por isso uma pesquisa a um
+     aeroporto sem voos correntes (guerra, sanções) simplesmente não
+     devolve nada, honesto por omissão, sem tratamento especial aqui. */
+  {n:'Cabul',         p:'Afeganistão',     f:'🇦🇫', i:'KBL', la:34.566, lo:69.213, c:0.50},
+  {n:'Yerevan',       p:'Arménia',         f:'🇦🇲', i:'EVN', la:40.147, lo:44.396, c:0.55},
+  {n:'Baku',          p:'Azerbaijão',      f:'🇦🇿', i:'GYD', la:40.468, lo:50.047, c:0.70},
+  {n:'Manama',        p:'Barém',           f:'🇧🇭', i:'BAH', la:26.271, lo:50.634, c:0.85},
+  {n:'Teerão',        p:'Irão',            f:'🇮🇷', i:'IKA', la:35.416, lo:51.152, c:0.55},
+  {n:'Bagdade',       p:'Iraque',          f:'🇮🇶', i:'BGW', la:33.263, lo:44.234, c:0.50},
+  {n:'Telavive',      p:'Israel',          f:'🇮🇱', i:'TLV', la:32.009, lo:34.883, c:1.10},
+  {n:'Amã',           p:'Jordânia',        f:'🇯🇴', i:'AMM', la:31.723, lo:35.993, c:0.65},
+  {n:'Astana',        p:'Cazaquistão',     f:'🇰🇿', i:'NQZ', la:51.022, lo:71.467, c:0.60},
+  {n:'Cidade do Kuwait',p:'Kuwait',        f:'🇰🇼', i:'KWI', la:29.227, lo:47.980, c:1.00},
+  {n:'Bisqueque',      p:'Quirguistão',    f:'🇰🇬', i:'FRU', la:43.061, lo:74.476, c:0.50},
+  {n:'Beirute',       p:'Líbano',          f:'🇱🇧', i:'BEY', la:33.821, lo:35.488, c:0.65},
+  {n:'Mascate',       p:'Omã',             f:'🇴🇲', i:'MCT', la:23.593, lo:58.284, c:0.90},
+  {n:'Riade',         p:'Arábia Saudita',  f:'🇸🇦', i:'RUH', la:24.958, lo:46.699, c:0.80},
+  {n:'Damasco',       p:'Síria',           f:'🇸🇾', i:'DAM', la:33.411, lo:36.516, c:0.45},
+  {n:'Dushanbe',      p:'Tajiquistão',     f:'🇹🇯', i:'DYU', la:38.535, lo:68.818, c:0.45},
+  {n:'Asgabate',      p:'Turquemenistão',  f:'🇹🇲', i:'ASB', la:37.987, lo:58.361, c:0.60},
+  {n:'Tasquente',     p:'Usbequistão',     f:'🇺🇿', i:'TAS', la:41.258, lo:69.281, c:0.50},
+  {n:'Sanaa',         p:'Iémen',           f:'🇾🇪', i:'SAH', la:15.476, lo:44.220, c:0.40},
   {n:'Marraquexe',    p:'Marrocos',        f:'🇲🇦', i:'RAK', la:31.630, lo:-7.981, c:0.60},
   {n:'Casablanca',    p:'Marrocos',        f:'🇲🇦', i:'CMN', la:33.573, lo:-7.590, c:0.62},
   {n:'Argel',         p:'Argélia',         f:'🇩🇿', i:'ALG', la:36.691, lo: 3.215, c:0.58},
@@ -1649,7 +1673,12 @@ const WIKI_EN = {
   'Porto de Espanha':'Port of Spain',
   'Jibuti':'Djibouti', 'Adis Abeba':'Addis Ababa', 'Conacri':'Conakry',
   'Nairóbi':'Nairobi', 'Monróvia':'Monrovia', 'Trípoli':'Tripoli',
-  'Mogadíscio':'Mogadishu', 'Cartum':'Khartoum', 'Tunes':'Tunis'
+  'Mogadíscio':'Mogadishu', 'Cartum':'Khartoum', 'Tunes':'Tunis',
+  'Cabul':'Kabul', 'Teerão':'Tehran', 'Bagdade':'Baghdad',
+  'Telavive':'Tel Aviv', 'Amã':'Amman', 'Cidade do Kuwait':'Kuwait City',
+  'Bisqueque':'Bishkek', 'Beirute':'Beirut', 'Mascate':'Muscat',
+  'Riade':'Riyadh', 'Damasco':'Damascus', 'Asgabate':'Ashgabat',
+  'Tasquente':'Tashkent'
 };
 
 /* Destinos considerados na aba «Ofertas em conta». */
