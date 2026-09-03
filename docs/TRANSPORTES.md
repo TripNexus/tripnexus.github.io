@@ -242,7 +242,7 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
 
 ## Estado em 03 de Setembro de 2026
 
-216 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+235 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 A partir daqui, a lista de cidades já não é uma lista fechada: está a
@@ -256,7 +256,7 @@ contagem, não os nomes todos: a lista completa está sempre em
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 119 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 138 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -380,6 +380,20 @@ tem Dodoma como capital oficial, mas quem tem o aeroporto internacional
 real é Dar es Salaam, que continua a ser a porta de entrada do país.
 Com África completa, fecham-se estes dois lotes com todas as 44
 capitais africanas que faltavam.
+
+**Lote 4a, 03 de Setembro: capitais do Médio Oriente e Ásia Central (19
+cidades).** Cabul (Afeganistão), Yerevan (Arménia), Baku (Azerbaijão),
+Manama (Barém), Teerão (Irão), Bagdade (Iraque), Telavive (Israel), Amã
+(Jordânia), Astana (Cazaquistão), Cidade do Kuwait, Bisqueque
+(Quirguistão), Beirute (Líbano), Mascate (Omã), Riade (Arábia Saudita),
+Damasco (Síria), Dushanbe (Tajiquistão), Asgabate (Turquemenistão),
+Tasquente (Usbequistão), Sanaa (Iémen).
+
+Damasco, Cartum (lote 3b) e Kiev (lote 1) partilham a mesma nota: o
+preço de voo vem de uma fonte real (Travelpayouts/Aviasales), por isso
+uma pesquisa a um destino sem voos correntes (guerra, sanções,
+instabilidade) simplesmente não devolve nada em vez de inventar um
+preço, honesto por omissão, sem tratamento especial na entrada.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 
