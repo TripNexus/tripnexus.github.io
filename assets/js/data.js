@@ -361,7 +361,17 @@ const CIDADES = [
   {n:'Honiara',       p:'Ilhas Salomão',    f:'🇸🇧', i:'HIR', la:-9.428, lo:160.055,c:0.90},
   {n:'Nuku\'alofa',   p:'Tonga',            f:'🇹🇴', i:'TBU', la:-21.241,lo:-175.149,c:1.05},
   {n:'Funafuti',      p:'Tuvalu',           f:'🇹🇻', i:'FUN', la:-8.525, lo:179.196,c:1.15},
-  {n:'Port Vila',     p:'Vanuatu',          f:'🇻🇺', i:'VLI', la:-17.699,lo:168.320,c:1.10}
+  {n:'Port Vila',     p:'Vanuatu',          f:'🇻🇺', i:'VLI', la:-17.699,lo:168.320,c:1.10},
+  /* Lote 6, 03/09/2026: fecha a lista das capitais que faltavam, sete
+     países que já tinham uma cidade no site mas não a capital, anotado
+     desde a primeira ronda deste projecto (Lote 1). */
+  {n:'Berna',         p:'Suíça',            f:'🇨🇭', i:'BRN', la:46.912, lo:7.499,  c:1.55},
+  {n:'Ancara',        p:'Turquia',          f:'🇹🇷', i:'ESB', la:40.128, lo:32.995, c:0.65},
+  {n:'Abu Dhabi',     p:'Emiratos Árabes Unidos', f:'🇦🇪', i:'AUH', la:24.433, lo:54.651, c:1.25},
+  {n:'Ottawa',        p:'Canadá',           f:'🇨🇦', i:'YOW', la:45.323, lo:-75.667,c:1.15},
+  {n:'Jacarta',       p:'Indonésia',        f:'🇮🇩', i:'CGK', la:-6.126, lo:106.656,c:0.55},
+  {n:'Camberra',      p:'Austrália',        f:'🇦🇺', i:'CBR', la:-35.307,lo:149.195,c:1.35},
+  {n:'Wellington',    p:'Nova Zelândia',    f:'🇳🇿', i:'WLG', la:-41.327,lo:174.805,c:1.20}
 ];
 
 /* Parceiros de comparação.
@@ -1729,7 +1739,8 @@ const WIKI_EN = {
   'Riade':'Riyadh', 'Damasco':'Damascus', 'Asgabate':'Ashgabat',
   'Tasquente':'Tashkent',
   'Daca':'Dhaka', 'Vienciana':'Vientiane', 'Ulã Bator':'Ulaanbaatar',
-  'Rangum':'Yangon', 'Catmandu':'Kathmandu'
+  'Rangum':'Yangon', 'Catmandu':'Kathmandu',
+  'Berna':'Bern', 'Ancara':'Ankara', 'Jacarta':'Jakarta', 'Camberra':'Canberra'
 };
 
 /* Destinos considerados na aba «Ofertas em conta». */
