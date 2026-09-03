@@ -312,7 +312,32 @@ const CIDADES = [
   {n:'São Tomé',      p:'São Tomé e Príncipe', f:'🇸🇹', i:'TMS', la:0.378, lo:6.712, c:0.85},
   {n:'Sal',           p:'Cabo Verde',      f:'🇨🇻', i:'SID', la:16.741, lo:-22.949,c:0.80},
   {n:'Mindelo',       p:'Cabo Verde',      f:'🇨🇻', i:'VXE', la:16.833, lo:-25.057,c:0.78},
-  {n:'Praia',         p:'Cabo Verde',      f:'🇨🇻', i:'RAI', la:14.933, lo:-23.513,c:0.75}
+  {n:'Praia',         p:'Cabo Verde',      f:'🇨🇻', i:'RAI', la:14.933, lo:-23.513,c:0.75},
+  /* Lote 4b (capitais do Sul e Sudeste Asiático), 03/09/2026. Myanmar:
+     o aeroporto internacional real é o de Rangum (Yangon), não o da
+     capital administrativa Naypyidaw, mesma lógica de Uganda/Tanzânia
+     nos lotes de África. Coreia do Norte partilha a nota do Lote 4a
+     sobre aeroportos sem voos numa fonte real (a Air Koryo não está
+     nos sistemas de reserva habituais): sem tratamento especial, a
+     pesquisa simplesmente não devolve resultados. Mongólia: o antigo
+     código IATA ULN ficou com o aeroporto antigo (Buyant-Ukhaa, hoje
+     fechado a voos comerciais); o aeroporto novo, Chinggis Khaan
+     (2021), tem o código UBN, confirmado contra várias fontes por
+     haver confusão generalizada entre os dois online. */
+  {n:'Daca',               p:'Bangladesh',      f:'🇧🇩', i:'DAC', la:23.843, lo:90.401, c:0.45},
+  {n:'Paro',               p:'Butão',           f:'🇧🇹', i:'PBH', la:27.409, lo:89.421, c:1.15},
+  {n:'Bandar Seri Begawan',p:'Brunei',          f:'🇧🇳', i:'BWN', la:4.945,  lo:114.934,c:0.75},
+  {n:'Phnom Penh',         p:'Camboja',         f:'🇰🇭', i:'PNH', la:11.546, lo:104.844,c:0.50},
+  {n:'Vienciana',          p:'Laos',            f:'🇱🇦', i:'VTE', la:17.988, lo:102.563,c:0.50},
+  {n:'Malé',               p:'Maldivas',        f:'🇲🇻', i:'MLE', la:4.192,  lo:73.529, c:1.30},
+  {n:'Ulã Bator',          p:'Mongólia',        f:'🇲🇳', i:'UBN', la:47.651, lo:106.821,c:0.70},
+  {n:'Rangum',             p:'Myanmar',         f:'🇲🇲', i:'RGN', la:16.907, lo:96.133, c:0.45},
+  {n:'Catmandu',           p:'Nepal',           f:'🇳🇵', i:'KTM', la:27.696, lo:85.359, c:0.45},
+  {n:'Pyongyang',          p:'Coreia do Norte', f:'🇰🇵', i:'FNJ', la:39.224, lo:125.670,c:0.40},
+  {n:'Islamabad',          p:'Paquistão',       f:'🇵🇰', i:'ISB', la:33.549, lo:72.826, c:0.50},
+  {n:'Manila',             p:'Filipinas',       f:'🇵🇭', i:'MNL', la:14.508, lo:121.020,c:0.65},
+  {n:'Colombo',            p:'Sri Lanka',       f:'🇱🇰', i:'CMB', la:7.181,  lo:79.884, c:0.55},
+  {n:'Dili',               p:'Timor-Leste',     f:'🇹🇱', i:'DIL', la:-8.546, lo:125.525,c:0.60}
 ];
 
 /* Parceiros de comparação.
@@ -1678,7 +1703,9 @@ const WIKI_EN = {
   'Telavive':'Tel Aviv', 'Amã':'Amman', 'Cidade do Kuwait':'Kuwait City',
   'Bisqueque':'Bishkek', 'Beirute':'Beirut', 'Mascate':'Muscat',
   'Riade':'Riyadh', 'Damasco':'Damascus', 'Asgabate':'Ashgabat',
-  'Tasquente':'Tashkent'
+  'Tasquente':'Tashkent',
+  'Daca':'Dhaka', 'Vienciana':'Vientiane', 'Ulã Bator':'Ulaanbaatar',
+  'Rangum':'Yangon', 'Catmandu':'Kathmandu'
 };
 
 /* Destinos considerados na aba «Ofertas em conta». */
