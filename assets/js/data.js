@@ -161,6 +161,38 @@ const CIDADES = [
   {n:'Washington D.C.',p:'Estados Unidos', f:'🇺🇸', i:'IAD', la:38.944, lo:-77.456,c:1.45},
   {n:'Toronto',       p:'Canadá',          f:'🇨🇦', i:'YYZ', la:43.653, lo:-79.383,c:1.30},
   {n:'Montreal',      p:'Canadá',          f:'🇨🇦', i:'YUL', la:45.502, lo:-73.567,c:1.20},
+  /* Lote 2 (capitais das Américas), 03/09/2026: países do continente
+     americano ainda sem nenhuma cidade no site. Códigos IATA e
+     coordenadas verificados um a um: o aeroporto de Quito apareceu numa
+     fonte com o hemisfério trocado (Norte em vez de Sul), corrigido
+     contra uma segunda fonte antes de entrar aqui. */
+  {n:'Saint John\'s', p:'Antígua e Barbuda', f:'🇦🇬', i:'ANU', la:17.137, lo:-61.793,c:1.10},
+  {n:'Nassau',        p:'Baamas',          f:'🇧🇸', i:'NAS', la:25.039, lo:-77.466,c:1.15},
+  {n:'Bridgetown',    p:'Barbados',        f:'🇧🇧', i:'BGI', la:13.075, lo:-59.493,c:1.10},
+  {n:'Cidade de Belize',p:'Belize',        f:'🇧🇿', i:'BZE', la:17.539, lo:-88.308,c:0.85},
+  {n:'San José',      p:'Costa Rica',      f:'🇨🇷', i:'SJO', la:9.994,  lo:-84.209,c:0.85},
+  {n:'Havana',        p:'Cuba',            f:'🇨🇺', i:'HAV', la:22.989, lo:-82.409,c:0.65},
+  {n:'Roseau',        p:'Dominica',        f:'🇩🇲', i:'DOM', la:15.547, lo:-61.300,c:0.90},
+  {n:'Santo Domingo', p:'República Dominicana', f:'🇩🇴', i:'SDQ', la:18.429, lo:-69.669,c:0.85},
+  {n:'San Salvador',  p:'El Salvador',     f:'🇸🇻', i:'SAL', la:13.441, lo:-89.056,c:0.65},
+  {n:'Saint George\'s',p:'Granada',        f:'🇬🇩', i:'GND', la:12.004, lo:-61.786,c:1.05},
+  {n:'Cidade da Guatemala',p:'Guatemala',  f:'🇬🇹', i:'GUA', la:14.582, lo:-90.527,c:0.65},
+  {n:'Porto Príncipe',p:'Haiti',           f:'🇭🇹', i:'PAP', la:18.575, lo:-72.295,c:0.55},
+  {n:'Tegucigalpa',   p:'Honduras',        f:'🇭🇳', i:'TGU', la:14.062, lo:-87.217,c:0.60},
+  {n:'Kingston',      p:'Jamaica',         f:'🇯🇲', i:'KIN', la:17.936, lo:-76.788,c:0.90},
+  {n:'Manágua',       p:'Nicarágua',       f:'🇳🇮', i:'MGA', la:12.141, lo:-86.168,c:0.55},
+  {n:'Cidade do Panamá',p:'Panamá',        f:'🇵🇦', i:'PTY', la:9.071,  lo:-79.384,c:0.85},
+  {n:'Basseterre',    p:'São Cristóvão e Neves', f:'🇰🇳', i:'SKB', la:17.311, lo:-62.719,c:1.05},
+  {n:'Castries',      p:'Santa Lúcia',     f:'🇱🇨', i:'UVF', la:13.733, lo:-60.953,c:1.10},
+  {n:'Kingstown',     p:'São Vicente e Granadinas', f:'🇻🇨', i:'SVD', la:13.156, lo:-61.150,c:1.00},
+  {n:'Porto de Espanha',p:'Trindade e Tobago', f:'🇹🇹', i:'POS', la:10.595, lo:-61.337,c:0.85},
+  {n:'La Paz',        p:'Bolívia',         f:'🇧🇴', i:'LPB', la:-16.513,lo:-68.192,c:0.55},
+  {n:'Quito',         p:'Equador',         f:'🇪🇨', i:'UIO', la:-0.113, lo:-78.359,c:0.60},
+  {n:'Georgetown',    p:'Guiana',          f:'🇬🇾', i:'GEO', la:6.498,  lo:-58.254,c:0.65},
+  {n:'Assunção',      p:'Paraguai',        f:'🇵🇾', i:'ASU', la:-25.240,lo:-57.519,c:0.55},
+  {n:'Paramaribo',    p:'Suriname',        f:'🇸🇷', i:'PBM', la:5.453,  lo:-55.188,c:0.65},
+  {n:'Montevideu',    p:'Uruguai',         f:'🇺🇾', i:'MVD', la:-34.838,lo:-56.031,c:0.75},
+  {n:'Caracas',       p:'Venezuela',       f:'🇻🇪', i:'CCS', la:10.603, lo:-66.991,c:0.60},
   {n:'São Paulo',     p:'Brasil',          f:'🇧🇷', i:'GRU', la:-23.551,lo:-46.633,c:0.80},
   {n:'Rio de Janeiro',p:'Brasil',          f:'🇧🇷', i:'GIG', la:-22.907,lo:-43.173,c:0.85},
   {n:'Brasília',      p:'Brasil',          f:'🇧🇷', i:'BSB', la:-15.871,lo:-47.919,c:0.78},
@@ -1552,7 +1584,11 @@ const WIKI_EN = {
   'Luxemburgo':'Luxembourg',
   'Liubliana':'Ljubljana', 'Taline':'Tallinn', 'Escópia':'Skopje',
   'Valeta':'Valletta', 'Bucareste':'Bucharest', 'Moscovo':'Moscow',
-  'Belgrado':'Belgrade', 'Kiev':'Kyiv', 'Sófia':'Sofia'
+  'Belgrado':'Belgrade', 'Kiev':'Kyiv', 'Sófia':'Sofia',
+  'Manágua':'Managua', 'Montevideu':'Montevideo', 'Assunção':'Asunción',
+  'Porto Príncipe':'Port-au-Prince', 'Cidade do Panamá':'Panama City',
+  'Cidade da Guatemala':'Guatemala City', 'Cidade de Belize':'Belize City',
+  'Porto de Espanha':'Port of Spain'
 };
 
 /* Destinos considerados na aba «Ofertas em conta». */

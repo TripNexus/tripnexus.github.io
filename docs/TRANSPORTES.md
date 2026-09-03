@@ -242,7 +242,7 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
 
 ## Estado em 03 de Setembro de 2026
 
-145 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+172 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 A partir daqui, a lista de cidades já não é uma lista fechada: está a
@@ -256,7 +256,7 @@ contagem, não os nomes todos: a lista completa está sempre em
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 48 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 75 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -320,6 +320,29 @@ ucraniano está fechado a voos civis desde 2022; como os preços de voo
 vêm de uma fonte real (Travelpayouts/Aviasales), a pesquisa aqui
 simplesmente não vai devolver nada em vez de inventar um preço, por isso
 a entrada fica sem tratamento especial.
+
+**Lote 2, 03 de Setembro: capitais das Américas (27 cidades).** Caraíbas
+e América Central: Saint John's (Antígua e Barbuda), Nassau (Baamas),
+Bridgetown (Barbados), Cidade de Belize (Belize), San José (Costa Rica),
+Havana (Cuba), Roseau (Dominica), Santo Domingo (República Dominicana),
+San Salvador (El Salvador), Saint George's (Granada), Cidade da
+Guatemala (Guatemala), Porto Príncipe (Haiti), Tegucigalpa (Honduras),
+Kingston (Jamaica), Manágua (Nicarágua), Cidade do Panamá (Panamá),
+Basseterre (São Cristóvão e Neves), Castries (Santa Lúcia), Kingstown
+(São Vicente e Granadinas), Porto de Espanha (Trindade e Tobago). Resto
+da América do Sul: La Paz (Bolívia; capital constitucional é Sucre, mas
+La Paz é a sede do governo e tem o aeroporto principal), Quito
+(Equador), Georgetown (Guiana), Assunção (Paraguai), Paramaribo
+(Suriname), Montevideu (Uruguai), Caracas (Venezuela).
+
+Nomes em português: onde o nome inglês/espanhol/francês diverge
+bastante, usa-se o que já é corrente em português (Manágua, Montevideu,
+Assunção, Porto Príncipe, Cidade do Panamá, Cidade da Guatemala, Cidade
+de Belize, Porto de Espanha); `WIKI_EN` ganhou as formas correspondentes
+para as pesquisas de alojamento continuarem a encontrar a cidade certa.
+Um dos códigos de aeroporto apareceu, numa primeira pesquisa, com o
+hemisfério trocado (o aeroporto de Quito, dado como a norte do equador
+em vez de a sul); confirmado contra uma segunda fonte antes de entrar.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 
