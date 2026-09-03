@@ -1524,6 +1524,80 @@ const TRANSPORTES_DESTINO = {
     bilhetes:[
       {nome:'Bilhete (transporte público gratuito)', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro','metro','eletrico']}
     ]},
+  /* Não estava na tabela. O autocarro urbano é gerido por várias empresas
+     privadas em concessão, coordenadas pela Câmara Municipal de Tirana;
+     tarifa geral subsidiada pela câmara, confirmada por várias fontes. Há
+     linhas suburbanas privadas distintas (Kamëz/Paskuqan-Tiranë) que
+     cobram mais (50 lekë desde Nov/2025): não é a tarifa que entra aqui,
+     que é a geral da cidade. Verificado a 03/09/2026. */
+  'Tirana': {operador:'Autocarros urbanos (concessionárias privadas, coordenadas pela Bashkia Tiranë)', url:'https://urbani.tirana.al/', actualizado:'2026-09-03', fonte:'https://opendata.tirana.al/',
+    moeda:'ALL', nota:'Preço da rede geral da cidade, subsidiado pela câmara. Linhas suburbanas privadas distintas (Kamëz, Paskuqan) cobram mais e não são esta tarifa.',
+    bilhetes:[
+      {nome:'Bilhete simples (dinheiro, ao cobrador)', preco:40, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Passe mensal', preco:1600, unidade:'mês', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Autocarro/trólei/eléctrico (Minsktrans) e metro
+     (Minsk Metro) são entidades separadas, com tarifas próximas. Preços
+     em vigor desde o aumento de 27/03/2026 (Decisão nº1016 do Comité
+     Executivo de Minsk); não foi possível aceder aos sites oficiais
+     directamente, mas quatro fontes de imprensa independentes coincidem
+     no valor. Verificado a 03/09/2026. */
+  'Minsk': {operador:'Minsktrans (autocarro/trólei/eléctrico) / Minsk Metro', url:'https://minsktrans.by/oplata-proezda/tarify/', actualizado:'2026-09-03', fonte:'https://myfin.by/',
+    moeda:'BYN', nota:'Talão do autocarro/trólei/eléctrico e ficha do metro têm preços próprios, ligeiramente diferentes.',
+    bilhetes:[
+      {nome:'Talão autocarro/trólei/eléctrico', preco:1.10, unidade:'viagem', quando:'antes', modos:['autocarro','eletrico']},
+      {nome:'Ficha do metro', preco:1.15, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Passe mensal unificado (todos os transportes)', preco:65.84, unidade:'mês', quando:'chegada', modos:['autocarro','metro','eletrico']}
+    ]},
+  /* Não estava na tabela. GRAS é o operador municipal (eléctrico, trólei,
+     autocarro). O preço nominal do bilhete subiu para 2,50 KM a
+     01/07/2025, mas o Governo do Cantão de Sarajevo subsidia 0,30 KM,
+     por isso o valor pago continua em 2,20 KM; confirmado pela tabela
+     oficial do operador e pelo Ministério dos Transportes do cantão.
+     Verificado a 03/09/2026. */
+  'Sarajevo': {operador:'GRAS (Gradski saobraćaj Sarajevo)', url:'https://gras.ba/karte/', actualizado:'2026-09-03', fonte:'https://gras.ba/wp-content/uploads/2025/06/cjenovnik-tabela-1.7.25.pdf',
+    moeda:'BAM', nota:'O preço nominal subiu para 2,50 KM em Julho de 2025, mas um subsídio do Cantão de Sarajevo mantém o valor pago em 2,20 KM.',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:2.20, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
+      {nome:'Passe diário', preco:7.10, unidade:'24 h', quando:'chegada', modos:['eletrico','autocarro']},
+      {nome:'Passe de 10 dias', preco:50, unidade:'10 dias', quando:'chegada', modos:['eletrico','autocarro']}
+    ]},
+  /* Não estava na tabela. O metro e a rede geral (autocarro/tram/trólei)
+     têm tarifário unificado, fixado pelo Centro de Mobilidade Urbana
+     (CGM). Os preços passaram de leva (BGN) para euro a 1 de Janeiro de
+     2026 (1,60 BGN passou a 0,80€); confirmado pela página oficial do
+     Metro de Sófia e por uma notícia do próprio CGM. Verificado a
+     03/09/2026. */
+  'Sófia': {operador:'Metropoliten EAD (Metro de Sófia) / Centro de Mobilidade Urbana (CGM)', url:'https://www.metrosofia.com/en/tickets', actualizado:'2026-09-03', fonte:'https://www.metrosofia.com/en/tickets',
+    moeda:'EUR', nota:'Tarifário unificado para metro, autocarro, tram e trólei. Os preços passaram de leva para euro a 1 de Janeiro de 2026.',
+    bilhetes:[
+      {nome:'Bilhete "30+" (transbordo até 30 min)', preco:0.80, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
+      {nome:'Passe diário (toda a rede)', preco:2.00, unidade:'24 h', quando:'chegada', modos:['metro','autocarro','eletrico']}
+    ]},
+  /* Não estava na tabela. A Cyprus Public Transport (CPT) é a operadora
+     contratada pelo Ministério dos Transportes para as rotas urbanas de
+     Nicósia. O bilhete simples subiu de 2,40€ para 2,70€ a 3 de Agosto de
+     2026 (fórmula de reajuste bienal regulada); confirmado pela página
+     oficial e por uma notícia local. Não há passe diário só a dinheiro
+     (só existe um passe multi-cidade a 20€, exige o cartão Motion, por
+     isso não entra aqui). Verificado a 03/09/2026. */
+  'Nicósia': {operador:'Cyprus Public Transport (CPT)', url:'https://www.publictransport.com.cy/cms/page/cash-tickets', actualizado:'2026-09-03', fonte:'https://www.publictransport.com.cy/cms/page/cash-tickets',
+    moeda:'EUR',
+    bilhetes:[
+      {nome:'Bilhete simples urbano (dinheiro)', preco:2.70, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete nocturno (21h-4h, dinheiro)', preco:4.70, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. A DPB (Dopravný podnik Bratislava) opera dentro
+     do sistema integrado IDS BK. Valores do tarifário oficial (Cenník),
+     confirmados contra uma segunda fonte independente sem contradição.
+     Verificado a 03/09/2026. */
+  'Bratislava': {operador:'Dopravný podnik Bratislava (DPB)', url:'https://dpb.sk/sk/cennik', actualizado:'2026-09-03', fonte:'https://dpb.sk/sk/cennik',
+    moeda:'EUR', nota:'Tarifas da cidade (zonas 100+101); o sistema IDS BK integra também comboio e autocarro regional, com zonas próprias.',
+    bilhetes:[
+      {nome:'Bilhete simples, 30 min', preco:1.20, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
+      {nome:'Bilhete simples, 60 min', preco:1.80, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
+      {nome:'Passe diário 24h', preco:5.40, unidade:'24 h', quando:'chegada', modos:['eletrico','autocarro']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */

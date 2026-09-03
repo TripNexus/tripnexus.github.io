@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 91 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 97 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 167 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 161 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -633,3 +633,18 @@ mais barato (2,30€) do que a bordo (2,50€). Luxemburgo: caso especial,
 os transportes públicos são gratuitos em todo o país desde Março de
 2020 (excepto a 1ª classe do comboio, sem preço confirmado); entra com
 um bilhete a 0€, uma tarifa real, não a ausência de uma.
+
+**Lote 2, 03 de Setembro (6 cidades): Tirana, Minsk, Sarajevo, Sófia,
+Nicósia, Bratislava.** Tirana: tarifa geral da rede urbana (40 lekë),
+subsidiada pela câmara; linhas suburbanas privadas distintas cobram
+mais, não confundir. Minsk: talão do autocarro/trólei/eléctrico (1,10
+BYN) e ficha do metro (1,15 BYN) são tarifas próximas mas distintas,
+confirmadas por quatro fontes de imprensa independentes (os sites
+oficiais não estavam acessíveis directamente). Sarajevo (GRAS): o
+preço nominal subiu para 2,50 KM em Julho de 2025, mas um subsídio do
+Cantão de Sarajevo mantém o valor pago pelo cidadão em 2,20 KM, que é
+o que entra aqui. Sófia: tarifário unificado (metro, autocarro, tram,
+trólei), passou de leva para euro a 1 de Janeiro de 2026. Nicósia
+(CPT): subida de 2,40€ para 2,70€ a 3 de Agosto de 2026, sem passe
+diário só a dinheiro (o único existente exige um cartão). Bratislava
+(DPB): tarifário oficial sem contradição entre fontes.
