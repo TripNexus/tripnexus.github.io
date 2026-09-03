@@ -242,7 +242,7 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
 
 ## Estado em 03 de Setembro de 2026
 
-261 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+268 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 A partir daqui, a lista de cidades já não é uma lista fechada: está a
@@ -256,7 +256,7 @@ contagem, não os nomes todos: a lista completa está sempre em
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 164 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 171 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -300,7 +300,7 @@ como capital constitucional mas La Paz como sede do governo e do
 aeroporto principal). Além disso, sete países já tinham uma cidade no
 site, mas não a capital (por exemplo, a Suíça só tinha Zurique e
 Genebra, não Berna): essas capitais entram também, como cidades
-adicionais, numa próxima ronda.
+adicionais, no Lote 6, mais abaixo.
 
 Capitais sem nenhum aeroporto comercial (Andorra, Listenstaine, São
 Marinho, Vaticano) não entram: inventar uma ligação a um aeroporto
@@ -442,6 +442,16 @@ pelo aeroporto de Pohnpei a 10 km, junto a Kolonia.
 **Nauru** é um caso à parte: é a única república do mundo sem capital
 oficial. Yaren, onde ficam o governo e o aeroporto, funciona como
 capital de facto, por isso é a que entra aqui.
+
+**Lote 6, 03 de Setembro: as sete capitais em falta de países que já
+tinham outra cidade no site (7 cidades).** Berna (Suíça, que só tinha
+Zurique e Genebra), Ancara (Turquia, só tinha Istambul), Abu Dhabi
+(Emiratos Árabes Unidos, só tinha Dubai), Ottawa (Canadá, só tinha
+Toronto e Montreal), Jacarta (Indonésia, só tinha Bali), Camberra
+(Austrália, só tinha Sydney e Melbourne), Wellington (Nova Zelândia, só
+tinha Auckland). Ficou anotado desde o Lote 1 que estas sete entravam
+numa próxima ronda; entram aqui, a fechar o projecto por completo: já
+não falta nenhuma capital soberana em falta em lado nenhum.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 
