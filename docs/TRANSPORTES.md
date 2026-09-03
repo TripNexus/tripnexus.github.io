@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 110 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 119 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 11 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland, Bucareste |
-| **Sem operador** | 147 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 14 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 135 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -668,3 +668,30 @@ com o operador: as fontes jornalísticas davam valores diferentes (7, 9,
 anunciadas entre Setembro de 2025 e Maio de 2026) sem forma clara de
 saber qual estava em vigor à data da verificação, por isso não se
 escolheu nenhum.
+
+**Lote 4, 03 de Setembro: Caraíbas e América Central (12 cidades com
+tarifa, 3 só operador, 4 de fora).** Nassau, Bridgetown, Havana,
+Roseau, Santo Domingo, San José (só operador), San Salvador (só
+operador), Cidade da Guatemala, Tegucigalpa (só operador), Kingston,
+Manágua, Cidade do Panamá. Muitas destas cidades não têm uma empresa
+municipal única, mas sim redes de minibus/autocarros privados
+regulados por um organismo do Estado (ARESEP na Costa Rica, VMT em El
+Salvador, IHTT em Honduras, IRTRAMMA em Manágua): quando o organismo
+regulador existe e é citável, entra como operador, mesmo sem tarifa
+única (San José, San Salvador, Tegucigalpa: preço varia por rota/
+empresa, sem valor citadino confirmável).
+
+Quatro cidades ficaram de fora nesta ronda, sem entrada nenhuma: Saint
+John's (Antígua e Barbuda), Cidade de Belize, Saint George's (Grenada)
+e Porto Príncipe (Haiti). Nestas não há operador formal identificável
+nem uma fonte oficial citável (só blogues de viagem ou tarifários
+informais, com cumprimento variável no terreno); nenhuma entra ainda,
+para não inventar um operador ou um preço que na prática ninguém
+garante.
+
+Casos com nota: Roseau e Nassau, apesar de terem tarifário
+governamental, dependem de minibus privados individuais, com relatos de
+cobrança inconsistente. Santo Domingo e Cidade da Guatemala têm dois
+sistemas distintos em paralelo (Metro/Teleférico + OMSA; Transmetro +
+TuBus), cada um com tarifa própria. Cidade do Panamá: PAB (balboa) tem
+paridade fixa 1:1 com o dólar americano.
