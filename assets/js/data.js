@@ -112,6 +112,36 @@ const CIDADES = [
   {n:'Oslo',          p:'Noruega',         f:'🇳🇴', i:'OSL', la:59.913, lo:10.752, c:1.50},
   {n:'Helsínquia',    p:'Finlândia',       f:'🇫🇮', i:'HEL', la:60.170, lo:24.938, c:1.30},
   {n:'Reiquiavique',  p:'Islândia',        f:'🇮🇸', i:'KEF', la:64.147, lo:-21.943,c:1.55},
+  /* Lote 1 (capitais da Europa), 03/09/2026: países europeus ainda sem
+     nenhuma cidade na lista. Códigos IATA e coordenadas verificados um a
+     um. Andorra, Listenstaine, São Marinho e o Vaticano ficaram de fora:
+     nenhum tem aeroporto comercial próprio, e inventar uma ligação a um
+     aeroporto vizinho (nenhum dentro do próprio país) seria o mesmo erro
+     que se corrigiu para Bragança/Vila Real/Viseu, ao contrário. Kiev:
+     o espaço aéreo ucraniano está fechado a voos civis desde 2022; como
+     os preços de voo vêm de uma fonte real (Travelpayouts/Aviasales), a
+     pesquisa simplesmente não devolve nada em vez de inventar um preço,
+     por isso a entrada fica, honesta, sem tratamento especial. */
+  {n:'Tirana',        p:'Albânia',         f:'🇦🇱', i:'TIA', la:41.415, lo:19.721, c:0.65},
+  {n:'Minsk',         p:'Bielorrússia',    f:'🇧🇾', i:'MSQ', la:53.883, lo:28.033, c:0.60},
+  {n:'Sarajevo',      p:'Bósnia e Herzegovina', f:'🇧🇦', i:'SJJ', la:43.825, lo:18.331,c:0.65},
+  {n:'Sófia',         p:'Bulgária',        f:'🇧🇬', i:'SOF', la:42.695, lo:23.408, c:0.68},
+  {n:'Nicósia',       p:'Chipre',          f:'🇨🇾', i:'LCA', la:34.879, lo:33.630, c:1.05},
+  {n:'Bratislava',    p:'Eslováquia',      f:'🇸🇰', i:'BTS', la:48.170, lo:17.213, c:0.85},
+  {n:'Liubliana',     p:'Eslovénia',       f:'🇸🇮', i:'LJU', la:46.224, lo:14.456, c:0.95},
+  {n:'Taline',        p:'Estónia',         f:'🇪🇪', i:'TLL', la:59.413, lo:24.833, c:0.90},
+  {n:'Tbilisi',       p:'Geórgia',         f:'🇬🇪', i:'TBS', la:41.669, lo:44.955, c:0.55},
+  {n:'Riga',          p:'Letónia',         f:'🇱🇻', i:'RIX', la:56.924, lo:23.971, c:0.85},
+  {n:'Vilnius',       p:'Lituânia',        f:'🇱🇹', i:'VNO', la:54.637, lo:25.288, c:0.80},
+  {n:'Escópia',       p:'Macedónia do Norte', f:'🇲🇰', i:'SKP', la:41.961, lo:21.627,c:0.55},
+  {n:'Valeta',        p:'Malta',           f:'🇲🇹', i:'MLA', la:35.858, lo:14.478, c:1.10},
+  {n:'Chisinau',      p:'Moldova',         f:'🇲🇩', i:'RMO', la:46.928, lo:28.931, c:0.50},
+  {n:'Mónaco',        p:'Mónaco',          f:'🇲🇨', i:'MCM', la:43.726, lo:7.421,  c:1.75},
+  {n:'Podgorica',     p:'Montenegro',      f:'🇲🇪', i:'TGD', la:42.359, lo:19.252, c:0.75},
+  {n:'Bucareste',     p:'Roménia',         f:'🇷🇴', i:'OTP', la:44.571, lo:26.085, c:0.62},
+  {n:'Moscovo',       p:'Rússia',          f:'🇷🇺', i:'SVO', la:55.973, lo:37.415, c:0.75},
+  {n:'Belgrado',      p:'Sérvia',          f:'🇷🇸', i:'BEG', la:44.819, lo:20.307, c:0.65},
+  {n:'Kiev',          p:'Ucrânia',         f:'🇺🇦', i:'KBP', la:50.345, lo:30.893, c:0.55},
   {n:'Istambul',      p:'Turquia',         f:'🇹🇷', i:'IST', la:41.008, lo:28.978, c:0.70},
   {n:'Marraquexe',    p:'Marrocos',        f:'🇲🇦', i:'RAK', la:31.630, lo:-7.981, c:0.60},
   {n:'Casablanca',    p:'Marrocos',        f:'🇲🇦', i:'CMN', la:33.573, lo:-7.590, c:0.62},
@@ -1519,7 +1549,10 @@ const WIKI_EN = {
   'Barcelona':'Barcelona', 'Paris':'Paris', 'Funchal':'Funchal',
   'Ponta Delgada':'Ponta Delgada',
   'Bilbau':'Bilbao', 'Acra':'Accra', 'Argel':'Algiers', 'Bolonha':'Bologna',
-  'Luxemburgo':'Luxembourg'
+  'Luxemburgo':'Luxembourg',
+  'Liubliana':'Ljubljana', 'Taline':'Tallinn', 'Escópia':'Skopje',
+  'Valeta':'Valletta', 'Bucareste':'Bucharest', 'Moscovo':'Moscow',
+  'Belgrado':'Belgrade', 'Kiev':'Kyiv', 'Sófia':'Sofia'
 };
 
 /* Destinos considerados na aba «Ofertas em conta». */

@@ -240,18 +240,23 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
   tecto, no mesmo espírito do fare cap de Auckland, sem inventar o preço
   do bilhete.
 
-## Estado em 03 de Setembro de 2026, depois das 14 cidades da TAP
+## Estado em 03 de Setembro de 2026
 
-125 cidades no site (mais 14 desde a ronda anterior: ver a secção
-seguinte). Começámos, na primeira ronda, com 17 na tabela e nenhuma com
-data de conferência.
+145 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+nenhuma com data de conferência.
+
+A partir daqui, a lista de cidades já não é uma lista fechada: está a
+crescer por um projecto à parte (capitais do mundo, ver a secção
+seguinte), por isso a coluna «Sem operador» passa a mostrar só a
+contagem, não os nomes todos: a lista completa está sempre em
+`assets/js/data.js` (`CIDADES`).
 
 | | Cidades | |
 |---|---:|---|
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 28 | Acra, Argel, Bali, Belo Horizonte, Bilbau, Bissau, Bolonha, Bombaim, Brasília, Cairo, Cancún, Chicago, Cidade do México, Dakar, Lima, Luanda, Luxemburgo, Maputo, Mindelo, Pequim, Phuket, Praia, Sal, Santiago de Compostela, Seul, São Tomé, Washington D.C., Xangai |
+| **Sem operador** | 48 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -278,6 +283,43 @@ Não é a lista completa da TAP: ficam de fora dezenas de rotas menores
 podem entrar numa próxima ronda. Estas 14 entram só em `CIDADES`, sem
 transportes locais confirmados (ficam em «sem operador», como qualquer
 cidade nova): é matéria para uma ronda de transportes à parte, não desta.
+
+### O projecto das capitais do mundo, a partir de 03 de Setembro
+
+Depois das 14 da TAP, pediu-se para não ficar por aí: acrescentar todas
+as capitais de países soberanos que ainda faltam, por lotes, cada um
+testado e enviado como o seu próprio PR antes do seguinte. O critério é
+a lista de estados-membros da ONU (193) mais os dois observadores
+(Vaticano, Palestina), cerca de 195 países, dos quais o site cobria
+antes só 56. Cada capital entra com a cidade que serve na prática o
+tráfego aéreo internacional do país, não necessariamente o nome
+constitucional da capital, quando os dois divergem (por exemplo: a Costa
+do Marfim tem Yamoussoukro como capital de jure mas Abidjan como sede de
+facto do governo e o aeroporto internacional real; a Bolívia tem Sucre
+como capital constitucional mas La Paz como sede do governo e do
+aeroporto principal). Além disso, oito países já tinham uma cidade no
+site, mas não a capital (por exemplo, a Suíça só tinha Zurique e
+Genebra, não Berna): essas capitais entram também, como cidades
+adicionais, numa próxima ronda.
+
+Capitais sem nenhum aeroporto comercial (Andorra, Listenstaine, São
+Marinho, Vaticano) não entram: inventar uma ligação a um aeroporto
+vizinho, fora do próprio país, seria o erro inverso ao que se corrigiu
+para Bragança/Vila Real/Viseu no início desta série. Fica anotado caso a
+caso em `data.js`, não escondido.
+
+**Lote 1, 03 de Setembro: capitais da Europa (20 cidades).** Países
+europeus que ainda não tinham nenhuma cidade no site: Tirana (Albânia),
+Minsk (Bielorrússia), Sarajevo (Bósnia e Herzegovina), Sófia (Bulgária),
+Nicósia (Chipre), Bratislava (Eslováquia), Liubliana (Eslovénia), Taline
+(Estónia), Tbilisi (Geórgia), Riga (Letónia), Vilnius (Lituânia),
+Escópia (Macedónia do Norte), Valeta (Malta), Chisinau (Moldova),
+Mónaco, Podgorica (Montenegro), Bucareste (Roménia), Moscovo (Rússia),
+Belgrado (Sérvia), Kiev (Ucrânia). Nota sobre Kiev: o espaço aéreo
+ucraniano está fechado a voos civis desde 2022; como os preços de voo
+vêm de uma fonte real (Travelpayouts/Aviasales), a pesquisa aqui
+simplesmente não vai devolver nada em vez de inventar um preço, por isso
+a entrada fica sem tratamento especial.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 
