@@ -242,7 +242,7 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
 
 ## Estado em 03 de Setembro de 2026
 
-235 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+249 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 A partir daqui, a lista de cidades já não é uma lista fechada: está a
@@ -256,7 +256,7 @@ contagem, não os nomes todos: a lista completa está sempre em
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 138 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 152 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -297,7 +297,7 @@ constitucional da capital, quando os dois divergem (por exemplo: a Costa
 do Marfim tem Yamoussoukro como capital de jure mas Abidjan como sede de
 facto do governo e o aeroporto internacional real; a Bolívia tem Sucre
 como capital constitucional mas La Paz como sede do governo e do
-aeroporto principal). Além disso, oito países já tinham uma cidade no
+aeroporto principal). Além disso, sete países já tinham uma cidade no
 site, mas não a capital (por exemplo, a Suíça só tinha Zurique e
 Genebra, não Berna): essas capitais entram também, como cidades
 adicionais, numa próxima ronda.
@@ -394,6 +394,34 @@ preço de voo vem de uma fonte real (Travelpayouts/Aviasales), por isso
 uma pesquisa a um destino sem voos correntes (guerra, sanções,
 instabilidade) simplesmente não devolve nada em vez de inventar um
 preço, honesto por omissão, sem tratamento especial na entrada.
+
+**Lote 4b, 03 de Setembro: capitais do Sul e Sudeste Asiático (14
+cidades).** Daca (Bangladesh), Paro (Butão), Bandar Seri Begawan
+(Brunei), Phnom Penh (Camboja), Vienciana (Laos), Malé (Maldivas), Ulã
+Bator (Mongólia), Rangum (Myanmar), Catmandu (Nepal), Pyongyang (Coreia
+do Norte), Islamabad (Paquistão), Manila (Filipinas), Colombo (Sri
+Lanka), Dili (Timor-Leste). Com este lote e o 4a, fecha-se a Ásia: não
+falta nenhuma capital do continente.
+
+Um caso de capital administrativa sem o aeroporto internacional real: o
+**Myanmar** tem Naypyidaw como capital desde 2005, mas quem tem o
+aeroporto internacional é Rangum (Yangon), mesma lógica já aplicada a
+Uganda e Tanzânia. A **Coreia do Norte** partilha a nota de
+Damasco/Cartum/Kiev: tem muito poucas ligações internacionais (a
+companhia estatal Air Koryo não está nos sistemas de reserva
+habituais), por isso uma pesquisa a Pyongyang simplesmente não devolve
+resultados, sem tratamento especial.
+
+Nomes em português: Daca, Vienciana, Ulã Bator e Catmandu são os
+exónimos correntes (confirmados na Wikipédia e na Infopédia em
+português), diferentes do nome inglês Dhaka/Vientiane/Ulaanbaatar/
+Kathmandu; Rangum é o nome histórico ainda em uso em português para
+Yangon, incluindo depois da mudança de nome pela junta militar em 1989.
+`WIKI_EN` ganhou as formas inglesas correspondentes. Nota à parte sobre
+a Mongólia: o código IATA antigo (ULN) ficou preso ao aeroporto antigo,
+hoje sem voos comerciais; o aeroporto novo, Chinggis Khaan (2021), usa
+o código UBN, confirmado contra várias fontes por haver confusão
+generalizada online entre os dois.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 
