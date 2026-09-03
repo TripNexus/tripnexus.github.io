@@ -242,7 +242,7 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
 
 ## Estado em 03 de Setembro de 2026
 
-172 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
+195 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
 
 A partir daqui, a lista de cidades já não é uma lista fechada: está a
@@ -256,7 +256,7 @@ contagem, não os nomes todos: a lista completa está sempre em
 | Com tarifas **confirmadas** | **87** | Amesterdão, Atenas, Aveiro, Barcelona, Berlim, Bogotá, Boston, Braga, Bragança, Bruxelas, Budapeste, Buenos Aires, Casablanca, Castelo Branco, Cidade do Cabo, Coimbra, Copenhaga, Covilhã, Cracóvia, Deli, Dubai, Dublin, Dubrovnik, Edimburgo, Estocolmo, Florença, Fortaleza, Frankfurt, Funchal, Genebra, Guarda, Hamburgo, Helsínquia, Hong Kong, Ibiza, Istambul, Kuala Lumpur, Leiria, Lisboa, Londres, Los Angeles, Lyon, Madrid, Manchester, Marselha, Melbourne, Miami, Milão, Montreal, Munique, Málaga, Nice, Nova Iorque, Orlando, Osaka, Oslo, Palma de Maiorca, Paris, Ponta Delgada, Porto, Praga, Recife, Reiquiavique, Rio de Janeiro, Roma, Salvador, Santarém, Santiago, Santorini, Setúbal, Sevilha, Singapura, Sydney, São Francisco, São Paulo, Tenerife, Toronto, Tóquio, Valência, Varsóvia, Veneza, Viana do Castelo, Viena, Viseu, Zagreb, Zurique, Évora |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 10 | Faro, Vila Real, Portalegre, Beja, Nápoles, Marraquexe, Doha, Banguecoque, Hanói, Auckland |
-| **Sem operador** | 75 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 98 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -343,6 +343,26 @@ para as pesquisas de alojamento continuarem a encontrar a cidade certa.
 Um dos códigos de aeroporto apareceu, numa primeira pesquisa, com o
 hemisfério trocado (o aeroporto de Quito, dado como a norte do equador
 em vez de a sul); confirmado contra uma segunda fonte antes de entrar.
+
+**Lote 3a, 03 de Setembro: capitais de África, primeira metade (23
+cidades).** Cotonou (Benim), Gaborone (Botsuana), Ouagadougou (Burquina
+Faso), Bujumbura (Burundi), Yaoundé (Camarões), Bangui (República
+Centro-Africana), N'Djamena (Chade), Moroni (Comores), Brazzaville
+(Congo), Kinshasa (República Democrática do Congo), Jibuti, Malabo
+(Guiné Equatorial), Asmara (Eritreia), Manzini (Essuatíni), Adis Abeba
+(Etiópia), Libreville (Gabão), Banjul (Gâmbia), Conacri (Guiné), Abidjan
+(Costa do Marfim), Nairóbi (Quénia), Maseru (Lesoto), Monróvia
+(Libéria), Trípoli (Líbia).
+
+Dois casos onde a capital constitucional não tem o aeroporto
+internacional real do país, e por isso não é a cidade que entra: a
+**Guiné Equatorial** mudou a capital oficial para Ciudad de la Paz em
+Janeiro de 2026, mas o aeroporto de lá só liga a Malabo (voo doméstico),
+sem ligação internacional directa: Malabo continua a ser a porta de
+entrada real, por isso fica ela; o **Essuatíni** tem Mbabane como
+capital administrativa, mas o aeroporto internacional (Matsapha) fica
+junto a Manzini, por isso a cidade é Manzini, para não sugerir uma
+ligação que o aeroporto não tem.
 
 ### A ronda das cidades sem aeroporto, feita a 31 de Agosto de 2026
 

@@ -225,6 +225,37 @@ const CIDADES = [
   {n:'Auckland',      p:'Nova Zelândia',   f:'🇳🇿', i:'AKL', la:-36.849,lo:174.763,c:1.25},
   {n:'Cidade do Cabo',p:'África do Sul',   f:'🇿🇦', i:'CPT', la:-33.925,lo:18.424, c:0.75},
   {n:'Luanda',        p:'Angola',          f:'🇦🇴', i:'LAD', la:-8.839, lo:13.289, c:1.10},
+  /* Lote 3a (capitais de África, primeira metade), 03/09/2026. Guiné
+     Equatorial: a capital oficial mudou para Ciudad de la Paz em Janeiro
+     de 2026, mas o aeroporto de lá (Mengomeyén/GEM) só tem ligação
+     doméstica a partir de Malabo, não voos internacionais directos;
+     Malabo continua a ser a porta de entrada real no país, por isso é a
+     que entra aqui, com nota do porquê. Essuatíni: o aeroporto fica perto
+     de Manzini, não da capital administrativa Mbabane, por isso a cidade
+     é Manzini, para não sugerir uma ligação que o aeroporto não tem. */
+  {n:'Cotonou',       p:'Benim',           f:'🇧🇯', i:'COO', la:6.356,  lo:2.385,  c:0.55},
+  {n:'Gaborone',      p:'Botsuana',        f:'🇧🇼', i:'GBE', la:-24.555,lo:25.918, c:0.85},
+  {n:'Ouagadougou',   p:'Burquina Faso',   f:'🇧🇫', i:'OUA', la:12.353, lo:-1.512, c:0.50},
+  {n:'Bujumbura',     p:'Burundi',         f:'🇧🇮', i:'BJM', la:-3.324, lo:29.319, c:0.45},
+  {n:'Yaoundé',       p:'Camarões',        f:'🇨🇲', i:'NSI', la:3.723,  lo:11.553, c:0.55},
+  {n:'Bangui',        p:'República Centro-Africana', f:'🇨🇫', i:'BGF', la:4.398, lo:18.519,c:0.45},
+  {n:'N\'Djamena',    p:'Chade',           f:'🇹🇩', i:'NDJ', la:12.134, lo:15.034, c:0.55},
+  {n:'Moroni',        p:'Comores',         f:'🇰🇲', i:'HAH', la:-11.537,lo:43.271, c:0.70},
+  {n:'Brazzaville',   p:'Congo',           f:'🇨🇬', i:'BZV', la:-4.252, lo:15.253, c:0.60},
+  {n:'Kinshasa',      p:'República Democrática do Congo', f:'🇨🇩', i:'FIH', la:-4.387, lo:15.442,c:0.55},
+  {n:'Jibuti',        p:'Jibuti',          f:'🇩🇯', i:'JIB', la:11.546, lo:43.159, c:0.90},
+  {n:'Malabo',        p:'Guiné Equatorial',f:'🇬🇶', i:'SSG', la:3.755,  lo:8.709,  c:0.95},
+  {n:'Asmara',        p:'Eritreia',        f:'🇪🇷', i:'ASM', la:15.292, lo:38.911, c:0.45},
+  {n:'Manzini',       p:'Essuatíni',       f:'🇸🇿', i:'MTS', la:-26.529,lo:31.308, c:0.65},
+  {n:'Adis Abeba',    p:'Etiópia',         f:'🇪🇹', i:'ADD', la:8.978,  lo:38.799, c:0.50},
+  {n:'Libreville',    p:'Gabão',           f:'🇬🇦', i:'LBV', la:0.459,  lo:9.412,  c:0.85},
+  {n:'Banjul',        p:'Gâmbia',          f:'🇬🇲', i:'BJL', la:13.338, lo:-16.652,c:0.60},
+  {n:'Conacri',       p:'Guiné',           f:'🇬🇳', i:'CKY', la:9.577,  lo:-13.612,c:0.50},
+  {n:'Abidjan',       p:'Costa do Marfim', f:'🇨🇮', i:'ABJ', la:5.261,  lo:-3.926, c:0.60},
+  {n:'Nairóbi',       p:'Quénia',          f:'🇰🇪', i:'NBO', la:-1.319, lo:36.926, c:0.60},
+  {n:'Maseru',        p:'Lesoto',          f:'🇱🇸', i:'MSU', la:-29.462,lo:27.553, c:0.55},
+  {n:'Monróvia',      p:'Libéria',         f:'🇱🇷', i:'ROB', la:6.234,  lo:-10.362,c:0.55},
+  {n:'Trípoli',       p:'Líbia',           f:'🇱🇾', i:'MJI', la:32.900, lo:13.283, c:0.60},
   {n:'Bissau',        p:'Guiné-Bissau',    f:'🇬🇼', i:'OXB', la:11.895, lo:-15.654,c:0.55},
   {n:'Maputo',        p:'Moçambique',      f:'🇲🇿', i:'MPM', la:-25.966,lo:32.573, c:0.75},
   {n:'São Tomé',      p:'São Tomé e Príncipe', f:'🇸🇹', i:'TMS', la:0.378, lo:6.712, c:0.85},
@@ -1588,7 +1619,9 @@ const WIKI_EN = {
   'Manágua':'Managua', 'Montevideu':'Montevideo', 'Assunção':'Asunción',
   'Porto Príncipe':'Port-au-Prince', 'Cidade do Panamá':'Panama City',
   'Cidade da Guatemala':'Guatemala City', 'Cidade de Belize':'Belize City',
-  'Porto de Espanha':'Port of Spain'
+  'Porto de Espanha':'Port of Spain',
+  'Jibuti':'Djibouti', 'Adis Abeba':'Addis Ababa', 'Conacri':'Conakry',
+  'Nairóbi':'Nairobi', 'Monróvia':'Monrovia', 'Trípoli':'Tripoli'
 };
 
 /* Destinos considerados na aba «Ofertas em conta». */
