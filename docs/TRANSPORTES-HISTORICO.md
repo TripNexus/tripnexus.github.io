@@ -349,3 +349,54 @@ ajuste nacional de Janeiro de 2026; um terceiro ficheiro sugerido pela
 página, «urbanas 2025.pdf», está morto, redirecciona para a página
 inicial). **Telavive**, **Doha**, **Banguecoque** e **Malé** continuam
 sem página oficial acessível ou sem tabela estática nesta ronda.
+
+### Ronda das «só operador», segunda do dia, ainda a 04 de Setembro: 33 para 27
+
+A pesquisa inicial desta ronda (duas buscas paralelas) correu num
+ambiente com o acesso à rede mais limitado do que esta sessão: várias
+páginas oficiais deram `EGRESS_BLOCKED` à ferramenta de pesquisa, que
+teve de se apoiar em notícias que citam a fonte primária, em vez da
+própria página. Isso tornou a reconferência ainda mais necessária do
+que o costume, e apanhou dois problemas antes de chegarem ao site:
+
+- Os números reportados para **San José** (tarifas específicas
+  San José-Alajuela 735 ₡, -Cartago 670 ₡, -Heredia 520 ₡) não estavam
+  no artigo citado como fonte: lendo o artigo directamente, ele fala
+  de milhares de tarifas arredondadas ao múltiplo de 10 colones mais
+  próximo, sem as listar rota a rota. Não se confirmou o número por
+  nenhuma outra via, e a ARESEP regula milhares de tarifas por rota
+  numa tabela montada em JavaScript (widget Kendo, sem endpoint de
+  dados visível), por isso continua sem preço.
+- Para **Tegucigalpa**, a única notícia com um número claro (13
+  lempiras) tem data de 13/08/2025: é sobre uma extensão orçamental do
+  subsídio de transporte só até finais de 2025, mais de um ano antes de
+  hoje, sem confirmação de que o valor continua em vigor. `transporte.
+  gob.hn` continua sem responder (esgota sempre o tempo limite).
+
+Em contrapartida, ler as páginas oficiais directamente (em vez de
+confiar no relatório da pesquisa) recuperou duas cidades que a
+pesquisa tinha dado como sem solução:
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Abuja (AUMTCO) | A pesquisa desta ronda não achou nenhum número | A própria página `aumtco.abujainvestments.com` tinha, afinal, uma tabela de «Bus Routes and Fares», 32 rotas, preço com e sem cartão. Usa-se o mais baixo, comum a 12 das 32 rotas: 75 NGN (cartão) / 100 NGN (dinheiro) |
+| Islamabad | A pesquisa achou Rs 30 para o Metrobus, mas com confiança moderada (o site oficial recusou o `curl` da pesquisa) | Lida directamente a página inicial da PMA: a política de tarifas separa claramente o Metrobus (BRT Rawalpindi-Islamabad, Rs 30 por viagem, tarifa única) da Orange Line de Lahore (essa sim por distância, Rs 25-45), o que resolve a confusão de rondas anteriores entre vários valores |
+
+As restantes três cidades confirmadas nesta ronda vieram já bem
+sourced da pesquisa inicial, e a reconferência directa bateu certo
+palavra por palavra com o que foi reportado:
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| San Salvador | Tarifa por rota, sem valor único | Achada a folha Excel oficial com as 1430 tarifas por rota, ligada da ferramenta de consulta do VMT (`tarifariociudadano.vmt.gob.sv`). O valor mais comum de cada tipo: autocarro 0,20 USD (157 das 1095 rotas, de longe o mais frequente), microbus 0,25 USD (195 das 335, mais de metade); este último corrige o 0,31 USD que a pesquisa tinha reportado, que não era o valor dominante |
+| Marraquexe | Operador ALSA, página de tarifário morta | Confirmado por que estava morta: a ALSA deixou de operar a rede a 14/12/2025, ao fim de 26 anos, substituída pela Supratours (ONCF). Sem página de tarifário do novo operador, mas a imprensa económica marroquina (LesEco.ma, 27/08/2026) cita, com aspas directas, o bilhete: 5 dirhams, só dinheiro a bordo |
+| Windhoek | Fontes contraditórias sobre se o pagamento em dinheiro tinha sido descontinuado | A página oficial de perguntas frequentes está viva, com a mesma frase de sempre: os dois métodos continuam activos, smartcard 8,50 NAD, dinheiro 9,50 NAD. A notícia que alegava a descontinuação já dá 404 |
+| Victoria (Seicheles) | Página antiga (`sptc.sc/faq/`) morta | O site foi redesenhado; achada a página actual (`sptc.sc/cards/`) com um «Visitor Travel Card» pensado mesmo para turistas: viagens ilimitadas por 1, 4 ou 8 dias (100/198/363 SCR, com o equivalente em euros já convertido na própria página). A tarifa normal por viagem, para quem mora lá, continua sem confirmação clara numa página viva |
+
+Ficaram sem preço, com a razão registada no comentário de cada
+entrada: **San José** e **Tegucigalpa** (ver acima), **Nairóbi** (os
+matatus não têm tecto oficial actual e claro publicado pela NAMATA) e
+**Vienciana** (`vientianebus.org.la` continua sem resolver DNS de
+qualquer computador; a única fonte com número era uma tarifa
+promocional de crise de combustível, válida só de 23/03 a 30/05/2026 e
+já expirada há mais de três meses).
