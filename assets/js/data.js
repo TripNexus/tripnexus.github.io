@@ -1965,6 +1965,160 @@ const TRANSPORTES_DESTINO = {
      2025, sem confirmação fiável de 2026. Verificado a 03/09/2026. */
   'Paramaribo': {operador:'NVB (Nationaal Vervoer Bedrijf)', url:'https://gov.sr/thema/nationaal-vervoer-bedrijf-nvb/', actualizado:'2026-09-03', fonte:'https://gov.sr/thema/nationaal-vervoer-bedrijf-nvb/',
     moeda:'SRD', bilhetes:[]},
+  /* Início da ronda de África. Não estava na tabela. Metro do Cairo,
+     gerido pela NAT; reajuste oficial em vigor desde 27/03/2026,
+     confirmado por duas fontes noticiosas independentes. Verificado a
+     04/09/2026. */
+  'Cairo': {operador:'Metro do Cairo (National Authority for Tunnels)', url:'https://www.cairometro.gov.eg/en/bookings/3', actualizado:'2026-09-04', fonte:'https://www.dailynewsegypt.com/2026/03/26/egypt-raises-train-and-metro-fares-in-latest-pricing-adjustment/',
+    moeda:'EGP', nota:'O preço depende do número de estações percorridas.',
+    bilhetes:[
+      {nome:'Até 9 estações', preco:10, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'10 a 16 estações', preco:12, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'17 a 23 estações', preco:15, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Mais de 23 estações', preco:20, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Sunu BRT é o novo sistema de autocarros rápidos;
+     existiu uma promoção temporária a 300 FCFA (Outubro de 2025), já
+     expirada, não confundir com a tarifa normal. Confirmado pelo site
+     oficial e por imprensa local. Verificado a 04/09/2026. */
+  'Dakar': {operador:'Sunu BRT / TER (Train Express Régional)', url:'https://www.sunubrt.sn/titres-et-tarifs/', actualizado:'2026-09-04', fonte:'https://www.sunubrt.sn/titres-et-tarifs/',
+    moeda:'XOF',
+    bilhetes:[
+      {nome:'BRT, dentro da mesma zona', preco:400, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'BRT, entre zonas', preco:500, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. MMTL (autocarros estatais) e trotros privados
+     (GPRTU); o BRT Aayalolo está inactivo desde 2018. Corte oficial de
+     15% em Maio de 2025 seguido de subidas não autorizadas (até 50%)
+     relatadas em 2026, sem tarifário publicado online, por isso fica só
+     o operador. Verificado a 04/09/2026. */
+  'Acra': {operador:'Metro Mass Transit Limited (MMTL) / trotros (GPRTU)', url:'https://mmt.gov.gh/', actualizado:'2026-09-04', fonte:'https://mmt.gov.gh/',
+    moeda:'GHS', bilhetes:[]},
+  /* Não estava na tabela. Rede de táxis colectivos partilhados
+     ("taxi-ville"), tarifa fixada por negociação entre governo e
+     sindicato de taxistas; não há autocarro nem metro formal. O valor
+     mais recente encontrado é de Maio de 2022, reconfirmado por guias de
+     viagem posteriores mas sem actualização mais recente localizada.
+     Verificado a 04/09/2026. */
+  'Moroni': {operador:'Táxis colectivos ("taxi-ville")', url:'https://lagazettedescomores.com/soci%C3%A9t%C3%A9/le-tarif-est-fix%C3%A9-%C3%A0-300-fc-pour-le-taxi-ville-.html', actualizado:'2026-09-04', fonte:'https://lagazettedescomores.com/soci%C3%A9t%C3%A9/le-tarif-est-fix%C3%A9-%C3%A0-300-fc-pour-le-taxi-ville-.html',
+    moeda:'KMF', nota:'Preço fixado por negociação entre o governo e o sindicato de taxistas; o valor mais recente encontrado é de 2022.',
+    bilhetes:[
+      {nome:'Táxi colectivo, dentro da cidade', preco:300, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Mercado de minibus privados ("cent-cent"),
+     regulado por decreto governamental, representado pela federação
+     sindical Fésyptc. A tarifa oficial máxima (150 FCFA, confirmada
+     Fevereiro de 2025) diverge do preço realmente praticado no terreno
+     (200-250 FCFA); entra o valor oficial, com nota. Verificado a
+     04/09/2026. */
+  'Brazzaville': {operador:'Minibus privados ("cent-cent"), regulados por decreto governamental', url:'https://www.aci.cg/congo-societe-le-transport-en-commun-maintenu-a-150-fcfa-et-le-taxi-a-1000-fcfa/', actualizado:'2026-09-04', fonte:'https://www.aci.cg/congo-societe-le-transport-en-commun-maintenu-a-150-fcfa-et-le-taxi-a-1000-fcfa/',
+    moeda:'XAF', nota:'150 FCFA é a tarifa máxima legal; na prática, é frequente pagar-se mais (200 a 250 FCFA).',
+    bilhetes:[
+      {nome:'Bilhete oficial (tarifa máxima legal)', preco:150, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Transco é a empresa pública de autocarros; a
+     grelha tarifária do governo provincial (Janeiro de 2025) fixa preços
+     por percurso, confirmados por cinco fontes de imprensa congolesa
+     independentes. Há relatos de que motoristas nem sempre a respeitam.
+     Verificado a 04/09/2026. */
+  'Kinshasa': {operador:'Transco (Transports au Congo)', url:'https://transco-rdc.cd/', actualizado:'2026-09-04', fonte:'https://transco-rdc.cd/',
+    moeda:'CDF', nota:'O preço depende muito da distância; motoristas nem sempre respeitam a grelha oficial.',
+    bilhetes:[
+      {nome:'Trajecto curto (mínimo)', preco:500, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Trajecto médio', preco:2000, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Trajecto longo', preco:8000, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. CNT, empresa pública criada em 2025 pela fusão
+     da Sogatra com a Trans'Urb; valor confirmado por três fontes de
+     imprensa gabonesa independentes, mas sem confirmação de que já está
+     em vigor em todas as linhas. Verificado a 04/09/2026. */
+  'Libreville': {operador:'Compagnie Nationale de Transport (CNT)', url:'https://transports.gouv.ga/la-compagnie-nationale-de-transport-la-renaissance-du-transport-public-gabonais/', actualizado:'2026-09-04', fonte:'https://transports.gouv.ga/la-compagnie-nationale-de-transport-la-renaissance-du-transport-public-gabonais/',
+    moeda:'XAF',
+    bilhetes:[
+      {nome:'Bilhete simples urbano', preco:200, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete diário', preco:1000, unidade:'24 h', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Não há autocarro municipal formal activo; o
+     transporte público de facto é o táxi colectivo ("ramassage"), com
+     tarifa fixada por despacho do Ministério do Comércio de Fevereiro
+     de 2024. Verificado a 04/09/2026. */
+  'Yaoundé': {operador:'Táxis colectivos ("ramassage"), tarifas fixadas pelo Ministério do Comércio', url:'https://www.investiraucameroun.com/', actualizado:'2026-09-04', fonte:'https://www.investiraucameroun.com/',
+    moeda:'XAF',
+    bilhetes:[
+      {nome:'Táxi colectivo, dia', preco:350, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Táxi colectivo, noite', preco:400, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Não há operador municipal formal; o transporte
+     público de facto é o táxi colectivo, com tarifa fixada por despacho
+     interministerial de Janeiro de 2023, o mais recente encontrado.
+     Verificado a 04/09/2026. */
+  'Bangui': {operador:'Táxis colectivos, tarifas fixadas por despacho interministerial', url:'https://www.radiondekeluka.org/39819-centrafrique-apres-le-carburant-le-transport-collectif-change-de-tarifs', actualizado:'2026-09-04', fonte:'https://www.radiondekeluka.org/39819-centrafrique-apres-le-carburant-le-transport-collectif-change-de-tarifs',
+    moeda:'XAF',
+    bilhetes:[
+      {nome:'Táxi colectivo, dia', preco:225, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Táxi colectivo, a partir das 21h', preco:350, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. SOTRA é a empresa estatal de autocarros e
+     bateaux-bus; valores confirmados por comunicado oficial do
+     Ministério dos Transportes de Julho de 2024. Verificado a
+     04/09/2026. */
+  'Abidjan': {operador:'SOTRA (Société des Transports Abidjanais)', url:'http://www.sotra.ci/www/s/titres-et-tarifs/', actualizado:'2026-09-04', fonte:'http://www.sotra.ci/www/s/titres-et-tarifs/',
+    moeda:'XOF',
+    bilhetes:[
+      {nome:'Linhas "Monbus"', preco:200, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Linhas Express/Navette', preco:500, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Os matatus (minibus privados) são geridos por
+     mais de 600 SACCOs sem tarifário único; a NAMATA (autoridade
+     metropolitana) tem um BRT em fase-piloto, ainda sem tarifa oficial
+     fixa confirmada. Verificado a 04/09/2026. */
+  'Nairóbi': {operador:'Matatus (SACCOs privadas), regulados pela NAMATA', url:'https://namata.go.ke/', actualizado:'2026-09-04', fonte:'https://namata.go.ke/',
+    moeda:'KES', bilhetes:[]},
+  /* Não estava na tabela. Táxis partilhados "4+1" e minibus privados,
+     tarifas fixadas pelo Road Transport Board; duas fontes davam valores
+     diferentes (M17 e M23) para a mesma tarifa na mesma data, sem forma
+     clara de saber qual está correcta, por isso fica só o operador.
+     Verificado a 04/09/2026. */
+  'Maseru': {operador:'Táxis partilhados "4+1" / minibus, regulados pelo Road Transport Board', url:'https://www.gov.ls/transport/increase-in-transport-fares-officiated/', actualizado:'2026-09-04', fonte:'https://www.gov.ls/transport/increase-in-transport-fares-officiated/',
+    moeda:'LSL', bilhetes:[]},
+  /* Não estava na tabela. Rede de minibus/combi privados, regulados pelo
+     Ministry of Transport and Infrastructure; valor mais recente
+     (Government Notice 309 de 2026) confirmado por duas fontes
+     independentes, substitui valores mais antigos e contraditórios de
+     fontes turísticas. Verificado a 04/09/2026. */
+  'Gaborone': {operador:'Minibus/combi privados, regulados pelo Ministry of Transport and Infrastructure', url:'https://www.mmegi.bw/news/taxi-fares-rise/news', actualizado:'2026-09-04', fonte:'https://www.mmegi.bw/news/taxi-fares-rise/news',
+    moeda:'BWP',
+    bilhetes:[
+      {nome:'Minibus/combi, local', preco:9, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. SOTRACO é a empresa municipal de autocarros;
+     tarifas revistas a 20 de Maio de 2026, confirmadas por duas fontes
+     noticiosas independentes. Verificado a 04/09/2026. */
+  'Ouagadougou': {operador:'SOTRACO (Société de Transport en Commun de Ouagadougou)', url:'https://sotraco.bf/', actualizado:'2026-09-04', fonte:'https://sotraco.bf/',
+    moeda:'XOF',
+    bilhetes:[
+      {nome:'Bilhete simples, linha urbana', preco:200, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Não há operador municipal único: kombis e
+     autocarros privados independentes, sujeitos a um tecto regulatório
+     nacional (Maximum Bus and Taxi Fares Regulations); entra o tecto
+     regulado, não uma tarifa fixa de operador. Verificado a 04/09/2026. */
+  'Manzini': {operador:'Kombis/autocarros privados, sujeitos ao tecto nacional (Maximum Bus and Taxi Fares Regulations)', url:'https://times.co.sz/41670/news/public-transport-fares-could-increase-by-25', actualizado:'2026-09-04', fonte:'https://times.co.sz/41670/news/public-transport-fares-could-increase-by-25',
+    moeda:'SZL', nota:'Não é uma tarifa fixa de bilhete: é o tecto máximo nacional regulado por lei, para percursos até 8 km.',
+    bilhetes:[
+      {nome:'Tecto regulado, até 8 km', preco:10, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. O Addis Ababa Light Rail (metro ligeiro) e os
+     autocarros Anbessa/Sheger (AACBSE) são os dois sistemas formais.
+     Valores repetidos de forma consistente em vários guias de viagem,
+     mas sem data clara: uma revisão tarifária oficial de Outubro de 2024
+     confirmada para minibus/midibus pode não se aplicar aqui, por isso
+     os valores podem estar desactualizados. Verificado a 04/09/2026. */
+  'Adis Abeba': {operador:'Addis Ababa Light Rail / Anbessa-Sheger (AACBSE)', url:'https://erc.gov.et/', actualizado:'2026-09-04', fonte:'https://erc.gov.et/',
+    moeda:'ETB', nota:'Uma revisão tarifária oficial de Outubro de 2024 foi confirmada para minibus/midibus; não está confirmado se o metro ligeiro e os autocarros AACBSE tiveram a mesma revisão.',
+    bilhetes:[
+      {nome:'Metro ligeiro, até 8 estações', preco:2, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */

@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 128 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 141 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 16 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 124 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 19 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 108 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -713,3 +713,24 @@ elevada que o valor pode já ter mudado outra vez entre a verificação e
 a leitura desta ficha; a tarifa subiu de 60 para 90 bolívares só entre
 Março e Maio de 2026. Fica registada como a fonte mais recente
 encontrada, sujeita à revisão mensal como qualquer outra.
+
+**Lote 6, 04 de Setembro: primeira ronda de África (16 cidades com
+tarifa, 3 só operador, 8 de fora).** Cairo, Dakar, Moroni, Brazzaville,
+Kinshasa, Libreville, Yaoundé, Bangui, Abidjan, Gaborone, Ouagadougou,
+Manzini, Adis Abeba entram com tarifas confirmadas; Acra, Nairóbi e
+Maseru ficam só com o operador (sem tarifário publicado, ou fontes
+contraditórias sobre o valor exacto). N'Djamena, Cotonou, Bujumbura,
+Jibuti, Malabo, Asmara, Banjul e Conacri ficam de fora: sem operador
+formal identificável nem fonte fiável e actual, só preços negociados
+caso a caso ou dados desactualizados sem confirmação cruzada.
+
+Em muitas destas cidades não existe autocarro municipal formal: o
+transporte público de facto é o táxi colectivo partilhado, com tarifa
+fixada por decreto ou despacho ministerial em vez de um tarifário de
+empresa. Quando esse despacho é uma fonte oficial citável com um número
+claro (Yaoundé, Bangui, Moroni), entra como qualquer outro operador;
+quando só há preços negociados sem tabela nenhuma (N'Djamena, Cotonou,
+Malabo), fica de fora. Dois casos de tecto regulado em vez de tarifa de
+operador: Brazzaville (150 FCFA é o máximo legal, a prática ronda os
+200-250 FCFA) e Manzini (10 SZL é o tecto nacional até 8 km, não uma
+tarifa de bilhete de uma empresa).
