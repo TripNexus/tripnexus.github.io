@@ -1570,8 +1570,14 @@ const TRANSPORTES_DESTINO = {
      IMOVEQROO; fontes contradizem-se sobre o valor actual (12, 13 ou
      15 MXN conforme a fonte e a zona), com um novo sistema "MOBI" ainda
      em implementação, sem forma clara de saber qual está em vigor.
-     Verificado a 03/09/2026. */
-  'Cancún': {operador:'Autocarros urbanos (rutas R1/R2...), regulados pelo IMOVEQROO', url:'https://imoveqroo.qroo.gob.mx/', actualizado:'2026-09-03', fonte:'https://imoveqroo.qroo.gob.mx/',
+     Reconferido a 04/09/2026: confusão ainda maior do que se pensava. O
+     IMOVEQROO negou publicamente (24/11/2025) ter aprovado qualquer
+     aumento na rede tradicional, mas o novo sistema MOBI (a substituir
+     a rede rota a rota) já tem tarifa oficial anunciada: 15 MXN geral,
+     10 MXN social (estudantes/idosos). O problema é que o MOBI ainda
+     não cobre a cidade toda, por isso não se sabe que tarifa se aplica
+     a uma rota qualquer hoje. Fica sem preço até a transição terminar. */
+  'Cancún': {operador:'Autocarros urbanos (rutas R1/R2...), regulados pelo IMOVEQROO', url:'https://imoveqroo.qroo.gob.mx/', actualizado:'2026-09-04', fonte:'https://imoveqroo.qroo.gob.mx/',
     moeda:'MXN', bilhetes:[]},
   /* Não estava na tabela. Metropolitano (BRT, gerido pela ATU) e Metro
      de Lima Linha 1 são sistemas distintos, ambos com tarifário oficial
@@ -1616,7 +1622,12 @@ const TRANSPORTES_DESTINO = {
      (GPRTU); o BRT Aayalolo está inactivo desde 2018. Corte oficial de
      15% em Maio de 2025 seguido de subidas não autorizadas (até 50%)
      relatadas em 2026, sem tarifário publicado online, por isso fica só
-     o operador. Verificado a 04/09/2026. */
+     o operador. Reconferida esta conclusão outra vez, ainda a
+     04/09/2026: nem a MMTL (`mmt.gov.gh`, `mmtgh.com`) nem a GPRTU
+     publicam tarifário consolidado online; o GPRTU fixa só percentagens
+     de ajuste, os valores em moeda ficam afixados fisicamente nas
+     estações. Uma nova subida de 30% foi pedida ao Ministério dos
+     Transportes a 3/09/2026, ainda por decidir. */
   'Acra': {operador:'Metro Mass Transit Limited (MMTL) / trotros (GPRTU)', url:'https://mmt.gov.gh/', actualizado:'2026-09-04', fonte:'https://mmt.gov.gh/',
     moeda:'GHS', bilhetes:[]},
   /* Não estava na tabela. Rede de táxis colectivos partilhados
@@ -2097,8 +2108,13 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Ashgabat Passenger Motor Transport Enterprise,
      sob a agência estatal Türkmenawtoulaglary; o único valor encontrado
      é de 2017, só em fontes secundárias/turísticas, sem confirmação
-     oficial nem actual, por isso fica só o operador. Verificado a
-     04/09/2026. */
+     oficial nem actual, por isso fica só o operador. Reconferido outra
+     vez a 04/09/2026, com a mesma conclusão: um valor mais recente
+     (0,50 manat) aparece em vários sites de turismo, mas nenhum é fonte
+     oficial; um artigo do turkmenportal.com (media semi-oficial) fala
+     de passes mensais mas sem repetir o preço da viagem simples. A
+     secção de tarifário do site oficial (`ayauk.gov.tm`) continua
+     inacessível. */
   'Asgabate': {operador:'Ashgabat Passenger Motor Transport Enterprise (Türkmenawtoulaglary)', url:'https://ayauk.gov.tm/', actualizado:'2026-09-04', fonte:'https://ayauk.gov.tm/',
     moeda:'TMT', bilhetes:[]},
   /* Segunda ronda de transportes na Ásia (a primeira, no Lote 4b, foi só
@@ -2201,14 +2217,37 @@ const TRANSPORTES_DESTINO = {
      sobre que valor corresponde a autocarro vs. trólei, sem tarifário
      oficial primário publicado, por isso fica só a referência ao
      departamento municipal. Verificado a 04/09/2026. */
+  /* Reconferido a 04/09/2026: achado o regulador certo, o Departamento
+     de Política de Transporte Público de Ulaanbaatar
+     (transport.ub.gov.mn, site cujo certificado TLS não corresponde ao
+     domínio, por isso não se conseguiu ler directamente). Duas notícias
+     da agência estatal MONTSAME (montsame.mn, ambas de Janeiro de 2025,
+     mais de ano e meio antes desta verificação) confirmam uma reforma
+     tarifária para 1000 MNT por até 4 viagens/dia sem limite de tempo
+     entre as 06h-23h. Mas uma pesquisa mais recente devolveu também um
+     indício contraditório («47,4% dos passageiros pagam 500 MNT»), sem
+     forma de saber qual descreve o sistema actual. Entre a idade da
+     fonte e a contradição, fica só o operador. */
   'Ulã Bator': {operador:'Departamento de Política de Transporte Público da cidade (rede de autocarros privados)', url:'https://en.ulaanbaatar-airport.mn/public-transportation-service', actualizado:'2026-09-04', fonte:'https://en.ulaanbaatar-airport.mn/public-transportation-service',
     moeda:'MNT', bilhetes:[]},
   /* Não estava na tabela. Yangon Bus Service (YBS), regulado pelo YRTC;
      um aumento de tarifa anunciado a 14/08/2026 terá sido retirado dois
      dias depois, sem confirmação de qual valor está mesmo em vigor, por
-     isso fica só o operador. Verificado a 04/09/2026. */
-  'Rangum': {operador:'Yangon Bus Service (YBS, regulado pelo YRTC)', url:'https://www.facebook.com/yrtc.yangon.myanmar/', actualizado:'2026-09-04', fonte:'https://www.facebook.com/yrtc.yangon.myanmar/',
-    moeda:'MMK', bilhetes:[]},
+     isso fica só o operador. Reconferido a 04/09/2026: episódio
+     diferente, mais recente. O YRTC anunciou em conferência de imprensa
+     um aumento geral em vigor desde 1/09/2026 (há só 3 dias): rotas do
+     centro de 200 para 300 kyat, rotas periféricas de 400 para 600
+     kyat. Os sites .gov.mm (Myanmar Digital News, Global New Light of
+     Myanmar) recusaram o `curl`, mas duas fontes de imprensa
+     independentes entre si (myanmarnews.net e news.myantrade.com, esta
+     em coreano) confirmam os mesmos números, citando o YRTC pelo nome. */
+  'Rangum': {operador:'Yangon Bus Service (YBS, regulado pelo YRTC)', url:'https://www.myanmarnews.net/news/279243648/myanmar-yangon-public-bus-fares', actualizado:'2026-09-04', fonte:'https://www.myanmarnews.net/news/279243648/myanmar-yangon-public-bus-fares',
+    moeda:'MMK',
+    nota:'Aumento em vigor desde 1/09/2026. Rotas do centro (downtown) custam menos que as periféricas/suburbanas.',
+    bilhetes:[
+      {nome:'Bilhete simples, rota central', preco:300, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete simples, rota periférica/suburbana', preco:600, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Transportes locais para as 7 capitais do Lote 6 (países já cobertos
      por outra cidade). Não estava na tabela. Bernmobil, rede tarifária
      Libero; o bilhete de zona mais larga apareceu com números
@@ -2360,27 +2399,57 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Palau Eco-Friendly Public Transport (HRCTD,
      com apoio da JICA); fontes de 2025 e 2026 dão valores diferentes
      (1 USD vs 2 USD por viagem), sem consenso claro sobre o valor
-     vigente, por isso fica só o operador. Verificado a 04/09/2026. */
+     vigente, por isso fica só o operador. Reconferido a 04/09/2026: o
+     jornal Island Times (imprensa local, não blogue) confirma 1 USD por
+     viagem em três artigos entre Abril/2024 e Julho/2025, mas o mais
+     recente sobre o serviço (Abril/2026, sobre uma «Fase 2» com mais
+     rotas) não repete o valor. Sem confirmação directa há mais de um
+     ano, fica de fora. */
   'Koror': {operador:'Palau Eco-Friendly Public Transport (HRCTD)', url:'https://www.palaugov.pw/executive-branch/ministries/hrctd/', actualizado:'2026-09-04', fonte:'https://www.palaugov.pw/executive-branch/ministries/hrctd/',
     moeda:'USD', bilhetes:[]},
   /* Não estava na tabela. Operadores privados licenciados regulados pela
      FCCC; o único valor confirmado é de Agosto de 2023, com indícios não
      verificáveis de subsídios e aumentos desde então, sem confirmação do
-     valor actual, por isso fica só o operador. Verificado a 04/09/2026. */
-  'Nadi': {operador:'Operadores privados de autocarro (regulados pela FCCC)', url:'https://fccc.gov.fj/transport/', actualizado:'2026-09-04', fonte:'https://fccc.gov.fj/transport/',
-    moeda:'FJD', bilhetes:[]},
+     valor actual, por isso fica só o operador. Reconferido a 04/09/2026:
+     achada a «Final Authorisation for Fares and Charges for Omnibus
+     Services in Fiji», da FCCC, emitida a 31/08/2026 (quatro dias antes
+     desta verificação). O «Stage 1» (tarifa mínima, sobe por zona) é a
+     mesma para Viti Levu (a ilha de Nadi), Vanua Levu e Taveuni. */
+  'Nadi': {operador:'Operadores privados de autocarro (regulados pela FCCC)', url:'https://fccc.gov.fj/transport/', actualizado:'2026-09-04', fonte:'https://fccc.gov.fj/wp-content/uploads/2026/08/Final-Authorisation-of-Fares-and-Charges-for-Omnibus-Services.pdf',
+    moeda:'FJD',
+    nota:'Tarifa por zona ("stage"), do Stage 1 (a mais barata) até ao Stage 46; o Stage 1 aplica-se a viagens curtas dentro da cidade.',
+    bilhetes:[
+      {nome:'Bilhete simples, Stage 1 (viagem curta)', preco:1.02, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. Rede de PMV (Public Motor Vehicles), regulada
      pela ICCC; fontes fortemente contraditórias sobre o valor actual (a
      ICCC tem uma revisão faseada 2026-2030 em curso), sem confirmação
-     fiável, por isso fica só o operador. Verificado a 04/09/2026. */
-  'Port Moresby': {operador:'PMV (Public Motor Vehicles), regulados pela ICCC', url:'https://iccc.gov.pg/pmv-taxi-fares/', actualizado:'2026-09-04', fonte:'https://iccc.gov.pg/pmv-taxi-fares/',
-    moeda:'PGK', bilhetes:[]},
+     fiável, por isso fica só o operador. Reconferido a 04/09/2026: achado
+     o «Public Motor Vehicle and Taxi Services Prices Order 2026», Gazeta
+     Nacional n.º G21 de 9/01/2026, publicado pela própria ICCC (PDF
+     digitalizado, lido por imagem). É a tarifa máxima legal para a rede
+     urbana do National Capital District (Port Moresby); a ICCC já
+     reconheceu publicamente que alguns operadores cobram mais na
+     prática, por isso fica dito que é o tecto, não uma garantia. */
+  'Port Moresby': {operador:'PMV (Public Motor Vehicles), regulados pela ICCC', url:'https://iccc.gov.pg/pmv-taxi-fares/', actualizado:'2026-09-04', fonte:'https://iccc.gov.pg/wp-content/uploads/2026/01/National-Gazette-G21-Public-Motor-Vehicle-and-Taxi-Services-Prices-Order-2026.pdf',
+    moeda:'PGK',
+    nota:'É a tarifa máxima legal para a rede urbana do National Capital District (Port Moresby), em vigor desde 1/01/2026. A ICCC reconhece que, na prática, alguns operadores cobram mais nalgumas rotas.',
+    bilhetes:[
+      {nome:'Bilhete adulto, tarifa máxima', preco:1.60, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. Rede de autocarros privados, regulada pela
      Land Transport Authority (LTA) de Samoa; fontes muito díspares entre
      si sobre o valor de um trajecto urbano simples, sem confirmação
-     fiável, por isso fica só o operador. Verificado a 04/09/2026. */
-  'Apia': {operador:'Autocarros privados (regulados pela Land Transport Authority)', url:'https://lta.gov.ws/fees/', actualizado:'2026-09-04', fonte:'https://lta.gov.ws/fees/',
-    moeda:'WST', bilhetes:[]},
+     fiável, por isso fica só o operador. Reconferido a 04/09/2026: achada
+     a «Bus & Taxi Passenger Fare List» oficial da LTA, datada de
+     31/07/2026 (pouco mais de um mês antes desta verificação), lida na
+     íntegra (17 páginas, texto simples, não imagem). */
+  'Apia': {operador:'Autocarros privados (regulados pela Land Transport Authority)', url:'https://lta.gov.ws/fees/', actualizado:'2026-09-04', fonte:'https://lta.gov.ws/wp-content/uploads/2026/08/Bus-Taxi-Fare-List.pdf',
+    moeda:'WST',
+    nota:'Tarifa por zona, a partir do terminal de Savalalo/Fugalei; o valor abaixo é o da zona central de Apia (as zonas mais afastadas custam mais).',
+    bilhetes:[
+      {nome:'Bilhete simples, zona de Apia', preco:1.30, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Últimas cidades novas desta fase (EUA e resto das Caraíbas). Não
      estava na tabela. CTA (autocarro e "L"); aumento de 25 cêntimos em
      vigor desde 1/2/2026, o primeiro desde 2018, confirmado por três

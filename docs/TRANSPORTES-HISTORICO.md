@@ -400,3 +400,32 @@ matatus não têm tecto oficial actual e claro publicado pela NAMATA) e
 qualquer computador; a única fonte com número era uma tarifa
 promocional de crise de combustível, válida só de 23/03 a 30/05/2026 e
 já expirada há mais de três meses).
+
+### Ronda das «só operador», terceira do dia, ainda a 04 de Setembro: 27 para 23
+
+Terceira ronda no mesmo dia, a pedido do utilizador ("vai tentando aos
+poucos"), desta vez restrita de propósito às 9 cidades ainda por
+tentar com regulador formal plausível (Cancún, Acra, Asgabate, Ulã
+Bator, Rangum, Nadi, Koror, Port Moresby, Apia): as restantes 18
+«só operador» já tinham sido tentadas sem sucesso nas duas rondas
+anteriores, ou são redes informais tipo matatu sem tarifário oficial,
+como Nairóbi já demonstrara. Rendimento mais baixo do que nas rondas
+anteriores (4 de 9), como se previa.
+
+A primeira pesquisa desta ronda (Cancún/Acra/Asgabate/Ulã Bator/
+Rangum) correu com o WebFetch bloqueado para todos os domínios
+testados; os números vieram só de sínteses da pesquisa web, sem
+leitura directa da página. A reconferência foi por isso ainda mais
+decisiva do que nas rondas anteriores:
+
+| Cidade | Reconferência |
+|---|---|
+| Nadi, Fiji | Confirmado directamente: baixado o PDF oficial da FCCC (`Final-Authorisation-of-Fares-and-Charges-for-Omnibus-Services.pdf`, emitido 31/08/2026) e lido o texto extraído. Tabela «SCHEDULE 1: OMNIBUS FARES FOR ALL ROUTES IN VITI LEVU», Stage 1 = 1,02 FJD, bate certo palavra por palavra |
+| Port Moresby, PNG | Confirmado directamente: baixado o PDF da Gazeta Nacional G21 (60 páginas, digitalizado sem camada de texto) e renderizada a página 4 como imagem para ler a olho. «SCHEDULE A: MAXIMUM PMV FARES - URBAN ROUTES», National Capital District: 1,60 PGK máximo, 0,80/1,20 concessões, bate certo |
+| Apia, Samoa | Confirmado directamente: baixado o PDF de 17 páginas da LTA (texto simples) e lida a página 7. «BUS FARES – UPOLU», zona Apia: 1,30 WST, bate certo |
+| Rangum (Yangon) | Os sites `.gov.mm` recusaram o `curl` (403) outra vez, mas confirmado por duas fontes de imprensa independentes entre si (`myanmarnews.net` e `news.myantrade.com`, esta em coreano), ambas citando o YRTC pelo nome pela mesma conferência de imprensa: 200→300 kyat (centro), 400→600 kyat (periferia), em vigor desde 1/09/2026 |
+| Koror, Palau | A fonte mais recente (Island Times, Julho/2025) confirma 1 USD/viagem, mas fica a mais de um ano da data desta verificação sem reconfirmação; um artigo de Abril/2026 sobre uma «Fase 2» do serviço não repete o valor. Fica sem preço por essa razão, não porque o valor pareça errado |
+| Ulã Bator, Mongólia | A fonte inicial (dois artigos da MONTSAME, agência estatal, ambos de Janeiro/2025) confirma uma reforma para 1000 MNT/4 viagens diárias, achada e lida directamente (`ayauk.gov.tm`... não, `transport.ub.gov.mn`, cujo certificado TLS afinal não corresponde ao domínio, impossível de ler directamente). Mas uma pesquisa adicional devolveu um indício contraditório («47,4% dos passageiros pagam 500 MNT»), sem forma de saber qual descreve o sistema hoje. Fica sem preço |
+| Cancún, México | O IMOVEQROO negou publicamente (24/11/2025) qualquer aumento na rede tradicional, mas o novo sistema MOBI (em implementação rota a rota) já tem tarifa oficial anunciada (15 MXN geral, 10 MXN social). Sem saber que rotas já mudaram para o MOBI, não há forma de dizer qual tarifa se aplica hoje a uma rota qualquer. Fica sem preço |
+| Acra, Gana | Nem a MMTL (`mmt.gov.gh`, `mmtgh.com`) nem a GPRTU publicam tarifário consolidado online; o GPRTU fixa só percentagens de ajuste, os valores ficam afixados fisicamente nas estações. Uma nova subida de 30% foi pedida ao Ministério dos Transportes a 3/09/2026, ainda por decidir |
+| Asgabate, Turquemenistão | A secção de tarifário do site oficial (`ayauk.gov.tm`) continua inacessível nesta sessão; o valor mais citado (0,50 manat) só aparece em sites de turismo, nunca numa fonte oficial |

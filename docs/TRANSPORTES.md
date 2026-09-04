@@ -253,9 +253,9 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 205 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 209 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 27 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Só operador**, sem valores | 23 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
 | **Sem operador** | 36 | ver `CIDADES` em `assets/js/data.js` |
 
 ### Ronda das «só operador», a 04 de Setembro: 39 para 33
@@ -309,6 +309,33 @@ confirmação de que ainda vale), **Nairóbi** (os matatus não têm tecto
 oficial actual e claro da NAMATA) e **Vienciana** (site oficial
 continua sem resolver DNS; a única fonte com número era uma tarifa
 promocional de crise, já expirada há mais de três meses).
+
+### Ronda das «só operador», terceira do dia, ainda a 04 de Setembro: 27 para 23
+
+A pedido do utilizador ("vai tentando aos poucos"), terceira ronda,
+desta vez limitada de propósito às 9 cidades que ainda não tinham sido
+tentadas e com regulador formal plausível (as restantes 18 já tinham
+sido tentadas sem sucesso, ou são redes informais tipo matatu sem
+tarifário oficial, como Nairóbi já mostrara). Rendimento mais baixo do
+que nas duas rondas anteriores, como se esperava: 4 das 9 fecharam.
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Nadi, Fiji | Único valor de Agosto de 2023, sem confirmação do actual | Achada a «Final Authorisation for Fares and Charges for Omnibus Services in Fiji», da FCCC, emitida a 31/08/2026 (quatro dias antes desta verificação). Stage 1 (tarifa mínima): 1,02 FJD |
+| Port Moresby, PNG | Fontes fortemente contraditórias | Achado o «Public Motor Vehicle and Taxi Services Prices Order 2026», Gazeta Nacional n.º G21, publicado pela própria ICCC. Tarifa máxima legal da rede urbana: 1,60 PGK |
+| Apia, Samoa | Fontes muito díspares entre si | Achada a «Bus & Taxi Passenger Fare List» oficial da LTA, datada de 31/07/2026. Zona central de Apia: 1,30 WST |
+| Rangum (Yangon), Myanmar | Só uma página de Facebook como fonte, aumento retirado dias depois de anunciado | Episódio diferente e mais recente: o YRTC anunciou um aumento em vigor desde 1/09/2026 (três dias antes desta verificação), confirmado por duas fontes de imprensa independentes entre si que citam o YRTC pelo nome. Centro: 300 MMK; periferia: 600 MMK |
+
+Ficaram sem preço, com a razão registada: **Koror** (Palau; a única
+fonte, imprensa local, tem mais de um ano sem reconfirmar o valor,
+apesar do serviço continuar activo), **Ulã Bator** (as únicas fontes
+têm mais de ano e meio, e uma pesquisa mais recente devolveu um
+indício contraditório), **Cancún** (o novo sistema "MOBI" já tem
+tarifa oficial, mas ainda não cobre a rede toda, e não há forma de
+saber que tarifa se aplica a uma rota qualquer hoje), **Acra** (nem a
+MMTL nem a GPRTU publicam tarifário consolidado online) e
+**Asgabate** (a secção de tarifário do site oficial continua
+inacessível).
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
