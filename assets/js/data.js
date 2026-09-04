@@ -727,8 +727,13 @@ const WIKI_EN = {
   'Berna':'Bern', 'Ancara':'Ankara', 'Jacarta':'Jakarta', 'Camberra':'Canberra'
 };
 
-/* Destinos considerados na aba «Ofertas em conta». */
-const DESTINOS_OFERTAS = ['Barcelona','Roma','Paris','Marraquexe','Praga','Ponta Delgada','Londres','Budapeste','Atenas','Funchal','Nova Iorque','Rio de Janeiro'];
+/* Destinos considerados na aba «Ofertas em conta». Mistura os mercados
+   europeus habituais com uma amostra dos destinos de fora da Europa
+   acrescentados na expansão para 268 cidades, para que a aba também os
+   mostre a quem nunca os procurou directamente. */
+const DESTINOS_OFERTAS = ['Barcelona','Roma','Paris','Marraquexe','Praga','Ponta Delgada','Londres',
+  'Budapeste','Atenas','Funchal','Nova Iorque','Rio de Janeiro',
+  'Tóquio','Dubai','Sydney','Cairo','Banguecoque','Cancún'];
 
 /* Gradientes dos cartões de oferta (sem imagens externas). */
 const GRADIENTES = [
