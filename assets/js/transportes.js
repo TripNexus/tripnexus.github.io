@@ -2360,27 +2360,57 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Palau Eco-Friendly Public Transport (HRCTD,
      com apoio da JICA); fontes de 2025 e 2026 dão valores diferentes
      (1 USD vs 2 USD por viagem), sem consenso claro sobre o valor
-     vigente, por isso fica só o operador. Verificado a 04/09/2026. */
+     vigente, por isso fica só o operador. Reconferido a 04/09/2026: o
+     jornal Island Times (imprensa local, não blogue) confirma 1 USD por
+     viagem em três artigos entre Abril/2024 e Julho/2025, mas o mais
+     recente sobre o serviço (Abril/2026, sobre uma «Fase 2» com mais
+     rotas) não repete o valor. Sem confirmação directa há mais de um
+     ano, fica de fora. */
   'Koror': {operador:'Palau Eco-Friendly Public Transport (HRCTD)', url:'https://www.palaugov.pw/executive-branch/ministries/hrctd/', actualizado:'2026-09-04', fonte:'https://www.palaugov.pw/executive-branch/ministries/hrctd/',
     moeda:'USD', bilhetes:[]},
   /* Não estava na tabela. Operadores privados licenciados regulados pela
      FCCC; o único valor confirmado é de Agosto de 2023, com indícios não
      verificáveis de subsídios e aumentos desde então, sem confirmação do
-     valor actual, por isso fica só o operador. Verificado a 04/09/2026. */
-  'Nadi': {operador:'Operadores privados de autocarro (regulados pela FCCC)', url:'https://fccc.gov.fj/transport/', actualizado:'2026-09-04', fonte:'https://fccc.gov.fj/transport/',
-    moeda:'FJD', bilhetes:[]},
+     valor actual, por isso fica só o operador. Reconferido a 04/09/2026:
+     achada a «Final Authorisation for Fares and Charges for Omnibus
+     Services in Fiji», da FCCC, emitida a 31/08/2026 (quatro dias antes
+     desta verificação). O «Stage 1» (tarifa mínima, sobe por zona) é a
+     mesma para Viti Levu (a ilha de Nadi), Vanua Levu e Taveuni. */
+  'Nadi': {operador:'Operadores privados de autocarro (regulados pela FCCC)', url:'https://fccc.gov.fj/transport/', actualizado:'2026-09-04', fonte:'https://fccc.gov.fj/wp-content/uploads/2026/08/Final-Authorisation-of-Fares-and-Charges-for-Omnibus-Services.pdf',
+    moeda:'FJD',
+    nota:'Tarifa por zona ("stage"), do Stage 1 (a mais barata) até ao Stage 46; o Stage 1 aplica-se a viagens curtas dentro da cidade.',
+    bilhetes:[
+      {nome:'Bilhete simples, Stage 1 (viagem curta)', preco:1.02, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. Rede de PMV (Public Motor Vehicles), regulada
      pela ICCC; fontes fortemente contraditórias sobre o valor actual (a
      ICCC tem uma revisão faseada 2026-2030 em curso), sem confirmação
-     fiável, por isso fica só o operador. Verificado a 04/09/2026. */
-  'Port Moresby': {operador:'PMV (Public Motor Vehicles), regulados pela ICCC', url:'https://iccc.gov.pg/pmv-taxi-fares/', actualizado:'2026-09-04', fonte:'https://iccc.gov.pg/pmv-taxi-fares/',
-    moeda:'PGK', bilhetes:[]},
+     fiável, por isso fica só o operador. Reconferido a 04/09/2026: achado
+     o «Public Motor Vehicle and Taxi Services Prices Order 2026», Gazeta
+     Nacional n.º G21 de 9/01/2026, publicado pela própria ICCC (PDF
+     digitalizado, lido por imagem). É a tarifa máxima legal para a rede
+     urbana do National Capital District (Port Moresby); a ICCC já
+     reconheceu publicamente que alguns operadores cobram mais na
+     prática, por isso fica dito que é o tecto, não uma garantia. */
+  'Port Moresby': {operador:'PMV (Public Motor Vehicles), regulados pela ICCC', url:'https://iccc.gov.pg/pmv-taxi-fares/', actualizado:'2026-09-04', fonte:'https://iccc.gov.pg/wp-content/uploads/2026/01/National-Gazette-G21-Public-Motor-Vehicle-and-Taxi-Services-Prices-Order-2026.pdf',
+    moeda:'PGK',
+    nota:'É a tarifa máxima legal para a rede urbana do National Capital District (Port Moresby), em vigor desde 1/01/2026. A ICCC reconhece que, na prática, alguns operadores cobram mais nalgumas rotas.',
+    bilhetes:[
+      {nome:'Bilhete adulto, tarifa máxima', preco:1.60, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. Rede de autocarros privados, regulada pela
      Land Transport Authority (LTA) de Samoa; fontes muito díspares entre
      si sobre o valor de um trajecto urbano simples, sem confirmação
-     fiável, por isso fica só o operador. Verificado a 04/09/2026. */
-  'Apia': {operador:'Autocarros privados (regulados pela Land Transport Authority)', url:'https://lta.gov.ws/fees/', actualizado:'2026-09-04', fonte:'https://lta.gov.ws/fees/',
-    moeda:'WST', bilhetes:[]},
+     fiável, por isso fica só o operador. Reconferido a 04/09/2026: achada
+     a «Bus & Taxi Passenger Fare List» oficial da LTA, datada de
+     31/07/2026 (pouco mais de um mês antes desta verificação), lida na
+     íntegra (17 páginas, texto simples, não imagem). */
+  'Apia': {operador:'Autocarros privados (regulados pela Land Transport Authority)', url:'https://lta.gov.ws/fees/', actualizado:'2026-09-04', fonte:'https://lta.gov.ws/wp-content/uploads/2026/08/Bus-Taxi-Fare-List.pdf',
+    moeda:'WST',
+    nota:'Tarifa por zona, a partir do terminal de Savalalo/Fugalei; o valor abaixo é o da zona central de Apia (as zonas mais afastadas custam mais).',
+    bilhetes:[
+      {nome:'Bilhete simples, zona de Apia', preco:1.30, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Últimas cidades novas desta fase (EUA e resto das Caraíbas). Não
      estava na tabela. CTA (autocarro e "L"); aumento de 25 cêntimos em
      vigor desde 1/2/2026, o primeiro desde 2018, confirmado por três
