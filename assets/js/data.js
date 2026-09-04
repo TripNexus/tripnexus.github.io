@@ -2305,6 +2305,144 @@ const TRANSPORTES_DESTINO = {
     bilhetes:[
       {nome:'Bilhete simples', preco:43, unidade:'viagem', quando:'chegada', modos:['autocarro']}
     ]},
+  /* Segunda ronda de transportes no Médio Oriente e Ásia Central (a
+     primeira, no Lote 4a, foi só de cidades). Não estava na tabela.
+     Reforma tarifária do sistema unificado em vigor desde 1/1/2025,
+     confirmada por duas fontes independentes. Verificado a 04/09/2026. */
+  'Yerevan': {operador:'Sistema unificado de transportes de Yerevan (metro/autocarro/trólei)', url:'https://transport.yerevan.am', actualizado:'2026-09-04', fonte:'https://arka.am/en/news/society/yerevan_s_unified_public_transport_ticketing_system_to_be_fully_operational_from_january_1_2025_vide/',
+    moeda:'AMD',
+    bilhetes:[
+      {nome:'Bilhete simples (1 viagem)', preco:150, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
+      {nome:'Bilhete com transbordo (90-180 min, até 3 viagens)', preco:300, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']}
+    ]},
+  /* Não estava na tabela. Metro de Baku (Bakı Metropoliteni), tarifa
+     fixa desde 1/10/2025, confirmada com alta confiança (fonte oficial +
+     agência de notícias). O BakuBus não tem tarifa fixa única (varia por
+     rota), por isso não entra aqui. Verificado a 04/09/2026. */
+  'Baku': {operador:'Baku Metro (Bakı Metropoliteni)', url:'https://metro.gov.az/en/page/muddealar/gedis-haqqinin-odenilmesi', actualizado:'2026-09-04', fonte:'https://en.apa.az/infrastructure/metro-fare-in-baku-set-at-060-azn-per-ride-as-expansion-and-fleet-renewal-continue-479111',
+    moeda:'AZN',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:0.60, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Bahrain Bus (BPTC), tarifa em vigor desde Maio
+     de 2025, confirmada por três fontes independentes incluindo notícia
+     local do aumento. Verificado a 04/09/2026. */
+  'Manama': {operador:'Bahrain Public Transport Company (Bahrain Bus)', url:'https://www.bahrainbus.bh/faq-fares', actualizado:'2026-09-04', fonte:'https://www.bahrainbus.bh/faq-fares',
+    moeda:'BHD', nota:'O bilhete com cartão GO Card é ligeiramente mais barato do que em dinheiro.',
+    bilhetes:[
+      {nome:'Bilhete simples, dinheiro', preco:0.300, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete simples, cartão GO Card', preco:0.275, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Tehran Metro, tarifas do ano persa 1404
+     (2025-2026), confirmadas por três fontes noticiosas iranianas
+     concordantes; fontes turísticas em inglês têm números antigos ou
+     contraditórios, ignorados. Verificado a 04/09/2026. */
+  'Teerão': {operador:'Tehran Metro', url:'https://metro.tehran.ir/en/Services/Tickets-Fares/Price-of-Tickets', actualizado:'2026-09-04', fonte:'https://metro.tehran.ir/en/Services/Tickets-Fares/Price-of-Tickets',
+    moeda:'IRR', nota:'O preço é normalmente citado em tomans (1 toman = 10 rials); o bilhete em papel é mais caro do que com cartão bancário.',
+    bilhetes:[
+      {nome:'Bilhete em papel/dinheiro', preco:70000, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Mwasalat é a empresa nacional; não foi
+     possível confirmar directamente na página oficial (bloqueio de
+     rede), mas os valores são consistentes entre várias fontes
+     secundárias de viagem. Confiança moderada. Verificado a 04/09/2026. */
+  'Mascate': {operador:'Mwasalat', url:'https://mwasalat.om/en-us/Tariffs-and-Fares/Tariffs-and-Fares', actualizado:'2026-09-04', fonte:'https://mwasalat.om/en-us/Tariffs-and-Fares/Tariffs-and-Fares',
+    moeda:'OMR', nota:'O preço depende do número de zonas percorridas.',
+    bilhetes:[
+      {nome:'Bilhete, 1 zona', preco:0.200, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete, 2 zonas', preco:0.300, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Riyadh Metro/Riyadh Bus, operados pelo
+     consórcio RATP Dev/SAPTCO sob a RCRC; confirmado por três fontes
+     independentes coincidentes. Verificado a 04/09/2026. */
+  'Riade': {operador:'Riyadh Metro / Riyadh Bus (RCRC)', url:'https://riyadhmetro.org/en/tickets/', actualizado:'2026-09-04', fonte:'https://riyadhmetro.org/en/tickets/',
+    moeda:'SAR',
+    bilhetes:[
+      {nome:'Classe regular, 2 horas', preco:4, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
+      {nome:'Primeira classe, 2 horas', preco:10, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Amman Bus e o BRT (Gürsel CMTC), sob a GAM,
+     com transbordo grátis entre os dois; valor confirmado por três
+     fontes independentes. Verificado a 04/09/2026. */
+  'Amã': {operador:'Amman Bus / BRT (Greater Amman Municipality)', url:'http://www.ammanbrt.jo/?l=en', actualizado:'2026-09-04', fonte:'http://www.ammanbrt.jo/?l=en',
+    moeda:'JOD',
+    bilhetes:[
+      {nome:'Bilhete simples, autocarro/BRT', preco:0.550, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Autocarros urbanos sob contrato da Akimat
+     (câmara) de Astana, bilhética via app/plataforma Avtobys; entra só a
+     tarifa de autocarro (confirmada por duas fontes), não a do LRT novo
+     (Maio de 2026), cujo preço aparece contraditório entre fontes por
+     ser um sistema muito recente. Verificado a 04/09/2026. */
+  'Astana': {operador:'Autocarros urbanos (Akimat de Astana, plataforma Avtobys)', url:'https://avtobys.kz/', actualizado:'2026-09-04', fonte:'https://avtobys.kz/',
+    moeda:'KZT',
+    bilhetes:[
+      {nome:'Bilhete normal (cartão/app)', preco:110, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Coexistem três empresas com rotas sobrepostas
+     (KPTC, CityBus, KGL Mowasalat), com valores consistentes entre elas;
+     confirmado por quatro fontes secundárias independentes, sem acesso
+     directo aos sites oficiais (bloqueio de rede). Verificado a
+     04/09/2026. */
+  'Cidade do Kuwait': {operador:'KPTC / CityBus / KGL Mowasalat', url:'https://citygroupco.com/faq-english/', actualizado:'2026-09-04', fonte:'https://citygroupco.com/faq-english/',
+    moeda:'KWD', nota:'Só se paga em dinheiro; o preço depende da distância.',
+    bilhetes:[
+      {nome:'Bilhete curto', preco:0.250, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete normal', preco:0.300, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Operador municipal de Bisqueque; pagamento em
+     dinheiro nos autocarros municipais foi entretanto abolido, por isso
+     entra a tarifa sem dinheiro; confirmado por três fontes
+     independentes, incluindo a câmara municipal. Verificado a
+     04/09/2026. */
+  'Bisqueque': {operador:'Câmara Municipal de Bisqueque (autocarros/trólei/e-bus)', url:'https://www.bishkek.gov.kg/ru/tariffs/1', actualizado:'2026-09-04', fonte:'https://www.bishkek.gov.kg/ru/tariffs/1',
+    moeda:'KGS', nota:'A tarifa em dinheiro (marshrutka/miniautocarro) é diferente da tarifa sem dinheiro dos autocarros municipais.',
+    bilhetes:[
+      {nome:'Autocarro/trólei/e-bus, sem dinheiro', preco:17, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']}
+    ]},
+  /* Não estava na tabela. OCFTC/ACTC relançaram o sistema de autocarros
+     em 20 de Dezembro de 2024, depois da hiperinflação da lira libanesa;
+     valor confirmado por três fontes independentes pós-relançamento, sem
+     página oficial com tarifário ao vivo. Verificado a 04/09/2026. */
+  'Beirute': {operador:'OCFTC / ACTC (autocarros públicos)', url:'https://www.beirut.com/en/749112/heres-exactly-how-to-use-the-public-buses-in-lebanon-cost-and-schedules/', actualizado:'2026-09-04', fonte:'https://www.beirut.com/en/749112/heres-exactly-how-to-use-the-public-buses-in-lebanon-cost-and-schedules/',
+    moeda:'LBP',
+    bilhetes:[
+      {nome:'Bilhete simples (linhas B, dentro de Beirute)', preco:70000, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Reforma tarifária do sistema ATTO (metro +
+     autocarros) em vigor desde 1/1/2025, confirmada por quatro fontes
+     independentes, incluindo dois sites oficiais. Alta confiança.
+     Verificado a 04/09/2026. */
+  'Tasquente': {operador:'ATTO (Metro de Tashkent + autocarros)', url:'https://atto.uz/uz/tariff', actualizado:'2026-09-04', fonte:'https://atto.uz/uz/tariff',
+    moeda:'UZS', nota:'A tarifa electrónica (cartão ATTO/NFC) é mais barata do que em dinheiro.',
+    bilhetes:[
+      {nome:'Bilhete em dinheiro/token QR', preco:3000, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
+      {nome:'Bilhete com cartão ATTO/NFC', preco:1700, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']}
+    ]},
+  /* Não estava na tabela. Entidade municipal de Dushanbe, sistema "City
+     Card"; a tarifa em dinheiro está estável e citada de forma
+     consistente desde 2021 até fontes de 2025/2026, a tarifa com cartão
+     é contraditória entre fontes e não entra. Verificado a 04/09/2026. */
+  'Dushanbe': {operador:'Entidade municipal de transportes de Dushanbe', url:'https://www.dushanbe.tj/ru/transport', actualizado:'2026-09-04', fonte:'https://www.dushanbe.tj/ru/transport',
+    moeda:'TJS',
+    bilhetes:[
+      {nome:'Autocarro, dinheiro', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Trólei, dinheiro', preco:2.00, unidade:'viagem', quando:'chegada', modos:['eletrico']}
+    ]},
+  /* Não estava na tabela. Dan (autocarros) e Metro Vermelho (light
+     rail), bilhética comum Rav-Kav; duas reformas tarifárias em 2025
+     (Abril e "Derekh Shava" em Agosto) geraram valores contraditórios,
+     sem confirmação segura do valor único actual, por isso fica só o
+     operador. Verificado a 04/09/2026. */
+  'Telavive': {operador:'Dan / Metro Vermelho (Rav-Kav)', url:'https://pti.org.il/derekh-shava/eng/', actualizado:'2026-09-04', fonte:'https://pti.org.il/derekh-shava/eng/',
+    moeda:'ILS', bilhetes:[]},
+  /* Não estava na tabela. Ashgabat Passenger Motor Transport Enterprise,
+     sob a agência estatal Türkmenawtoulaglary; o único valor encontrado
+     é de 2017, só em fontes secundárias/turísticas, sem confirmação
+     oficial nem actual, por isso fica só o operador. Verificado a
+     04/09/2026. */
+  'Asgabate': {operador:'Ashgabat Passenger Motor Transport Enterprise (Türkmenawtoulaglary)', url:'https://ayauk.gov.tm/', actualizado:'2026-09-04', fonte:'https://ayauk.gov.tm/',
+    moeda:'TMT', bilhetes:[]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
