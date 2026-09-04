@@ -8,6 +8,12 @@
    caminhos principais à procura de erros de JavaScript. Não confirma
    preços nem texto exacto: só que nada rebenta.
 
+   A maior parte dos passos corre em ecrã largo (1280px); os últimos
+   correm num segundo contexto em ecrã estreito (390px, abaixo dos
+   720px do ponto de quebra do CSS), para apanhar o que só existe nessa
+   vista: o botão de menu (hambúrguer), o painel do `nav-principal` e o
+   fecho automático do menu ao escolher uma opção.
+
    Os pedidos de rede que não sejam para o próprio servidor local saem
    todos bloqueados (Wikipédia, câmbios ao vivo, o backend de preços
    reais, CDNs), para o resultado não depender de serviços externos
@@ -113,6 +119,50 @@ function verificar(condicao, descricao){
     {waitUntil: 'domcontentloaded'});
   await pagina.waitForTimeout(2500);
   verificar(await pagina.isVisible('#resultados'), 'explorar destinos produz resultados');
+
+  console.log('9. hambúrguer do menu, em ecrã de telemóvel (<720px)');
+  const contextoMovel = await navegador.newContext({
+    viewport: {width: 390, height: 844}, isMobile: true, hasTouch: true, serviceWorkers: 'block'
+  });
+  const paginaMovel = await contextoMovel.newPage();
+  paginaMovel.on('pageerror', e => erros.push('pageerror (mobile): ' + e.message));
+  paginaMovel.on('console', m => {
+    if(m.type() !== 'error') return;
+    const texto = m.text();
+    if(/ERR_|net::|Failed to load resource/.test(texto)) return;
+    erros.push('console (mobile): ' + texto);
+  });
+  await paginaMovel.route('**/*', route => {
+    const url = route.request().url();
+    if(url.startsWith(BASE)) return route.continue();
+    return route.abort();
+  });
+  await paginaMovel.goto(`${BASE}/index.html?de=Lisboa&para=Paris&ida=${IDA}&volta=${VOLTA}&tipo=ida-volta`,
+    {waitUntil: 'domcontentloaded'});
+  await paginaMovel.waitForTimeout(2500);
+  verificar(await paginaMovel.isVisible('#btn-menu-movel'), 'botão de menu (hambúrguer) fica visível em ecrã estreito');
+  verificar(!(await paginaMovel.isVisible('#nav-principal.aberto')), 'painel do menu começa fechado');
+  await paginaMovel.click('#btn-menu-movel');
+  await paginaMovel.waitForTimeout(300);
+  verificar(await paginaMovel.isVisible('#nav-principal.aberto'), 'clicar no hambúrguer abre o painel do menu');
+
+  console.log('10. transportes locais e ofertas, em ecrã de telemóvel');
+  const abasMovel = await paginaMovel.$$eval('.abas-resultados .aba', els => els.map(e => e.dataset.ir));
+  verificar(abasMovel.includes('transportes'), 'abas de resultados também aparecem em ecrã estreito');
+  await paginaMovel.click('.aba[data-ir="transportes"]');
+  await paginaMovel.waitForTimeout(300);
+  const temTransportesMovel = await paginaMovel.evaluate(() =>
+    !!document.querySelector('[data-aba="transportes"] .bloco-sub'));
+  verificar(temTransportesMovel, 'bloco de transportes locais tem conteúdo em ecrã estreito');
+
+  await paginaMovel.click('#btn-menu-movel');
+  await paginaMovel.waitForTimeout(300);
+  await paginaMovel.click('.nav-btn[data-vista="ofertas"]');
+  await paginaMovel.waitForTimeout(2000);
+  verificar(await paginaMovel.isVisible('#vista-ofertas'), 'vista de ofertas fica visível em ecrã estreito');
+  verificar(!(await paginaMovel.isVisible('#nav-principal.aberto')), 'o menu fecha sozinho depois de escolher uma vista');
+
+  await contextoMovel.close();
 
   verificar(erros.length === 0, `zero erros de JavaScript (encontrados: ${erros.length})`);
   erros.forEach(e => console.log('    · ' + e));
