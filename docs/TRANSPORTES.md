@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 183 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 189 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 31 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 54 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 48 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -803,3 +803,13 @@ Wellington entram com tarifas confirmadas, todas com boa confiança
 (países bem documentados, com sistemas de transporte formais e
 noticiados). Jacarta tem três sistemas em paralelo (MRT, TransJakarta
 BRT, KRL Commuterline), cada um com tarifa própria.
+
+**Lote 12, 04 de Setembro: grandes cidades asiáticas por fazer (6
+cidades, todas com tarifa).** Pequim, Xangai, Seul, Bombaim, Phuket e
+Bali entram com tarifas confirmadas. Pequim e Xangai (metro por
+distância), Seul (metro e autocarro com T-money) e Bombaim (BEST e
+Metro) têm confirmação forte; a tarifa do comboio suburbano "local" de
+Bombaim não entrou por falta de confirmação actual e fiável. Phuket:
+só o Phuket Smart Bus tem tarifário oficial, os songthaews privados
+não têm valores fiáveis. Bali: valores mais antigos e contraditórios
+(2023, início de 2025) foram descartados a favor de fontes de 2026.

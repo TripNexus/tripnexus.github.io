@@ -6,7 +6,7 @@
    rede e nunca são servidos de cache obsoleta.
    ═══════════════════════════════════════════════════════════════ */
 
-const VERSAO = 'tripnexus-v114';
+const VERSAO = 'tripnexus-v115';
 const CASCA = [
   './',
   './index.html',

@@ -2606,6 +2606,65 @@ const TRANSPORTES_DESTINO = {
       {nome:'Adulto, 1 zona, Snapper, fora de ponta', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro','comboio']},
       {nome:'Adulto, 1 zona, dinheiro', preco:3.00, unidade:'viagem', quando:'chegada', modos:['autocarro','comboio']}
     ]},
+  /* Grandes cidades asiáticas ainda por fazer. Não estava na tabela.
+     Beijing Subway, tarifa por distância; confirmado pelo portal do
+     governo municipal e pelo operador oficial, coincidentes. Verificado
+     a 04/09/2026. */
+  'Pequim': {operador:'Beijing Subway', url:'https://www.bjsubway.com/en/', actualizado:'2026-09-04', fonte:'https://english.beijing.gov.cn/specials/beijinglifeonthesubway/noticeforpassengers/202504/t20250423_4072294.html',
+    moeda:'CNY', nota:'O preço depende da distância percorrida.',
+    bilhetes:[
+      {nome:'Metro, até 6 km', preco:3, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Metro, 12 a 22 km', preco:5, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Shanghai Metro (Shanghai Shentong Metro
+     Group), tarifa por distância; confirmado por duas fontes
+     coincidentes. Verificado a 04/09/2026. */
+  'Xangai': {operador:'Shanghai Metro (Shanghai Shentong Metro Group)', url:'https://www.shmetro.com/', actualizado:'2026-09-04', fonte:'http://service.shmetro.com/en/cczn/73.htm',
+    moeda:'CNY', nota:'O preço depende da distância percorrida.',
+    bilhetes:[
+      {nome:'Metro, até 6 km', preco:3, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Metro, 6 a 16 km', preco:4, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Seoul Metro e a rede de autocarros, ambos
+     bilhética T-money; valores em vigor desde Junho de 2025 (metro) e
+     Agosto de 2023 (autocarro), confirmados por quatro fontes
+     noticiosas coreanas independentes. Verificado a 04/09/2026. */
+  'Seul': {operador:'Seoul Metro / autocarros urbanos (cartão T-money)', url:'http://www.seoulmetro.co.kr/en/page.do?menuIdx=348', actualizado:'2026-09-04', fonte:'http://www.seoulmetro.co.kr/en/page.do?menuIdx=348',
+    moeda:'KRW', nota:'O bilhete pago com cartão T-money é mais barato do que em papel.',
+    bilhetes:[
+      {nome:'Metro, até 10 km, cartão T-money', preco:1550, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Autocarro tronco/ramal, cartão T-money', preco:1500, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. BEST opera os autocarros (tarifa revista em
+     Maio de 2025), o Metro tem várias linhas/operadores; ambos com boa
+     confirmação cruzada. A tarifa do comboio suburbano "local" não
+     entrou por não ter confirmação actual e fiável. Verificado a
+     04/09/2026. */
+  'Bombaim': {operador:'BEST (autocarros) / Mumbai Metro', url:'https://www.bestundertaking.com/', actualizado:'2026-09-04', fonte:'https://www.bestundertaking.com/',
+    moeda:'INR',
+    bilhetes:[
+      {nome:'Autocarro BEST, não-AC, até 5 km', preco:10, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Metro, bilhete simples mínimo', preco:10, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Phuket Smart Bus é o único serviço formal com
+     tarifário público (os songthaews privados não têm tarifário
+     fiável); valores confirmados por quatro fontes independentes,
+     incluindo o site oficial. Verificado a 04/09/2026. */
+  'Phuket': {operador:'Phuket Smart Bus', url:'https://phuketsmartbus.com/', actualizado:'2026-09-04', fonte:'https://phuketsmartbus.com/',
+    moeda:'THB', nota:'Tarifa fixa por rota, independente da paragem de saída.',
+    bilhetes:[
+      {nome:'Rota 2 (Terminal 1-Kathu-Patong)', preco:50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Rota 1 (Aeroporto-Patong-Karon-Kata-Rawai)', preco:100, unidade:'viagem', quando:'chegada', modos:['autocarro','aeroporto']}
+    ]},
+  /* Não estava na tabela. Trans Metro Dewata (BRT) é do Governo da
+     Província de Bali; valores mais antigos e contraditórios (2023,
+     início de 2025) foram descartados a favor de fontes datadas de
+     2026, que convergem. Verificado a 04/09/2026. */
+  'Bali': {operador:'Trans Metro Dewata (Governo da Província de Bali)', url:'https://bali.trans.my.id/', actualizado:'2026-09-04', fonte:'https://bali.antaranews.com/berita/411567',
+    moeda:'IDR',
+    bilhetes:[
+      {nome:'Bilhete geral', preco:4400, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
