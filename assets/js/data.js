@@ -2119,6 +2119,127 @@ const TRANSPORTES_DESTINO = {
     bilhetes:[
       {nome:'Metro ligeiro, até 8 estações', preco:2, unidade:'viagem', quando:'chegada', modos:['metro']}
     ]},
+  /* Segunda ronda de África. Não estava na tabela. Metro/tramway (EMA) e
+     autocarros (ETUSA); valores-base fixados em 2011-2014, sem
+     confirmação directa de reajuste posterior, mas consistentes com
+     dados agregados de 2026. Confiança moderada. Verificado a
+     04/09/2026. */
+  'Argel': {operador:'Metro/Tramway de Argel (EMA) / ETUSA', url:'https://www.metroalger-dz.com/', actualizado:'2026-09-04', fonte:'https://www.metroalger-dz.com/',
+    moeda:'DZD', nota:'Valores-base de 2011-2014, sem confirmação directa de reajuste mais recente.',
+    bilhetes:[
+      {nome:'Metro, bilhete simples', preco:50, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Tramway, bilhete único', preco:40, unidade:'viagem', quando:'chegada', modos:['eletrico']}
+    ]},
+  /* Não estava na tabela. TCUL (autocarros estatais) e táxis colectivos
+     "candongueiros", tarifas fixadas pela ANTT; valor em vigor desde
+     7/7/2025, confirmado por quatro fontes independentes. Verificado a
+     04/09/2026. */
+  'Luanda': {operador:'TCUL / táxis colectivos (candongueiros), tarifas fixadas pela ANTT', url:'https://expansao.co.ao/', actualizado:'2026-09-04', fonte:'https://expansao.co.ao/',
+    moeda:'AOA',
+    bilhetes:[
+      {nome:'Autocarro urbano (TCUL)', preco:200, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Táxi colectivo (candongueiro)', preco:300, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Rede "taxi-be" fragmentada por cooperativa
+     (UCTU, FMA...), sem tarifário único: o valor varia por cooperativa e
+     linha (600 a 1500 Ariary conforme a fonte), por isso fica só o
+     regulador municipal. Verificado a 04/09/2026. */
+  'Antananarivo': {operador:'Taxi-be (minibus privados em cooperativas), licenciados pela Comuna Urbana de Antananarivo (CUA)', url:'https://www.cua.mg/', actualizado:'2026-09-04', fonte:'https://www.cua.mg/',
+    moeda:'MGA', bilhetes:[]},
+  /* Não estava na tabela. Rede de minibus privados coordenada
+     informalmente pela MOAM (Minibus Owners Association of Malawi, não
+     opera veículos); valores de uma única fonte de imprensa (Junho de
+     2026), sem segunda fonte a citar os números exactos, mas o contexto
+     (corte no preço do combustível) está corroborado por várias outras.
+     Verificado a 04/09/2026. */
+  'Lilongwe': {operador:'Minibus privados, coordenados pela MOAM (Minibus Owners Association of Malawi)', url:'https://mwnation.com/', actualizado:'2026-09-04', fonte:'https://mwnation.com/',
+    moeda:'MWK', nota:'O preço depende muito da distância; valor de uma única fonte de imprensa, sem confirmação cruzada dos números exactos.',
+    bilhetes:[
+      {nome:'Area 24 ao Depósito de Minibus (curta)', preco:1500, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Sotrama são minibus privados geridos por
+     sindicatos de transportadores, sem operador único nem site oficial;
+     gama de preços confirmada por várias fontes independentes. Verificado
+     a 04/09/2026. */
+  'Bamako': {operador:'Sotrama (minibus privados, sindicatos de transportadores)', url:'https://www.bamada.net/', actualizado:'2026-09-04', fonte:'https://www.bamada.net/',
+    moeda:'XOF', nota:'O preço depende da distância; sobe com o preço do combustível, sem tarifário fixo regulado.',
+    bilhetes:[
+      {nome:'Trajecto curto', preco:150, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Trajecto mais longo', preco:275, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. STP (empresa estatal) lançou autocarros BHNS
+     em Maio de 2025; valor confirmado por múltiplas fontes de imprensa
+     independentes em datas diferentes. Verificado a 04/09/2026. */
+  'Nouakchott': {operador:'STP (Société de Transport Public)', url:'https://stp.mr/', actualizado:'2026-09-04', fonte:'https://stp.mr/',
+    moeda:'MRU',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:15, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Metro Express é o light rail que serve a área
+     metropolitana; o preço depende do número de zonas percorridas (Rs 32
+     a Rs 52), confirmado por duas fontes independentes; entra o valor
+     mínimo. Verificado a 04/09/2026. */
+  'Port Louis': {operador:'Metro Express', url:'https://mauritiusmetroexpress.mu/my-journey/?lang=en', actualizado:'2026-09-04', fonte:'https://mauritiusmetroexpress.mu/my-journey/?lang=en',
+    moeda:'MUR', nota:'O preço depende do número de zonas percorridas; entra o valor mínimo (uma zona).',
+    bilhetes:[
+      {nome:'Bilhete simples, mínimo', preco:32, unidade:'viagem', quando:'chegada', modos:['eletrico']}
+    ]},
+  /* Não estava na tabela. Tramway de Rabat-Salé, explorado pela Transdev
+     sob concessão da RRM; valor em vigor desde 1 de Julho de 2025,
+     confirmado por quatro fontes de imprensa marroquina independentes.
+     Verificado a 04/09/2026. */
+  'Rabat': {operador:'Tramway de Rabat-Salé (Transdev / RRM)', url:'https://www.tram-way.ma/en/ticket-and-fines/', actualizado:'2026-09-04', fonte:'https://www.tram-way.ma/en/ticket-and-fines/',
+    moeda:'MAD',
+    bilhetes:[
+      {nome:'Bilhete unitário', preco:7, unidade:'viagem', quando:'chegada', modos:['eletrico']}
+    ]},
+  /* Não estava na tabela. Serviço municipal de autocarros; a FAQ oficial
+     (cartão N$8,50 / dinheiro N$9,50) parece desactualizada, já que o
+     pagamento em dinheiro foi descontinuado em Agosto de 2025, e uma
+     notícia mais recente cita N$9 fixo, sem forma clara de saber qual é
+     o valor certo, por isso fica só o operador. Verificado a 04/09/2026. */
+  'Windhoek': {operador:'City of Windhoek (Department of Urban and Transport Planning)', url:'https://www.windhoekcc.org.na/urban-and-transport-planning-faqs/', actualizado:'2026-09-04', fonte:'https://www.windhoekcc.org.na/urban-and-transport-planning-faqs/',
+    moeda:'NAD', bilhetes:[]},
+  /* Não estava na tabela. AUMTCO é a empresa pública de autocarros;
+     também há o Abuja Light Rail, mas nenhum dos dois tem tarifário
+     oficial confirmável (só blogues de viagem contraditórios), por isso
+     fica só o operador. Verificado a 04/09/2026. */
+  'Abuja': {operador:'AUMTCO (Abuja Urban Mass Transport Company) / Abuja Light Rail', url:'https://aumtco.abujainvestments.com/urban-public-transportation-services/', actualizado:'2026-09-04', fonte:'https://aumtco.abujainvestments.com/urban-public-transportation-services/',
+    moeda:'NGN', bilhetes:[]},
+  /* Não estava na tabela. Kigali Bus Services (KBS) e RFTC, regulados
+     pela RURA, com tarifário oficial por distância/zona; faixa geral
+     confirmada por duas fontes, sem acesso directo ao PDF oficial para
+     valores exactos por rota. Verificado a 04/09/2026. */
+  'Kigali': {operador:'Kigali Bus Services (KBS) / RFTC (regulados pela RURA)', url:'https://www.rura.rw/fileadmin/user_upload/RURA/Documents/Tariffs/City_of_Kigali_Public_Transport_tariff_April_2026.pdf', actualizado:'2026-09-04', fonte:'https://www.rura.rw/fileadmin/user_upload/RURA/Documents/Tariffs/City_of_Kigali_Public_Transport_tariff_April_2026.pdf',
+    moeda:'RWF', nota:'O preço depende da distância/zona percorrida.',
+    bilhetes:[
+      {nome:'Bilhete simples, mínimo', preco:200, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Shuttle aeroporto (KBS-UTC)', preco:1000, unidade:'viagem', quando:'chegada', modos:['autocarro','aeroporto']}
+    ]},
+  /* Não estava na tabela. SPTC é a empresa estatal; fontes contraditórias
+     sobre o valor exacto (Rs7/Rs10/Rs12), a última revisão datada é de
+     2021, sem confirmação clara para 2025/2026, por isso fica só o
+     operador. Verificado a 04/09/2026. */
+  'Victoria': {operador:'SPTC (Seychelles Public Transport Corporation)', url:'https://sptc.sc/faq/', actualizado:'2026-09-04', fonte:'https://sptc.sc/faq/',
+    moeda:'SCR', bilhetes:[]},
+  /* Não estava na tabela. Waka Fine Bus (Metro Transport Company SL
+     Ltd), projecto do governo com o Banco Mundial; tarifa confirmada por
+     duas fontes jornalísticas independentes recentes. Verificado a
+     04/09/2026. */
+  'Freetown': {operador:'Waka Fine Bus (Metro Transport Company SL)', url:'https://thesierraleonetelegraph.com/', actualizado:'2026-09-04', fonte:'https://thesierraleonetelegraph.com/',
+    moeda:'SLE',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:12, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. DART/UDA-RT opera o BRT "Mwendokasi"; valor
+     confirmado por duas notícias independentes, mas o serviço numa das
+     rotas foi suspenso após protestos em Outubro de 2025, o que pode
+     afectar a disponibilidade. Verificado a 04/09/2026. */
+  'Dar es Salaam': {operador:'DART / UDA-RT (BRT "Mwendokasi")', url:'https://www.dart.go.tz/', actualizado:'2026-09-04', fonte:'https://www.dart.go.tz/',
+    moeda:'TZS', nota:'O serviço numa das rotas foi suspenso após protestos em Outubro de 2025; a disponibilidade pode variar por rota.',
+    bilhetes:[
+      {nome:'Bilhete simples "Mwendokasi"', preco:750, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
