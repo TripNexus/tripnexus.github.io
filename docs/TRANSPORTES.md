@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 141 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 151 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 19 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 108 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 23 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 94 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -734,3 +734,18 @@ Malabo), fica de fora. Dois casos de tecto regulado em vez de tarifa de
 operador: Brazzaville (150 FCFA é o máximo legal, a prática ronda os
 200-250 FCFA) e Manzini (10 SZL é o tecto nacional até 8 km, não uma
 tarifa de bilhete de uma empresa).
+
+**Lote 7, 04 de Setembro: segunda ronda de África (10 cidades com
+tarifa, 4 só operador, 4 de fora).** Argel, Luanda, Lilongwe, Bamako,
+Nouakchott, Port Louis, Rabat, Kigali, Freetown e Dar es Salaam entram
+com tarifas confirmadas; Antananarivo, Windhoek, Abuja e Victoria ficam
+só com o operador (tarifário fragmentado por cooperativa, ou fontes
+contraditórias sobre o valor exacto). Niamey, Mogadíscio, Juba e Cartum
+ficam de fora: sem operador formal identificável (Juba, Mogadíscio,
+Niamey) ou sem preços fixos por causa da guerra (Cartum, onde as
+fontes vão de poucos SDG a milhares, "variam imprevisivelmente" por
+falta de regulação).
+
+Faltam ainda cerca de 11 cidades africanas (Lomé, Tunes, Entebbe,
+Lusaka, Harare, Bissau, Maputo, São Tomé, Sal, Mindelo, Praia), para
+uma próxima ronda.
