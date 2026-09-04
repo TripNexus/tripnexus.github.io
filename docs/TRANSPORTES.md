@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 157 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 170 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 24 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 87 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 26 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 72 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -765,3 +765,20 @@ Fecha-se aqui África: entre os três lotes desta ronda (6, 7 e 8), todas
 as capitais do continente foram investigadas; algumas ficaram de fora
 por não terem operador formal nem dados fiáveis, não por falta de
 tentativa.
+
+**Lote 9, 04 de Setembro: Médio Oriente e Ásia Central (13 cidades com
+tarifa, 2 só operador, 4 de fora).** Yerevan, Baku, Manama, Teerão,
+Mascate, Riade, Amã, Astana, Cidade do Kuwait, Bisqueque, Beirute,
+Tasquente e Dushanbe entram com tarifas confirmadas; Telavive e
+Asgabate ficam só com o operador. Cabul, Bagdade, Damasco e Sanaa
+ficam de fora: sem operador formal com tarifário publicado (Cabul,
+Bagdade), ou sem dados fiáveis por causa da guerra (Damasco, Sanaa).
+
+Casos com nota: Telavive teve duas reformas tarifárias em 2025 (Abril
+e "Derekh Shava" em Agosto) que geraram valores contraditórios entre
+fontes, sem confirmação segura de qual está em vigor. Asgabate: o único
+valor encontrado é de 2017, sem confirmação oficial nem actual, dado o
+isolamento do país. Cidade do Kuwait tem três empresas privadas com
+rotas sobrepostas (KPTC, CityBus, KGL Mowasalat) em vez de uma
+operadora única, mas com valores consistentes entre elas. Fecha-se aqui
+o Médio Oriente e a Ásia Central.
