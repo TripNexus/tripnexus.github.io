@@ -253,9 +253,9 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 199 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 205 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 33 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Só operador**, sem valores | 27 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
 | **Sem operador** | 36 | ver `CIDADES` em `assets/js/data.js` |
 
 ### Ronda das «só operador», a 04 de Setembro: 39 para 33
@@ -280,6 +280,35 @@ o mesmo carimbo «Atualizado em 19/01/2023», Beja com PDFs de Julho de
 2025, antes do ajuste nacional de Janeiro de 2026); **Telavive**, **Doha**,
 **Banguecoque** e **Malé** (sites oficiais inacessíveis ou sem tabela
 estática nesta ronda também).
+
+### Ronda das «só operador», ainda a 04 de Setembro: 33 para 27
+
+A pedido do utilizador ("vai tentando aos poucos"), segunda ronda no
+mesmo dia. Desta vez a pesquisa inicial (duas buscas paralelas) trouxe
+mais números por confirmar às cegas do que o costume: o ambiente da
+pesquisa tinha o acesso à rede mais limitado que o desta sessão, por
+isso vários números vieram só de notícias que *citam* a fonte oficial,
+não da própria página. Reconferiu-se cada um directamente na fonte
+primária antes de entrar; dois não resistiram à reconferência:
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| San Salvador | Tarifa por rota, sem valor único | Achada a folha Excel oficial com as 1430 tarifas por rota (ligada da ferramenta de consulta do VMT). Usa-se a tarifa mais comum de cada tipo: autocarro 0,20 USD (a mais frequente, longe, de 1095 rotas), microbus 0,25 USD (mais de metade de 335 rotas) |
+| Abuja (AUMTCO) | Sem tarifário achado (inclusive na pesquisa desta ronda) | A própria página do operador tem, afinal, uma tabela de 32 rotas com preço (com e sem cartão); a pesquisa inicial não a encontrou, mas uma leitura directa da página achou-a. Usa-se a mais baixa, das rotas mais curtas: 75 NGN (cartão) / 100 NGN (dinheiro) |
+| Islamabad | Sistema fragmentado, valores contraditórios no tempo | A própria página da PMA separa claramente o Metrobus (BRT Rawalpindi-Islamabad, tarifa única) da Orange Line de Lahore (essa sim por distância), o que resolve a confusão: Metrobus 30 PKR. As linhas da CDA continuam sem valor fiável |
+| Marraquexe | Operador ALSA, página de tarifário morta | A ALSA deixou mesmo de operar a rede a 14/12/2025, ao fim de 26 anos: entrou a Supratours (ONCF). Sem página de tarifário do novo operador, mas a imprensa económica marroquina (LesEco.ma, uma semana antes desta verificação) cita o bilhete: 5 MAD, só dinheiro a bordo |
+| Windhoek | Fontes contraditórias sobre se o pagamento em dinheiro continua | A página oficial (mesma da ronda anterior) ainda está viva com a mesma pergunta e resposta, os dois métodos continuam activos: smartcard 8,50 NAD, dinheiro 9,50 NAD |
+| Victoria (Seicheles) | Página antiga (`/faq/`) morta, tarifa normal por confirmar | Achada a página actual (`/cards/`), com um cartão pensado mesmo para visitantes: viagens ilimitadas por 1, 4 ou 8 dias (100/198/363 SCR). A tarifa normal por viagem continua sem confirmação clara, mas o cartão de visitante serve bem quem usa este site |
+
+A pesquisa inicial tinha reportado números para **San José** (tarifas
+específicas Alajuela/Cartago/Heredia) que, ao reconferir a notícia
+citada, afinal não estavam lá: o artigo fala de milhares de tarifas
+arredondadas, sem as listar uma a uma. Ficou sem preço, tal como
+**Tegucigalpa** (a única fonte com número tem mais de um ano, sem
+confirmação de que ainda vale), **Nairóbi** (os matatus não têm tecto
+oficial actual e claro da NAMATA) e **Vienciana** (site oficial
+continua sem resolver DNS; a única fonte com número era uma tarifa
+promocional de crise, já expirada há mais de três meses).
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 

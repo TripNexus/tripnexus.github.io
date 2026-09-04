@@ -1035,16 +1035,26 @@ const TRANSPORTES_DESTINO = {
       {nome:'Ticket unitário, 1 viagem', preco:8, unidade:'viagem', quando:'chegada', modos:['eletrico']},
       {nome:'Ticket unitário, 2 viagens', preco:14, unidade:'2 viagens', quando:'chegada', modos:['eletrico']}
     ]},
-  /* Não estava na tabela. O operador dos autocarros urbanos é a ALSA
+  /* Não estava na tabela. O operador dos autocarros urbanos era a ALSA
      (a mesma que já opera em Ibiza e noutras cidades), confirmado por
-     várias fontes independentes; o valor mais citado é 4 DH em dinheiro ou
-     3,50 DH com o cartão Ikhlas, mas nenhuma delas é a página oficial: a
-     página de tarifários da ALSA para Marraquexe (alsa.ma/en/marrakech/
-     prices) está partida no próprio sítio, a redireccionar para
-     «not-found». Sem uma fonte primária legível, fica só o operador.
-     Verificado a 31/08/2026. */
-  'Marraquexe': {operador:'ALSA', url:'https://www.alsa.ma/en', actualizado:'2026-08-31', fonte:'https://www.alsa.ma/en',
-    moeda:'MAD', bilhetes:[]},
+     várias fontes independentes; o valor mais citado era 4 DH em dinheiro
+     ou 3,50 DH com o cartão Ikhlas, mas nenhuma delas era a página
+     oficial: a página de tarifários da ALSA para Marraquexe estava
+     partida no próprio sítio, a redireccionar para «not-found».
+     Reconferido a 04/09/2026: a página continua morta porque a ALSA
+     deixou mesmo de operar a rede, a 14/12/2025, ao fim de 26 anos: a
+     Supratours (subsidiária da ONCF) tomou conta das 67 linhas urbanas.
+     A Supratours não publica tarifário para a rede urbana (o site dela,
+     supratoursbus.com, é só para autocarros interurbanos), mas a
+     imprensa económica marroquina (LesEco.ma, 27/08/2026, uma semana
+     antes desta verificação) confirma o bilhete: «Le ticket est maintenu
+     à cinq dirhams»; só dinheiro a bordo, sem cartão de assinatura. */
+  'Marraquexe': {operador:'Supratours (subsidiária da ONCF)', url:'https://leseco.ma/maroc/bus-a-marrakech-le-nouveau-gestionnaire-peine-a-convaincre.html', actualizado:'2026-09-04', fonte:'https://leseco.ma/maroc/bus-a-marrakech-le-nouveau-gestionnaire-peine-a-convaincre.html',
+    moeda:'MAD',
+    nota:'A ALSA geriu a rede urbana até Dezembro de 2025; a Supratours não tem página de tarifário próprio para autocarros urbanos, por isso a fonte é jornalística, não do operador.',
+    bilhetes:[
+      {nome:'Bilhete simples (só dinheiro, a bordo)', preco:5, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* O url antigo redirecciona para metrohanoi.vn; a página das tarifas
      (afc-tickets/metro-fares-1/) monta os preços em JavaScript, mas
      reconferido a 04/09/2026: embute dois avisos oficiais em imagem (um
@@ -1386,16 +1396,34 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. ARESEP regula dezenas de empresas privadas,
      cada uma com tarifa própria por rota (não há tarifa única citadina);
      um valor de uma rota específica apareceu só numa fonte, sem
-     confirmação cruzada, por isso fica só o operador. Verificado a
-     03/09/2026. */
-  'San José': {operador:'Autocarros privados concessionados, regulados pela ARESEP', url:'https://aresep.go.cr/autobus/tarifas/', actualizado:'2026-09-03', fonte:'https://aresep.go.cr/autobus/tarifas/',
+     confirmação cruzada, por isso fica só o operador. Reconferido a
+     04/09/2026: a página tem mesmo uma tabela, mas é montada em
+     JavaScript (widget Kendo UI, sem endpoint de dados visível no HTML).
+     Uma notícia que supostamente citava valores por rota (San José-
+     Alajuela, -Cartago, -Heredia) foi lida directamente e não continha
+     esses números: fala de milhares de tarifas arredondadas ao múltiplo
+     de 10 colones mais próximo (retirada das moedas de 5), sem os listar
+     um a um. Continua sem valor fiável. */
+  'San José': {operador:'Autocarros privados concessionados, regulados pela ARESEP', url:'https://aresep.go.cr/autobus/tarifas/', actualizado:'2026-09-04', fonte:'https://aresep.go.cr/autobus/tarifas/',
     moeda:'CRC', bilhetes:[]},
   /* Não estava na tabela. O Viceministerio de Transporte (VMT) regula
      autocarros e microbuses privados concessionados; a tarifa varia por
      rota ($0.20 a $1.86) e exige consulta por matrícula do veículo, sem
-     valor único citadino. Verificado a 03/09/2026. */
-  'San Salvador': {operador:'Autocarros/microbuses privados concessionados, regulados pelo Viceministerio de Transporte (VMT)', url:'https://www.vmt.gob.sv/servicios/consulta-de-tarifa-de-transporte/', actualizado:'2026-09-03', fonte:'https://www.vmt.gob.sv/servicios/consulta-de-tarifa-de-transporte/',
-    moeda:'USD', bilhetes:[]},
+     valor único citadino. Reconferido a 04/09/2026: a ferramenta de
+     consulta por rota (tarifariociudadano.vmt.gob.sv) liga a uma folha
+     Excel oficial descarregável com as 1430 tarifas por rota. As
+     unidades chamadas «AB» (autocarro) e «MB» (microbus) têm cada uma um
+     valor claramente dominante, que se usa aqui como tarifa base:
+     0,20 USD em 157 das 1095 rotas de autocarro (a mais comum, de
+     longe), e 0,25 USD em 195 das 335 rotas de microbus (mais de
+     metade). Fica o resto de fora: há tarifas por rota até 2,00 USD. */
+  'San Salvador': {operador:'Autocarros/microbuses privados concessionados, regulados pelo Viceministerio de Transporte (VMT)', url:'https://tarifariociudadano.vmt.gob.sv/', actualizado:'2026-09-04', fonte:'https://tarifariociudadano.vmt.gob.sv/assets/docs/Tarifas%20Transporte%20Colectivo%20El%20Salvador.xlsx',
+    moeda:'USD',
+    nota:'A tarifa é fixada por rota (mais de 1400 no total); os valores abaixo são os mais comuns («tarifa base»), não um preço único citadino. Rotas específicas, sobretudo expresso ou longa distância, custam mais.',
+    bilhetes:[
+      {nome:'Autocarro (tarifa base, a maioria das rotas)', preco:0.20, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Microbus (tarifa base, a maioria das rotas)', preco:0.25, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. Transmetro (BRT) e TuBus são sistemas
      municipais distintos com tarifas próprias; o Transmetro está fixo em
      Q1,50 desde 2007, o TuBus em Q5,00 desde 2023. Verificado a
@@ -1409,8 +1437,13 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. O IHTT regula empresas privadas de autocarro
      urbano ("rapiditos"); fontes de Maio de 2026 divergem entre 13 e 15
      lempiras conforme a rota/veículo, sem página oficial de tarifário
-     única, por isso fica só o operador. Verificado a 03/09/2026. */
-  'Tegucigalpa': {operador:'Autocarros urbanos privados ("rapiditos"), regulados pelo IHTT', url:'https://www.transporte.gob.hn/', actualizado:'2026-09-03', fonte:'https://www.transporte.gob.hn/',
+     única, por isso fica só o operador. Reconferido a 04/09/2026:
+     transporte.gob.hn continua sem resposta (esgota o tempo limite). A
+     única notícia com um número claro (13 lempiras) é de 13/08/2025,
+     sobre uma extensão orçamental do subsídio só até finais de 2025, com
+     mais de um ano de idade e sem confirmação de que ainda vale hoje;
+     fica de fora por essa razão, não por o valor ser inverosímil. */
+  'Tegucigalpa': {operador:'Autocarros urbanos privados ("rapiditos"), regulados pelo IHTT', url:'https://www.transporte.gob.hn/', actualizado:'2026-09-04', fonte:'https://www.transporte.gob.hn/',
     moeda:'HNL', bilhetes:[]},
   /* Não estava na tabela. JUTC é a operadora estatal. Há também uma
      tarifa reduzida com o cartão SmartFare, mas era uma medida temporária
@@ -1789,15 +1822,36 @@ const TRANSPORTES_DESTINO = {
      (cartão N$8,50 / dinheiro N$9,50) parece desactualizada, já que o
      pagamento em dinheiro foi descontinuado em Agosto de 2025, e uma
      notícia mais recente cita N$9 fixo, sem forma clara de saber qual é
-     o valor certo, por isso fica só o operador. Verificado a 04/09/2026. */
+     o valor certo, por isso fica só o operador. Reconferido a 04/09/2026,
+     lido directamente na própria página de perguntas frequentes (ainda
+     viva, com a mesma pergunta «How much is your bus tickets?»): os dois
+     métodos de pagamento continuam activos, ao contrário do que a
+     notícia entretanto sugeria (essa página de notícia, aliás, já dá
+     404). Citação exacta: «A single trip with a smartcard costs NAD8.50
+     while payment by cash is NAD 9.50.» */
   'Windhoek': {operador:'City of Windhoek (Department of Urban and Transport Planning)', url:'https://www.windhoekcc.org.na/urban-and-transport-planning-faqs/', actualizado:'2026-09-04', fonte:'https://www.windhoekcc.org.na/urban-and-transport-planning-faqs/',
-    moeda:'NAD', bilhetes:[]},
+    moeda:'NAD',
+    bilhetes:[
+      {nome:'Bilhete simples, com smartcard (pré-pago)', preco:8.50, unidade:'viagem', quando:'antes', modos:['autocarro']},
+      {nome:'Bilhete simples, a dinheiro', preco:9.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. AUMTCO é a empresa pública de autocarros;
      também há o Abuja Light Rail, mas nenhum dos dois tem tarifário
      oficial confirmável (só blogues de viagem contraditórios), por isso
-     fica só o operador. Verificado a 04/09/2026. */
+     fica só o operador. Reconferido a 04/09/2026: a própria página da
+     AUMTCO afinal tem, sim, uma tabela de tarifas por rota (32 rotas,
+     preço para quem tem o cartão de autocarro e para quem não tem);
+     usa-se aqui a tarifa mais baixa, comum a 12 das 32 rotas (as mais
+     curtas, incluindo a circular do centro). O Abuja Light Rail continua
+     sem tarifário actual confirmável: o único achado é de 2018, antes da
+     suspensão pela pandemia, sem confirmação de que ainda vale. */
   'Abuja': {operador:'AUMTCO (Abuja Urban Mass Transport Company) / Abuja Light Rail', url:'https://aumtco.abujainvestments.com/urban-public-transportation-services/', actualizado:'2026-09-04', fonte:'https://aumtco.abujainvestments.com/urban-public-transportation-services/',
-    moeda:'NGN', bilhetes:[]},
+    moeda:'NGN',
+    nota:'A tarifa é por rota (32 no total, até 400 NGN nas mais longas); o valor abaixo é o mais baixo, das rotas mais curtas (ex. a circular do centro). O Abuja Light Rail (comboio) não está incluído: não há tarifário actual confirmável.',
+    bilhetes:[
+      {nome:'Autocarro, com cartão (rota mais curta)', preco:75, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Autocarro, sem cartão (rota mais curta)', preco:100, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. Kigali Bus Services (KBS) e RFTC, regulados
      pela RURA, com tarifário oficial por distância/zona; faixa geral
      confirmada por duas fontes, sem acesso directo ao PDF oficial para
@@ -1811,9 +1865,21 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. SPTC é a empresa estatal; fontes contraditórias
      sobre o valor exacto (Rs7/Rs10/Rs12), a última revisão datada é de
      2021, sem confirmação clara para 2025/2026, por isso fica só o
-     operador. Verificado a 04/09/2026. */
-  'Victoria': {operador:'SPTC (Seychelles Public Transport Corporation)', url:'https://sptc.sc/faq/', actualizado:'2026-09-04', fonte:'https://sptc.sc/faq/',
-    moeda:'SCR', bilhetes:[]},
+     operador. Reconferido a 04/09/2026: `sptc.sc/faq/` foi redesenhado e
+     já não existe, mas achou-se a página actual `sptc.sc/cards/`, com o
+     «Visitor Travel Card», pensado mesmo para turistas: viagens
+     ilimitadas por um número de dias, sem ter de saber o preço de cada
+     percurso. A tarifa normal por viagem (~10 SCR, para quem mora cá)
+     continua sem confirmação clara numa página viva, por isso fica de
+     fora; o cartão de visitante chega e sobra para quem usa este site. */
+  'Victoria': {operador:'SPTC (Seychelles Public Transport Corporation)', url:'https://sptc.sc/cards/', actualizado:'2026-09-04', fonte:'https://sptc.sc/cards/',
+    moeda:'SCR',
+    nota:'O Visitor Travel Card dá viagens ilimitadas em todos os autocarros normais da SPTC em Mahé e Praslin, pensado para quem visita as ilhas.',
+    bilhetes:[
+      {nome:'Visitor Travel Card, 1 dia', preco:100, unidade:'dia', quando:'antes', modos:['autocarro']},
+      {nome:'Visitor Travel Card, 4 dias', preco:198, unidade:'4 dias', quando:'antes', modos:['autocarro']},
+      {nome:'Visitor Travel Card, 8 dias', preco:363, unidade:'8 dias', quando:'antes', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. Waka Fine Bus (Metro Transport Company SL
      Ltd), projecto do governo com o Banco Mundial; tarifa confirmada por
      duas fontes jornalísticas independentes recentes. Verificado a
@@ -2098,14 +2164,29 @@ const TRANSPORTES_DESTINO = {
      PMA: Red Line); fontes contraditórias no tempo (aumento para Rs 100
      em Junho de 2025 revertido dias depois para Rs 50; guias mais
      recentes ainda indicam Rs 30/Rs 40 noutras linhas), sem valor único
-     confirmado actualmente, por isso fica só o operador. Verificado a
-     04/09/2026. */
-  'Islamabad': {operador:'CDA (Orange/Blue/Green) / PMA (Red Line)', url:'https://pma.punjab.gov.pk/', actualizado:'2026-09-04', fonte:'https://pma.punjab.gov.pk/',
-    moeda:'PKR', bilhetes:[]},
+     confirmado actualmente para as linhas da CDA. Reconferido a
+     04/09/2026, lido directamente na página inicial da PMA (Punjab Mass
+     Transit Authority): a política de tarifas separa claramente o
+     «Metrobus System» (o BRT que liga Rawalpindi a Islamabad, tarifa
+     única por viagem) da linha ferroviária Orange Line de Lahore (essa
+     sim por distância, Rs 25 a Rs 45), o que resolve a confusão anterior
+     entre os vários valores. Fica só o Metrobus (as linhas CDA/Orange
+     continuam sem valor fiável). */
+  'Islamabad': {operador:'PMA (Punjab Mass Transit Authority), Metrobus Rawalpindi-Islamabad', url:'https://pma.punjab.gov.pk/', actualizado:'2026-09-04', fonte:'https://pma.punjab.gov.pk/',
+    moeda:'PKR',
+    nota:'É a tarifa do Metrobus (BRT) entre Rawalpindi e Islamabad. As restantes linhas da cidade (CDA: Orange/Blue/Green) continuam sem tarifa fiável confirmada.',
+    bilhetes:[
+      {nome:'Bilhete simples, Metrobus', preco:30, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
   /* Não estava na tabela. Vientiane Capital State Bus Enterprise; fontes
      contradizem-se sobre o preço por rota específica, e uma tarifa
      promocional temporária já expirou, sem valor actual confirmado, por
-     isso fica só o operador. Verificado a 04/09/2026. */
+     isso fica só o operador. Reconferido a 04/09/2026: vientianebus.org.la
+     continua sem resolver DNS, de qualquer computador. A única fonte
+     com número (agência noticiosa estatal do Laos, KPL) descrevia uma
+     tarifa promocional de crise (10.000 LAK, só nalgumas linhas), válida
+     de 23/03 a 30/05/2026 e já expirada há mais de três meses; a tarifa
+     "normal" retomada depois disso não está confirmada em lado nenhum. */
   'Vienciana': {operador:'Vientiane Capital State Bus Enterprise', url:'http://vientianebus.org.la/', actualizado:'2026-09-04', fonte:'http://vientianebus.org.la/',
     moeda:'LAK', bilhetes:[]},
   /* Não estava na tabela. MTCC opera o serviço urbano "Raajje Transport
