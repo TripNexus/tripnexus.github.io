@@ -95,6 +95,7 @@ afiliacao.html           divulgação de afiliação
 
 assets/css/style.css     estilos, incluindo o tema escuro
 assets/js/data.js        cidades, parceiros, cupões e ligações de reserva
+assets/js/transportes.js tarifas reais de transportes públicos no destino
 assets/js/engine.js      motor de estimativas (voos, alojamento, carros, pacotes, cupões)
 assets/js/calendar.js    calendário de preços
 assets/js/live.js        preços reais de voos e hotéis (via backend)

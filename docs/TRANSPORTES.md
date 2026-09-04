@@ -1,7 +1,7 @@
 # Tarifas de transportes: como se mantêm
 
 Os passes e bilhetes de transporte no destino são o único preço do site que
-não vem de uma API. Vêm daqui, de uma tabela em `assets/js/data.js`
+não vem de uma API. Vêm daqui, de uma tabela em `assets/js/transportes.js`
 (`TRANSPORTES_DESTINO`), e por isso alguém tem de os ir confirmar.
 
 Este documento diz quem, quando e como.
@@ -619,8 +619,8 @@ confirmar coordenadas e código IATA.
 
 Nesta fase a investigação de várias cidades em paralelo é feita por
 subagentes, cada um a cruzar fontes independentes antes de aceitar um
-número; quem escreve as entradas em `data.js` (e confirma que não há
-número nem URL inventados) continua a ser sempre a sessão principal.
+número; quem escreve as entradas em `transportes.js` (e confirma que não
+há número nem URL inventados) continua a ser sempre a sessão principal.
 
 **Lote 1, 03 de Setembro (4 cidades): Bilbau, Santiago de Compostela,
 Bolonha, Luxemburgo.** Bilbau (Metro Bilbao/CTB): zona 1 com cartão

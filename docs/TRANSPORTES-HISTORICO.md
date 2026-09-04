@@ -1,7 +1,7 @@
 # Tarifas de transportes: histórico de correcções
 
 Registo, ronda a ronda, do que mudou na tabela `TRANSPORTES_DESTINO`
-(`assets/js/data.js`) e porquê. A metodologia e o estado actual ficam em
+(`assets/js/transportes.js`) e porquê. A metodologia e o estado actual ficam em
 [`TRANSPORTES.md`](TRANSPORTES.md); este ficheiro só cresce, para trás.
 
 ### Correcções em cidades que já cá estavam

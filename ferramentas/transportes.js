@@ -25,7 +25,8 @@ const fs = require('fs');
 const path = require('path');
 
 const RAIZ = path.join(__dirname, '..');
-const fonte = fs.readFileSync(path.join(RAIZ, 'assets/js/data.js'), 'utf8');
+const fonte = fs.readFileSync(path.join(RAIZ, 'assets/js/data.js'), 'utf8')
+  + fs.readFileSync(path.join(RAIZ, 'assets/js/transportes.js'), 'utf8');
 
 /* O data.js é um script de navegador, não um módulo. Avalia-se num contexto
    vazio e colhem-se as três coisas de que precisamos. */
