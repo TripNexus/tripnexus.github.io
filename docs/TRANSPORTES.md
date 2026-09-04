@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 151 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 157 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 23 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 94 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 24 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 87 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -746,6 +746,22 @@ Niamey) ou sem preços fixos por causa da guerra (Cartum, onde as
 fontes vão de poucos SDG a milhares, "variam imprevisivelmente" por
 falta de regulação).
 
-Faltam ainda cerca de 11 cidades africanas (Lomé, Tunes, Entebbe,
-Lusaka, Harare, Bissau, Maputo, São Tomé, Sal, Mindelo, Praia), para
-uma próxima ronda.
+**Lote 8, 04 de Setembro: terceira e última ronda de África (6 cidades
+com tarifa, 1 só operador, 4 de fora).** Lomé, Tunes, Harare, Maputo,
+Mindelo e Praia entram com tarifas confirmadas; Lusaka fica só com o
+operador (a RTSA só divulga ajustes relativos, nunca a tarifa absoluta
+actual). Entebbe, Bissau, São Tomé e Sal ficam de fora: sem operador
+formal identificável, só transporte informal negociado por percurso.
+
+Casos com nota: Tunes tem tarifas confirmadas mas a última alteração
+localizada é de 2021, pode estar desactualizada. Harare tem duas
+realidades: a ZUPCO (estatal) cobra 1 USD de referência, mas a maioria
+das viagens reais faz-se em kombis privados mais caros, que sobem com
+frequência; entra o valor da ZUPCO. Mindelo e Praia partilham o mesmo
+padrão, tarifa estável desde Setembro de 2024 e reconfirmada
+inalterada pelo regulador ARME em Janeiro de 2026.
+
+Fecha-se aqui África: entre os três lotes desta ronda (6, 7 e 8), todas
+as capitais do continente foram investigadas; algumas ficaram de fora
+por não terem operador formal nem dados fiáveis, não por falta de
+tentativa.

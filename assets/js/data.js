@@ -2240,6 +2240,71 @@ const TRANSPORTES_DESTINO = {
     bilhetes:[
       {nome:'Bilhete simples "Mwendokasi"', preco:750, unidade:'viagem', quando:'chegada', modos:['autocarro']}
     ]},
+  /* Terceira e última ronda de África. Não estava na tabela. SOTRAL é a
+     empresa municipal de autocarros; redução tarifária em vigor desde 23
+     de Dezembro de 2024 (na sequência da descida do preço do gasóleo),
+     confirmada por duas fontes noticiosas independentes. Verificado a
+     04/09/2026. */
+  'Lomé': {operador:'SOTRAL (Société des Transports de Lomé)', url:'https://sotraltogo.com/transport_way', actualizado:'2026-09-04', fonte:'https://sotraltogo.com/transport_way',
+    moeda:'XOF', nota:'O preço depende do percurso.',
+    bilhetes:[
+      {nome:'Percurso curto', preco:100, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Percurso mais longo', preco:300, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Transtu opera o metro ligeiro, o TGM e a rede
+     de autocarros; valores confirmados por várias fontes, mas a última
+     alteração tarifária localizada é de Junho de 2021, sem confirmação
+     de revisão mais recente. Verificado a 04/09/2026. */
+  'Tunes': {operador:'Transtu (Société des Transports de Tunis)', url:'https://www.transtu.tn/fr/tarifs', actualizado:'2026-09-04', fonte:'https://lapresse.tn/98672/transtu-ajustement-des-prix-des-tickets-du-bus-et-metro/',
+    moeda:'TND', nota:'O preço depende do número de secções percorridas; a última alteração tarifária confirmada é de 2021, pode estar desactualizada.',
+    bilhetes:[
+      {nome:'Bilhete, 1ª a 3ª secção', preco:0.5, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
+      {nome:'Bilhete, 7ª a 10ª secção', preco:1.5, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']}
+    ]},
+  /* Não estava na tabela. Rede de minibus privados, tarifas máximas
+     reguladas pela RTSA (Road Transport and Safety Agency); a RTSA só
+     divulga ajustes relativos ("redução de K1"), nunca a tarifa absoluta
+     actual, e as fontes contradizem-se sobre o valor final, por isso
+     fica só o operador. Verificado a 04/09/2026. */
+  'Lusaka': {operador:'Minibus privados, tarifas máximas reguladas pela RTSA', url:'https://www.rtsa.org.zm/media-room/public-notices/', actualizado:'2026-09-04', fonte:'https://www.rtsa.org.zm/media-room/public-notices/',
+    moeda:'ZMW', bilhetes:[]},
+  /* Não estava na tabela. ZUPCO é a empresa estatal, mas a maioria das
+     viagens reais faz-se em kombis privados que cobram mais e oscilam
+     com o preço do combustível; entra a tarifa de referência da ZUPCO.
+     Verificado a 04/09/2026. */
+  'Harare': {operador:'ZUPCO (Zimbabwe United Passenger Company)', url:'http://www.zupco.co.zw/harare_urban.html', actualizado:'2026-09-04', fonte:'https://allafrica.com/stories/202501130598.html',
+    moeda:'USD', nota:'Os kombis privados, que fazem a maioria das viagens reais, cobram mais do que a ZUPCO e sobem com frequência.',
+    bilhetes:[
+      {nome:'ZUPCO, tarifa de referência', preco:1, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. EMTPM é a empresa municipal de autocarros; os
+     "chapas" (minibus privados) complementam a rede. Valor reafirmado
+     pela EMTPM a partir de 1 de Junho de 2025, confirmado por várias
+     fontes moçambicanas independentes. Verificado a 04/09/2026. */
+  'Maputo': {operador:'EMTPM (Empresa Municipal de Transportes Públicos de Maputo) / chapas', url:'https://www.emtpm.co.mz/', actualizado:'2026-09-04', fonte:'https://www.emtpm.co.mz/',
+    moeda:'MZN',
+    bilhetes:[
+      {nome:'Bilhete, curta distância', preco:15, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete, longa distância (mais de 10-20 km)', preco:18, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. TRANSCOR SV é a operadora municipal; valor
+     fixado em Setembro de 2024 e reconfirmado inalterado numa notícia de
+     Janeiro de 2026, cruzado entre o operador, o regulador ARME e a
+     imprensa. Verificado a 04/09/2026. */
+  'Mindelo': {operador:'TRANSCOR SV (Transportadora Coletiva de São Vicente)', url:'https://www.transcor.cv/noticia-atualizacao-de-tarifas', actualizado:'2026-09-04', fonte:'https://www.transcor.cv/noticia-atualizacao-de-tarifas',
+    moeda:'CVE',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:42, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Sol Atlântico é a operadora municipal; valor
+     fixado em Setembro de 2024 e reconfirmado inalterado numa notícia de
+     Janeiro de 2026, cruzado entre o operador, o regulador ARME e a
+     imprensa. Verificado a 04/09/2026. */
+  'Praia': {operador:'Sol Atlântico', url:'https://www.solatlantico.cv/', actualizado:'2026-09-04', fonte:'https://www.solatlantico.cv/',
+    moeda:'CVE',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:43, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
