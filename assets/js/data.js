@@ -2665,6 +2665,49 @@ const TRANSPORTES_DESTINO = {
     bilhetes:[
       {nome:'Bilhete geral', preco:4400, unidade:'viagem', quando:'chegada', modos:['autocarro']}
     ]},
+  /* Ronda de transportes na Oceânia. Não estava na tabela. Minibus
+     privados regulados por ordenança do Honiara City Council (HCC);
+     valor gazetado confirmado por duas fontes independentes de Abril de
+     2026, apesar de alguns operadores cobrarem mais (SBD 5) do que o
+     tarifário legal. Verificado a 04/09/2026. */
+  'Honiara': {operador:'Minibus privados (regulados pelo Honiara City Council)', url:'https://www.sibconline.com.sb/hcc-says-no-bus-fare-increase-approved-despite-rising-fuel-prices/', actualizado:'2026-09-04', fonte:'https://www.sibconline.com.sb/hcc-says-no-bus-fare-increase-approved-despite-rising-fuel-prices/',
+    moeda:'SBD', nota:'Alguns operadores cobram mais (5 SBD) do que o tarifário legal, segundo o próprio Honiara City Council.',
+    bilhetes:[
+      {nome:'Bilhete adulto', preco:3, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Minibus privados licenciados (matrícula "B"),
+     tarifas por zona; subida confirmada por duas fontes noticiosas
+     independentes (Janeiro de 2025), mas o site oficial de turismo ainda
+     mostra o valor antigo, desactualizado. Verificado a 04/09/2026. */
+  'Port Vila': {operador:'Minibus privados licenciados (matrícula "B")', url:'https://www.vanuatu.travel/en/plan/planning-tools/guides/how-to-catch-the-bus-in-vanuatu', actualizado:'2026-09-04', fonte:'https://dailypost.vu/',
+    moeda:'VUV', nota:'O site oficial de turismo ainda mostra o valor antigo (150 VT); o valor aqui é o mais recente, confirmado por duas notícias independentes.',
+    bilhetes:[
+      {nome:'Bilhete adulto, zona urbana', preco:200, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Palau Eco-Friendly Public Transport (HRCTD,
+     com apoio da JICA); fontes de 2025 e 2026 dão valores diferentes
+     (1 USD vs 2 USD por viagem), sem consenso claro sobre o valor
+     vigente, por isso fica só o operador. Verificado a 04/09/2026. */
+  'Koror': {operador:'Palau Eco-Friendly Public Transport (HRCTD)', url:'https://www.palaugov.pw/executive-branch/ministries/hrctd/', actualizado:'2026-09-04', fonte:'https://www.palaugov.pw/executive-branch/ministries/hrctd/',
+    moeda:'USD', bilhetes:[]},
+  /* Não estava na tabela. Operadores privados licenciados regulados pela
+     FCCC; o único valor confirmado é de Agosto de 2023, com indícios não
+     verificáveis de subsídios e aumentos desde então, sem confirmação do
+     valor actual, por isso fica só o operador. Verificado a 04/09/2026. */
+  'Nadi': {operador:'Operadores privados de autocarro (regulados pela FCCC)', url:'https://fccc.gov.fj/transport/', actualizado:'2026-09-04', fonte:'https://fccc.gov.fj/transport/',
+    moeda:'FJD', bilhetes:[]},
+  /* Não estava na tabela. Rede de PMV (Public Motor Vehicles), regulada
+     pela ICCC; fontes fortemente contraditórias sobre o valor actual (a
+     ICCC tem uma revisão faseada 2026-2030 em curso), sem confirmação
+     fiável, por isso fica só o operador. Verificado a 04/09/2026. */
+  'Port Moresby': {operador:'PMV (Public Motor Vehicles), regulados pela ICCC', url:'https://iccc.gov.pg/pmv-taxi-fares/', actualizado:'2026-09-04', fonte:'https://iccc.gov.pg/pmv-taxi-fares/',
+    moeda:'PGK', bilhetes:[]},
+  /* Não estava na tabela. Rede de autocarros privados, regulada pela
+     Land Transport Authority (LTA) de Samoa; fontes muito díspares entre
+     si sobre o valor de um trajecto urbano simples, sem confirmação
+     fiável, por isso fica só o operador. Verificado a 04/09/2026. */
+  'Apia': {operador:'Autocarros privados (regulados pela Land Transport Authority)', url:'https://lta.gov.ws/fees/', actualizado:'2026-09-04', fonte:'https://lta.gov.ws/fees/',
+    moeda:'WST', bilhetes:[]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
