@@ -1,0 +1,11 @@
+{
+  "name": "tripnexus.github.io",
+  "private": true,
+  "description": "TripNexus é um site estático sem passo de compilação nem dependências de runtime. Isto serve só as ferramentas de desenvolvimento (teste de fumo).",
+  "scripts": {
+    "test:fumo": "node tests/fumo.js"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}
