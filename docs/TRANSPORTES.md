@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 191 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 193 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 35 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 42 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 39 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 36 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -827,3 +827,34 @@ Caso com nota: em Honiara e Port Vila, apesar de haver tarifário legal
 gazetado, há relatos de operadores a cobrar acima do valor oficial;
 entra sempre o valor legal, com nota do que se sabe sobre a prática no
 terreno.
+
+**Lote 14, 04 de Setembro: as últimas cidades novas desta fase (2
+cidades com tarifa, 4 só operador).** Chicago e Washington D.C. (EUA)
+entram com tarifas confirmadas (CTA, WMATA). Basseterre, Castries,
+Kingstown e Porto de Espanha, no resto das Caraíbas, ficam só com o
+operador: em todas há uma rede de minibus privados regulada por um
+organismo do Estado citável, mas sem tarifário actual confirmável (o
+mais recente é de 2022 em Kingstown; nos outros, fontes contraditórias
+ou reformas incompletas).
+
+### Fecha-se aqui a investigação: todas as 268 cidades do site
+
+Com este lote fecha-se a investigação de transportes locais a todas as
+cidades do site: nenhuma ficou por tentar. Restam 36 sem operador,
+todas por uma razão documentada, não por falta de pesquisa:
+
+- **Conflito armado ou colapso do Estado**, sem preços fiáveis:
+  Cabul, Bagdade, Damasco, Sanaa, Cartum, Juba, Mogadíscio.
+- **Isolamento do país**, impossível verificar de forma independente:
+  Pyongyang.
+- **Rede informal sem operador identificável** (só táxis/minibus
+  privados negociados, sem organismo regulador nem tarifário
+  publicado): Saint John's, Cidade de Belize, Saint George's, Porto
+  Príncipe, Georgetown, Cotonou, Bujumbura, N'Djamena, Jibuti, Malabo,
+  Asmara, Banjul, Conacri, Monróvia, Trípoli, Niamey, Entebbe, Bissau,
+  São Tomé, Sal, Dili, Tarawa, Majuro, Pohnpei, Yaren, Nuku'alofa,
+  Funafuti.
+- **Vila pequena e percorrível a pé**, sem serviço formal: Paro.
+
+Qualquer uma destas pode voltar a entrar numa próxima revisão, se
+surgir um operador formal e um tarifário citável que hoje não existe.
