@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 189 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 191 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 31 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 48 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 35 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 42 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -813,3 +813,17 @@ Bombaim não entrou por falta de confirmação actual e fiável. Phuket:
 só o Phuket Smart Bus tem tarifário oficial, os songthaews privados
 não têm valores fiáveis. Bali: valores mais antigos e contraditórios
 (2023, início de 2025) foram descartados a favor de fontes de 2026.
+
+**Lote 13, 04 de Setembro: Oceânia (2 cidades com tarifa, 4 só
+operador, 6 de fora).** Honiara e Port Vila entram com tarifas
+confirmadas; Koror, Nadi, Port Moresby e Apia ficam só com o operador
+(fontes contraditórias sobre o valor exacto, em vários casos por
+haver uma revisão tarifária em curso). Pohnpei, Yaren, Nuku'alofa,
+Funafuti, Tarawa e Majuro ficam de fora: sem operador formal
+identificável, ilhas pequenas que dependem de táxis partilhados
+informais sem tarifário regulado.
+
+Caso com nota: em Honiara e Port Vila, apesar de haver tarifário legal
+gazetado, há relatos de operadores a cobrar acima do valor oficial;
+entra sempre o valor legal, com nota do que se sabe sobre a prática no
+terreno.
