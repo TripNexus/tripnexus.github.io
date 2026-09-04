@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 170 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 176 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 26 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 72 | ver `CIDADES` em `assets/js/data.js` |
+| **Só operador**, sem valores | 31 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Sem operador** | 61 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -782,3 +782,17 @@ isolamento do país. Cidade do Kuwait tem três empresas privadas com
 rotas sobrepostas (KPTC, CityBus, KGL Mowasalat) em vez de uma
 operadora única, mas com valores consistentes entre elas. Fecha-se aqui
 o Médio Oriente e a Ásia Central.
+
+**Lote 10, 04 de Setembro: Sul e Sudeste Asiático (6 cidades com
+tarifa, 5 só operador, 3 de fora).** Daca, Bandar Seri Begawan, Phnom
+Penh, Catmandu, Manila e Colombo entram com tarifas confirmadas;
+Islamabad, Vienciana, Malé, Ulã Bator e Rangum ficam só com o
+operador. Paro (vila pequena, percorrível a pé, sem serviço formal),
+Pyongyang (isolamento do país impede verificação independente) e Dili
+(microlets informais, sem operador nem tarifário oficial) ficam de
+fora.
+
+Caso comum a várias destas cidades: fontes contraditórias sobre se um
+aumento de tarifa anunciado chegou mesmo a entrar em vigor (Rangum,
+Islamabad) ou sobre o valor exacto por rota (Ulã Bator, Vienciana), sem
+forma de saber qual está correcto à data da verificação.
