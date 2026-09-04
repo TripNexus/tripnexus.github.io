@@ -112,7 +112,9 @@ if(args.includes('--folha')){
   soOperador.forEach(l => console.log(linha(l)));
   console.log('## 3. Sem operador (' + semNada.length + ')');
   console.log('');
-  console.log('Falta descobrir quem opera os transportes e qual é a página de tarifário.');
+  console.log('Já se procurou por estas sem sucesso (sem acesso directo às páginas ' +
+    'oficiais, só por pesquisa). Se tiver acesso ao navegador, vale a pena tentar de ' +
+    'novo antes de assumir que não há mesmo operador nenhum.');
   console.log('');
   semNada.forEach(c => console.log('- ' + c.n + ' (' + c.p + '): operador ______  ·  endereço ______'));
   process.exit(0);
