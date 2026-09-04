@@ -107,6 +107,8 @@ assets/js/app.js         interface e ligação de tudo
 backend/                 Cloudflare Worker: preços reais e assistente (ver backend/README.md)
 manifest.webmanifest
 sw.js                    aplicação instalável e funcionamento offline (PWA)
+
+tests/                   teste de fumo (Playwright), corrido em cada PR pela GitHub Action
 ```
 
 O site é **estático** e corre no GitHub Pages. O único serviço à parte é um Cloudflare Worker
@@ -127,6 +129,19 @@ Depois abrir <http://localhost:8642>. Não há passo de compilação nem depend�
 e JavaScript simples.
 
 Para os preços reais e o assistente, ver **[`backend/README.md`](backend/README.md)**.
+
+---
+
+## Testar
+
+Há um teste de fumo (Playwright) que percorre os caminhos principais do site à procura de
+erros de JavaScript. Corre automaticamente em cada PR (GitHub Action), e também localmente:
+
+```bash
+npm ci
+npx playwright install --with-deps chromium
+npm run test:fumo
+```
 
 ---
 
