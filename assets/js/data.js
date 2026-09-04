@@ -2443,6 +2443,99 @@ const TRANSPORTES_DESTINO = {
      04/09/2026. */
   'Asgabate': {operador:'Ashgabat Passenger Motor Transport Enterprise (Türkmenawtoulaglary)', url:'https://ayauk.gov.tm/', actualizado:'2026-09-04', fonte:'https://ayauk.gov.tm/',
     moeda:'TMT', bilhetes:[]},
+  /* Segunda ronda de transportes na Ásia (a primeira, no Lote 4b, foi só
+     de cidades). Não estava na tabela. DMTCL opera o Metro (MRT Line 6);
+     os autocarros urbanos não têm operador único identificável.
+     Confirmado por três fontes independentes. Verificado a 04/09/2026. */
+  'Daca': {operador:'DMTCL (Dhaka Mass Transit Company), Metro MRT Line 6', url:'https://dmtcl.gov.bd/site/page/d8573d11-7f71-4834-b72e-96e060fb3a0b/Fare-Chart--Fare-Collection-Guidelines', actualizado:'2026-09-04', fonte:'https://bdnews24.com/bangladesh/nzlp4ngm6o',
+    moeda:'BDT', nota:'O preço depende do número de estações percorridas.',
+    bilhetes:[
+      {nome:'Metro, mínimo', preco:20, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Metro, máximo (Uttara Norte-Motijheel)', preco:100, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. O "Franchise Bus" é regulado pelo Land
+     Transport Department (JPD); tarifa fixa confirmada em várias fontes
+     de 2025, mas nenhuma é o site oficial (bloqueado ao acesso).
+     Verificado a 04/09/2026. */
+  'Bandar Seri Begawan': {operador:'Franchise Bus (Land Transport Department, JPD)', url:'https://www.jpd.gov.bn/SitePages/PUBLIC%20BUS%20ROUTE.aspx', actualizado:'2026-09-04', fonte:'https://www.jpd.gov.bn/SitePages/PUBLIC%20BUS%20ROUTE.aspx',
+    moeda:'BND', nota:'Tarifa fixa, independente da distância.',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:1.00, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. Phnom Penh City Bus é a autoridade municipal;
+     tarifa fixa confirmada por quatro fontes independentes. Verificado a
+     04/09/2026. */
+  'Phnom Penh': {operador:'Phnom Penh City Bus', url:'https://www.facebook.com/phnompenhcitybus.gov.kh/', actualizado:'2026-09-04', fonte:'https://en.wikipedia.org/wiki/Phnom_Penh_City_Bus',
+    moeda:'KHR', nota:'Tarifa fixa, independente da distância.',
+    bilhetes:[
+      {nome:'Bilhete simples', preco:1500, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. As tarifas são reguladas pelo Governo da
+     Província de Bagmati (não por um operador único), aplicadas a todos
+     os veículos públicos do vale, incluindo a cooperativa semipública
+     Sajha Yatayat; valor em vigor desde 12/04/2026, confirmado por duas
+     fontes noticiosas independentes. Verificado a 04/09/2026. */
+  'Catmandu': {operador:'Regulação provincial de Bagmati / Sajha Yatayat', url:'https://sajhayatayat.com.np/', actualizado:'2026-09-04', fonte:'https://kathmandupost.com/province-no-3/2026/04/12/bagmati-revises-public-transport-fares-after-fuel-price-hike',
+    moeda:'NPR', nota:'O preço depende da distância percorrida.',
+    bilhetes:[
+      {nome:'Até 5 km', preco:24, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Mais de 20 km', preco:50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. LRT-1 (privado), LRT-2 e MRT-3 (públicos, sob
+     a DOTr/LRTA); valores confirmados por várias fontes independentes e
+     oficiais. Nota: o desconto de 50% em MRT-3/LRT-2 é "até novo aviso",
+     não permanente. Verificado a 04/09/2026. */
+  'Manila': {operador:'LRT-1 / LRT-2 / MRT-3', url:'https://lrta.gov.ph/tickets-and-fares', actualizado:'2026-09-04', fonte:'https://lrta.gov.ph/tickets-and-fares',
+    moeda:'PHP', nota:'O preço depende da distância; o desconto de 50% em MRT-3/LRT-2 é uma medida temporária "até novo aviso", não se aplica ao LRT-1.',
+    bilhetes:[
+      {nome:'LRT-1, mínimo', preco:20, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'LRT-1, máximo', preco:55, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. As tarifas de todos os autocarros (SLTB e
+     privados) são fixadas pela NTC; valor de autocarro muito recente e
+     sólido (gazette oficial + duas notícias). A tarifa mínima de comboio
+     consta na tabela oficial mas parece inalterada desde Julho de 2022,
+     sem confirmação de revisão mais recente. Verificado a 04/09/2026. */
+  'Colombo': {operador:'SLTB / operadores privados (tarifas fixadas pela NTC) / Sri Lanka Railways', url:'https://www.ntc.gov.lk/Bus_info/bus_fare.php', actualizado:'2026-09-04', fonte:'https://www.ntc.gov.lk/Bus_info/bus_fare.php',
+    moeda:'LKR', nota:'A tarifa de comboio (3ª classe) consta na tabela oficial mas não parece ter mudado desde 2022, ao contrário da de autocarro, muito mais recente.',
+    bilhetes:[
+      {nome:'Autocarro, 1º estágio (mínimo)', preco:34, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Comboio, 3ª classe, mínimo', preco:20, unidade:'viagem', quando:'chegada', modos:['comboio']}
+    ]},
+  /* Não estava na tabela. Sistema fragmentado (CDA: Orange/Blue/Green;
+     PMA: Red Line); fontes contraditórias no tempo (aumento para Rs 100
+     em Junho de 2025 revertido dias depois para Rs 50; guias mais
+     recentes ainda indicam Rs 30/Rs 40 noutras linhas), sem valor único
+     confirmado actualmente, por isso fica só o operador. Verificado a
+     04/09/2026. */
+  'Islamabad': {operador:'CDA (Orange/Blue/Green) / PMA (Red Line)', url:'https://pma.punjab.gov.pk/', actualizado:'2026-09-04', fonte:'https://pma.punjab.gov.pk/',
+    moeda:'PKR', bilhetes:[]},
+  /* Não estava na tabela. Vientiane Capital State Bus Enterprise; fontes
+     contradizem-se sobre o preço por rota específica, e uma tarifa
+     promocional temporária já expirou, sem valor actual confirmado, por
+     isso fica só o operador. Verificado a 04/09/2026. */
+  'Vienciana': {operador:'Vientiane Capital State Bus Enterprise', url:'http://vientianebus.org.la/', actualizado:'2026-09-04', fonte:'http://vientianebus.org.la/',
+    moeda:'LAK', bilhetes:[]},
+  /* Não estava na tabela. MTCC opera o serviço urbano "Raajje Transport
+     Link" (RTL); o único valor encontrado (7 MVR) data do lançamento em
+     2022, sem confirmação de que se mantém em 2025/2026 apesar de
+     pesquisa dedicada, por isso fica só o operador. Verificado a
+     04/09/2026. */
+  'Malé': {operador:'MTCC (Raajje Transport Link)', url:'https://mtcc.mv/transport-services/', actualizado:'2026-09-04', fonte:'https://mtcc.mv/transport-services/',
+    moeda:'MVR', bilhetes:[]},
+  /* Não estava na tabela. Rede de cerca de 21 empresas privadas de
+     autocarros, sem operador único; fontes contradizem-se directamente
+     sobre que valor corresponde a autocarro vs. trólei, sem tarifário
+     oficial primário publicado, por isso fica só a referência ao
+     departamento municipal. Verificado a 04/09/2026. */
+  'Ulã Bator': {operador:'Departamento de Política de Transporte Público da cidade (rede de autocarros privados)', url:'https://en.ulaanbaatar-airport.mn/public-transportation-service', actualizado:'2026-09-04', fonte:'https://en.ulaanbaatar-airport.mn/public-transportation-service',
+    moeda:'MNT', bilhetes:[]},
+  /* Não estava na tabela. Yangon Bus Service (YBS), regulado pelo YRTC;
+     um aumento de tarifa anunciado a 14/08/2026 terá sido retirado dois
+     dias depois, sem confirmação de qual valor está mesmo em vigor, por
+     isso fica só o operador. Verificado a 04/09/2026. */
+  'Rangum': {operador:'Yangon Bus Service (YBS, regulado pelo YRTC)', url:'https://www.facebook.com/yrtc.yangon.myanmar/', actualizado:'2026-09-04', fonte:'https://www.facebook.com/yrtc.yangon.myanmar/',
+    moeda:'MMK', bilhetes:[]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
