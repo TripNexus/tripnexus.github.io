@@ -2536,6 +2536,76 @@ const TRANSPORTES_DESTINO = {
      isso fica só o operador. Verificado a 04/09/2026. */
   'Rangum': {operador:'Yangon Bus Service (YBS, regulado pelo YRTC)', url:'https://www.facebook.com/yrtc.yangon.myanmar/', actualizado:'2026-09-04', fonte:'https://www.facebook.com/yrtc.yangon.myanmar/',
     moeda:'MMK', bilhetes:[]},
+  /* Transportes locais para as 7 capitais do Lote 6 (países já cobertos
+     por outra cidade). Não estava na tabela. Bernmobil, rede tarifária
+     Libero; o bilhete de zona mais larga apareceu com números
+     contraditórios entre fontes (confusão com o passe diário), por isso
+     só entra a tarifa de curta distância, bem confirmada. Sobe para
+     3,00 CHF a partir de 13/12/2026. Verificado a 04/09/2026. */
+  'Berna': {operador:'Bernmobil (rede tarifária Libero)', url:'https://www.bernmobil.ch/de/abos-tickets/libero-tarifverbund', actualizado:'2026-09-04', fonte:'https://www.bernerzeitung.ch/libero-kosten-in-bern-steigen-linke-will-gegensteuern-982465352380',
+    moeda:'CHF', nota:'Sobe para 3,00 CHF a partir de 13 de Dezembro de 2026.',
+    bilhetes:[
+      {nome:'Kurzstrecke (curta distância, até 1,5 km)', preco:2.60, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']}
+    ]},
+  /* Não estava na tabela. EGO opera metro, Ankaray, Başkentray e
+     autocarros; subida em vigor desde 23/08/2026, confirmada por três
+     fontes noticiosas independentes. Verificado a 04/09/2026. */
+  'Ancara': {operador:'EGO (Ankara Elektrik, Gaz ve Otobüs İşletmeleri)', url:'https://www.ego.gov.tr/tr/sayfa/2098/tasima-ucretleri', actualizado:'2026-09-04', fonte:'https://www.cnnturk.com/ekonomi/ankara-otobus-ucretleri-ve-toplu-tasima-tarifesi-2026-ego-tam-ogrenci-ve-ogretmen-bileti-kac-tl-basiyor-3454688',
+    moeda:'TRY',
+    bilhetes:[
+      {nome:'Bilhete simples ("tam bilet")', preco:40, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']}
+    ]},
+  /* Não estava na tabela. Abu Dhabi Mobility (ex-ITC) opera os
+     autocarros públicos, pagos com o cartão Hafilat; estrutura tarifária
+     unificada desde Fevereiro de 2024, confirmada por fonte oficial e
+     vários órgãos de imprensa. Verificado a 04/09/2026. */
+  'Abu Dhabi': {operador:'Abu Dhabi Mobility (autocarros públicos, cartão Hafilat)', url:'https://admobility.gov.ae/en/pb-bus-service/hafilat-passes-for-hc', actualizado:'2026-09-04', fonte:'https://www.admobility.gov.ae/en/news/standardizes-tariffs-for-public-bus-services',
+    moeda:'AED', nota:'Tarifa base mais 0,05 AED por km, com tecto de 5 AED por viagem.',
+    bilhetes:[
+      {nome:'Viagem, tarifa mínima', preco:2, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Viagem, tecto máximo', preco:5, unidade:'viagem', quando:'chegada', modos:['autocarro']}
+    ]},
+  /* Não estava na tabela. OC Transpo opera autocarros e o O-Train
+     (Confederation Line); tarifas em vigor desde 1/1/2026, confirmadas
+     por três fontes independentes. Verificado a 04/09/2026. */
+  'Ottawa': {operador:'OC Transpo (autocarro + O-Train)', url:'https://www.octranspo.com/en/fares/', actualizado:'2026-09-04', fonte:'https://www.octranspo.com/en/news/article/fare-change-takes-effect-january-1-2026',
+    moeda:'CAD', nota:'O bilhete pago com cartão Presto é ligeiramente mais barato do que em dinheiro.',
+    bilhetes:[
+      {nome:'Bilhete simples, adulto (Presto)', preco:4.10, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']},
+      {nome:'Bilhete simples, adulto (dinheiro)', preco:4.15, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']}
+    ]},
+  /* Não estava na tabela. Três sistemas distintos: MRT Jakarta,
+     TransJakarta (BRT) e KRL Commuterline; tarifas confirmadas por
+     várias fontes noticiosas indonésias. Uma subida do TransJakarta para
+     Rp 5.000 estava em discussão mas não confirmada como aprovada, não
+     entra. Verificado a 04/09/2026. */
+  'Jacarta': {operador:'MRT Jakarta / TransJakarta / KRL Commuterline', url:'https://transjakarta.co.id/tarif', actualizado:'2026-09-04', fonte:'https://transjakarta.co.id/tarif',
+    moeda:'IDR', nota:'TransJakarta tem tarifa mais baixa na hora de ponta (05h-07h) do que no resto do dia.',
+    bilhetes:[
+      {nome:'TransJakarta, hora de ponta', preco:2000, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'TransJakarta, restante horário', preco:3500, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'KRL Commuterline, até 25 km', preco:3000, unidade:'viagem', quando:'chegada', modos:['comboio']}
+    ]},
+  /* Não estava na tabela. Transport Canberra opera autocarro e light
+     rail com bilhética unificada MyWay+; tarifas em vigor desde
+     10/1/2026, confirmadas por duas fontes jornalísticas independentes.
+     Verificado a 04/09/2026. */
+  'Camberra': {operador:'Transport Canberra (MyWay+)', url:'https://www.transport.act.gov.au/tickets-and-myway/fares', actualizado:'2026-09-04', fonte:'https://www.transport.act.gov.au/tickets-and-myway/fares',
+    moeda:'AUD', nota:'A tarifa na hora de ponta é mais cara do que fora dela.',
+    bilhetes:[
+      {nome:'Adulto, fora de ponta', preco:2.70, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
+      {nome:'Adulto, hora de ponta', preco:3.41, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']}
+    ]},
+  /* Não estava na tabela. Metlink (Greater Wellington Regional Council)
+     opera autocarro, comboio e ferry; tarifas em vigor desde 15/5/2026,
+     confirmadas pelo site oficial e por duas fontes jornalísticas
+     independentes. Verificado a 04/09/2026. */
+  'Wellington': {operador:'Metlink (Greater Wellington Regional Council)', url:'https://www.metlink.org.nz/getting-started/tickets-and-fares', actualizado:'2026-09-04', fonte:'https://www.metlink.org.nz/getting-started/tickets-and-fares',
+    moeda:'NZD', nota:'O bilhete com cartão Snapper é mais barato do que em dinheiro; a tarifa em dinheiro é sempre 1 zona.',
+    bilhetes:[
+      {nome:'Adulto, 1 zona, Snapper, fora de ponta', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro','comboio']},
+      {nome:'Adulto, 1 zona, dinheiro', preco:3.00, unidade:'viagem', quando:'chegada', modos:['autocarro','comboio']}
+    ]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
