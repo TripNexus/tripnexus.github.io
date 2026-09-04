@@ -2708,6 +2708,51 @@ const TRANSPORTES_DESTINO = {
      fiável, por isso fica só o operador. Verificado a 04/09/2026. */
   'Apia': {operador:'Autocarros privados (regulados pela Land Transport Authority)', url:'https://lta.gov.ws/fees/', actualizado:'2026-09-04', fonte:'https://lta.gov.ws/fees/',
     moeda:'WST', bilhetes:[]},
+  /* Últimas cidades novas desta fase (EUA e resto das Caraíbas). Não
+     estava na tabela. CTA (autocarro e "L"); aumento de 25 cêntimos em
+     vigor desde 1/2/2026, o primeiro desde 2018, confirmado por três
+     fontes noticiosas independentes. Verificado a 04/09/2026. */
+  'Chicago': {operador:'CTA (Chicago Transit Authority)', url:'https://www.transitchicago.com/fares/', actualizado:'2026-09-04', fonte:'https://blockclubchicago.org/2025/10/14/cta-to-raise-fares-25-cents-per-ride-as-fiscal-cliff-looms/',
+    moeda:'USD',
+    bilhetes:[
+      {nome:'Autocarro, bilhete simples', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'"L" (metro/comboio urbano), bilhete simples', preco:2.75, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. WMATA (Metro/Metrobus); o orçamento do ano
+     fiscal de 2026 confirma que não há aumento de tarifas. Verificado a
+     04/09/2026. */
+  'Washington D.C.': {operador:'WMATA (Metro/Metrobus)', url:'https://www.wmata.com/fares/basic.cfm', actualizado:'2026-09-04', fonte:'https://www.wmata.com/fares/basic.cfm',
+    moeda:'USD', nota:'A tarifa do Metrorail depende da distância percorrida e da hora do dia.',
+    bilhetes:[
+      {nome:'Metrobus, tarifa única', preco:2.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Metrorail, mínimo', preco:2.25, unidade:'viagem', quando:'chegada', modos:['metro']}
+    ]},
+  /* Não estava na tabela. Minibus privados ("H buses"), regulados pela
+     Traffic Safety and Public Service Drivers Board; reforma tarifária
+     de Novembro de 2024 confirmada pelo governo, mas a tabela integral
+     pós-reforma não foi encontrada, valores parciais e algo
+     contraditórios entre operadores/imprensa, por isso fica só o
+     operador. Verificado a 04/09/2026. */
+  'Basseterre': {operador:'Minibus privados ("H buses"), regulados pela Traffic Safety and Public Service Drivers Board', url:'https://trafficboard.gov.kn/', actualizado:'2026-09-04', fonte:'https://trafficboard.gov.kn/',
+    moeda:'XCD', bilhetes:[]},
+  /* Não estava na tabela. St. Lucia Minibus Association (minibus
+     privados); fontes contradizem-se sobre o valor exacto da rota mais
+     comum, sem confirmação de quando o tarifário foi actualizado, por
+     isso fica só o operador. Verificado a 04/09/2026. */
+  'Castries': {operador:'St. Lucia Minibus Association (minibus privados)', url:'https://sites.google.com/micoud.edu.lc/st-lucia-minibus-association/fare-for-various-routes', actualizado:'2026-09-04', fonte:'https://sites.google.com/micoud.edu.lc/st-lucia-minibus-association/fare-for-various-routes',
+    moeda:'XCD', bilhetes:[]},
+  /* Não estava na tabela. Minibus privados, tarifas aprovadas pelo
+     Cabinet via Ministry of Transport; o único valor encontrado é de
+     Setembro de 2022, sem confirmação de revisão mais recente, por isso
+     fica só o operador. Verificado a 04/09/2026. */
+  'Kingstown': {operador:'Minibus privados (tarifas aprovadas pelo Ministry of Transport)', url:'https://transport.gov.vc/transport/index.php?option=com_content&view=article&id=198:approval-for-bus-and-taxi-fares-in-svg', actualizado:'2026-09-04', fonte:'https://transport.gov.vc/transport/index.php?option=com_content&view=article&id=198:approval-for-bus-and-taxi-fares-in-svg',
+    moeda:'XCD', bilhetes:[]},
+  /* Não estava na tabela. PTSC (autocarros estatais) e maxi-taxis
+     privados por rota; a faixa de preços encontrada é genérica/
+     intercidades, sem valor único urbano confirmado para a cidade, por
+     isso fica só o operador. Verificado a 04/09/2026. */
+  'Porto de Espanha': {operador:'PTSC (Public Transport Service Corporation) / maxi-taxis', url:'https://ptsc.co.tt/routes-and-schedules/', actualizado:'2026-09-04', fonte:'https://ptsc.co.tt/routes-and-schedules/',
+    moeda:'TTD', bilhetes:[]},
 };
 
 /* Modos de transporte, para se ver de relance o que cada título cobre. */
