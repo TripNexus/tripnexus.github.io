@@ -391,14 +391,22 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete do aeroporto (linha A)', preco:4.00, unidade:'viagem', quando:'chegada', modos:['autocarro','aeroporto']},
       {nome:'Recarga de 10 viagens', preco:5.00, unidade:'10 viagens', quando:'chegada', modos:['autocarro']}
     ]},
-  /* O url antigo (task=view&id=1344) já não existe: o site da ANM mudou
-     para um portal Salesforce («anm.it/s/…») que monta tudo em JavaScript,
-     sem preços na página estática. As tarifas de Nápoles são geridas pelo
-     consórcio regional UnicoCampania, cujo site também não mostrou preço
-     nenhum ao `curl` (o achador só encontrou páginas de assinaturas
-     anuais). Verificado a 31/08/2026. */
-  'Nápoles': {operador:'ANM', url:'https://www.anm.it/s/biglietti-e-abbonamenti', actualizado:'2026-08-31', fonte:'https://www.anm.it/s/biglietti-e-abbonamenti',
-    bilhetes:[]},
+  /* O site novo da ANM («anm.it/s/…») e o do consórcio regional
+     UnicoCampania são portais Salesforce/Angular que montam tudo em
+     JavaScript, sem preços na página estática. Reconferido a 04/09/2026:
+     achado o domínio legado mas ainda oficial e activo `www2.anm.it`, cuja
+     página de bilhetes embute a tabela tarifária como imagem
+     (tabella_tariffe_05_24.jpg, lida visualmente). Os preços «Aziendale
+     ANM» valem só na rede urbana da ANM; «Integrato» é o título
+     UnicoCampania, que também serve a Metropolitana Linha 1. */
+  'Nápoles': {operador:'ANM', url:'https://www2.anm.it/index.php?Itemid=320&id=1344&option=com_content&task=view', actualizado:'2026-09-04', fonte:'https://www2.anm.it/images/stories/tabella_tariffe_05_24.jpg', moeda:'EUR',
+    nota:'Corsa singola A cobre funiculares e autocarros urbanos (título só ANM). A Metropolitana Linhas 1 e 6 exige o título integrado UnicoCampania.',
+    bilhetes:[
+      {nome:'Corsa singola A (funiculares, autocarros urbanos)', preco:1.30, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Corsa singola B, integrado (Metropolitana 1 e 6, autocarros suburbanos)', preco:1.80, unidade:'90 minutos', quando:'chegada', modos:['autocarro','metro']},
+      {nome:'Giornaliero, integrado', preco:5.40, unidade:'dia', quando:'chegada', modos:['autocarro','metro']},
+      {nome:'Mensile, integrado', preco:42.00, unidade:'mês', quando:'antes', modos:['autocarro','metro']}
+    ]},
   /* Lido na SL a 30/08/2026, nas três sub-páginas de «Visitor tickets».
      Resolve a contradição que a ronda anterior apanhou nos guias, que davam
      a viagem simples ora a 42 ora a 43 SEK: são 43. */
@@ -569,8 +577,23 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete Regional Turístico, 3 dias', preco:23.00, unidade:'3 dias', quando:'chegada', modos:['autocarro']},
       {nome:'Bilhete Regional Turístico, 7 dias', preco:36.00, unidade:'7 dias', quando:'chegada', modos:['autocarro']}
     ]},
-  'Faro': {operador:'Vamus Algarve', url:'https://www.vamusalgarve.pt/', actualizado:'2026-08-24', fonte:'https://www.vamusalgarve.pt/',
-    bilhetes:[]},
+  /* O PDF de tarifário (Tarifas_VAMUS_01-01-2023_v3.pdf) tem uma tabela
+     por zonas quilométricas para toda a rede do Algarve, mas nenhuma
+     zona corresponde claramente a «Faro cidade»: a tabela por distância
+     começa em «3 e 4 km», sem uma linha «até 2 km» própria, e a extracção
+     de texto embaralha as colunas dessa secção. Sem uma forma fiável de
+     saber que preço é o do bilhete avulso na cidade, prefere-se não
+     adivinhar.
+     Confirmou-se, isso sim, o «Passe Algarve», por comunicado oficial da
+     AMAL (autoridade de transportes do Algarve) de 21/08/2025, citação
+     directa: «"Passe Algarve" tem um preço de 40€ e é válido para todas
+     as carreiras de todas as linhas da rede VAMUS, à exceção do Serviço
+     AeroBus». */
+  'Faro': {operador:'Vamus Algarve', url:'https://vamus.pt/tarifario/', actualizado:'2026-09-04', fonte:'https://amal.pt/comunicacao/1110-passe-algarve-na-rede-vamus-avanca-ja-em-setembro', moeda:'EUR',
+    nota:'Só se confirmou o passe mensal para toda a rede regional (excepto o AeroBus do aeroporto); o bilhete avulso na cidade não está confirmado, por a tabela de zonas do operador não distinguir claramente qual é a de Faro.',
+    bilhetes:[
+      {nome:'Passe Algarve (toda a rede Vamus, excepto AeroBus)', preco:40.00, unidade:'mês', quando:'antes', modos:['autocarro']}
+    ]},
   /* A AzoresBus (Vale do Ave Açores) tomou conta de toda a rede de
      autocarros de São Miguel a 1 de Setembro de 2025, mas a página de
      tarifários dela é montada em JavaScript, sem preços no HTML estático.
@@ -668,8 +691,10 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* A página de tarifários da SMAT diz, no fundo, «Atualizado em
      19/01/2023»: um preço com quase quatro anos não passa no crivo deste
-     site. Fica só o operador, à espera de alguém confirmar o actual. */
-  'Portalegre': {operador:'SMAT (Serviços Municipalizados de Águas e Transportes de Portalegre)', url:'https://www.cm-portalegre.pt/municipes/servicos-municipalizados/transportes/tarifarios/', actualizado:'2026-08-31', fonte:'https://www.cm-portalegre.pt/municipes/servicos-municipalizados/transportes/tarifarios/',
+     site. Reconferido a 04/09/2026: a página continua com o mesmo
+     carimbo, sem PDF nem versão mais recente encontrada. Fica só o
+     operador, à espera de alguém confirmar o actual. */
+  'Portalegre': {operador:'SMAT (Serviços Municipalizados de Águas e Transportes de Portalegre)', url:'https://www.cm-portalegre.pt/municipes/servicos-municipalizados/transportes/tarifarios/', actualizado:'2026-09-04', fonte:'https://www.cm-portalegre.pt/municipes/servicos-municipalizados/transportes/tarifarios/',
     bilhetes:[]},
   'Évora': {operador:'Trevo (E-BUS)', url:'https://www.trevo.com.pt/', actualizado:'2026-08-31', fonte:'https://www.cm-evora.pt/wp-content/uploads/2025/12/5-Certidao-ponto-10.3-RPC-17-12-2025.pdf',
     nota:'Valores da deliberação camarária de 17/12/2025, em vigor desde 1/01/2026. A LinhAzul é a linha turística do centro histórico.',
@@ -683,8 +708,11 @@ const TRANSPORTES_DESTINO = {
      todos os outros operadores portugueses subiram os preços em Janeiro
      de 2026 (taxa nacional de actualização, 2,28 %). Sem uma versão 2026
      confirmada, mostrar aqueles números como actuais seria arriscar um
-     valor errado: melhor vazio do que errado. */
-  'Beja': {operador:'Rodoviária do Alentejo', url:'https://cm-beja.pt/pt/menu/521/transportes-urbanos-e-transportes-a-pedido--taxis-coletivos.aspx', actualizado:'2026-08-31', fonte:'https://cm-beja.pt/pt/menu/521/transportes-urbanos-e-transportes-a-pedido--taxis-coletivos.aspx',
+     valor errado: melhor vazio do que errado. Reconferido a 04/09/2026: a
+     página só liga aos mesmos dois PDFs de Julho de 2025 (um terceiro
+     ficheiro, «urbanas 2025.pdf», está morto, redirecciona para a página
+     inicial); continua sem versão 2026. */
+  'Beja': {operador:'Rodoviária do Alentejo', url:'https://cm-beja.pt/pt/menu/521/transportes-urbanos-e-transportes-a-pedido--taxis-coletivos.aspx', actualizado:'2026-09-04', fonte:'https://cm-beja.pt/pt/menu/521/transportes-urbanos-e-transportes-a-pedido--taxis-coletivos.aspx',
     bilhetes:[]},
   /* Bragança, Vila Real e Viseu (agora cidades normais, com voo PSO da
      Sevenair: ver `vooLimitado` acima) ficaram sem entrada em 31/08/2026,
@@ -702,9 +730,18 @@ const TRANSPORTES_DESTINO = {
      publica tarifário porque, precisamente, não há preço a cobrar. */
   'Bragança': {operador:'STUB (Serviço de Transportes Urbanos de Bragança)', url:'https://bus.cm-braganca.pt/', actualizado:'2026-09-01', fonte:'https://www.mdb.pt/noticia/plano-de-mobilidade-preve-novas-rotas-de-autocarros-e-mais-eletricos',
     bilhetes:[{nome:'Todas as linhas urbanas e rurais', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro']}]},
-  /* Idem: página de tarifários em JavaScript, sem PDF alternativo achado. */
-  'Vila Real': {operador:'Urbanos de Vila Real (TUVR)', url:'https://www.urbanosvilareal.pt/pt/tarifarios/', actualizado:'2026-09-01', fonte:'https://www.urbanosvilareal.pt/pt/tarifarios/',
-    bilhetes:[]},
+  /* As tabelas de preços da página não são geradas por JavaScript: estão
+     embutidas como imagens. A própria página confirma «Ajustamento
+     tarifário com efeitos a 1 de Janeiro de 2026», por isso é a tarifa
+     actual. Não se inclui o «Multiviagens» (7,65 €) por a página não
+     dizer quantas viagens dá: melhor omitir do que adivinhar. */
+  'Vila Real': {operador:'Urbanos de Vila Real (TUVR)', url:'https://www.urbanosvilareal.pt/pt/tarifarios/', actualizado:'2026-09-04', fonte:'https://www.urbanosvilareal.pt/pt/tarifarios/', moeda:'EUR',
+    nota:'Preços da zona 1 (a cidade). Em vigor desde 1/01/2026.',
+    bilhetes:[
+      {nome:'Bilhete de bordo', preco:1.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Bilhete de bordo, ida e volta', preco:2.30, unidade:'ida e volta', quando:'chegada', modos:['autocarro']},
+      {nome:'Passe mensal', preco:29.00, unidade:'mês', quando:'antes', modos:['autocarro']}
+    ]},
   /* O primeiro PDF achado dizia «TARIFÁRIOS PARA 2021»; o segundo,
      «TARIFÁRIOS 2025». Só o tarifário 2026 da própria Câmara de Viseu
      (publicado à parte dos horários, que mudaram a 1 de março de 2026)
@@ -836,12 +873,20 @@ const TRANSPORTES_DESTINO = {
       {nome:'10 a 20 km', preco:25.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'Mais de 60 km', preco:46.00, unidade:'viagem', quando:'chegada', modos:['autocarro']}
     ]},
-  /* Lido a 31/08/2026: a tarifa é por zona atravessada, mas a tabela por
-     zona está numa imagem/widget, não em texto. Achado real e sem número
-     inventado: o tecto de gasto (fare cap), esse sim em texto simples. */
-  'Auckland': {operador:'Auckland Transport', url:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', actualizado:'2026-08-31', fonte:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', moeda:'NZD',
-    nota:'A tarifa é por zonas atravessadas (até 4), e a tabela por zona não veio em texto simples. O que se confirmou foi o tecto de gasto: no máximo 20 NZD por dia a pagar por contactless, ou 50 NZD por 7 dias com o cartão AT HOP.',
-    bilhetes:[]},
+  /* Lido a 31/08/2026: a tarifa é por zona atravessada, mas pareceu estar
+     numa imagem/widget, não em texto. Reconferido a 04/09/2026: a tabela
+     está, sim, em texto simples, só que dentro de um atributo JSON de um
+     componente da página (`table-data='[...]'`), que um `curl` normal não
+     lê como tabela visível. Confirmados os preços com cartão AT HOP e a
+     dinheiro (mais caro; só se compra em máquina/balcão, não a bordo). */
+  'Auckland': {operador:'Auckland Transport', url:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', actualizado:'2026-09-04', fonte:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', moeda:'NZD',
+    nota:'A tarifa é por zonas atravessadas (até 4). O tecto de gasto: no máximo 20 NZD por dia a pagar por contactless, ou 50 NZD por 7 dias com o cartão AT HOP.',
+    bilhetes:[
+      {nome:'Cartão AT HOP ou contactless, 1 zona', preco:3.00, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']},
+      {nome:'Cartão AT HOP ou contactless, 4 ou mais zonas', preco:7.90, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']},
+      {nome:'Dinheiro (só em máquina/balcão), 1 zona', preco:4.00, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']},
+      {nome:'Dinheiro (só em máquina/balcão), 4 ou mais zonas', preco:10.00, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']}
+    ]},
   /* Lido no MTR a 30/08/2026. A tarifa normal do metro é por distância,
      estação a estação, e o operador não publica nenhum valor único que se
      possa pôr aqui: ficam os dois títulos de preço fixo, que são os que
@@ -887,8 +932,12 @@ const TRANSPORTES_DESTINO = {
       {nome:'Cartão turístico, 3 dias (com caução)', preco:500, unidade:'3 dias', quando:'chegada', modos:['metro']}
     ]},
   /* A página é um formulário de procura por estação (origem/destino), sem
-     tabela nenhuma na página estática. Verificado a 31/08/2026. */
-  'Banguecoque': {operador:'BTS SkyTrain', url:'https://www.bts.co.th/', actualizado:'2026-08-31', fonte:'https://www.bts.co.th/', moeda:'THB',
+     tabela nenhuma na página estática. Reconferido a 04/09/2026: o mapa
+     tarifário continua interactivo (clicar estação a estação), sem tabela
+     nem endpoint de dados achado; os valores que circulam por fontes
+     secundárias (16-59 THB conforme distância) não vieram confirmados
+     numa página oficial. */
+  'Banguecoque': {operador:'BTS SkyTrain', url:'https://www.bts.co.th/', actualizado:'2026-09-04', fonte:'https://www.bts.co.th/', moeda:'THB',
     bilhetes:[]},
   /* Dubai não estava na tabela. Lido na RTA a 30/08/2026. É por zonas (são
      sete), e o preço depende de quantas atravessa, por isso ficam as três
@@ -906,8 +955,9 @@ const TRANSPORTES_DESTINO = {
      não o operador em si) confirma o tecto de gasto diário; a viagem
      avulsa (2 QAR, citada em vários guias) não veio confirmada em nenhuma
      página do próprio Qatar Rail, que recusou o `curl`. Fica só o tecto,
-     não um bilhete. Verificado a 31/08/2026. */
-  'Doha': {operador:'Qatar Rail (Doha Metro)', url:'https://visitqatar.com/intl-en/plan-your-trip/getting-around/doha-metro', actualizado:'2026-08-31', fonte:'https://visitqatar.com/intl-en/plan-your-trip/getting-around/doha-metro',
+     não um bilhete. Reconferido a 04/09/2026: `qr.com.qa` continua
+     inacessível (falha de ligação repetida), mesmo resultado. */
+  'Doha': {operador:'Qatar Rail (Doha Metro)', url:'https://visitqatar.com/intl-en/plan-your-trip/getting-around/doha-metro', actualizado:'2026-09-04', fonte:'https://visitqatar.com/intl-en/plan-your-trip/getting-around/doha-metro',
     moeda:'QAR', nota:'O Visit Qatar (autoridade de turismo) confirma um tecto de 6 QAR por dia na classe Standard, sem limite de viagens; o valor de cada viagem avulsa não veio confirmado numa página do operador.',
     bilhetes:[]},
   'Miami': {operador:'Miami-Dade Transit', url:'https://www.miamidade.gov/global/transportation/transit-pass.page', actualizado:'2026-08-24', fonte:'https://www.miamidade.gov/global/transportation/transit-pass.page', moeda:'USD',
@@ -996,10 +1046,20 @@ const TRANSPORTES_DESTINO = {
   'Marraquexe': {operador:'ALSA', url:'https://www.alsa.ma/en', actualizado:'2026-08-31', fonte:'https://www.alsa.ma/en',
     moeda:'MAD', bilhetes:[]},
   /* O url antigo redirecciona para metrohanoi.vn; a página das tarifas
-     (afc-tickets/metro-fares-1/) monta os preços em JavaScript. Verificado
-     a 31/08/2026. */
-  'Hanói': {operador:'Hanoi Metro', url:'https://metrohanoi.vn/afc-tickets/metro-fares-1/', actualizado:'2026-08-31', fonte:'https://metrohanoi.vn/afc-tickets/metro-fares-1/', moeda:'VND',
-    bilhetes:[]},
+     (afc-tickets/metro-fares-1/) monta os preços em JavaScript, mas
+     reconferido a 04/09/2026: embute dois avisos oficiais em imagem (um
+     por linha, 2A Cát Linh-Hà Đông e 3.1 Nhổn-Ga Hà Nội), decisão do
+     Comité Popular de Hanói n.º 3316/QĐ-UBND, em vigor desde 01/08/2025.
+     Os títulos diário/semanal/mensal são os mesmos nas duas linhas; o
+     bilhete avulso varia por distância percorrida (dinheiro, sem cartão). */
+  'Hanói': {operador:'Hanoi Metro', url:'https://metrohanoi.vn/afc-tickets/metro-fares-1/', actualizado:'2026-09-04', fonte:'https://metrohanoi.vn/wp-content/uploads/2025/09/gia-ve-tuyen-2-1024x768.jpg', moeda:'VND',
+    nota:'O bilhete avulso em dinheiro varia por distância (9.000 a 19.000 VND consoante o percurso). O passe mensal listado é o preço geral (não o reduzido, reservado a estudantes/trabalhadores locais).',
+    bilhetes:[
+      {nome:'Bilhete avulso (dinheiro, percurso mais curto)', preco:9000, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Bilhete avulso (dinheiro, percurso mais longo)', preco:19000, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Vé ngày (passe diário)', preco:40000, unidade:'dia', quando:'chegada', modos:['metro']},
+      {nome:'Vé 01 tháng (passe mensal, geral)', preco:280000, unidade:'mês', quando:'antes', modos:['metro']}
+    ]},
   /* Segunda fase do projecto das capitais do mundo: tarifas locais para as
      cidades que entraram por lotes geográficos. Bilbau não estava na
      tabela. Tarifário CTB confirmado por três pesquisas cruzadas a
@@ -1225,9 +1285,20 @@ const TRANSPORTES_DESTINO = {
      contraditórias sobre o valor actual (7, 9, 12, 14 ou 18 lei conforme
      a fonte e a data, com sucessivas subidas anunciadas entre Set/2025 e
      Mai/2026), sem forma clara de saber qual está em vigor a 03/09/2026.
-     Fica só o operador, sem inventar qual dos números é o certo. */
-  'Bucareste': {operador:'STB (Societatea de Transport București) / Metrorex', url:'https://www.stbsa.ro/', actualizado:'2026-09-03', fonte:'https://www.stbsa.ro/',
-    moeda:'RON', bilhetes:[]},
+     Reconferido a 04/09/2026: o `stbsa.ro` antigo redirecciona para o
+     domínio actual `stb.ro`, cuja página de tarifário («Tarife») resolve
+     a contradição com a tabela oficial, lida directamente da página (não
+     de imprensa). O Metrorex continua sem site acessível nesta sessão,
+     mas os títulos «integrado» abaixo já incluem o metro. */
+  'Bucareste': {operador:'STB (Societatea de Transport București) / Metrorex', url:'https://www.stb.ro/tarife', actualizado:'2026-09-04', fonte:'https://www.stb.ro/tarife',
+    moeda:'RON',
+    nota:'A «Card călătorie turist» é o título integrado (superfície + metro + comboio Gara de Nord–Aeroporto Otopeni) pensado para visitantes.',
+    bilhetes:[
+      {nome:'1 viagem, só superfície, 90 min', preco:3, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'1 viagem, superfície + metro, 120 min', preco:7, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']},
+      {nome:'Card călătorie turist, 24 horas', preco:20, unidade:'24 horas', quando:'chegada', modos:['autocarro','metro']},
+      {nome:'Card călătorie turist, 72 horas', preco:40, unidade:'72 horas', quando:'chegada', modos:['autocarro','metro']}
+    ]},
   /* Não estava na tabela. Mosgortrans (autocarro/eléctrico/trólei) e
      Mosmetro (metro) partilham o cartão Troika. Preços em vigor desde 2
      de Janeiro de 2026, confirmados por três fontes de imprensa

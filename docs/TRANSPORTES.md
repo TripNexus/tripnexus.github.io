@@ -240,7 +240,7 @@ que o ambiente desta caixa dá: `curl`, `ferramentas/achar.py` e o
   tecto, no mesmo espírito do fare cap de Auckland, sem inventar o preço
   do bilhete.
 
-## Estado em 03 de Setembro de 2026
+## Estado em 04 de Setembro de 2026
 
 268 cidades no site. Começámos, na primeira ronda, com 17 na tabela e
 nenhuma com data de conferência.
@@ -253,10 +253,33 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 193 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 199 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
-| **Só operador**, sem valores | 39 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
+| **Só operador**, sem valores | 33 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
 | **Sem operador** | 36 | ver `CIDADES` em `assets/js/data.js` |
+
+### Ronda das «só operador», a 04 de Setembro: 39 para 33
+
+Seis cidades saíram de «só operador» para confirmadas, todas com fonte
+oficial re-encontrada ou re-lida (nenhum preço inventado; nas cidades
+sem sucesso, fica dito porquê):
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Vila Real | Página em JavaScript, sem PDF alternativo | As tabelas afinal não são JS: são imagens embutidas na página, lidas visualmente. Confirmado «ajustamento tarifário com efeitos a 1/01/2026»: bilhete de bordo 1,25 €, ida e volta 2,30 €, passe mensal 29 € |
+| Faro | Bloqueado pela política de rede do ambiente anterior | `vamus.pt` já acessível. O PDF de tarifas tem uma tabela de zonas quilométricas ambígua (sem linha «até 2 km» clara, texto embaralhado na extracção), por isso não se arriscou o bilhete avulso; confirmou-se só o «Passe Algarve» (40 €/mês, toda a rede excepto AeroBus), por comunicado oficial da AMAL |
+| Nápoles | Site novo (Salesforce) sem preços estáticos | Achado o domínio legado `www2.anm.it`, ainda oficial, com a tabela tarifária em imagem: corsa singola 1,30 €/1,80 €, giornaliero 5,40 €, mensile 42 € |
+| Bucareste | Fontes jornalísticas contraditórias (7 a 18 lei) | O `stbsa.ro` redirecciona para o domínio actual `stb.ro`, cuja página oficial de tarifário resolve a contradição: 3 lei (só superfície), 7 lei (com metro), cartão turista 20/40 lei (24h/72h) |
+| Hanói | Página em JavaScript, sem preços estáticos | A página embute dois avisos oficiais em imagem (decisão do Comité Popular de Hanói, Ago/2025): bilhete avulso 9.000-19.000 VND consoante distância, diário 40.000 VND, mensal 280.000 VND |
+| Auckland | Tabela por zona só numa imagem/widget, aparentemente | A tabela está em texto simples, só que dentro de um atributo JSON de um componente da página, invisível a um `curl` normal: 1 zona 3 NZD (AT HOP) / 4 NZD (dinheiro), 4+ zonas 7,90 NZD / 10 NZD |
+
+Ficaram sem preço, com a razão registada no comentário de cada entrada
+em `assets/js/transportes.js`: **Portalegre** e **Beja** (reconfirmado
+que as únicas fontes achadas continuam desactualizadas: Portalegre com
+o mesmo carimbo «Atualizado em 19/01/2023», Beja com PDFs de Julho de
+2025, antes do ajuste nacional de Janeiro de 2026); **Telavive**, **Doha**,
+**Banguecoque** e **Malé** (sites oficiais inacessíveis ou sem tabela
+estática nesta ronda também).
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 

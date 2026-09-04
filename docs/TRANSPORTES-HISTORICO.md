@@ -322,3 +322,30 @@ pelos dados: `rodalentejo.pt` (Beja) e `vamus.pt` (Faro) devolvem 403 do
 proxy por não estarem na lista de hosts permitidos, não do site em si.
 Vila Real e Portalegre continuam com tarifário só em JavaScript, sem PDF
 alternativo achado, tal como já se tinha confirmado numa ronda anterior.
+
+### Ronda das «só operador», a 04 de Setembro: 39 para 33
+
+`vamus.pt` (Faro) já não está bloqueado pelo proxy desta sessão: o
+403 anterior era mesmo da política de rede, não do site. Seis cidades
+ficaram confirmadas nesta ronda, cada uma verificada de forma
+independente antes de entrar (imagem lida a olho, texto da página
+oficial conferido a `grep`, nunca só o relatório da pesquisa):
+
+| Cidade | Estava | Ficou |
+|---|---|---|
+| Vila Real | Tarifário «só em JavaScript» (ronda anterior) | Afinal não é JavaScript: as tabelas estão embutidas na página como imagens PNG em base64, descodificadas e lidas a olho. Confirma «ajustamento tarifário com efeitos a 1/01/2026»: bordo 1,25 €, ida e volta 2,30 €, mensal 29 € |
+| Faro | Bloqueado pelo proxy (403) | `vamus.pt` já acessível. O PDF de tarifas (`Tarifas_VAMUS_01-01-2023_v3.pdf`) tem uma tabela de zonas quilométricas para toda a rede do Algarve, mas nenhuma linha corresponde claramente a «até 2 km»: a tabela começa em «3 e 4 km», e uma primeira leitura do texto extraído embaralhou as colunas e atribuiu mal os números a essa zona. Corrigido a tempo: fica só o «Passe Algarve» (40 €/mês, toda a rede excepto AeroBus), citação directa de um comunicado oficial da AMAL de 21/08/2025 |
+| Nápoles | Site novo (Salesforce) sem preços estáticos | Achado o domínio legado `www2.anm.it`, ainda oficial, com a tabela tarifária como imagem (`tabella_tariffe_05_24.jpg`); lida a olho em duas metades ampliadas para confirmar cada linha: corsa singola A 1,30 €, B integrado 1,80 €, giornaliero integrado 5,40 €, mensile integrado 42 € |
+| Bucareste | Fontes jornalísticas contraditórias (7 a 18 lei) | `stbsa.ro` redirecciona para o domínio actual `stb.ro`; a página oficial de tarifário («Tarife») resolve a contradição, confirmada por `grep` directo ao HTML: 3 lei (só superfície, 90 min), 7 lei (com metro, 120 min), «Card călătorie turist» 20 lei (24h) / 40 lei (72h, integrado com o comboio do aeroporto) |
+| Hanói | Página em JavaScript, sem preços estáticos | A página embute dois avisos oficiais em imagem, um por linha (2A e 3.1), decisão do Comité Popular de Hanói de Agosto de 2025: bilhete avulso 9.000-19.000 VND consoante a distância, diário 40.000 VND, mensal (preço geral, não o reduzido de estudante) 280.000 VND. As duas linhas partilham a mesma tabela de diário/semanal/mensal |
+| Auckland | Tabela por zona só numa imagem/widget (ronda anterior) | Afinal está em texto simples, só que dentro de um atributo `table-data` (JSON) de um componente da página, que um `curl` normal não lê como tabela visível; achada com uma pesquisa de texto à volta do valor já confirmado do tecto («$0.95»). Confirmados os preços com AT HOP e a dinheiro, para 1 zona e para 4+ zonas |
+
+Ficaram sem preço, com a razão registada no comentário de cada entrada:
+**Portalegre** (a página da SMAT continua com o mesmo carimbo
+«Atualizado em 19/01/2023», confirmado de novo por `grep` ao HTML: um
+preço com quase quatro anos não passa no crivo deste site) e **Beja**
+(os únicos PDFs achados continuam datados de Julho de 2025, antes do
+ajuste nacional de Janeiro de 2026; um terceiro ficheiro sugerido pela
+página, «urbanas 2025.pdf», está morto, redirecciona para a página
+inicial). **Telavive**, **Doha**, **Banguecoque** e **Malé** continuam
+sem página oficial acessível ou sem tabela estática nesta ronda.
