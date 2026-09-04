@@ -253,10 +253,10 @@ contagem, não os nomes todos: a lista completa está sempre em
 
 | | Cidades | |
 |---|---:|---|
-| Com tarifas **confirmadas** | 176 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
+| Com tarifas **confirmadas** | 183 | ver `node ferramentas/transportes.js` para a lista completa; cresce lote a lote na fase 2 (ver secção abaixo), deixou de caber aqui |
 | Com tarifas **por reconferir** | 0 | nenhuma |
 | **Só operador**, sem valores | 31 | ver `node ferramentas/transportes.js`; cresce lote a lote, deixou de caber aqui |
-| **Sem operador** | 61 | ver `CIDADES` em `assets/js/data.js` |
+| **Sem operador** | 54 | ver `CIDADES` em `assets/js/data.js` |
 
 ### As 14 cidades acrescentadas a 03 de Setembro: aeroportos que faltavam
 
@@ -796,3 +796,10 @@ Caso comum a várias destas cidades: fontes contraditórias sobre se um
 aumento de tarifa anunciado chegou mesmo a entrar em vigor (Rangum,
 Islamabad) ou sobre o valor exacto por rota (Ulã Bator, Vienciana), sem
 forma de saber qual está correcto à data da verificação.
+
+**Lote 11, 04 de Setembro: as 7 capitais do Lote 6 (7 cidades, todas
+com tarifa).** Berna, Ancara, Abu Dhabi, Ottawa, Jacarta, Camberra e
+Wellington entram com tarifas confirmadas, todas com boa confiança
+(países bem documentados, com sistemas de transporte formais e
+noticiados). Jacarta tem três sistemas em paralelo (MRT, TransJakarta
+BRT, KRL Commuterline), cada um com tarifa própria.
