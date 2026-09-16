@@ -392,13 +392,13 @@ async function actualizarVoosReais(ctx){
    «como este preço mudou nas últimas 8 semanas» sem o termos andado a
    registar nós próprios, o que nunca aconteceu. O que já existe, ligado ao
    mesmo `/calendario` que alimenta a grelha de datas, é o preço real de
-   OUTRAS datas de partida deste mês, para a mesma duração de viagem — uma
+   OUTRAS datas de partida deste mês, para a mesma duração de viagem: uma
    pergunta diferente («compensa mudar de dia?», em vez de «subiu ou
    desceu?»), mas real, e mais útil para decidir.
 
    Só troca a curva sintética por esta quando há pontos reais que cheguem
    para dizer alguma coisa (5 ou mais dias com tarifa este mês); com menos,
-   fica a estimativa, que por isso nunca deixa de existir — é o recurso de
+   fica a estimativa, que por isso nunca deixa de existir: é o recurso de
    último caso, não uma coisa que se apaga. */
 async function actualizarEvolucaoReal(ctx, precoHoje){
   const bloco = document.getElementById('bloco-evolucao');
@@ -463,7 +463,7 @@ async function actualizarEvolucaoReal(ctx, precoHoje){
    A viagem multi-cidade nunca tinha ligação ao backend: todos os voos e
    todo o alojamento vinham sempre do motor local. Aqui o real entra perna
    a perna e estadia a estadia, e o que não vier real fica na estimativa já
-   calculada por `desenharResultadosMulti` — nunca em bloco, para uma cidade
+   calculada por `desenharResultadosMulti`: nunca em bloco, para uma cidade
    sem tarifa registada não apagar as que têm. */
 async function vooRealDeTroco(origem, destino, ida, adultos, criancas, classe){
   const base = (window.TRIPNEXUS_API || '').replace(/\/$/, '');

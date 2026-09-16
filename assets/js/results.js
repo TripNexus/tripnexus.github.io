@@ -409,7 +409,7 @@ function montarAbas(sec){
 /* ── resultados: várias cidades ──────────────────────────────── */
 /* Cotação mais barata do motor local para UM troço (não a soma da viagem
    inteira): é o que serve de recurso, perna a perna, enquanto o real não
-   chega — ver `RESUMO_MULTI` e `actualizarMultiReais` em live.js. */
+   chega; ver `RESUMO_MULTI` e `actualizarMultiReais` em live.js. */
 function cotacaoMaisBarataTroco(o, d, ida, classe, pax){
   let melhor = null;
   for(const c of parceirosDe('voo')){

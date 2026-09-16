@@ -1073,8 +1073,8 @@ async function ofertas(url, env){
 
    Ao contrário de `/ofertas` (que compara o mês inteiro e usa a mediana
    como termo de comparação), aqui as datas são as que o utilizador
-   escolheu na pesquisa — o mesmo princípio do `/voos`, «as datas são as do
-   utilizador» — por isso usa-se o mesmo `prices_for_dates`, só que uma vez
+   escolheu na pesquisa: o mesmo princípio do `/voos`, «as datas são as do
+   utilizador», por isso usa-se o mesmo `prices_for_dates`, só que uma vez
    por destino, guardando apenas o mais barato de cada um.
 
    Um Worker no plano gratuito da Cloudflare tem um limite de sub-pedidos
@@ -1082,7 +1082,7 @@ async function ofertas(url, env){
    só chamada não chega com margem confortável. Por isso este endpoint
    aceita `destinos` em qualquer quantidade e é o `search.js` que reparte
    as 95 em grupos mais pequenos e chama isto várias vezes em paralelo,
-   juntando os resultados do lado do site — nenhuma cidade fica de fora,
+   juntando os resultados do lado do site: nenhuma cidade fica de fora,
    e nenhuma invocação se aproxima do limite. */
 async function explorar(url, env){
   const q = url.searchParams;
