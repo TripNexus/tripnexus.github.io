@@ -1078,10 +1078,11 @@ async function ofertas(url, env){
    por destino, guardando apenas o mais barato de cada um.
 
    Um Worker no plano gratuito da Cloudflare tem um limite de sub-pedidos
-   por invocação (50, à data desta escrita); com 95 cidades no site, uma
-   só chamada não chega com margem confortável. Por isso este endpoint
-   aceita `destinos` em qualquer quantidade e é o `search.js` que reparte
-   as 95 em grupos mais pequenos e chama isto várias vezes em paralelo,
+   por invocação (50, à data desta escrita); com as centenas de cidades
+   que o site já tem hoje, uma só chamada não chega com margem
+   confortável. Por isso este endpoint aceita `destinos` em qualquer
+   quantidade e é o `search.js` que reparte a lista em grupos mais
+   pequenos (GRUPO = 40 lá) e chama isto várias vezes em paralelo,
    juntando os resultados do lado do site: nenhuma cidade fica de fora,
    e nenhuma invocação se aproxima do limite. */
 async function explorar(url, env){
