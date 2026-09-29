@@ -53,12 +53,21 @@ Só a segunda permite saber se a informação envelheceu.
 Cada bilhete pode ainda levar `url`, para quando o título se compra numa
 página própria; sem ele, o botão «Comprar» usa o `comprar` da cidade.
 
-## A ronda mensal
+## A ronda semanal, automática desde 29 de Setembro de 2026
 
 `TRANSPORTES_REVISAO_DIAS` está em **30 dias**. Passado esse prazo o site
 deixa de dizer «✅ Confirmado a …» e passa a dizer «⚠️ … pode ter mudado
 desde então», a amarelo, com a ligação ao operador. O utilizador vê o aviso;
 não fica a pensar que o número é de hoje.
+
+Há uma Rotina (trigger) agendada para todas as segundas-feiras às 07:47
+(hora de Lisboa) que corre esta ronda sozinha: identifica as cidades «por
+rever», reconfirma cada uma directamente na fonte primária guardada em
+`url`, actualiza o que mudou, deixa por rever o que não conseguir
+confirmar com confiança, e envia tudo pelo fluxo normal (PR, merge,
+rebase). Não inventa números: uma cidade sem confirmação clara fica
+«por rever» para a ronda seguinte, tal como aconteceu com Viena a
+29/09/2026 (ver secção abaixo).
 
 ```
 node ferramentas/transportes.js          # o que está por rever
@@ -937,3 +946,43 @@ todas por uma razão documentada, não por falta de pesquisa:
 
 Qualquer uma destas pode voltar a entrar numa próxima revisão, se
 surgir um operador formal e um tarifário citável que hoje não existe.
+
+## Primeira ronda de reconfirmação, a 29 de Setembro de 2026: 30 para 1
+
+Passados 25 dias desde a última revisão geral (16 de Setembro), o lote de
+cidades confirmadas a 19 e a 24 de Agosto ultrapassou os 30 dias e entrou
+em «por rever»: 30 cidades ao todo. Cada uma foi reconfirmada directamente
+na fonte primária guardada em `url` (três pesquisas em paralelo, uma por
+lote de 10, cada uma com instrução explícita de citar o texto exacto da
+página, não confiar em memória), e as mudanças relatadas foram depois
+reconfirmadas outra vez, eu próprio, antes de entrarem no ficheiro.
+
+**29 de 30 reconfirmadas.** 25 sem alteração (só a data mudou): Ponta
+Delgada, Lisboa, Porto, Barcelona, Dublin, Berlim, Hamburgo, Amesterdão,
+Zurique, Genebra, Budapeste, Atenas, Miami, Los Angeles, São Francisco,
+Orlando, Boston, Toronto, Montreal, São Paulo, Rio de Janeiro, Sydney, e
+mais três com um pormenor à parte apesar do preço confirmado: Veneza (o
+`url` guardado nunca teve os preços, só tarifários combinados; corrigido
+para a página certa do mesmo operador), Varsóvia (os dois bilhetes eram
+afinal da zona 1+2, não só zona 1; preço certo, etiqueta corrigida) e
+Salvador (o domínio antigo `ccrmetrobahia.com.br` passou a redireccionar
+para `trilhos.motiva.com.br`, rebranding do operador; `url` actualizado).
+
+**4 com subida real de preço**, confirmada com data e razão:
+
+| Cidade | Estava | Ficou | Razão |
+|---|---|---|---|
+| Edimburgo | Autocarro 2,00 £ | 2,40 £ | Subida de 22/02/2026: autocarro alinhado com o eléctrico |
+| Florença | 90 min: 1,70 € / 2,50 € | 2,00 € / 3,00 € | Tarifário «Nuove tariffe AT 2026», em vigor desde 1 de Agosto |
+| Bruxelas | Avulsa 2,60 € / dia 8,00 € | 2,70 € / 9,50 € | Reestruturação para «Brupass»; a tarifa por aproximação (2,40 €) não mudou |
+| Copenhaga | Simples 30 DKK | 24 DKK | Preço mais baixo confirmado na página oficial de bilhetes simples |
+
+**1 ficou por rever: Viena.** A página antiga (`news/new-fare-structure...`)
+dá erro 404. As páginas de bilhetes que restam mostram preços «from X» sem
+indicar se é tarifa normal ou reduzida, e a tabela completa está atrás de
+um login na loja da WienMobil, impossível de passar nesta ronda. Vários
+jornais austríacos confirmam os valores já guardados (3,20 € / 10,20 € /
+28,90 €) como a tarifa normal de 2026, mas por não serem fonte primária
+directa, `actualizado` não foi tocado: a cidade continua a avisar o
+utilizador, e fica para a ronda semanal seguinte tentar de novo, com mais
+tempo para passar o login da loja oficial.
