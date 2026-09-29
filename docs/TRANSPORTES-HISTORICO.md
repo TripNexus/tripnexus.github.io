@@ -429,3 +429,52 @@ decisiva do que nas rondas anteriores:
 | Cancún, México | O IMOVEQROO negou publicamente (24/11/2025) qualquer aumento na rede tradicional, mas o novo sistema MOBI (em implementação rota a rota) já tem tarifa oficial anunciada (15 MXN geral, 10 MXN social). Sem saber que rotas já mudaram para o MOBI, não há forma de dizer qual tarifa se aplica hoje a uma rota qualquer. Fica sem preço |
 | Acra, Gana | Nem a MMTL (`mmt.gov.gh`, `mmtgh.com`) nem a GPRTU publicam tarifário consolidado online; o GPRTU fixa só percentagens de ajuste, os valores ficam afixados fisicamente nas estações. Uma nova subida de 30% foi pedida ao Ministério dos Transportes a 3/09/2026, ainda por decidir |
 | Asgabate, Turquemenistão | A secção de tarifário do site oficial (`ayauk.gov.tm`) continua inacessível nesta sessão; o valor mais citado (0,50 manat) só aparece em sites de turismo, nunca numa fonte oficial |
+
+### Primeira ronda de reconfirmação por prazo, a 29 de Setembro de 2026
+
+Não é uma ronda «só operador»: são 30 cidades que já tinham tarifas
+confirmadas (lote de 19 e 24 de Agosto), agora fora do prazo de 30 dias
+de `TRANSPORTES_REVISAO_DIAS`. Três pesquisas em paralelo, uma por lote
+de 10 cidades, cada uma com instrução de citar o texto exacto da fonte,
+nunca confiar em memória; as quatro mudanças relatadas foram depois
+reconfirmadas eu próprio, directamente na fonte, antes de entrarem no
+ficheiro.
+
+| Cidade | Estava | É | Nota |
+|---|---|---|---|
+| Edimburgo | autocarro 2,00 £ | **2,40 £** | subida de 22/02/2026, confirmada em `lothianbuses.com/tickets/` |
+| Florença | 90 min antes 1,70 € / a bordo 2,50 € | **2,00 € / 3,00 €** | tarifário «Nuove tariffe AT 2026», em vigor desde 1/08/2026, confirmado no site e no PDF oficial |
+| Bruxelas | avulsa 2,60 € / dia 8,00 € | **2,70 € / 9,50 €** | reestruturação para «Brupass»; tarifa por aproximação (2,40 €) sem alteração |
+| Copenhaga | simples 30 DKK | **24 DKK** | preço mais baixo confirmado em `publictransport.dk/tickets/single-tickets` |
+
+Três correcções de proveniência, sem alteração de preço:
+
+| Cidade | Problema | Correcção |
+|---|---|---|
+| Veneza | `url` guardado (`integrated-fares-0`) nunca teve os preços destes bilhetes, só tarifários combinados com outros operadores | Trocado para `avm.avmspa.it/en/content/venice-urban-services-0`, a página certa do mesmo operador, com os 5 preços confirmados |
+| Varsóvia | Os dois bilhetes guardados como «zona 1» são afinal «zona 1+2»; existe uma versão de 24 h só da zona 1, mais barata (15 zł), que não estava representada | Preço confirmado, etiqueta corrigida para «zona 1+2» |
+| Salvador | O domínio antigo `ccrmetrobahia.com.br` passou a redireccionar (301) para `trilhos.motiva.com.br`, rebranding do operador de «CCR» para «Motiva» | `url` e `fonte` actualizados para o domínio novo; tarifa (R$ 4,10) sem alteração |
+
+25 cidades ficaram sem alteração nenhuma, só com a data de `actualizado`
+posta em 29/09/2026: Ponta Delgada, Lisboa, Porto, Barcelona, Dublin,
+Berlim, Hamburgo, Amesterdão, Zurique, Genebra, Budapeste, Atenas,
+Miami, Los Angeles, São Francisco, Orlando, Boston, Toronto, Montreal,
+São Paulo, Rio de Janeiro, Sydney, e as três acima (Veneza, Varsóvia,
+Salvador).
+
+**Viena ficou por rever.** A página antiga (`news/new-fare-structure-
+from-1-january-2026`) dá erro 404. As páginas de bilhetes que restam
+(`tickets/single-journey`, `tickets/24-hours-vienna`,
+`tickets/7-days-vienna`) mostram preços «from X» sem indicar se é
+tarifa normal ou reduzida; a tabela completa está atrás de um login na
+loja da WienMobil (`shop.wienmobil.at`), que não foi possível passar
+mesmo com um browser real. Três jornais austríacos (meinbezirk.at,
+heute.at, exxpress.at) confirmam os valores já guardados (3,20 € /
+10,20 € / 28,90 €) como a tarifa normal de 2026, mas por não serem
+fonte primária directa, `actualizado` não foi tocado: fica «por rever»
+para a próxima ronda tentar de novo. `url` foi trocado para a página
+que ainda está viva (`tickets/single-journey`), em vez da que dá 404.
+
+A partir desta ronda, esta reconfirmação passa a ser semanal e
+automática (Rotina agendada às segundas-feiras, 07:47 hora de Lisboa;
+ver a secção «A ronda semanal» em [`TRANSPORTES.md`](TRANSPORTES.md)).
