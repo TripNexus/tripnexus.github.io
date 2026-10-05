@@ -133,7 +133,7 @@ const TRANSPORTES_DESTINO = {
      aeroportos») já não é verdade em nenhuma das duas metades: há dois
      preços de viagem (2,55 € no metro e no RER, 2,05 € no autocarro) e o
      aeroporto tem título próprio, a 14 €. Era o erro mais caro da tabela. */
-  'Paris': {operador:'RATP / Île-de-France Mobilités', url:'https://www.iledefrance-mobilites.fr/titres-et-tarifs', actualizado:'2026-08-30', fonte:'https://www.iledefrance-mobilites.fr/titres-et-tarifs',
+  'Paris': {operador:'RATP / Île-de-France Mobilités', url:'https://www.iledefrance-mobilites.fr/titres-et-tarifs', actualizado:'2026-10-05', fonte:'https://www.iledefrance-mobilites.fr/titres-et-tarifs',
     nota:'Já não há tarifa única: o metro, o comboio e o RER custam mais do que o autocarro e o eléctrico, e as viagens de e para Orly e CDG têm um título à parte, bem mais caro.',
     bilhetes:[
       {nome:'Ticket Métro-Train-RER', preco:2.55, unidade:'viagem', quando:'chegada', modos:['metro','comboio']},
@@ -150,7 +150,12 @@ const TRANSPORTES_DESTINO = {
      formulário submetido, e o que não se leu não leva carimbo de conferido.
      Não faz grande falta: quem paga por aproximação nunca paga mais do que
      o tecto, que é o que aqui fica. */
-  'Londres': {operador:'Transport for London', url:'https://tfl.gov.uk/fares/', actualizado:'2026-08-30', fonte:'https://tfl.gov.uk/cdn/static/cms/documents/adult-fares.pdf', moeda:'GBP',
+  /* Aviso para a ronda de 01/11/2026 ou depois: a decisão MD3517 da
+     GLA/Mayor of London (publicada 03/07/2026) já aprovou a subida do
+     autocarro/eléctrico para 1,85 £ (viagem), 5,55 £ (tecto diário) e
+     26,10 £ (tecto semanal), com efeitos às 04:30 de 1 de Novembro de
+     2026. Os valores abaixo são os correctos até essa data. */
+  'Londres': {operador:'Transport for London', url:'https://tfl.gov.uk/fares/', actualizado:'2026-10-05', fonte:'https://tfl.gov.uk/cdn/static/cms/documents/adult-fares.pdf', moeda:'GBP',
     nota:'Não compre bilhetes avulso: pague por aproximação com o cartão bancário ou telemóvel, que aplica sozinho o tecto diário e semanal. O tecto do autocarro conta à parte do do metro.',
     bilhetes:[
       {nome:'Autocarro ou eléctrico (Hopper: 1 h de mudanças)', preco:1.75, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
@@ -164,7 +169,7 @@ const TRANSPORTES_DESTINO = {
      todos: o 24H estava a 7,00 e são 8,50, o 72H estava a 18,00 e são
      22,00. Acrescentados o de 48 h e o semanal, que lá vêm. O Leonardo
      Express saiu: é da Trenitalia, não da ATAC, e não vem nesta página. */
-  'Roma': {operador:'ATAC', url:'https://www.atac.roma.it/en/tickets-and-passes', actualizado:'2026-08-30', fonte:'https://www.atac.roma.it/en/tickets-and-passes',
+  'Roma': {operador:'ATAC', url:'https://www.atac.roma.it/en/tickets-and-passes', actualizado:'2026-10-05', fonte:'https://www.atac.roma.it/en/tickets-and-passes',
     nota:'O bilhete BIT vale 100 minutos e permite mudar de autocarro, mas só uma entrada no metro. O comboio do aeroporto de Fiumicino é da Trenitalia e paga à parte.',
     bilhetes:[
       {nome:'BIT (100 minutos)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
@@ -178,7 +183,7 @@ const TRANSPORTES_DESTINO = {
      «bypublictransport» no fim e faltava. Lida a 30/08/2026: o simples e o
      diário não mudaram, mas o passe de 3 dias estava a 13,00 e são 15,50, e
      faltava o carnet de 10 viagens. */
-  'Milão': {operador:'ATM', url:'https://www.atm.it/en/ViaggiaConNoi/Biglietti/Pages/HowtogetaroundMilanbypublictransport.aspx', actualizado:'2026-08-30', fonte:'https://www.atm.it/en/ViaggiaConNoi/Biglietti/Pages/HowtogetaroundMilanbypublictransport.aspx',
+  'Milão': {operador:'ATM', url:'https://www.atm.it/en/ViaggiaConNoi/Biglietti/Pages/HowtogetaroundMilanbypublictransport.aspx', actualizado:'2026-10-05', fonte:'https://www.atm.it/en/ViaggiaConNoi/Biglietti/Pages/HowtogetaroundMilanbypublictransport.aspx',
     nota:'Quem tiver um passe carregado paga mais 1,70 € para o troço Malpensa/Rho Fiera. O bilhete serve metro, autocarro, eléctrico e as linhas S da Trenord dentro da cidade (zonas Mi1-Mi3).',
     bilhetes:[
       {nome:'Bilhete urbano (90 minutos)', preco:2.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
@@ -213,7 +218,7 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Lido no DPP a 30/08/2026. Os quatro títulos estavam abaixo do real:
      30 min 30 -> 39, 90 min 40 -> 50, 24 h 120 -> 150, 72 h 330 -> 350. */
-  'Praga': {operador:'DPP', url:'https://www.dpp.cz/en/fares/fare-pricelist', comprar:'https://www.dpp.cz/en/fares/fare-pricelist', actualizado:'2026-08-30', fonte:'https://www.dpp.cz/en/fares/fare-pricelist', moeda:'CZK',
+  'Praga': {operador:'DPP', url:'https://www.dpp.cz/en/fares/fare-pricelist', comprar:'https://www.dpp.cz/en/fares/fare-pricelist', actualizado:'2026-10-05', fonte:'https://www.dpp.cz/en/fares/fare-pricelist', moeda:'CZK',
     nota:'Um dos sistemas mais baratos da Europa. Valide o bilhete à entrada, nas máquinas amarelas.',
     bilhetes:[
       {nome:'Bilhete de 30 minutos', preco:39, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -258,7 +263,7 @@ const TRANSPORTES_DESTINO = {
      semanal estava a 34,80 e são 35,00. O MetroCard deixou de se vender a
      1 de Janeiro de 2026, por isso sai do nome do bilhete. O AirTrain saiu:
      é da Port Authority, não da MTA, e não vem nesta página. */
-  'Nova Iorque': {operador:'MTA', url:'https://www.mta.info/fares-tolls', actualizado:'2026-08-30', fonte:'https://www.mta.info/fares-tolls/subway-bus', moeda:'USD',
+  'Nova Iorque': {operador:'MTA', url:'https://www.mta.info/fares-tolls', actualizado:'2026-10-05', fonte:'https://www.mta.info/fares-tolls/subway-bus', moeda:'USD',
     nota:'Pague por aproximação (OMNY): com o mesmo cartão ou telemóvel nunca paga mais do que o tecto semanal, e não precisa de comprar passe. O MetroCard deixou de se vender a 1 de Janeiro de 2026. O AirTrain do JFK é da Port Authority e paga à parte.',
     bilhetes:[
       {nome:'Metro ou autocarro local (OMNY)', preco:3.00, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
@@ -270,7 +275,7 @@ const TRANSPORTES_DESTINO = {
      700; a viagem curta não mexeu. O Narita Express saiu: é da JR East,
      não do Tokyo Metro, e não vem nestas páginas, por isso o operador
      também deixa de dizer JR East, que é o que aqui se foi conferir. */
-  'Tóquio': {operador:'Tokyo Metro', url:'https://www.tokyometro.jp/en/ticket/', actualizado:'2026-08-30', fonte:'https://www.tokyometro.jp/en/ticket/regular/index.html', moeda:'JPY',
+  'Tóquio': {operador:'Tokyo Metro', url:'https://www.tokyometro.jp/en/ticket/', actualizado:'2026-10-05', fonte:'https://www.tokyometro.jp/en/ticket/regular/index.html', moeda:'JPY',
     cartao:{nome:'PASMO', preco:500, nota:'é uma caução, devolvida quando entregar o cartão; serve metro, comboio, autocarro e lojas de conveniência'},
     nota:'A tarifa do metro é por distância: 180 ¥ até 6 km, 210 até 11, 260 até 19, 300 até 27 e 330 acima disso. Os comboios do aeroporto são de outras empresas e pagam à parte.',
     bilhetes:[
@@ -285,7 +290,7 @@ const TRANSPORTES_DESTINO = {
      Kong e Deli, e o bilhete de papel avulso deixou de se vender em 2022.
      O preço do Singapore Tourist Pass não veio confirmado em nenhuma fonte
      oficial (só em sítios de afiliados), por isso sai sem número. */
-  'Singapura': {operador:'SMRT / SBS Transit', url:'https://www.sbstransit.com.sg/fares-and-concessions', actualizado:'2026-08-30', fonte:'https://www.sbstransit.com.sg/fares-and-concessions', moeda:'SGD',
+  'Singapura': {operador:'SMRT / SBS Transit', url:'https://www.sbstransit.com.sg/fares-and-concessions', actualizado:'2026-10-05', fonte:'https://www.sbstransit.com.sg/fares-and-concessions', moeda:'SGD',
     nota:'A tarifa é por distância, paga com EZ-Link, SimplyGo ou cartão bancário sem contacto: quanto mais anda, mais paga, dentro destes escalões. Não há bilhete de papel avulso desde 2022. O Singapore Tourist Pass existe e dá viagens ilimitadas, mas não confirmámos o preço em nenhuma fonte oficial: veja-o antes de comprar.',
     bilhetes:[
       {nome:'Metro/LRT, até 3,2 km (fora de hora de ponta)', preco:1.28, unidade:'viagem', quando:'chegada', modos:['metro']},
@@ -299,7 +304,7 @@ const TRANSPORTES_DESTINO = {
      Anonim Kart e em İstanbulkart. Estava 27 ₺, de 2026-01-01 e nunca
      conferido. O preço do cartão e a tarifa do M11 do aeroporto não vinham
      em nenhuma das páginas: saem, e ficam ditos sem número. */
-  'Istambul': {operador:'İETT / Metro İstanbul', url:'https://www.metro.istanbul/SeferDurumlari/BiletUcretleri', actualizado:'2026-08-30', fonte:'https://www.metro.istanbul/SeferDurumlari/BiletUcretleri', moeda:'TRY',
+  'Istambul': {operador:'İETT / Metro İstanbul', url:'https://www.metro.istanbul/SeferDurumlari/BiletUcretleri', actualizado:'2026-10-05', fonte:'https://www.metro.istanbul/SeferDurumlari/BiletUcretleri', moeda:'TRY',
     nota:'É preciso um cartão para andar: o İstanbulkart ou o Anonim Kart, que se compram nas máquinas das estações e custam à parte da viagem. A linha M11 do aeroporto tem tarifa própria, que não vem nesta página.',
     bilhetes:[
       {nome:'Viagem com İstanbulkart ou Anonim Kart', preco:46.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','barco','funicular']}
@@ -421,7 +426,7 @@ const TRANSPORTES_DESTINO = {
   /* Lido na SL a 30/08/2026, nas três sub-páginas de «Visitor tickets».
      Resolve a contradição que a ronda anterior apanhou nos guias, que davam
      a viagem simples ora a 42 ora a 43 SEK: são 43. */
-  'Estocolmo': {operador:'SL', url:'https://sl.se/en/fares-and-tickets', actualizado:'2026-08-30', fonte:'https://sl.se/en/fares-and-tickets/visitor-tickets', moeda:'SEK',
+  'Estocolmo': {operador:'SL', url:'https://sl.se/en/fares-and-tickets', actualizado:'2026-10-05', fonte:'https://sl.se/en/fares-and-tickets/visitor-tickets', moeda:'SEK',
     cartao:{nome:'Cartão SL', preco:50, nota:'só se precisa de um se não usar a aplicação nem o cartão bancário; é reutilizável numa próxima visita'},
     nota:'Os preços são os de adulto. Não se compram bilhetes a bordo. A ida a Arlanda leva uma sobretaxa de passagem nas cancelas do aeroporto, já incluída no valor abaixo; o Arlanda Express é outra empresa e não aceita títulos da SL.',
     bilhetes:[
@@ -442,7 +447,7 @@ const TRANSPORTES_DESTINO = {
   /* Helsínquia não estava na tabela. Lido na HSL a 30/08/2026: o simples
      em /single-tickets, os passes em /day-tickets. São os valores de
      adulto na zona AB, que é a cidade. */
-  'Helsínquia': {operador:'HSL', url:'https://www.hsl.fi/en/tickets-and-fares', actualizado:'2026-08-30', fonte:'https://www.hsl.fi/en/tickets-and-fares/day-tickets',
+  'Helsínquia': {operador:'HSL', url:'https://www.hsl.fi/en/tickets-and-fares', actualizado:'2026-10-05', fonte:'https://www.hsl.fi/en/tickets-and-fares/day-tickets',
     nota:'Os preços são os da zona AB, que cobre Helsínquia. Comprar na aplicação da HSL fica mais barato do que na máquina ou por aproximação. O aeroporto fica na zona C e obriga a um título ABC.',
     bilhetes:[
       {nome:'Bilhete simples na aplicação (80 minutos)', preco:3.30, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio','barco']},
@@ -565,7 +570,7 @@ const TRANSPORTES_DESTINO = {
   /* Melbourne não estava na tabela. Lido no Departamento de Transportes de
      Victória a 30/08/2026, na tabela myki das zonas metropolitanas. São os
      valores da zona 1+2, que é a cidade e os subúrbios. */
-  'Melbourne': {operador:'PTV (myki)', url:'https://transport.vic.gov.au/tickets-and-payments/fares', actualizado:'2026-08-30', fonte:'https://transport.vic.gov.au/tickets-and-payments/fares/metropolitan-train-tram-and-bus-fares', moeda:'AUD',
+  'Melbourne': {operador:'PTV (myki)', url:'https://transport.vic.gov.au/tickets-and-payments/fares', actualizado:'2026-10-05', fonte:'https://transport.vic.gov.au/tickets-and-payments/fares/metropolitan-train-tram-and-bus-fares', moeda:'AUD',
     nota:'O eléctrico é gratuito dentro da Free Tram Zone, no centro: para andar só por ali não precisa de título nenhum. Fora dela paga-se com myki, e a viagem de 2 h nunca custa mais do que o tecto do dia.',
     bilhetes:[
       {nome:'myki Money, 2 horas (zonas 1+2)', preco:2.85, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
@@ -778,6 +783,12 @@ const TRANSPORTES_DESTINO = {
      em JavaScript e por isso vinha vazia às rondas anteriores. São as
      tarifas ordinárias, pagas a bordo. A targeta ciutadana é para
      residentes e não entra. */
+  /* Tentada reconfirmação a 05/10/2026: o sítio é uma SPA sem dados
+     estáticos e nunca respondeu (nem à procura da API interna). Fontes
+     de imprensa contraditórias: uma diz que a câmara aprovou subir o
+     bilhete urbano/porto de 2 € para 3 €, mas sem confirmar se já está
+     em vigor; outra cita «3 €» já como preço do porto. Fica «por rever»
+     por isto parecer uma subida real, não só burocracia parada. */
   'Palma de Maiorca': {operador:'EMT Palma', url:'https://www.emtpalma.cat/ca/tarifes/tarifes', actualizado:'2026-08-30', fonte:'https://www.emtpalma.cat/ca/tarifes/tarifes',
     nota:'Paga-se a bordo, em dinheiro (não aceitam notas acima de 5 €) ou com cartão bancário; nenhum destes bilhetes dá direito a transbordo. As linhas A1 e A2 só servem o aeroporto, sem paragens pelo meio.',
     bilhetes:[
@@ -819,7 +830,7 @@ const TRANSPORTES_DESTINO = {
      na coluna «Zones 1 et 2», que é a cidade. Atenção: o próprio guia diz
      «à partir du 1er septembre 2026», e hoje é 30 de Agosto. São as
      tarifas que entram em vigor daqui a dois dias, e a nota di-lo. */
-  'Lyon': {operador:'TCL', url:'https://www.tcl.fr/titres-et-tarifs/tous-les-titres-et-abonnements', actualizado:'2026-08-30', fonte:'https://www.tcl.fr/sites/default/files/2026-07/Guide_Tarifaire_TCL_Mai_2026.pdf',
+  'Lyon': {operador:'TCL', url:'https://www.tcl.fr/titres-et-tarifs/tous-les-titres-et-abonnements', actualizado:'2026-10-05', fonte:'https://www.tcl.fr/sites/default/files/2026-07/Guide_Tarifaire_TCL_Mai_2026.pdf',
     nota:'Valores das zonas 1 e 2, que cobrem a cidade, e que o guia da TCL dá como em vigor a partir de 1 de Setembro de 2026. Pagando com o cartão bancário não paga mais de 7,10 € por dia, o mesmo que o passe de 24 h. O título carrega-se num bilhete recarregável que custa 0,20 € à primeira compra.',
     bilhetes:[
       {nome:'1 voyage (1 h nas zonas 1 e 2)', preco:2.10, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','funicular']},
@@ -833,7 +844,7 @@ const TRANSPORTES_DESTINO = {
      tfgm.com/tickets-and-passes/bus-tickets e os tectos por aproximação em
      tfgm.com/ways-to-pay/contactless, que é o que fica como fonte. O
      eléctrico avulso é por zonas e não entra. */
-  'Manchester': {operador:'Bee Network (TfGM)', url:'https://tfgm.com/tickets-and-passes', actualizado:'2026-08-30', fonte:'https://tfgm.com/ways-to-pay/contactless', moeda:'GBP',
+  'Manchester': {operador:'Bee Network (TfGM)', url:'https://tfgm.com/tickets-and-passes', actualizado:'2026-10-05', fonte:'https://tfgm.com/ways-to-pay/contactless', moeda:'GBP',
     nota:'Pague por aproximação com o mesmo cartão ou telemóvel e nunca paga mais do que o tecto, que cobre autocarro e eléctrico juntos. No eléctrico tem de validar à entrada e à saída.',
     bilhetes:[
       {nome:'Bee Bus, bilhete simples (1 h de mudanças)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -903,7 +914,7 @@ const TRANSPORTES_DESTINO = {
      possa pôr aqui: ficam os dois títulos de preço fixo, que são os que
      interessam a quem chega. O Tourist Day Pass veio de
      mtr.com.hk/en/customer/tickets/day_pass_tourist.html. */
-  'Hong Kong': {operador:'MTR', url:'https://www.mtr.com.hk/en/customer/tickets/index.php', actualizado:'2026-08-30', fonte:'https://www.mtr.com.hk/en/customer/tickets/tf_index.html', moeda:'HKD',
+  'Hong Kong': {operador:'MTR', url:'https://www.mtr.com.hk/en/customer/tickets/index.php', actualizado:'2026-10-05', fonte:'https://www.mtr.com.hk/en/customer/tickets/day_pass_tourist.html', moeda:'HKD',
     nota:'A tarifa normal do metro depende da distância entre as estações: consulte-a no calculador do MTR. O Tourist Day Pass não serve na Airport Express nem para Lo Wu e Lok Ma Chau.',
     bilhetes:[
       {nome:'Tourist Day Pass (1 dia de metro)', preco:75, unidade:'dia', quando:'chegada', modos:['metro']},
@@ -925,7 +936,7 @@ const TRANSPORTES_DESTINO = {
      entra. O passe Rapid Kota (10 e 25 RM) também não, porque a página
      diz «exclusively for Malaysians only». Fica o Kembara, que é o que a
      página dá como aberto a todos e feito para turistas. */
-  'Kuala Lumpur': {operador:'Rapid KL', url:'https://myrapid.com.my/bus-train/rapid-kl/integrated-fare-table/', actualizado:'2026-08-30', fonte:'https://myrapid.com.my/our-products/rapidkembarapass/', moeda:'MYR',
+  'Kuala Lumpur': {operador:'Rapid KL', url:'https://myrapid.com.my/bus-train/rapid-kl/integrated-fare-table/', actualizado:'2026-10-05', fonte:'https://myrapid.com.my/our-products/rapidkembarapass/', moeda:'MYR',
     nota:'O preço do passe não inclui o cartão Touch ’n Go, que se compra à parte e tem de ter saldo mínimo. A tarifa avulsa depende da distância: veja a tabela do operador. Há um passe mais barato, o Rapid Kota, mas é só para residentes com bilhete de identidade malaio; não entra aqui por não estar aberto a quem visita.',
     bilhetes:[
       {nome:'Rapid Kembara, 1 dia (comboio e autocarro)', preco:25, unidade:'dia', quando:'chegada', modos:['metro','autocarro']},
@@ -935,7 +946,7 @@ const TRANSPORTES_DESTINO = {
      na página do cartão turístico. A faixa de 5 a 12 km é a que apanha a
      maior parte dos trajectos dentro da cidade; a nota diz a tabela toda,
      para não dar a entender que há uma tarifa única. */
-  'Deli': {operador:'Delhi Metro', url:'https://delhimetrorail.com/fare', actualizado:'2026-08-30', fonte:'https://delhimetrorail.com/fare', moeda:'INR',
+  'Deli': {operador:'Delhi Metro', url:'https://delhimetrorail.com/fare', actualizado:'2026-10-05', fonte:'https://delhimetrorail.com/fare', moeda:'INR',
     nota:'A tarifa é por distância, de seg. a sáb.: 11 ₹ até 2 km, 21 até 5, 32 até 12, 43 até 21, 54 até 32 e 64 acima disso. Ao domingo e nos feriados desce um escalão. O cartão turístico inclui 50 ₹ de caução, devolvidos, e não serve na linha do aeroporto.',
     bilhetes:[
       {nome:'Metro, 5 a 12 km (seg. a sáb.)', preco:32, unidade:'viagem', quando:'chegada', modos:['metro']},
@@ -954,7 +965,7 @@ const TRANSPORTES_DESTINO = {
      sete), e o preço depende de quantas atravessa, por isso ficam as três
      linhas da tabela, e não um valor inventado à média. O nol Silver é o
      cartão normal; o Red Ticket é o bilhete de papel, mais caro à viagem. */
-  'Dubai': {operador:'RTA', url:'https://www.rta.ae/wps/portal/rta/ae/public-transport/Nol-Fares?lang=en', actualizado:'2026-08-30', fonte:'https://www.rta.ae/wps/portal/rta/ae/public-transport/Nol-Fares?lang=en', moeda:'AED',
+  'Dubai': {operador:'RTA', url:'https://www.rta.ae/wps/portal/rta/ae/public-transport/Nol-Fares?lang=en', actualizado:'2026-10-05', fonte:'https://www.rta.ae/wps/portal/rta/ae/public-transport/Nol-Fares?lang=en', moeda:'AED',
     nota:'A tarifa depende de quantas das sete zonas atravessa. O cartão nol Silver serve metro, eléctrico e autocarro e sai mais barato à viagem do que o nol Red Ticket de papel, que custa 4, 6 ou 8,50 AED conforme as zonas. As mudanças entre modos contam como uma só viagem se as fizer em 30 minutos.',
     bilhetes:[
       {nome:'nol Silver, dentro de 1 zona', preco:3.00, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
