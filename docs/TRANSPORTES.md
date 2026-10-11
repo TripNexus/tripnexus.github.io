@@ -69,6 +69,16 @@ rebase). Não inventa números: uma cidade sem confirmação clara fica
 «por rever» para a ronda seguinte, tal como aconteceu com Viena a
 29/09/2026 (ver secção abaixo).
 
+Como quase todas as cidades confirmadas foram-o em dois lotes muito
+concentrados no tempo (19-24 de Agosto e 3-4 de Setembro), envelhecem
+também quase todas juntas: a ronda de 05/10/2026 encontrou de repente
+perto de 200 cidades «por rever», não um gotejar pequeno. Nessas
+semanas de pico, a ronda trata só o lote mais antigo (prioridade ao
+maior número de dias) e deixa o resto para a semana seguinte, como o
+texto da própria Rotina já prevê; o histórico em
+[`TRANSPORTES-HISTORICO.md`](TRANSPORTES-HISTORICO.md) mostra, ronda a
+ronda, quanto já foi tratado e quanto falta.
+
 ```
 node ferramentas/transportes.js          # o que está por rever
 node ferramentas/transportes.js --url    # só os endereços, para a ronda

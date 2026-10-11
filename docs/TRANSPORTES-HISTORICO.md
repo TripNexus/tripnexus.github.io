@@ -478,3 +478,59 @@ que ainda está viva (`tickets/single-journey`), em vez da que dá 404.
 A partir desta ronda, esta reconfirmação passa a ser semanal e
 automática (Rotina agendada às segundas-feiras, 07:47 hora de Lisboa;
 ver a secção «A ronda semanal» em [`TRANSPORTES.md`](TRANSPORTES.md)).
+
+### Segunda ronda semanal, a 05 de Outubro de 2026: a dimensão real do problema
+
+Primeira vez que a Rotina correu sozinha. A lista «por rever» não tinha
+30 cidades como na semana anterior: tinha **cerca de 200**, quase toda
+a tabela de tarifas confirmadas (o lote de 19-24 de Agosto e, sobretudo,
+o grande lote das capitais do mundo de 3-4 de Setembro foram todos
+confirmados dentro de poucos dias um do outro, por isso envelhecem
+também quase todos juntos). Não é possível reconfirmar 200 cidades por
+semana com o rigor que este projecto exige (ler a fonte primária, nunca
+confiar de cabeça); por isso esta ronda tratou só o lote mais antigo,
+as 21 cidades a 36 dias, e deixou o resto para as próximas semanas,
+como o próprio texto da Rotina já previa («trata um lote razoável...
+deixa o resto para a próxima semana, sem problema»).
+
+**18 de 21 reconfirmadas, sem alteração de preço**, só a data mudou:
+Paris, Lyon, Londres, Manchester, Roma, Milão, Praga, Estocolmo,
+Helsínquia, Istambul, Dubai, Nova Iorque, Tóquio, Hong Kong, Singapura,
+Kuala Lumpur, Deli, Melbourne. Duas pesquisas em paralelo (10 e 11
+cidades), com instrução de citar o texto exacto da fonte; em metade
+destes casos os sítios oficiais (`hsl.fi`, `tokyometro.jp`,
+`transport.vic.gov.au`, `myrapid.com.my`, `delhimetrorail.com`)
+bloquearam todos os pedidos automáticos (desafio Cloudflare/Akamai/
+Incapsula), e os valores foram confirmados por fontes jornalísticas
+independentes e consistentes entre si (incluindo, para Melbourne, um
+comunicado oficial do governo de Victoria sobre a promoção de metade
+do preço em vigor até 1 de Janeiro de 2027). Tentei eu próprio voltar
+a aceder a dois destes sítios (HSL e Tokyo Metro): continuam
+bloqueados, confirmando que não é uma falha de rede do lado da
+pesquisa.
+
+**3 cidades ficaram por rever, por bloqueio técnico**: Málaga, Valência
+e Palma de Maiorca. Os três sítios espanhóis (`emtmalaga.es`,
+`metrovalencia.es`, `emtpalma.cat`) recusaram todos os pedidos, de
+vários tipos (WebFetch directo, curl com vários user-agents, Wayback
+Machine); tentei eu próprio outra vez, sem sucesso. Para Palma há um
+indício real de subida (câmara aprovou subir o bilhete urbano/porto de
+2 € para 3 €, mas sem confirmação se já está em vigor); por isso
+`actualizado` não foi tocado em nenhuma das três, para o site continuar
+a avisar o utilizador até se conseguir ler a fonte.
+
+Duas correcções de proveniência, sem alteração de preço: Hong Kong
+(o `fonte` antigo já não tem o Tourist Day Pass, que passou para
+`day_pass_tourist.html`, confirmado directamente) e um aviso novo em
+Londres (a GLA já aprovou, pela decisão MD3517, subir o autocarro para
+1,85 £/5,55 £/26,10 £ a partir de 1 de Novembro de 2026; os valores
+actuais ainda estão correctos, mas a próxima ronda de Novembro já vai
+precisar de os mudar).
+
+**Cerca de 180 cidades ficam por rever para as próximas semanas**, a
+maior parte ainda na mesma faixa de 31 a 35 dias (confirmadas quase
+todas entre 3 e 4 de Setembro). Ao ritmo de ~20 cidades por semana, a
+fila deve demorar uns meses a esvaziar; depois disso, como os lotes
+originais deixam de estar concentrados em datas tão próximas, as
+rondas seguintes devem voltar a ser pequenas, parecidas com a primeira
+semana (30 cidades).
