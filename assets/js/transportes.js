@@ -229,16 +229,15 @@ const TRANSPORTES_DESTINO = {
   /* A Wiener Linien mudou a estrutura tarifária a 1 de Janeiro de 2026 e
      acabou com os passes de 48 h e de 72 h. A tabela ainda tinha o de 72 h
      a 17,10 €: um título que já não se vende. */
-  /* Tentada reconfirmação a 29/09/2026: a página antiga (news/new-fare-structure...)
-     dá erro 404. As páginas de bilhetes que restam (tickets/single-journey,
-     tickets/24-hours-vienna, tickets/7-days-vienna) mostram preços "from X",
-     sem indicar se é tarifa normal ou reduzida, e a tabela completa está na
-     loja da WienMobil atrás de um login que não foi possível passar. Vários
-     jornais austríacos (meinbezirk.at, heute.at, exxpress.at) confirmam os
-     valores abaixo como a tarifa normal de 2026, mas por não serem fonte
-     primária directa, mantém-se o aviso «por rever» até se conseguir ler a
-     tabela completa na loja oficial. */
-  'Viena': {operador:'Wiener Linien', url:'https://www.wienerlinien.at/web/wl-en/tickets/single-journey', comprar:'https://www.wienerlinien.at/web/wl-en/tickets', actualizado:'2026-08-24', fonte:'https://www.wienerlinien.at/web/wl-en/tickets/single-journey',
+  /* Confirmado a 12/10/2026, ao fim de 3 semanas bloqueado: o sítio
+     wienerlinien.at continua atrás de um desafio Radware para pedidos
+     automáticos, mas o factsheet oficial "Tarifanpassung/09.2025" (editor
+     Wiener Linien GmbH & Co KG, www.wienerlinien.at/tarifanpassung) lido
+     directamente confirma os três valores abaixo, coluna "NEUER TARIF"
+     (tarifa normal, não digital): 1 Fahrt Wien 3,2 €, 24 Stunden Wien
+     10,2 €, 7 Tage Wien 28,9 €. Existe também uma variante digital mais
+     barata (3,00/9,70/25,20 €) ainda não representada aqui. */
+  'Viena': {operador:'Wiener Linien', url:'https://www.behindertenrat.at/wp-content/uploads/2025/09/WL_2025_Factsheet_A4_3seitig_Tarifanpassungen_web.pdf', comprar:'https://www.wienerlinien.at/web/wl-en/tickets', actualizado:'2026-10-12', fonte:'https://www.behindertenrat.at/wp-content/uploads/2025/09/WL_2025_Factsheet_A4_3seitig_Tarifanpassungen_web.pdf',
     nota:'Os passes de 48 h e de 72 h deixaram de existir em 2026. Para mais de um dia, o passe de 7 dias é o que resta. O comboio CAT para o aeroporto é de outro operador e tem tarifa própria.',
     bilhetes:[
       {nome:'Bilhete simples', preco:3.20, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -388,6 +387,11 @@ const TRANSPORTES_DESTINO = {
      zona A, e os títulos SUMA T valem na combinação AB. São os valores da
      rede de metro e eléctrico; a EMT (autocarros) tem tarifário próprio,
      que não vem nesta página. */
+  /* Tentada reconfirmação em 29/09, 05/10 e 12/10/2026: metrovalencia.es
+     recusa sempre a ligação (reset de TLS vindo do próprio servidor,
+     confirmado várias vezes, não é bloqueio de rede deste lado). Fontes
+     secundárias, não oficiais, citam os mesmos valores de baixo; não
+     chega para confirmar. Fica «por rever». */
   'Valência': {operador:'Metrovalencia', url:'https://www.metrovalencia.es/es/nuestras-tarifas/', actualizado:'2026-08-30', fonte:'https://www.metrovalencia.es/es/nuestras-tarifas/',
     nota:'O preço depende da zona: a cidade é a zona A. O título não inclui o suporte: o cartão SUMA anónimo custa 2,20 € em plástico ou 1,10 € em cartão, à parte. Os autocarros da EMT têm tarifário próprio.',
     bilhetes:[
@@ -399,7 +403,16 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Málaga não estava na tabela: o utilizador via só uma procura. Lido na
      EMT Málaga a 30/08/2026. A própria página diz que são as tarifas de
-     1 de Janeiro de 2025, prorrogadas durante 2026. */
+     1 de Janeiro de 2025, prorrogadas durante 2026.
+     Tentada reconfirmação em 29/09, 05/10 e 12/10/2026: emtmalaga.es
+     recusa sempre a ligação (reset de TLS do próprio servidor). Duas
+     dúvidas reais por resolver assim que o sítio voltar: (1) o
+     «Bilhete ordinário» pode já ter subido para 1,50 € (ordenança
+     camarária ainda em fase de aprovação inicial, Julho/2026, sem
+     confirmação de entrada em vigor); (2) a «Recarga de 10 viagens» a
+     5,00 € pode ser um desconto temporário de 2025 já caducado: a
+     Ordenanza Fiscal Nº 31 do município lista a «Tarjeta Trasbordo
+     (10 Viajes)» a 8,30 €, como tarifa de base. Fica tudo «por rever». */
   'Málaga': {operador:'EMT Málaga', url:'https://www.emtmalaga.es/es/tarifas', actualizado:'2026-08-30', fonte:'https://www.emtmalaga.es/es/tarifas',
     nota:'O bilhete simples não dá transbordo e não vale na linha A do aeroporto, que tem bilhete próprio. A recarga de 10 viagens dá transbordos gratuitos durante 1 h e sai a metade do preço à viagem, mas precisa de um cartão.',
     bilhetes:[
@@ -462,7 +475,7 @@ const TRANSPORTES_DESTINO = {
      tiras por viagem consoante a distância), mas fica de fora por ser mais
      difícil de explicar sem inventar uma equivalência; os bilhetes e o
      diário «a partir de» já dão a ideia do custo para quem visita. */
-  'Munique': {operador:'MVG', url:'https://www.mvg.de/abos-tickets/einzel-und-tageskarten.html', actualizado:'2026-08-31', fonte:'https://www.mvg.de/abos-tickets/einzel-und-tageskarten.html',
+  'Munique': {operador:'MVG', url:'https://www.mvg.de/abos-tickets/einzel-und-tageskarten.html', actualizado:'2026-10-12', fonte:'https://www.mvg.de/abos-tickets/einzel-und-tageskarten.html',
     nota:'O preço do bilhete e do diário depende das zonas atravessadas; o valor aqui é o «a partir de», para a zona central (M). Cobre metro, autocarro e eléctrico.',
     bilhetes:[
       {nome:'Einzelfahrkarte Kurzstrecke (até 4 paragens)', preco:2.10, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -482,7 +495,7 @@ const TRANSPORTES_DESTINO = {
      mais abaixo uma excepção: a tarifa própria de Frankfurt (zona 5000),
      com preços fixos para quem não sai da cidade. Fora dessa zona continua
      a ser preciso o planeador, e a nota di-lo. */
-  'Frankfurt': {operador:'RMV', url:'https://www.rmv.de/c/en/tickets', actualizado:'2026-08-31', fonte:'https://www.rmv.de/c/en/tickets/your-ticket/tickets-overview/single-tickets/single-ticket',
+  'Frankfurt': {operador:'RMV', url:'https://www.rmv.de/c/en/tickets', actualizado:'2026-10-12', fonte:'https://www.rmv.de/c/en/tickets/your-ticket/tickets-overview/single-tickets/single-ticket',
     nota:'Tarifa própria da cidade (zona 5000). Para viagens que saiam de Frankfurt, incluindo o aeroporto, o preço já não é fixo: introduza o percurso no planeador do operador. O Deutschland-Ticket, que cobre todos os transportes regionais da Alemanha, custa 63 € por mês e só se vende por subscrição.',
     bilhetes:[
       {nome:'Kurzstrecke (viagem curta)', preco:2.35, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico','comboio']},
@@ -585,7 +598,7 @@ const TRANSPORTES_DESTINO = {
      tiim.pt respondeu sem o certificado intermédio ao `curl` (a ligação
      completa-se na mesma, só falha a verificação estrita); num navegador
      normal costuma passar sem aviso. */
-  'Funchal': {operador:'Horários do Funchal / TIIM', url:'https://tiim.pt/index.php/tarifarios/bilhetes', actualizado:'2026-08-31', fonte:'https://tiim.pt/index.php/tarifarios/bilhetes',
+  'Funchal': {operador:'Horários do Funchal / TIIM', url:'https://tiim.pt/index.php/tarifarios/bilhetes', actualizado:'2026-10-12', fonte:'https://tiim.pt/index.php/tarifarios/bilhetes',
     nota:'O Bilhete de Bordo tem dois preços consoante o percurso ficar dentro do concelho (municipal) ou passar para outro (intermunicipal); o Regional Turístico não tem essa distinção e cobre toda a Madeira, aerobus incluído.',
     bilhetes:[
       {nome:'Bilhete de bordo (avulso, no veículo)', preco:2.05, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -625,7 +638,7 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Ronda das cidades sem aeroporto acrescentadas a este ficheiro (ver
      CIDADES): lidas todas a 31/08/2026. */
-  'Coimbra': {operador:'SMTUC', url:'https://www.smtuc.pt/tabela-tarifaria/', actualizado:'2026-08-31', fonte:'https://www.smtuc.pt/wp-content/uploads/2026/04/TARIFARIO-2026-versao-30-abril-2026-.pdf',
+  'Coimbra': {operador:'SMTUC', url:'https://www.smtuc.pt/tabela-tarifaria/', actualizado:'2026-10-12', fonte:'https://www.smtuc.pt/wp-content/uploads/2026/10/TARIFARIO-2026-versao-01-outubro-2026-.pdf',
     nota:'O passe intermodal de 1 dia cobre a rede SMTUC e o Metro Mondego; o preço «municipal» vale só dentro do concelho de Coimbra.',
     bilhetes:[
       {nome:'Bilhete de motorista (avulso)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -633,7 +646,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe intermodal, 3 dias (municipal)', preco:10.00, unidade:'3 dias', quando:'chegada', modos:['autocarro']},
       {nome:'Passe intermodal, 7 dias (municipal)', preco:15.00, unidade:'7 dias', quando:'chegada', modos:['autocarro']}
     ]},
-  'Aveiro': {operador:'Aveiro Bus', url:'https://www.aveirobus.pt/gama-tarifaria', actualizado:'2026-08-31', fonte:'https://www.aveirobus.pt/gama-tarifaria',
+  'Aveiro': {operador:'Aveiro Bus', url:'https://www.aveirobus.pt/gama-tarifaria', actualizado:'2026-10-12', fonte:'https://www.aveirobus.pt/gama-tarifaria',
     nota:'Preços em vigor desde agosto de 2024, mantidos sem aumento em 2026 por decisão da câmara. O Bilhete Turístico dá viagens ilimitadas no circuito urbano e fluvial.',
     bilhetes:[
       {nome:'Tarifa de motorista, circuito urbano (avulso)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -641,7 +654,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Bilhete turístico, 1 dia', preco:10.00, unidade:'dia', quando:'chegada', modos:['autocarro','barco']},
       {nome:'Bilhete turístico, 2 dias', preco:18.00, unidade:'2 dias', quando:'chegada', modos:['autocarro','barco']}
     ]},
-  'Guarda': {operador:'ETUG (Empresa Transportes Urbanos da Guarda)', url:'https://transportes.mun-guarda.pt/Tarifario', actualizado:'2026-08-31', fonte:'https://transportes.mun-guarda.pt/Tarifario',
+  'Guarda': {operador:'ETUG (Empresa Transportes Urbanos da Guarda)', url:'https://transportes.mun-guarda.pt/Tarifario', actualizado:'2026-10-12', fonte:'https://transportes.mun-guarda.pt/Tarifario',
     nota:'Tarifário aprovado em reunião do executivo municipal de 23/12/2025, em vigor em 2026.',
     bilhetes:[
       {nome:'Bilhete simples (avulso)', preco:1.30, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -650,12 +663,18 @@ const TRANSPORTES_DESTINO = {
   /* A página oficial (covilhamobilidade.pt) monta a tabela em JavaScript,
      sem preços no HTML estático; o cartaz tarifário 2026 em PDF, da mesma
      empresa (Transdev), tem os mesmos títulos com texto a sério. */
-  'Covilhã': {operador:'Covilhã Mobilidade', url:'https://covilhamobilidade.pt/Tariff', actualizado:'2026-08-31', fonte:'https://www.transdev.pt/sites/default/files/downloads/covilhamobilidade-tarifariocartaz-a4-2026_001.pdf',
+  /* Corrigido a 12/10/2026: o valor anterior (4,35 €) estava trocado com
+     o do bilhete diário URBANO+SUBURBANO, um produto diferente. Visto
+     directamente no PDF oficial (tabela TARIFÁRIO 2026, coluna PVP
+     geral): «BILHETE DIÁRIO URBANO PRÉ-COMPRADO» = 3,70 €, «BILHETE
+     DIÁRIO URBANO+SUBURBANO PRÉ-COMPRADO» = 4,35 €. Não é uma subida de
+     preço, é uma troca de produto que já vinha de trás. */
+  'Covilhã': {operador:'Covilhã Mobilidade', url:'https://covilhamobilidade.pt/Tariff', actualizado:'2026-10-12', fonte:'https://www.transdev.pt/sites/default/files/downloads/covilhamobilidade-tarifariocartaz-a4-2026_001.pdf',
     bilhetes:[
       {nome:'Bilhete de bordo urbano (avulso)', preco:1.85, unidade:'viagem', quando:'chegada', modos:['autocarro']},
-      {nome:'Bilhete diário urbano pré-comprado', preco:4.35, unidade:'dia', quando:'antes', modos:['autocarro']}
+      {nome:'Bilhete diário urbano pré-comprado', preco:3.70, unidade:'dia', quando:'antes', modos:['autocarro']}
     ]},
-  'Braga': {operador:'TUB (Transportes Urbanos de Braga)', url:'https://tub.pt/templates/frontoffice/commerce/pdf/tarifario_2026.pdf', actualizado:'2026-08-31', fonte:'https://tub.pt/templates/frontoffice/commerce/pdf/tarifario_2026.pdf',
+  'Braga': {operador:'TUB (Transportes Urbanos de Braga)', url:'https://tub.pt/templates/frontoffice/commerce/pdf/tarifario_2026.pdf', actualizado:'2026-10-12', fonte:'https://tub.pt/templates/frontoffice/commerce/pdf/tarifario_2026.pdf',
     nota:'Em vigor desde 21/02/2026. «Coroa» é a zona: 1 coroa cobre o essencial da cidade.',
     bilhetes:[
       {nome:'Bilhete de bordo (1 coroa)', preco:1.55, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -666,21 +685,21 @@ const TRANSPORTES_DESTINO = {
   /* O TUViana é muito recente (cobrança física só arrancou a 13/04/2026):
      não achámos uma página de tarifário dedicada, só o comunicado oficial
      da câmara, com os valores no próprio texto. */
-  'Viana do Castelo': {operador:'TUViana (Transportes Urbanos de Viana)', url:'https://www.cm-viana-castelo.pt/areas-de-atividade/comunicacao/noticias/noticia/tuviana-transportes-urbanos-de-viana-iniciam-cobranca-fisica-a-13-de-abril', actualizado:'2026-08-31', fonte:'https://www.cm-viana-castelo.pt/areas-de-atividade/comunicacao/noticias/noticia/tuviana-transportes-urbanos-de-viana-iniciam-cobranca-fisica-a-13-de-abril',
+  'Viana do Castelo': {operador:'TUViana (Transportes Urbanos de Viana)', url:'https://www.cm-viana-castelo.pt/areas-de-atividade/comunicacao/noticias/noticia/tuviana-transportes-urbanos-de-viana-iniciam-cobranca-fisica-a-13-de-abril', actualizado:'2026-10-12', fonte:'https://www.cm-viana-castelo.pt/areas-de-atividade/comunicacao/noticias/noticia/tuviana-transportes-urbanos-de-viana-iniciam-cobranca-fisica-a-13-de-abril',
     bilhetes:[
       {nome:'Bilhete a bordo', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'Bilhete pré-comprado', preco:1.00, unidade:'viagem', quando:'antes', modos:['autocarro']},
       {nome:'Bilhete, 1 dia', preco:5.00, unidade:'dia', quando:'chegada', modos:['autocarro']},
       {nome:'Bilhete, 3 dias', preco:12.00, unidade:'3 dias', quando:'chegada', modos:['autocarro']}
     ]},
-  'Leiria': {operador:'Mobilis (Rodoviária do Lis)', url:'https://www.rodoviariadolis.pt/precos-titulos/', actualizado:'2026-08-31', fonte:'https://www.rodoviariadolis.pt/wp-content/uploads/RDL_Informa_Aumento-tarifário-2026_Mobilis.pdf',
+  'Leiria': {operador:'Mobilis (Rodoviária do Lis)', url:'https://www.rodoviariadolis.pt/precos-titulos/', actualizado:'2026-10-12', fonte:'https://www.rodoviariadolis.pt/wp-content/uploads/RDL_Informa_Aumento-tarifário-2026_Mobilis.pdf',
     nota:'Preços em vigor desde 1/01/2026, publicados a 29/12/2025.',
     bilhetes:[
       {nome:'Tarifa de motorista (avulso)', preco:1.60, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'Bilhete diário', preco:3.65, unidade:'dia', quando:'chegada', modos:['autocarro']},
       {nome:'Pré-comprados (mín. 10 viagens)', preco:9.50, unidade:'10 viagens', quando:'antes', modos:['autocarro']}
     ]},
-  'Santarém': {operador:'Scalabus (RodoLeziria)', url:'https://www.scalabus.pt/?opc=tarifa', actualizado:'2026-08-31', fonte:'https://www.rodotejo.pt/wp-content/uploads/RLZ_Informa_Aumento-tarifário-2026_scalabus-1.pdf',
+  'Santarém': {operador:'Scalabus (RodoLeziria)', url:'https://www.scalabus.pt/?opc=tarifa', actualizado:'2026-10-12', fonte:'https://www.rodotejo.pt/wp-content/uploads/RLZ_Informa_Aumento-tarifário-2026_scalabus-1.pdf',
     nota:'Preços em vigor desde 1/01/2026, publicados a 29/12/2025.',
     bilhetes:[
       {nome:'Tarifa de motorista (avulso)', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -692,6 +711,12 @@ const TRANSPORTES_DESTINO = {
      2025 (1,25 € / 4,50 €); o aumento de 2026 está confirmado num artigo
      da Lisboa Para Pessoas, publicado a 30/12/2025, com fonte no regulador
      (AMT, taxa de actualização de 2,28 %) e nas operadoras. */
+  /* Tentada reconfirmação a 12/10/2026: backoffice.carrismetropolitana.pt
+     devolveu erro 523 (origem incontactável) em 4 tentativas, incluindo
+     via a app nova em carrismetropolitana.pt/tickets, que não tem API de
+     tarifário. Parece ser uma falha real do sítio, não um bloqueio. Só se
+     confirmou o Passe Navegante Municipal (30 €, dito como sem alteração
+     para 2026 na fonte); os outros dois bilhetes ficam por confirmar. */
   'Setúbal': {operador:'Carris Metropolitana', url:'https://backoffice.carrismetropolitana.pt/tarifarios/', actualizado:'2026-08-31', fonte:'https://lisboaparapessoas.pt/2025/12/30/transportes-2026-lisboa/',
     nota:'A tarifa de bordo da zona «Linha Próxima» subiu de 1,25 € para 1,30 € em 2026; o pré-pago (zapping) não subiu. Os passes Navegante cobrem toda a Área Metropolitana de Lisboa, não só Setúbal.',
     bilhetes:[
@@ -699,7 +724,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Navegante pré-pago, Linha Próxima', preco:0.85, unidade:'viagem', quando:'antes', modos:['autocarro']},
       {nome:'Passe Navegante Municipal', preco:30.00, unidade:'mês', quando:'antes', modos:['autocarro']}
     ]},
-  'Castelo Branco': {operador:'Mobicab', url:'https://mobicab.pt/tarifarios/', actualizado:'2026-08-31', fonte:'https://mobicab.pt/tarifarios/',
+  'Castelo Branco': {operador:'Mobicab', url:'https://mobicab.pt/tarifarios/', actualizado:'2026-10-12', fonte:'https://mobicab.pt/tarifarios/',
     bilhetes:[
       {nome:'Bilhete simples (avulso)', preco:1.10, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'Bilhete diário', preco:3.85, unidade:'dia', quando:'chegada', modos:['autocarro']},
@@ -712,7 +737,7 @@ const TRANSPORTES_DESTINO = {
      operador, à espera de alguém confirmar o actual. */
   'Portalegre': {operador:'SMAT (Serviços Municipalizados de Águas e Transportes de Portalegre)', url:'https://www.cm-portalegre.pt/municipes/servicos-municipalizados/transportes/tarifarios/', actualizado:'2026-09-04', fonte:'https://www.cm-portalegre.pt/municipes/servicos-municipalizados/transportes/tarifarios/',
     bilhetes:[]},
-  'Évora': {operador:'Trevo (E-BUS)', url:'https://www.trevo.com.pt/', actualizado:'2026-08-31', fonte:'https://www.cm-evora.pt/wp-content/uploads/2025/12/5-Certidao-ponto-10.3-RPC-17-12-2025.pdf',
+  'Évora': {operador:'Trevo (E-BUS)', url:'https://www.trevo.com.pt/', actualizado:'2026-10-12', fonte:'https://www.cm-evora.pt/wp-content/uploads/2025/12/5-Certidao-ponto-10.3-RPC-17-12-2025.pdf',
     nota:'Valores da deliberação camarária de 17/12/2025, em vigor desde 1/01/2026. A LinhAzul é a linha turística do centro histórico.',
     bilhetes:[
       {nome:'Bilhete de motorista (avulso)', preco:1.55, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -773,7 +798,7 @@ const TRANSPORTES_DESTINO = {
   /* Lido a 31/08/2026: o bilhete avulso é calculado por uma calculadora de
      tarifas (linha, origem e destino), sem preço fixo nenhum, tal como o
      bilhete simples de Madrid; a nota di-lo. Os passes têm preço fixo. */
-  'Tenerife': {operador:'TITSA', url:'https://www.titsa.com/index.php/en/your-buses/fares-and-discounts', actualizado:'2026-08-31', fonte:'https://www.titsa.com/index.php/en/your-buses/fares-and-discounts',
+  'Tenerife': {operador:'TITSA', url:'https://www.titsa.com/index.php/en/your-buses/fares-and-discounts', actualizado:'2026-10-12', fonte:'https://www.titsa.com/index.php/en/your-buses/fares-and-discounts',
     nota:'O bilhete avulso depende da linha e do percurso, calculado numa ferramenta própria do operador; os passes cobrem autocarro e eléctrico em toda a ilha. É preciso um cartão Ten+ (2 €, à parte) para os carregar.',
     bilhetes:[
       {nome:'Day Travelcard (Ten+), 24 h', preco:10.00, unidade:'24 h', quando:'chegada', modos:['autocarro','eletrico']},
@@ -783,13 +808,21 @@ const TRANSPORTES_DESTINO = {
      em JavaScript e por isso vinha vazia às rondas anteriores. São as
      tarifas ordinárias, pagas a bordo. A targeta ciutadana é para
      residentes e não entra. */
-  /* Tentada reconfirmação a 05/10/2026: o sítio é uma SPA sem dados
-     estáticos e nunca respondeu (nem à procura da API interna). Fontes
-     de imprensa contraditórias: uma diz que a câmara aprovou subir o
-     bilhete urbano/porto de 2 € para 3 €, mas sem confirmar se já está
-     em vigor; outra cita «3 €» já como preço do porto. Fica «por rever»
-     por isto parecer uma subida real, não só burocracia parada. */
-  'Palma de Maiorca': {operador:'EMT Palma', url:'https://www.emtpalma.cat/ca/tarifes/tarifes', actualizado:'2026-08-30', fonte:'https://www.emtpalma.cat/ca/tarifes/tarifes',
+  /* Tentada reconfirmação a 05/10 e 12/10/2026: o sítio é uma SPA sem
+     dados estáticos e nunca respondeu. Lida directamente a 12/10 a
+     ordenança do Ayuntamiento de Palma (BOIB Núm. 99, 8/08/2026,
+     artigo 5): fixa a tarifa de referência em 3,00 € para a zona urbana
+     (A1, 0 saltos) e 4,50 € para o aeroporto/zona A2 (1 salto),
+     substituindo todo o sistema por zonas+saltos em vez dos bilhetes
+     actuais. MAS este é só o acordo de aprovação INICIAL: a própria
+     ordenança diz que só entra em vigor com uma publicação posterior no
+     BOIB, depois de um prazo de 30+15 dias sem reclamações. Não se
+     achou essa publicação definitiva, por isso não se sabe ao certo se
+     já está em vigor hoje. Fica «por rever»: a próxima ronda deve
+     procurar especificamente essa publicação definitiva, e se a achar,
+     também vai ter de repensar os bilhetes de «porto» e «aeroporto»
+     para o novo sistema por zonas. */
+  'Palma de Maiorca': {operador:'EMT Palma', url:'https://www.emtpalma.cat/ca/tarifes/tarifes', actualizado:'2026-08-30', fonte:'https://www.caib.es/eboibfront/pdf/es/2026/99/1225914',
     nota:'Paga-se a bordo, em dinheiro (não aceitam notas acima de 5 €) ou com cartão bancário; nenhum destes bilhetes dá direito a transbordo. As linhas A1 e A2 só servem o aeroporto, sem paragens pelo meio.',
     bilhetes:[
       {nome:'Bilhete simples, urbano', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -800,7 +833,7 @@ const TRANSPORTES_DESTINO = {
      de tarifas tinha a tabela completa, por escalão de distância. Entram
      dois escalões representativos, pagos por cartão ou QR (mais barato do
      que em dinheiro a bordo). Lido a 31/08/2026. */
-  'Ibiza': {operador:'ALSA', url:'https://www.alsaibiza.es/en/fares', actualizado:'2026-08-31', fonte:'https://www.alsaibiza.es/en/fares',
+  'Ibiza': {operador:'ALSA', url:'https://www.alsaibiza.es/en/fares', actualizado:'2026-10-12', fonte:'https://www.alsaibiza.es/en/fares',
     nota:'Tarifa por escalão de distância. Pago em dinheiro a bordo custa mais (2,40 a 3,60 € consoante o escalão); os valores aqui são a pagar por cartão ou QR na aplicação Mobi4U.',
     bilhetes:[
       {nome:'0 a 9 km', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -818,7 +851,7 @@ const TRANSPORTES_DESTINO = {
      10; o CityPass turístico de 24/48/72 h existe (visto no catálogo), mas
      só apareceu com o preço de criança (6-12 anos): sem o preço de adulto
      confirmado, fica de fora. */
-  'Marselha': {operador:'RTM', url:'https://www.rtm.fr/tarifs', actualizado:'2026-08-31', fonte:'https://www.rtm.fr/tarifs?page=2',
+  'Marselha': {operador:'RTM', url:'https://www.rtm.fr/tarifs', actualizado:'2026-10-12', fonte:'https://www.rtm.fr/tarifs?page=2',
     nota:'Há também um CityPass turístico de 24, 48 e 72 horas, mas só se confirmou o preço da versão de criança (6-12 anos); por isso não entra aqui. Cobre autocarro, metro, eléctrico e o ferry do Vieux-Port.',
     bilhetes:[
       {nome:'Carte 1 voyage', preco:1.70, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -851,7 +884,7 @@ const TRANSPORTES_DESTINO = {
       {nome:'Tecto diário, autocarro e eléctrico', preco:9.50, unidade:'dia', quando:'chegada', modos:['autocarro','eletrico']},
       {nome:'Tecto semanal, autocarro e eléctrico', preco:41.00, unidade:'semana', quando:'chegada', modos:['autocarro','eletrico']}
     ]},
-  'Cracóvia': {operador:'MPK Kraków', url:'https://mpk.krakow.pl/en/kmk-tickets', actualizado:'2026-08-31', fonte:'https://mpk.krakow.pl/en/kmk-tickets', moeda:'PLN',
+  'Cracóvia': {operador:'MPK Kraków', url:'https://mpk.krakow.pl/en/kmk-tickets', actualizado:'2026-10-12', fonte:'https://mpk.krakow.pl/en/kmk-tickets', moeda:'PLN',
     nota:'A zona I cobre o centro; a I+II+III chega aos arredores. O bilhete de 24 h da zona I é mais barato do que o das três zonas juntas.',
     bilhetes:[
       {nome:'Bilhete de 30 minutos ou viagem única', preco:6.00, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},

@@ -534,3 +534,56 @@ fila deve demorar uns meses a esvaziar; depois disso, como os lotes
 originais deixam de estar concentrados em datas tão próximas, as
 rondas seguintes devem voltar a ser pequenas, parecidas com a primeira
 semana (30 cidades).
+
+### Terceira ronda semanal, a 12 de Outubro de 2026: 18 cidades, e uma correcção antiga encontrada
+
+Tratado o lote dos 42 dias (cidades portuguesas pequenas e algumas
+europeias), mais nova tentativa nas quatro que ficaram por rever nas
+duas semanas anteriores.
+
+**17 cidades reconfirmadas sem alteração de preço**, só a data mudou:
+Funchal, Aveiro, Guarda, Braga, Viana do Castelo, Leiria, Santarém,
+Castelo Branco, Évora, Ibiza, Tenerife, Marselha, Munique, Frankfurt,
+Cracóvia, e duas com um pormenor à parte: Coimbra (preço confirmado,
+mas o `fonte` apontava para o PDF de Abril; trocado para a versão de
+1 de Outubro, mais recente, encontrada na mesma página) e **Viena**,
+que finalmente saiu de «por rever» ao fim de 3 semanas bloqueada: a
+página oficial continua atrás de um desafio Radware, mas o factsheet
+oficial da Wiener Linien («Tarifanpassung/09.2025», publicado pela
+própria empresa) confirma os três valores já guardados (3,2 € / 10,2 € /
+28,9 €) directamente, sem intermediários jornalísticos desta vez.
+
+**1 correcção de dados antiga, não uma subida de preço**: Covilhã. O
+valor guardado para o «Bilhete diário urbano pré-comprado» (4,35 €)
+estava trocado com o de um produto diferente, o bilhete combinado
+urbano+suburbano. Visto directamente na imagem do PDF oficial (a
+extracção de texto embaralhava a tabela, por isso renderizou-se a
+página e leu-se a olho): o bilhete urbano sozinho custa 3,70 €, o
+combinado é que custa 4,35 €. Corrigido para 3,70 €; o erro já vinha
+de quando esta cidade foi adicionada, não é uma mudança recente.
+
+**4 cidades ficam por rever**, cada uma com motivo diferente e
+documentado directamente no ficheiro:
+- **Málaga**: terceira semana seguida sem conseguir ligar ao sítio
+  (reset de TLS do próprio servidor). Pesquisa adicional encontrou dois
+  motivos reais de dúvida, não só o bloqueio: o bilhete ordinário pode
+  estar prestes a subir para 1,50 € (ordenança camarária em aprovação
+  inicial), e a «Recarga de 10 viagens» guardada a 5,00 € pode ser um
+  desconto temporário de 2025 já caducado (a ordenança fiscal municipal
+  lista 8,30 € como tarifa de base). Nenhum dos dois foi confirmado o
+  suficiente para mudar o número.
+- **Valência**: terceira semana seguida bloqueada; fontes secundárias
+  coincidem com o valor guardado, mas não chegam para confirmar.
+- **Palma de Maiorca**: lida directamente a ordenança do Ayuntamiento
+  de Palma (BOIB Núm. 99, 8/08/2026): aprova uma subida de 2 € para
+  3 € (zona urbana) e a substituição de todo o sistema de bilhetes por
+  zonas e saltos. Mas é só a aprovação INICIAL; falta achar a
+  publicação definitiva no BOIB que a própria ordenança diz ser
+  necessária para entrar em vigor. Sem essa segunda publicação, não se
+  sabe ao certo se já está em vigor hoje.
+- **Setúbal**: o sítio da Carris Metropolitana devolveu erro 523 em
+  4 tentativas separadas, parecendo uma falha real do serviço, não um
+  bloqueio. Só o Passe Navegante Municipal (30 €) se confirmou por uma
+  fonte secundária; os outros dois bilhetes ficam por confirmar.
+
+**Cerca de 147 cidades ficam por rever** para as próximas semanas.
