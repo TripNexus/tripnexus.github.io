@@ -587,3 +587,45 @@ documentado directamente no ficheiro:
   fonte secundária; os outros dois bilhetes ficam por confirmar.
 
 **Cerca de 147 cidades ficam por rever** para as próximas semanas.
+
+### Quarta ronda semanal, a 19 de Outubro de 2026: 17 cidades, duas mudanças reais
+
+Tratadas as 4 cidades que já vinham por rever (Málaga, Valência, Setúbal,
+Palma de Maiorca) mais o lote dos 49 e 48 dias.
+
+**14 cidades reconfirmadas sem alteração de preço**, só a data mudou:
+Santorini, Zagreb, Dubrovnik, Casablanca, Recife, Bogotá, Buenos Aires,
+Santiago, Osaka, Cidade do Cabo, Viseu, Madrid, Sevilha, Fortaleza.
+
+**Nice**: preço confirmado sem alteração, mas o `fonte` apontava para um
+PDF de Setembro que já não existe (redirecciona para uma edição de
+Outubro); trocado por uma página estável que resolve sempre para o guia
+mais recente, em vez de um nome de ficheiro versionado.
+
+**2 mudanças reais, ambas confirmadas directamente na fonte oficial:**
+
+| Cidade | Estava | Ficou | Razão |
+|---|---|---|---|
+| Oslo | Passe de 30 dias 805 NOK; bilhete simples por confirmar | 655 NOK; bilhete simples 46 NOK (achado) | Subsídio estatal temporário (3/05/2026 a 3/05/2027) baixou o passe; o bilhete simples, que faltava desde a primeira vez que esta cidade entrou na tabela, foi achado na calculadora oficial |
+| Reiquiavique | Passe de 24h (2750 ISK) e de 72h (6000 ISK) na tabela | Retirados | Já não são vendidos: a página oficial actual só lista bilhete simples, passe de 30 dias e cartão de 1 ano; um aviso da Strætó de Janeiro de 2025 confirma a descontinuação, substituídos por um tecto de gastos diário/semanal |
+
+**5 cidades ficam por rever**, todas com o motivo actualizado no
+ficheiro:
+- **Málaga e Valência**: quarta semana seguida com o sítio a recusar
+  ligação por TLS. Para Málaga, resolvida a dúvida da semana passada
+  sobre a «Recarga de 10 viagens»: o desconto municipal de 40-50% (em
+  vigor até final de 2026) é o que explica o preço guardado, a tarifa
+  base é 8,40 €, não 8,30 € como se pensava.
+- **Setúbal**: site continua com erro 523/503, e o arquivo da Wayback
+  Machine deste endereço está bloqueado pela política de rede desta
+  sessão.
+- **Palma de Maiorca**: o prazo de informação pública da ordenança já
+  fechou há mais de um mês, mas continua sem se achar a publicação
+  definitiva que a traz à vigor; uma fonte turística verificada hoje
+  ainda descreve o bilhete como 2 €, reforçando que a subida para 3 €
+  provavelmente ainda não está activa.
+- **Bragança**: tentativa directa falhou (site municipal com erro 503,
+  o site do STUB só tem planeador de viagens); continua sem contradição
+  em lado nenhum de que é gratuito, mas também sem confirmação directa.
+
+**Cerca de 130 cidades ficam por rever** para as próximas semanas.
