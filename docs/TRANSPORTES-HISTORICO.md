@@ -629,3 +629,53 @@ ficheiro:
   em lado nenhum de que é gratuito, mas também sem confirmação directa.
 
 **Cerca de 130 cidades ficam por rever** para as próximas semanas.
+
+### Quinta ronda semanal, a 26 de Outubro de 2026: 14 cidades, duas mudanças reais
+
+Tratadas as 5 cidades que já vinham por rever (Málaga, Valência, Setúbal,
+Palma de Maiorca, Bragança) mais o lote dos 53 dias (cidades europeias e
+Minsk).
+
+**10 cidades reconfirmadas sem alteração de preço**, só a data mudou:
+Santiago de Compostela, Luxemburgo, Tirana, Sarajevo, Nicósia, Liubliana,
+Tbilisi, Vilnius (confirmado via judu.lt, a verdadeira autoridade
+tarifária, já que o `url` guardado só reencaminhava para lá), Escópia,
+Valeta (a pergunta sazonal da ronda anterior ficou resolvida: hoje está
+dentro da época de Inverno, por isso o preço guardado, 2 €, é o
+correcto).
+
+**2 correcções de proveniência**, sem alteração de preço: Bolonha (o
+`url` antigo dava 404, trocado para `tper.it/tariffe`) e Sófia (o `url`
+guardado, metrosofia.com, diz no próprio rodapé que não é afiliado ao
+operador; trocado para o sítio oficial, metropolitan.bg, que confirma
+os mesmos preços).
+
+**2 mudanças reais, ambas confirmadas directamente na fonte oficial:**
+
+| Cidade | Estava | Ficou | Razão |
+|---|---|---|---|
+| Bilbau | Avulso 1,60 €; Barik 0,95 € | 1,60→2,00 €; 0,95→1,02 € | Subida directa, confirmada na página oficial da CTB. O «Bilhete diário» (4,90 €) não se encontrou em nenhuma sub-página; fica o valor antigo, marcado como por confirmar |
+| Bratislava | 1,20 €/1,80 €/5,40 € | 0,60 €/0,90 €/2,70 € | Tarifário temporário a metade do preço, em vigor de 12/10 a 10/11/2026 (confirmado no PDF oficial da DPB); volta ao normal depois dessa data |
+
+**6 cidades ficam por rever**, cada uma com o motivo actualizado no
+ficheiro:
+- **Málaga e Valência**: quinta semana seguida bloqueadas por TLS.
+- **Setúbal**: site continua com erro 523/503; a app nova carrega mas
+  não tem dados de tarifário nenhuns.
+- **Bragança**: o site do STUB já carrega (já não dá 503), mas não tem
+  uma única menção a tarifário ou preço; continua sem contradição, mas
+  a confirmação directa mais recente já tem 3 anos.
+- **Palma de Maiorca**: imprensa balear (23/10/2026) traz a notícia mais
+  precisa até agora: a subida só passou pela comissão da câmara, falta
+  o voto do pleno completo (~29/10) e depois mais 30 dias de informação
+  pública; a nova tarifa só deve entrar em vigor em 2027. O bilhete
+  continua a 2 €, agora com bastante mais confiança.
+- **Minsk**: site completamente inacessível; imprensa independente
+  (Nasha Niva) confirma os valores guardados, mas por ser só imprensa,
+  não chega para confirmar.
+
+**2 cidades novas ficam por rever**, bloqueadas pela primeira vez: Taline
+(desafio Cloudflare em todas as tentativas) e Riga (bloqueio da Azure
+Application Gateway, mais a página alternativa riga.lv com erro 503).
+
+**Cerca de 116 cidades ficam por rever** para as próximas semanas.
