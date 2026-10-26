@@ -387,10 +387,11 @@ const TRANSPORTES_DESTINO = {
      zona A, e os títulos SUMA T valem na combinação AB. São os valores da
      rede de metro e eléctrico; a EMT (autocarros) tem tarifário próprio,
      que não vem nesta página. */
-  /* Tentada reconfirmação em 29/09, 05/10, 12/10 e 19/10/2026:
+  /* Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10 e 26/10/2026:
      metrovalencia.es recusa sempre a ligação (reset de TLS vindo do
      próprio servidor, confirmado várias vezes, não é bloqueio de rede
-     deste lado). Fontes secundárias, não oficiais, confirmam os dois
+     deste lado; nem o domínio alternativo fgv.es nem a Wayback Machine
+     responderam). Fontes secundárias, não oficiais, confirmam os dois
      «sencillo» mas não dizem nada fiável sobre os três SUMA (24/48/72h).
      Fica «por rever». */
   'Valência': {operador:'Metrovalencia', url:'https://www.metrovalencia.es/es/nuestras-tarifas/', actualizado:'2026-08-30', fonte:'https://www.metrovalencia.es/es/nuestras-tarifas/',
@@ -405,16 +406,17 @@ const TRANSPORTES_DESTINO = {
   /* Málaga não estava na tabela: o utilizador via só uma procura. Lido na
      EMT Málaga a 30/08/2026. A própria página diz que são as tarifas de
      1 de Janeiro de 2025, prorrogadas durante 2026.
-     Tentada reconfirmação em 29/09, 05/10, 12/10 e 19/10/2026:
+     Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10 e 26/10/2026:
      emtmalaga.es recusa sempre a ligação (reset de TLS do próprio
-     servidor), quarta semana seguida. Fontes secundárias (não oficiais)
+     servidor), quinta semana seguida. Fontes secundárias (não oficiais)
      confirmam os três valores de baixo continuam correctos, incluindo a
-     dúvida da ronda passada: o desconto municipal de 40-50% que está em
-     vigor até 31/12/2026 é o que explica a «Recarga de 10 viagens» a
+     dúvida de rondas passadas: o desconto municipal de 40-50% que está
+     em vigor até 31/12/2026 é o que explica a «Recarga de 10 viagens» a
      5,00 € (a tarifa base, sem desconto, é 8,40 €, não 8,30 € como se
      tinha achado). O «Bilhete ordinário» pode ainda vir a subir para
-     1,50 €, mas a ordenança que o propõe ainda não entrou em vigor. Como
-     a confirmação é só por fontes secundárias, fica «por rever». */
+     1,50 €, mas a ordenança que o propõe ainda não entrou em vigor (a
+     7/07/2026 ainda estava em aprovação inicial). Como a confirmação é
+     só por fontes secundárias, fica «por rever». */
   'Málaga': {operador:'EMT Málaga', url:'https://www.emtmalaga.es/es/tarifas', actualizado:'2026-08-30', fonte:'https://www.emtmalaga.es/es/tarifas',
     nota:'O bilhete simples não dá transbordo e não vale na linha A do aeroporto, que tem bilhete próprio. A recarga de 10 viagens dá transbordos gratuitos durante 1 h e sai a metade do preço à viagem, mas precisa de um cartão.',
     bilhetes:[
@@ -721,15 +723,17 @@ const TRANSPORTES_DESTINO = {
      2025 (1,25 € / 4,50 €); o aumento de 2026 está confirmado num artigo
      da Lisboa Para Pessoas, publicado a 30/12/2025, com fonte no regulador
      (AMT, taxa de actualização de 2,28 %) e nas operadoras. */
-  /* Tentada reconfirmação a 12/10 e a 19/10/2026: backoffice.
+  /* Tentada reconfirmação a 12/10, 19/10 e 26/10/2026: backoffice.
      carrismetropolitana.pt continua a devolver erro 523/503 (origem
-     incontactável), e o arquivo da Wayback Machine deste endereço está
-     bloqueado pela política de rede desta sessão. Parece ser uma falha
-     real do sítio, não um bloqueio. O Passe Navegante Municipal (30 €)
-     está confirmado por várias notícias de 2026 independentes da fonte
-     guardada; os outros dois bilhetes ficam por confirmar (há um indício
-     indirecto, não uma confirmação, de que a tarifa de bordo pode ter
-     subido 2,28% em vez de ficar exactamente em 1,30 €). */
+     incontactável); carrismetropolitana.pt/tickets carrega mas é uma
+     SPA sem dados no HTML (confirmado directamente: zero ocorrências de
+     "tarifa", "€" ou "Próxima" na página). Parece ser uma falha real do
+     sítio, não um bloqueio. O Passe Navegante Municipal (30 €) está
+     confirmado por várias notícias de 2026 independentes da fonte
+     guardada ("pelo terceiro ano consecutivo"); os outros dois bilhetes
+     ficam por confirmar (há um indício indirecto, não uma confirmação,
+     de que a tarifa de bordo pode ter subido 2,28% em vez de ficar
+     exactamente em 1,30 €). */
   'Setúbal': {operador:'Carris Metropolitana', url:'https://backoffice.carrismetropolitana.pt/tarifarios/', actualizado:'2026-08-31', fonte:'https://lisboaparapessoas.pt/2025/12/30/transportes-2026-lisboa/',
     nota:'A tarifa de bordo da zona «Linha Próxima» subiu de 1,25 € para 1,30 € em 2026; o pré-pago (zapping) não subiu. Os passes Navegante cobrem toda a Área Metropolitana de Lisboa, não só Setúbal.',
     bilhetes:[
@@ -782,10 +786,12 @@ const TRANSPORTES_DESTINO = {
      linhas, horários e autocarros novos sem mencionar tarifa nenhuma, o
      que seria de esperar se a tivessem reintroduzido. O site oficial não
      publica tarifário porque, precisamente, não há preço a cobrar.
-     Tentativa de reconfirmação directa a 19/10/2026: bus.cm-braganca.pt
-     só tem planeador de viagens, sem tarifário nenhum; cm-braganca.pt
-     devolveu erro 503. Continua sem contradição em lado nenhum, mas sem
-     confirmação directa de 2026 também. */
+     Tentativa de reconfirmação directa a 19/10 e a 26/10/2026:
+     bus.cm-braganca.pt carrega bem (já não dá 503), mas só tem
+     planeador de viagens, horários e linhas, sem uma única menção a
+     tarifário, preço ou "gratuito" em toda a página; cm-braganca.pt
+     continua inacessível. Continua sem contradição em lado nenhum, mas
+     a confirmação mais recente e directa que existe já tem 3 anos. */
   'Bragança': {operador:'STUB (Serviço de Transportes Urbanos de Bragança)', url:'https://bus.cm-braganca.pt/', actualizado:'2026-09-01', fonte:'https://www.mdb.pt/noticia/plano-de-mobilidade-preve-novas-rotas-de-autocarros-e-mais-eletricos',
     bilhetes:[{nome:'Todas as linhas urbanas e rurais', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro']}]},
   /* As tabelas de preços da página não são geradas por JavaScript: estão
@@ -825,23 +831,21 @@ const TRANSPORTES_DESTINO = {
      em JavaScript e por isso vinha vazia às rondas anteriores. São as
      tarifas ordinárias, pagas a bordo. A targeta ciutadana é para
      residentes e não entra. */
-  /* Tentada reconfirmação a 05/10, 12/10 e 19/10/2026: o sítio é uma SPA
-     sem dados estáticos e nunca respondeu (sem arquivo Wayback também).
-     Lida directamente a 12/10 a ordenança do Ayuntamiento de Palma (BOIB
-     Núm. 99, 8/08/2026, artigo 5): fixa a tarifa de referência em 3,00 €
-     para a zona urbana (A1, 0 saltos) e 4,50 € para o aeroporto/zona A2
-     (1 salto), substituindo todo o sistema por zonas+saltos. MAS este é
-     só o acordo de aprovação INICIAL: a própria ordenança diz que só
-     entra em vigor com uma publicação posterior no BOIB. O prazo de
-     informação pública (10/08 a 18/09/2026) já fechou há mais de um mês,
-     mas a 19/10 continua sem se achar essa publicação definitiva nem
-     nenhuma notícia de Outubro a confirmar que o bilhete de 3 € já está
-     a ser cobrado; uma fonte turística não oficial, verificada hoje,
-     ainda descreve o bilhete a dinheiro como 2 € e diz explicitamente
-     que a subida só entra em vigor com a publicação definitiva. Fica
-     «por rever»: a próxima ronda deve voltar a procurar essa publicação,
-     e se a achar, também terá de repensar «porto» e «aeroporto» para o
-     novo sistema por zonas. */
+  /* Tentada reconfirmação a 05/10, 12/10, 19/10 e 26/10/2026: o sítio é
+     uma SPA sem dados estáticos e nunca respondeu. A ordenança (BOIB
+     Núm. 99, 8/08/2026) propõe 3,00 € na zona urbana (A1) e 4,50 € no
+     aeroporto (A2), mas a 26/10 já se sabe exactamente em que fase vai:
+     imprensa balear (Última Hora e Forbes España, ambas 23/10/2026)
+     noticia que a subida só passou pela Comissão de Urbanismo (câmara),
+     com o voto do Pleno completo agendado para cerca de 29/10/2026;
+     depois disso falta ainda outro prazo de 30 dias de informação
+     pública e a publicação definitiva no BOIB. A Forbes diz
+     explicitamente que a tarifa nova só entra em vigor "a partir del
+     año que viene" (2027). O bilhete continua, portanto, a 2 €, com
+     bastante mais confiança do que nas rondas anteriores, mas como a
+     fonte é imprensa e não o BOIB em si, fica «por rever»: a próxima
+     ronda não precisa de se apressar, só voltar a verificar perto do
+     final do ano. */
   'Palma de Maiorca': {operador:'EMT Palma', url:'https://www.emtpalma.cat/ca/tarifes/tarifes', actualizado:'2026-08-30', fonte:'https://www.caib.es/eboibfront/pdf/es/2026/99/1225914',
     nota:'Paga-se a bordo, em dinheiro (não aceitam notas acima de 5 €) ou com cartão bancário; nenhum destes bilhetes dá direito a transbordo. As linhas A1 e A2 só servem o aeroporto, sem paragens pelo meio.',
     bilhetes:[
@@ -1156,18 +1160,24 @@ const TRANSPORTES_DESTINO = {
      03/09/2026: zona 1 com cartão Barik (pré-carregado, mínimo 5€, numa
      máquina na estação) fica a 0,95€; sem cartão, o avulso em dinheiro
      fica a 1,60€; o diário fica a 4,90€. */
-  'Bilbau': {operador:'Metro Bilbao / CTB', url:'https://www.ctb.eus/en/metro-service-fares', actualizado:'2026-09-03', fonte:'https://www.ctb.eus/en/metro-service-fares',
-    moeda:'EUR', nota:'É preciso o cartão Barik (pré-carregado, mínimo 5€) para a tarifa mais barata; sem cartão paga-se mais no bilhete avulso.',
+  /* Subida real a 26/10/2026, confirmada directamente na página oficial:
+     avulso 1,60→2,00 €, Barik 0,95→1,02 €. O «Bilhete diário» não se
+     encontrou nesta página nem em nenhuma das sub-páginas do Barik
+     (Bidai 50/70, Gazte, Bidai Oro são passes de 30 dias, não diários);
+     fica o valor antigo por não haver nada melhor, mas marcado para se
+     confirmar se ainda existe este produto. */
+  'Bilbau': {operador:'Metro Bilbao / CTB', url:'https://www.ctb.eus/en/metro-service-fares', actualizado:'2026-10-26', fonte:'https://www.ctb.eus/en/metro-service-fares',
+    moeda:'EUR', nota:'É preciso o cartão Barik (pré-carregado, mínimo 5€) para a tarifa mais barata; sem cartão paga-se mais no bilhete avulso. O «Bilhete diário» não foi reconfirmado: pode já não existir como produto.',
     bilhetes:[
-      {nome:'Bilhete avulso, sem cartão (zona 1)', preco:1.60, unidade:'viagem', quando:'chegada', modos:['metro']},
-      {nome:'Bilhete com cartão Barik (zona 1)', preco:0.95, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Bilhete avulso, sem cartão (zona 1)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Bilhete com cartão Barik (zona 1)', preco:1.02, unidade:'viagem', quando:'chegada', modos:['metro']},
       {nome:'Bilhete diário', preco:4.90, unidade:'24 h', quando:'chegada', modos:['metro']}
     ]},
   /* Não estava na tabela. Bilhete avulso a dinheiro (1€) estável há vários
      anos, confirmado por duas fontes. O bono (cartão recarregável) desce
      de 0,60€ para 0,36€ por viagem a partir de Janeiro de 2026, com
      subsídio do governo espanhol. Verificado a 03/09/2026. */
-  'Santiago de Compostela': {operador:'Tussa (Transportes Urbanos de Santiago)', url:'https://tussa.gal/es/estacion/tarifas', actualizado:'2026-09-03', fonte:'https://www.elespanol.com/quincemil/santiago/20250630/quedan-precios-autobus-urbano-santiago-compostela-partir-julio/1003743827097_0.html',
+  'Santiago de Compostela': {operador:'Tussa (Transportes Urbanos de Santiago)', url:'https://tussa.gal/es/estacion/tarifas', actualizado:'2026-10-26', fonte:'https://www.elespanol.com/quincemil/santiago/20250630/quedan-precios-autobus-urbano-santiago-compostela-partir-julio/1003743827097_0.html',
     moeda:'EUR', nota:'O bono (cartão recarregável) tem subsídio do governo espanhol e baixa o preço por viagem; sem cartão paga-se o bilhete avulso ao condutor.',
     bilhetes:[
       {nome:'Bilhete avulso (dinheiro, ao condutor)', preco:1.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1177,7 +1187,7 @@ const TRANSPORTES_DESTINO = {
      2025, confirmado por duas fontes jornalísticas independentes: o
      bilhete comprado antes (quiosque/tabacaria) é mais barato do que a
      bordo. Verificado a 03/09/2026. */
-  'Bolonha': {operador:'TPER (Trasporto Passeggeri Emilia-Romagna)', url:'https://www.tper.it/content/tariffe', actualizado:'2026-09-03', fonte:'https://www.ilrestodelcarlino.it/bologna/economia/sch-aumento-biglietti-bus-cosa-cambia-oggi-dllsxnxw/i-dettagli-sui-nuovi-prezzi-tper-biglietti-e-abbonamenti',
+  'Bolonha': {operador:'TPER (Trasporto Passeggeri Emilia-Romagna)', url:'https://www.tper.it/tariffe', actualizado:'2026-10-26', fonte:'https://www.tper.it/tariffe',
     moeda:'EUR', nota:'O bilhete comprado antes de embarcar (quiosque, tabacaria, TPER Point) é mais barato do que a bordo, onde só se paga com dinheiro ou contactless.',
     bilhetes:[
       {nome:'Bilhete urbano, comprado antes', preco:2.30, unidade:'viagem', quando:'antes', modos:['autocarro']},
@@ -1190,7 +1200,7 @@ const TRANSPORTES_DESTINO = {
      num balanço de cinco anos (Fevereiro de 2025); só a 1ª classe do
      comboio continua paga, sem preço confirmado com confiança
      suficiente para entrar aqui. Verificado a 03/09/2026. */
-  'Luxemburgo': {operador:'Mobiliteit.lu / Ville de Luxembourg (rede AVL/RGTR/CFL)', url:'https://www.mobiliteit.lu/en/tickets-page/fares/', actualizado:'2026-09-03', fonte:'https://gouvernement.lu/fr/actualites.gouvernement2024+fr+actualites+toutes_actualites+communiques+2025+02-fevrier+28-bilan-transport-gratuit.html',
+  'Luxemburgo': {operador:'Mobiliteit.lu / Ville de Luxembourg (rede AVL/RGTR/CFL)', url:'https://www.mobiliteit.lu/en/tickets-page/fares/', actualizado:'2026-10-26', fonte:'https://gouvernement.lu/fr/actualites.gouvernement2024+fr+actualites+toutes_actualites+communiques+2025+02-fevrier+28-bilan-transport-gratuit.html',
     moeda:'EUR', nota:'Os transportes públicos são gratuitos em todo o país desde Março de 2020; a única excepção é a 1ª classe do comboio, que continua paga.',
     bilhetes:[
       {nome:'Bilhete (transporte público gratuito)', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro','metro','eletrico']}
@@ -1201,7 +1211,7 @@ const TRANSPORTES_DESTINO = {
      linhas suburbanas privadas distintas (Kamëz/Paskuqan-Tiranë) que
      cobram mais (50 lekë desde Nov/2025): não é a tarifa que entra aqui,
      que é a geral da cidade. Verificado a 03/09/2026. */
-  'Tirana': {operador:'Autocarros urbanos (concessionárias privadas, coordenadas pela Bashkia Tiranë)', url:'https://urbani.tirana.al/', actualizado:'2026-09-03', fonte:'https://opendata.tirana.al/',
+  'Tirana': {operador:'Autocarros urbanos (concessionárias privadas, coordenadas pela Bashkia Tiranë)', url:'https://urbani.tirana.al/', actualizado:'2026-10-26', fonte:'https://opendata.tirana.al/',
     moeda:'ALL', nota:'Preço da rede geral da cidade, subsidiado pela câmara. Linhas suburbanas privadas distintas (Kamëz, Paskuqan) cobram mais e não são esta tarifa.',
     bilhetes:[
       {nome:'Bilhete simples (dinheiro, ao cobrador)', preco:40, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1213,6 +1223,12 @@ const TRANSPORTES_DESTINO = {
      Executivo de Minsk); não foi possível aceder aos sites oficiais
      directamente, mas quatro fontes de imprensa independentes coincidem
      no valor. Verificado a 03/09/2026. */
+  /* Tentada reconfirmação a 26/10/2026: minsktrans.by continua
+     totalmente inacessível (reset de TLS em todas as tentativas, mesmo
+     ao domínio base). A imprensa independente (Nasha Niva) confirma os
+     três valores de baixo, com subida a 27/03/2026 (autocarro de 0,95
+     para 1,1 BYN, metro de 1 para 1,15 BYN); mas por ser só imprensa,
+     não o operador, fica «por rever». */
   'Minsk': {operador:'Minsktrans (autocarro/trólei/eléctrico) / Minsk Metro', url:'https://minsktrans.by/oplata-proezda/tarify/', actualizado:'2026-09-03', fonte:'https://myfin.by/',
     moeda:'BYN', nota:'Talão do autocarro/trólei/eléctrico e ficha do metro têm preços próprios, ligeiramente diferentes.',
     bilhetes:[
@@ -1226,7 +1242,7 @@ const TRANSPORTES_DESTINO = {
      por isso o valor pago continua em 2,20 KM; confirmado pela tabela
      oficial do operador e pelo Ministério dos Transportes do cantão.
      Verificado a 03/09/2026. */
-  'Sarajevo': {operador:'GRAS (Gradski saobraćaj Sarajevo)', url:'https://gras.ba/karte/', actualizado:'2026-09-03', fonte:'https://gras.ba/wp-content/uploads/2025/06/cjenovnik-tabela-1.7.25.pdf',
+  'Sarajevo': {operador:'GRAS (Gradski saobraćaj Sarajevo)', url:'https://gras.ba/karte/', actualizado:'2026-10-26', fonte:'https://gras.ba/wp-content/uploads/2025/06/cjenovnik-tabela-1.7.25.pdf',
     moeda:'BAM', nota:'O preço nominal subiu para 2,50 KM em Julho de 2025, mas um subsídio do Cantão de Sarajevo mantém o valor pago em 2,20 KM.',
     bilhetes:[
       {nome:'Bilhete simples', preco:2.20, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
@@ -1239,7 +1255,11 @@ const TRANSPORTES_DESTINO = {
      2026 (1,60 BGN passou a 0,80€); confirmado pela página oficial do
      Metro de Sófia e por uma notícia do próprio CGM. Verificado a
      03/09/2026. */
-  'Sófia': {operador:'Metropoliten EAD (Metro de Sófia) / Centro de Mobilidade Urbana (CGM)', url:'https://www.metrosofia.com/en/tickets', actualizado:'2026-09-03', fonte:'https://www.metrosofia.com/en/tickets',
+  /* URL corrigido a 26/10/2026: metrosofia.com, apesar do nome, diz no
+     próprio rodapé que não é afiliado ao operador («NOT the official
+     site of Metropolitan EAD»). Trocado para o sítio oficial
+     (metropolitan.bg), que confirma os mesmos dois preços. */
+  'Sófia': {operador:'Metropoliten EAD (Metro de Sófia) / Centro de Mobilidade Urbana (CGM)', url:'https://www.metropolitan.bg/en/information-for-citizens/trip-cards-sofia-metro', actualizado:'2026-10-26', fonte:'https://www.metropolitan.bg/en/information-for-citizens/trip-cards-sofia-metro',
     moeda:'EUR', nota:'Tarifário unificado para metro, autocarro, tram e trólei. Os preços passaram de leva para euro a 1 de Janeiro de 2026.',
     bilhetes:[
       {nome:'Bilhete "30+" (transbordo até 30 min)', preco:0.80, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -1252,7 +1272,7 @@ const TRANSPORTES_DESTINO = {
      oficial e por uma notícia local. Não há passe diário só a dinheiro
      (só existe um passe multi-cidade a 20€, exige o cartão Motion, por
      isso não entra aqui). Verificado a 03/09/2026. */
-  'Nicósia': {operador:'Cyprus Public Transport (CPT)', url:'https://www.publictransport.com.cy/cms/page/cash-tickets', actualizado:'2026-09-03', fonte:'https://www.publictransport.com.cy/cms/page/cash-tickets',
+  'Nicósia': {operador:'Cyprus Public Transport (CPT)', url:'https://www.publictransport.com.cy/cms/page/cash-tickets', actualizado:'2026-10-26', fonte:'https://www.publictransport.com.cy/cms/page/cash-tickets',
     moeda:'EUR',
     bilhetes:[
       {nome:'Bilhete simples urbano (dinheiro)', preco:2.70, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1262,17 +1282,23 @@ const TRANSPORTES_DESTINO = {
      do sistema integrado IDS BK. Valores do tarifário oficial (Cenník),
      confirmados contra uma segunda fonte independente sem contradição.
      Verificado a 03/09/2026. */
-  'Bratislava': {operador:'Dopravný podnik Bratislava (DPB)', url:'https://dpb.sk/sk/cennik', actualizado:'2026-09-03', fonte:'https://dpb.sk/sk/cennik',
-    moeda:'EUR', nota:'Tarifas da cidade (zonas 100+101); o sistema IDS BK integra também comboio e autocarro regional, com zonas próprias.',
+  /* Preços temporários a 26/10/2026: a própria DPB publica um «Cenník
+     dočasne» (tarifário temporário) em vigor de 12/10 a 10/11/2026,
+     a metade do tarifário normal. Confirmado directamente no PDF
+     oficial. O tarifário normal (1,20/1,80/5,40 €, guardado como nota
+     para quando a promoção acabar) volta depois de 10/11/2026; convém
+     reconfirmar nessa altura. */
+  'Bratislava': {operador:'Dopravný podnik Bratislava (DPB)', url:'https://dpb.sk/sk/cennik', actualizado:'2026-10-26', fonte:'https://dpba.blob.core.windows.net/media/Default/Dokumenty/Pre cestujúcich/Cenník od 12.10.2026 dočasne na 30 dní.pdf',
+    moeda:'EUR', nota:'Tarifas da cidade (zonas 100+101); o sistema IDS BK integra também comboio e autocarro regional, com zonas próprias. Preço temporário (metade do normal) em vigor de 12/10 a 10/11/2026; o normal é 1,20 €/1,80 €/5,40 €.',
     bilhetes:[
-      {nome:'Bilhete simples, 30 min', preco:1.20, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
-      {nome:'Bilhete simples, 60 min', preco:1.80, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
-      {nome:'Passe diário 24h', preco:5.40, unidade:'24 h', quando:'chegada', modos:['eletrico','autocarro']}
+      {nome:'Bilhete simples, 30 min', preco:0.60, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
+      {nome:'Bilhete simples, 60 min', preco:0.90, unidade:'viagem', quando:'chegada', modos:['eletrico','autocarro']},
+      {nome:'Passe diário 24h', preco:2.70, unidade:'24 h', quando:'chegada', modos:['eletrico','autocarro']}
     ]},
   /* Não estava na tabela. LPP é a operadora municipal. Duas fontes (o
      próprio operador e o turismo oficial de Liubliana) coincidem sem
      contradição. Verificado a 03/09/2026. */
-  'Liubliana': {operador:'LPP (Ljubljanski potniški promet)', url:'https://www.lpp.si/en/payment-methods/', actualizado:'2026-09-03', fonte:'https://www.lpp.si/en/payment-methods/',
+  'Liubliana': {operador:'LPP (Ljubljanski potniški promet)', url:'https://www.lpp.si/en/payment-methods/', actualizado:'2026-10-26', fonte:'https://www.lpp.si/en/payment-methods/',
     moeda:'EUR', cartao:{nome:'Urbana', preco:2.00, nota:'recarregável, reembolsável; sem ela só se paga (sem transbordo grátis) com cartão bancário directo no validador'},
     bilhetes:[
       {nome:'Bilhete simples (90 min)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
@@ -1283,6 +1309,11 @@ const TRANSPORTES_DESTINO = {
      directo (anti-bot), confirmado em vez disso pelo espelho oficial de
      turismo e pelo operador do eléctrico, sem contradição entre os dois.
      Verificado a 03/09/2026. */
+  /* Tentada reconfirmação a 26/10/2026: tallinn.ee bloqueia todos os
+     pedidos automáticos com um desafio Cloudflare (403 em todas as
+     tentativas, incluindo com cabeçalhos de browser e via um proxy
+     leitor alternativo). Fontes não oficiais, não datadas, citam o
+     mesmo valor (2 €) mas não chegam para confirmar. Fica «por rever». */
   'Taline': {operador:'TLT (Tallinna Linnatransport) / Câmara de Taline', url:'https://www.tallinn.ee/en/pilet/public-transport-tickets-tallinn', actualizado:'2026-09-03', fonte:'https://visittallinn.ee/eng/visitor/plan/transport/public-transport',
     moeda:'EUR', nota:'Os transportes são gratuitos para residentes registados de Taline; um visitante paga sempre o bilhete normal.',
     bilhetes:[
@@ -1293,7 +1324,7 @@ const TRANSPORTES_DESTINO = {
      metro/autocarro/minibus, sistema sem dinheiro (só MetroMoney ou
      cartão bancário). Valor em vigor desde Fevereiro de 2022, sem
      contradição nas fontes actuais. Verificado a 03/09/2026. */
-  'Tbilisi': {operador:'Tbilisi Transport Company (TTC)', url:'https://ttc.com.ge/en/tariff/10', actualizado:'2026-09-03', fonte:'https://ttc.com.ge/en/tariff/10',
+  'Tbilisi': {operador:'Tbilisi Transport Company (TTC)', url:'https://ttc.com.ge/en/tariff/10', actualizado:'2026-10-26', fonte:'https://ttc.com.ge/en/tariff/10',
     moeda:'GEL', nota:'Sistema totalmente sem dinheiro: paga-se com o cartão MetroMoney ou cartão bancário.',
     bilhetes:[
       {nome:'Bilhete único (90 min ilimitados)', preco:1, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
@@ -1304,6 +1335,11 @@ const TRANSPORTES_DESTINO = {
      tradicional para a generalidade dos passageiros; confirmado pelo
      operador e pela câmara de Riga, sem contradição. Verificado a
      03/09/2026. */
+  /* Tentada reconfirmação a 26/10/2026: rigassatiksme.lv bloqueia com um
+     403 da Azure Application Gateway em todas as tentativas; a página
+     alternativa riga.lv devolveu 503. Fontes não oficiais (uma app de
+     terceiros, notícias de 2022-2023) citam os mesmos valores, mas sem
+     fonte primária para confirmar. Fica «por rever». */
   'Riga': {operador:'Rīgas satiksme', url:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/', actualizado:'2026-09-03', fonte:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/',
     moeda:'EUR',
     bilhetes:[
@@ -1313,7 +1349,7 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. VVT é a operadora municipal. Tarifas em vigor
      desde 1 de Julho de 2025 (aumento aprovado pela câmara); sem
      contradição entre fontes. Verificado a 03/09/2026. */
-  'Vilnius': {operador:'Vilniaus viešasis transportas (VVT)', url:'https://www.vilniausviesasistransportas.lt/bilietu-kainos/', actualizado:'2026-09-03', fonte:'https://www.vilniausviesasistransportas.lt/bilietu-kainos/',
+  'Vilnius': {operador:'Vilniaus viešasis transportas (VVT)', url:'https://www.vilniausviesasistransportas.lt/bilietu-kainos/', actualizado:'2026-10-26', fonte:'https://www.vilniausviesasistransportas.lt/bilietu-kainos/',
     moeda:'EUR',
     bilhetes:[
       {nome:'Bilhete 30 min', preco:1.00, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
@@ -1325,7 +1361,7 @@ const TRANSPORTES_DESTINO = {
      motorista (um valor de 60 MKD encontrado numa página turística vinha
      de uma notícia de 2016, descartado por desactualizado). Verificado a
      03/09/2026. */
-  'Escópia': {operador:'JSP Skopje', url:'https://skopjebus.mk/en/price-list/', actualizado:'2026-09-03', fonte:'https://skopjebus.mk/en/price-list/',
+  'Escópia': {operador:'JSP Skopje', url:'https://skopjebus.mk/en/price-list/', actualizado:'2026-10-26', fonte:'https://skopjebus.mk/en/price-list/',
     moeda:'MKD', nota:'Sistema cashless: o bilhete paga-se com o cartão Skopska ou por telemóvel, não há tarifa em numerário confirmada.',
     bilhetes:[
       {nome:'Bilhete simples (cartão Skopska)', preco:35, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1335,7 +1371,7 @@ const TRANSPORTES_DESTINO = {
      para residentes com cartão Tallinja pessoal; um visitante paga
      sempre. Tem duas épocas de preço: a de Verão (14 Jun-18 Out) é a que
      está em vigor a 03/09/2026, dia da verificação. */
-  'Valeta': {operador:'Malta Public Transport (Tallinja)', url:'https://www.publictransport.com.mt/fares-and-tickets/', actualizado:'2026-09-03', fonte:'https://www.publictransport.com.mt/fares-and-tickets/',
+  'Valeta': {operador:'Malta Public Transport (Tallinja)', url:'https://www.publictransport.com.mt/fares-and-tickets/', actualizado:'2026-10-26', fonte:'https://www.publictransport.com.mt/fares-and-tickets/',
     moeda:'EUR', nota:'Gratuito só para residentes com cartão Tallinja pessoal; um visitante paga sempre o bilhete. Preço sazonal: mais caro na época de Verão (14 Jun-18 Out) do que no Inverno.',
     bilhetes:[
       {nome:'Bilhete simples, época de Verão (2 h)', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
