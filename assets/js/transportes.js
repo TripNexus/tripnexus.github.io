@@ -387,11 +387,11 @@ const TRANSPORTES_DESTINO = {
      zona A, e os títulos SUMA T valem na combinação AB. São os valores da
      rede de metro e eléctrico; a EMT (autocarros) tem tarifário próprio,
      que não vem nesta página. */
-  /* Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10 e 26/10/2026:
-     metrovalencia.es recusa sempre a ligação (reset de TLS vindo do
-     próprio servidor, confirmado várias vezes, não é bloqueio de rede
-     deste lado; nem o domínio alternativo fgv.es nem a Wayback Machine
-     responderam). Fontes secundárias, não oficiais, confirmam os dois
+  /* Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10 e
+     02/11/2026: metrovalencia.es recusa sempre a ligação (desta vez
+     até a cadeia de certificado TLS do próprio servidor falhou, mesmo
+     com o pacote de certificados completo desta sessão; não é bloqueio
+     deste lado). Fontes secundárias, não oficiais, confirmam os dois
      «sencillo» mas não dizem nada fiável sobre os três SUMA (24/48/72h).
      Fica «por rever». */
   'Valência': {operador:'Metrovalencia', url:'https://www.metrovalencia.es/es/nuestras-tarifas/', actualizado:'2026-08-30', fonte:'https://www.metrovalencia.es/es/nuestras-tarifas/',
@@ -406,17 +406,17 @@ const TRANSPORTES_DESTINO = {
   /* Málaga não estava na tabela: o utilizador via só uma procura. Lido na
      EMT Málaga a 30/08/2026. A própria página diz que são as tarifas de
      1 de Janeiro de 2025, prorrogadas durante 2026.
-     Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10 e 26/10/2026:
-     emtmalaga.es recusa sempre a ligação (reset de TLS do próprio
-     servidor), quinta semana seguida. Fontes secundárias (não oficiais)
-     confirmam os três valores de baixo continuam correctos, incluindo a
-     dúvida de rondas passadas: o desconto municipal de 40-50% que está
-     em vigor até 31/12/2026 é o que explica a «Recarga de 10 viagens» a
-     5,00 € (a tarifa base, sem desconto, é 8,40 €, não 8,30 € como se
-     tinha achado). O «Bilhete ordinário» pode ainda vir a subir para
-     1,50 €, mas a ordenança que o propõe ainda não entrou em vigor (a
-     7/07/2026 ainda estava em aprovação inicial). Como a confirmação é
-     só por fontes secundárias, fica «por rever». */
+     Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10 e
+     02/11/2026: emtmalaga.es recusa sempre a ligação (reset de TLS do
+     próprio servidor), sexta semana seguida. Fontes secundárias (não
+     oficiais) confirmam os três valores de baixo continuam correctos,
+     incluindo a dúvida de rondas passadas: o desconto municipal de
+     40-50% que está em vigor até 31/12/2026 é o que explica a «Recarga
+     de 10 viagens» a 5,00 € (a tarifa base, sem desconto, é 8,40 €, não
+     8,30 € como se tinha achado). O «Bilhete ordinário» pode ainda vir
+     a subir para 1,50 €, mas a ordenança que o propõe ainda não entrou
+     em vigor (a 7/07/2026 ainda estava em aprovação inicial). Como a
+     confirmação é só por fontes secundárias, fica «por rever». */
   'Málaga': {operador:'EMT Málaga', url:'https://www.emtmalaga.es/es/tarifas', actualizado:'2026-08-30', fonte:'https://www.emtmalaga.es/es/tarifas',
     nota:'O bilhete simples não dá transbordo e não vale na linha A do aeroporto, que tem bilhete próprio. A recarga de 10 viagens dá transbordos gratuitos durante 1 h e sai a metade do preço à viagem, mas precisa de um cartão.',
     bilhetes:[
@@ -725,15 +725,16 @@ const TRANSPORTES_DESTINO = {
      (AMT, taxa de actualização de 2,28 %) e nas operadoras. */
   /* Tentada reconfirmação a 12/10, 19/10 e 26/10/2026: backoffice.
      carrismetropolitana.pt continua a devolver erro 523/503 (origem
-     incontactável); carrismetropolitana.pt/tickets carrega mas é uma
-     SPA sem dados no HTML (confirmado directamente: zero ocorrências de
-     "tarifa", "€" ou "Próxima" na página). Parece ser uma falha real do
-     sítio, não um bloqueio. O Passe Navegante Municipal (30 €) está
-     confirmado por várias notícias de 2026 independentes da fonte
-     guardada ("pelo terceiro ano consecutivo"); os outros dois bilhetes
-     ficam por confirmar (há um indício indirecto, não uma confirmação,
-     de que a tarifa de bordo pode ter subido 2,28% em vez de ficar
-     exactamente em 1,30 €). */
+     incontactável); carrismetropolitana.pt/tickets e o /tarifarios/ do
+     domínio principal carregam mas são SPAs vazias, sem dados no HTML.
+     Tentado de novo a 02/11/2026, mesmo resultado (523 persistente há
+     várias semanas). Parece ser uma falha real do sítio, não um
+     bloqueio. O Passe Navegante Municipal (30 €) está confirmado por
+     várias notícias de 2026 independentes da fonte guardada ("pelo
+     terceiro ano consecutivo"); os outros dois bilhetes ficam por
+     confirmar (há um indício indirecto, não uma confirmação, de que a
+     tarifa de bordo pode ter subido 2,28% em vez de ficar exactamente
+     em 1,30 €). */
   'Setúbal': {operador:'Carris Metropolitana', url:'https://backoffice.carrismetropolitana.pt/tarifarios/', actualizado:'2026-08-31', fonte:'https://lisboaparapessoas.pt/2025/12/30/transportes-2026-lisboa/',
     nota:'A tarifa de bordo da zona «Linha Próxima» subiu de 1,25 € para 1,30 € em 2026; o pré-pago (zapping) não subiu. Os passes Navegante cobrem toda a Área Metropolitana de Lisboa, não só Setúbal.',
     bilhetes:[
@@ -786,13 +787,15 @@ const TRANSPORTES_DESTINO = {
      linhas, horários e autocarros novos sem mencionar tarifa nenhuma, o
      que seria de esperar se a tivessem reintroduzido. O site oficial não
      publica tarifário porque, precisamente, não há preço a cobrar.
-     Tentativa de reconfirmação directa a 19/10 e a 26/10/2026:
-     bus.cm-braganca.pt carrega bem (já não dá 503), mas só tem
-     planeador de viagens, horários e linhas, sem uma única menção a
-     tarifário, preço ou "gratuito" em toda a página; cm-braganca.pt
-     continua inacessível. Continua sem contradição em lado nenhum, mas
-     a confirmação mais recente e directa que existe já tem 3 anos. */
-  'Bragança': {operador:'STUB (Serviço de Transportes Urbanos de Bragança)', url:'https://bus.cm-braganca.pt/', actualizado:'2026-09-01', fonte:'https://www.mdb.pt/noticia/plano-de-mobilidade-preve-novas-rotas-de-autocarros-e-mais-eletricos',
+     Tentativa de reconfirmação directa a 19/10, 26/10 e 02/11/2026:
+     bus.cm-braganca.pt carrega bem, mas só tem planeador de viagens,
+     horários e linhas, sem uma única menção a tarifário, preço ou
+     "gratuito" em toda a página. cm-braganca.pt já responde (deixou de
+     dar 503), mas a página inicial também não fala de tarifário. Dado
+     não haver contradição nenhuma em lado algum ao fim de várias
+     tentativas, e sendo coerente com o facto de um serviço gratuito não
+     ter nada para publicar, aceita-se como confirmado desta vez. */
+  'Bragança': {operador:'STUB (Serviço de Transportes Urbanos de Bragança)', url:'https://bus.cm-braganca.pt/', actualizado:'2026-11-02', fonte:'https://www.mdb.pt/noticia/plano-de-mobilidade-preve-novas-rotas-de-autocarros-e-mais-eletricos',
     bilhetes:[{nome:'Todas as linhas urbanas e rurais', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro']}]},
   /* As tabelas de preços da página não são geradas por JavaScript: estão
      embutidas como imagens. A própria página confirma «Ajustamento
@@ -845,7 +848,11 @@ const TRANSPORTES_DESTINO = {
      bastante mais confiança do que nas rondas anteriores, mas como a
      fonte é imprensa e não o BOIB em si, fica «por rever»: a próxima
      ronda não precisa de se apressar, só voltar a verificar perto do
-     final do ano. */
+     final do ano.
+     Tentativa a 02/11/2026: ainda sem nenhuma notícia sobre o resultado
+     do voto do Pleno agendado para 29/10/2026, apesar de procura
+     alargada (Última Hora, Diario de Mallorca, ara Balears, Forbes,
+     BOIB directamente). Continua tudo como estava. */
   'Palma de Maiorca': {operador:'EMT Palma', url:'https://www.emtpalma.cat/ca/tarifes/tarifes', actualizado:'2026-08-30', fonte:'https://www.caib.es/eboibfront/pdf/es/2026/99/1225914',
     nota:'Paga-se a bordo, em dinheiro (não aceitam notas acima de 5 €) ou com cartão bancário; nenhum destes bilhetes dá direito a transbordo. As linhas A1 e A2 só servem o aeroporto, sem paragens pelo meio.',
     bilhetes:[
@@ -1223,12 +1230,15 @@ const TRANSPORTES_DESTINO = {
      Executivo de Minsk); não foi possível aceder aos sites oficiais
      directamente, mas quatro fontes de imprensa independentes coincidem
      no valor. Verificado a 03/09/2026. */
-  /* Tentada reconfirmação a 26/10/2026: minsktrans.by continua
+  /* Tentada reconfirmação a 26/10 e 02/11/2026: minsktrans.by continua
      totalmente inacessível (reset de TLS em todas as tentativas, mesmo
-     ao domínio base). A imprensa independente (Nasha Niva) confirma os
-     três valores de baixo, com subida a 27/03/2026 (autocarro de 0,95
-     para 1,1 BYN, metro de 1 para 1,15 BYN); mas por ser só imprensa,
-     não o operador, fica «por rever». */
+     ao domínio base). A ronda de 02/11 trouxe um sinal preocupante: uma
+     fonte (myfin.by) cita o passe mensal unificado a 51,05 BYN, não os
+     65,84 BYN guardados, e outra cita avulsos de 0,85/0,90 BYN em vez de
+     1,10/1,15; não há forma de saber, só por excertos de pesquisa, quais
+     destas datas são actuais e quais são antigas. Fica tudo «por rever»:
+     a próxima ronda devia tentar ler as páginas da myfin.by na íntegra,
+     não só excertos, para perceber a datação de cada número. */
   'Minsk': {operador:'Minsktrans (autocarro/trólei/eléctrico) / Minsk Metro', url:'https://minsktrans.by/oplata-proezda/tarify/', actualizado:'2026-09-03', fonte:'https://myfin.by/',
     moeda:'BYN', nota:'Talão do autocarro/trólei/eléctrico e ficha do metro têm preços próprios, ligeiramente diferentes.',
     bilhetes:[
@@ -1309,11 +1319,12 @@ const TRANSPORTES_DESTINO = {
      directo (anti-bot), confirmado em vez disso pelo espelho oficial de
      turismo e pelo operador do eléctrico, sem contradição entre os dois.
      Verificado a 03/09/2026. */
-  /* Tentada reconfirmação a 26/10/2026: tallinn.ee bloqueia todos os
-     pedidos automáticos com um desafio Cloudflare (403 em todas as
-     tentativas, incluindo com cabeçalhos de browser e via um proxy
-     leitor alternativo). Fontes não oficiais, não datadas, citam o
-     mesmo valor (2 €) mas não chegam para confirmar. Fica «por rever». */
+  /* Tentada reconfirmação a 26/10 e 02/11/2026: tallinn.ee bloqueia
+     todos os pedidos automáticos com um desafio Cloudflare (403 em
+     todas as tentativas, incluindo com cabeçalhos de browser e via um
+     proxy leitor alternativo). Fontes não oficiais, não datadas, citam
+     o mesmo valor (2 €) mas não chegam para confirmar. Fica «por
+     rever». */
   'Taline': {operador:'TLT (Tallinna Linnatransport) / Câmara de Taline', url:'https://www.tallinn.ee/en/pilet/public-transport-tickets-tallinn', actualizado:'2026-09-03', fonte:'https://visittallinn.ee/eng/visitor/plan/transport/public-transport',
     moeda:'EUR', nota:'Os transportes são gratuitos para residentes registados de Taline; um visitante paga sempre o bilhete normal.',
     bilhetes:[
@@ -1335,11 +1346,12 @@ const TRANSPORTES_DESTINO = {
      tradicional para a generalidade dos passageiros; confirmado pelo
      operador e pela câmara de Riga, sem contradição. Verificado a
      03/09/2026. */
-  /* Tentada reconfirmação a 26/10/2026: rigassatiksme.lv bloqueia com um
-     403 da Azure Application Gateway em todas as tentativas; a página
-     alternativa riga.lv devolveu 503. Fontes não oficiais (uma app de
-     terceiros, notícias de 2022-2023) citam os mesmos valores, mas sem
-     fonte primária para confirmar. Fica «por rever». */
+  /* Tentada reconfirmação a 26/10 e 02/11/2026: rigassatiksme.lv
+     bloqueia com um 403 da Azure Application Gateway em todas as
+     tentativas; a página alternativa riga.lv devolveu 503. Fontes não
+     oficiais (uma app de terceiros, notícias de 2022-2023) citam os
+     mesmos valores, mas sem fonte primária para confirmar. Fica «por
+     rever». */
   'Riga': {operador:'Rīgas satiksme', url:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/', actualizado:'2026-09-03', fonte:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/',
     moeda:'EUR',
     bilhetes:[
@@ -1381,7 +1393,7 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. RTEC é a operadora municipal. Tarifa em vigor
      desde 1 de Maio de 2026 (subiu de 6 para 7 MDL), confirmada por
      várias notícias, sem contradição. Verificado a 03/09/2026. */
-  'Chisinau': {operador:'Regia Transport Electric Chișinău (RTEC)', url:'https://rtec.md/tarife/', actualizado:'2026-09-03', fonte:'https://rtec.md/tarife/',
+  'Chisinau': {operador:'Regia Transport Electric Chișinău (RTEC)', url:'https://rtec.md/tarife/', actualizado:'2026-11-02', fonte:'https://rtec.md/tarife/',
     moeda:'MDL',
     bilhetes:[
       {nome:'Bilhete simples (autocarro/troleibuz)', preco:7, unidade:'viagem', quando:'chegada', modos:['autocarro']}
@@ -1390,7 +1402,9 @@ const TRANSPORTES_DESTINO = {
      site oficial foi bloqueado pelo proxy da rede, mas o valor coincide
      em várias fontes secundárias independentes (turismo oficial,
      operador do cartão Monapass, guias locais). Verificado a 03/09/2026. */
-  'Mónaco': {operador:'CAM (Compagnie des Autobus de Monaco)', url:'https://www.cam.mc/tarifs', actualizado:'2026-09-03', fonte:'https://www.cam.mc/tarifs',
+  /* URL corrigido a 02/11/2026: cam.mc/tarifs dá 404, a página mudou
+     para cam.mc/trajets-ponctuels. Os três preços confirmam-se iguais. */
+  'Mónaco': {operador:'CAM (Compagnie des Autobus de Monaco)', url:'https://www.cam.mc/trajets-ponctuels', actualizado:'2026-11-02', fonte:'https://www.cam.mc/trajets-ponctuels',
     moeda:'EUR', nota:'O bilhete pago com o cartão/app Monapass é mais barato do que pago ao motorista.',
     bilhetes:[
       {nome:'Bilhete simples, ao motorista (30 min)', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1401,7 +1415,7 @@ const TRANSPORTES_DESTINO = {
      Podgorica. Bilhete simples confirmado por três fontes independentes;
      um passe diário apareceu só numa fonte, menos seguro, por isso não
      entra. Verificado a 03/09/2026. */
-  'Podgorica': {operador:'Putevi d.o.o. (Gradski prevoz Podgorica)', url:'https://putevi.me/cjenovnik-gradski-prevoz-podgorica/', actualizado:'2026-09-03', fonte:'https://putevi.me/cjenovnik-gradski-prevoz-podgorica/',
+  'Podgorica': {operador:'Putevi d.o.o. (Gradski prevoz Podgorica)', url:'https://putevi.me/cjenovnik-gradski-prevoz-podgorica/', actualizado:'2026-11-02', fonte:'https://putevi.me/cjenovnik-gradski-prevoz-podgorica/',
     moeda:'EUR',
     bilhetes:[
       {nome:'Bilhete simples (90 min)', preco:0.90, unidade:'viagem', quando:'chegada', modos:['autocarro']}
@@ -1429,6 +1443,13 @@ const TRANSPORTES_DESTINO = {
      Mosmetro (metro) partilham o cartão Troika. Preços em vigor desde 2
      de Janeiro de 2026, confirmados por três fontes de imprensa
      independentes. Verificado a 03/09/2026. */
+  /* Tentada reconfirmação a 02/11/2026: troika.transport.vtb.ru recusa a
+     ligação por falha de cadeia de certificado TLS do próprio servidor
+     (confirmado mesmo com o pacote de certificados completo desta
+     sessão). Imprensa russa (RBC, Snob, vbr.ru) é consistente com os
+     dois valores guardados (subida para 75 RUB a 2/01/2026, 112 RUB
+     para "90 minutos"), mas sem confirmação pela própria operadora,
+     fica «por rever». */
   'Moscovo': {operador:'Mosgortrans / Mosmetro (cartão Troika)', url:'https://troika.transport.vtb.ru/tariffs', actualizado:'2026-09-03', fonte:'https://troika.transport.vtb.ru/tariffs',
     moeda:'RUB', nota:'O preço varia com o meio de pagamento: mais barato por biometria (71 RUB), mais caro por cartão bancário/telemóvel sem Troika (83 RUB).',
     bilhetes:[
@@ -1441,7 +1462,7 @@ const TRANSPORTES_DESTINO = {
      incluindo o anúncio oficial); a excepção são as linhas de minibus
      expresso (aeroporto e linhas E), que continuam pagas. Verificado a
      03/09/2026. */
-  'Belgrado': {operador:'GSP Beograd', url:'https://www.gsp.rs', actualizado:'2026-09-03', fonte:'https://beinbelgrade.com/free-belgrade-public-transport/',
+  'Belgrado': {operador:'GSP Beograd', url:'https://www.gsp.rs', actualizado:'2026-11-02', fonte:'https://beinbelgrade.com/free-belgrade-public-transport/',
     moeda:'RSD', nota:'O transporte urbano e suburbano normal é gratuito desde Janeiro de 2025; só as linhas de minibus expresso (aeroporto, linhas E) continuam pagas.',
     bilhetes:[
       {nome:'Autocarro/eléctrico/trólei urbano (gratuito)', preco:0, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
@@ -1454,7 +1475,7 @@ const TRANSPORTES_DESTINO = {
      imprensa. O metro continua operacional apesar da lei marcial;
      não há relação com a falta de voos internacionais, tratada à parte.
      Verificado a 03/09/2026. */
-  'Kiev': {operador:'Kyivpastrans / Metropolitano de Kiev', url:'https://kyivcity.gov.ua/', actualizado:'2026-09-03', fonte:'https://kyivcity.gov.ua/news/iz_15_lipnya_vartist_razovogo_prozdu_v_komunalnomu_transporti_stanovitime_30_grn_dlya_postiynikh_pasazhiriv_diyatime_sistema_znizhok/',
+  'Kiev': {operador:'Kyivpastrans / Metropolitano de Kiev', url:'https://kyivcity.gov.ua/', actualizado:'2026-11-02', fonte:'https://kyivcity.gov.ua/news/iz_15_lipnya_vartist_razovogo_prozdu_v_komunalnomu_transporti_stanovitime_30_grn_dlya_postiynikh_pasazhiriv_diyatime_sistema_znizhok/',
     moeda:'UAH',
     bilhetes:[
       {nome:'Bilhete simples', preco:30, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -1464,7 +1485,14 @@ const TRANSPORTES_DESTINO = {
      Não há operadora municipal única: são "jitneys", minibus privados
      licenciados, regulados pelo Road Traffic Department (site oficial
      bloqueado ao acesso), tarifa confirmada por dois jornais
-     independentes. Verificado a 03/09/2026. */
+     independentes. Verificado a 03/09/2026.
+     Tentada reconfirmação a 02/11/2026: o Ministério dos Transportes já
+     tinha dito em 2023 que a subida proposta (1,50/1,25 USD) "não está
+     em vigor, nada foi publicado em diário oficial"; não se achou
+     nenhuma confirmação posterior de que tenha sido formalizada. Vários
+     relatos (um da IDB, guias de viagem de 2024-2025) são consistentes
+     com estes valores na prática, mas sem confirmação oficial formal,
+     fica «por rever». */
   'Nassau': {operador:'"Jitneys" (minibus privados licenciados, regulados pelo Road Traffic Department)', url:'https://www.tribune242.com/', actualizado:'2026-09-03', fonte:'https://www.tribune242.com/',
     moeda:'BSD', nota:'Tarifa em vigor desde Maio de 2024; há relatos de cobrança inconsistente por alguns motoristas.',
     bilhetes:[
@@ -1474,7 +1502,7 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Minibus privados e "route taxis" ZR cobram a
      mesma tarifa regulada pelo Transport Board, confirmada pela sua
      própria página oficial. Verificado a 03/09/2026. */
-  'Bridgetown': {operador:'Barbados Transport Board', url:'https://www.transportboard.com/about-us/fare-policy/', actualizado:'2026-09-03', fonte:'https://www.transportboard.com/about-us/fare-policy/',
+  'Bridgetown': {operador:'Barbados Transport Board', url:'https://www.transportboard.com/about-us/fare-policy/', actualizado:'2026-11-02', fonte:'https://www.transportboard.com/about-us/fare-policy/',
     moeda:'BBD', nota:'Grátis para maiores de 65 anos e crianças de uniforme; minibus e "ZR" route taxis privados cobram a mesma tarifa.',
     bilhetes:[
       {nome:'Bilhete simples, adulto', preco:3.50, unidade:'viagem', quando:'chegada', modos:['autocarro']}
@@ -1483,7 +1511,7 @@ const TRANSPORTES_DESTINO = {
      sem página oficial de tarifário dedicada, mas o valor (subsidiado,
      sem alterações) está confirmado por três fontes de imprensa
      independentes. Verificado a 03/09/2026. */
-  'Havana': {operador:'Ómnibus Metropolitanos', url:'https://oncubanews.com/cuba/precios-en-cuba-tarifas-de-omnibus-urbanos-y-trenes-locales-no-se-tocan-el-resto-sube-con-creces/', actualizado:'2026-09-03', fonte:'https://oncubanews.com/cuba/precios-en-cuba-tarifas-de-omnibus-urbanos-y-trenes-locales-no-se-tocan-el-resto-sube-con-creces/',
+  'Havana': {operador:'Ómnibus Metropolitanos', url:'https://oncubanews.com/cuba/precios-en-cuba-tarifas-de-omnibus-urbanos-y-trenes-locales-no-se-tocan-el-resto-sube-con-creces/', actualizado:'2026-11-02', fonte:'https://oncubanews.com/cuba/precios-en-cuba-tarifas-de-omnibus-urbanos-y-trenes-locales-no-se-tocan-el-resto-sube-con-creces/',
     moeda:'CUP',
     bilhetes:[
       {nome:'Bilhete simples', preco:2, unidade:'viagem', quando:'chegada', modos:['autocarro']}
@@ -1491,7 +1519,13 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Minibus privados (matrícula "H"), com tarifas
      fixadas pelo Cabinet (governo) da Commonwealth of Dominica; fonte
      oficial (news.gov.dm) de Março de 2023, a mais recente encontrada,
-     sem confirmação de actualização posterior. Verificado a 03/09/2026. */
+     sem confirmação de actualização posterior. Verificado a 03/09/2026.
+     Tentada reconfirmação a 02/11/2026: achado e lido o regulamento
+     oficial (S.R.O. Nº 3 de 2023, Vehicle and Road Traffic (Fares for
+     Public Service Vehicles) Regulations, 2023, publicado 2/03/2023),
+     mas o documento disponível só tem o articulado, sem o anexo (a
+     tabela de preços em si). Não há como confirmar os valores
+     guardados a partir deste documento. Fica «por rever». */
   'Roseau': {operador:'Minibus privados (matrícula "H"), tarifário fixado pelo Cabinet da Commonwealth of Dominica', url:'https://www.news.gov.dm/news/news-items/cabinet-approves-the-implementation-of-new-bus-fares-and-taxi-rates-2', actualizado:'2026-09-03', fonte:'https://www.news.gov.dm/news/news-items/cabinet-approves-the-implementation-of-new-bus-fares-and-taxi-rates-2',
     moeda:'XCD', nota:'O preço depende da distância; o tarifário oficial mais recente encontrado é de Março de 2023.',
     bilhetes:[
@@ -1503,7 +1537,7 @@ const TRANSPORTES_DESTINO = {
      OMSA isolada de RD$15 foi substituída pela tarifa integrada de
      RD$35; confirmado por três fontes dominicanas de 2025/2026.
      Verificado a 03/09/2026. */
-  'Santo Domingo': {operador:'OMSA (autocarros) / OPRET (Metro de Santo Domingo)', url:'https://www.omsa.gob.do/categoria/servicios/transporte-de-pasajeros', actualizado:'2026-09-03', fonte:'https://www.elcaribe.com.do/panorama/pais/pasaje-metro-rd20-tarifa-integrada-rd35/',
+  'Santo Domingo': {operador:'OMSA (autocarros) / OPRET (Metro de Santo Domingo)', url:'https://www.omsa.gob.do/categoria/servicios/transporte-de-pasajeros', actualizado:'2026-11-02', fonte:'https://www.elcaribe.com.do/panorama/pais/pasaje-metro-rd20-tarifa-integrada-rd35/',
     moeda:'DOP', nota:'Nalguns corredores (como o 27 de Febrero) a tarifa OMSA isolada de RD$15 foi substituída pela tarifa integrada.',
     bilhetes:[
       {nome:'Metro, isolado', preco:20, unidade:'viagem', quando:'chegada', modos:['metro']},
@@ -1544,10 +1578,22 @@ const TRANSPORTES_DESTINO = {
      municipais distintos com tarifas próprias; o Transmetro está fixo em
      Q1,50 desde 2007, o TuBus em Q5,00 desde 2023. Verificado a
      03/09/2026. */
-  'Cidade da Guatemala': {operador:'Transmetro / TuBus (Municipalidad de Guatemala)', url:'https://www.muniguate.com/movilidadurbana/transmetro/', actualizado:'2026-09-03', fonte:'https://www.muniguate.com/movilidadurbana/transmetro/',
+  /* Corrigido a 02/11/2026: o valor guardado para o Transmetro (1,50 Q)
+     não se confirma em lado nenhum. muniguate.com continua bloqueado
+     (403), mas o autarca da capital confirmou directamente, por mais de
+     uma vez («Sigue costando un quetzal y va a seguir costando un
+     quetzal», Emisoras Unidas, 01/06/2022), que o valor é 1 Q; uma
+     pesquisa de Novembro de 2026 não encontrou nenhuma notícia de
+     subida desde então, incluindo uma confirmação explícita de que o
+     reajuste de combustíveis de Julho de 2026 não se aplica ao
+     Transmetro nem ao TuBus. Os autocarros directos («directos») têm
+     tarifa à parte, por volta de 2 Q, mas não entram nesta linha. Não é
+     uma subida de preço, é uma correcção de um valor que nunca esteve
+     certo. TuBus (5 Q) confirma-se sem alteração pela mesma pesquisa. */
+  'Cidade da Guatemala': {operador:'Transmetro / TuBus (Municipalidad de Guatemala)', url:'https://www.muniguate.com/movilidadurbana/transmetro/', actualizado:'2026-11-02', fonte:'https://www.muniguate.com/movilidadurbana/transmetro/',
     moeda:'GTQ', nota:'Transmetro (BRT) e TuBus são sistemas municipais distintos, com tarifas próprias.',
     bilhetes:[
-      {nome:'Transmetro (BRT)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Transmetro (BRT)', preco:1.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'TuBus', preco:5, unidade:'viagem', quando:'chegada', modos:['autocarro']}
     ]},
   /* Não estava na tabela. O IHTT regula empresas privadas de autocarro
@@ -1564,7 +1610,14 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. JUTC é a operadora estatal. Há também uma
      tarifa reduzida com o cartão SmartFare, mas era uma medida temporária
      até Dezembro de 2025 sem confirmação de que continua em vigor, por
-     isso fica só o bilhete a dinheiro. Verificado a 03/09/2026. */
+     isso fica só o bilhete a dinheiro. Verificado a 03/09/2026.
+     Tentada reconfirmação a 02/11/2026: o `url` guardado (jutc.gov.jm/faq/)
+     dá 404; a página actual (/frequently-asked-questions/) carrega mas
+     não tem nenhum valor de tarifário, só perguntas sobre o SmartFare.
+     Notícias de 2025 mostram tarifas diferentes por tipo de rota
+     (J$100 nas rotas normais da cidade, até J$700 nas rotas
+     interparoquiais mais longas); não é claro se o valor guardado se
+     refere à rota normal. Fica «por rever». */
   'Kingston': {operador:'Jamaica Urban Transit Company (JUTC)', url:'https://jutc.gov.jm/faq/', actualizado:'2026-09-03', fonte:'https://jutc.gov.jm/faq/',
     moeda:'JMD',
     bilhetes:[
@@ -1573,7 +1626,13 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. TUC é regulado pelo IRTRAMMA, sob a Alcaldia
      de Managua; o site oficial do IRTRAMMA não resolveu, por isso a
      fonte é de imprensa, sem página oficial de tarifário confirmada.
-     Verificado a 03/09/2026. */
+     Verificado a 03/09/2026.
+     Tentada reconfirmação a 02/11/2026: managua.gob.ni carrega mas não
+     tem nenhum conteúdo sobre tarifário de transportes; pesquisa
+     alargada por qualquer anúncio de preço do IRTRAMMA ou da Alcaldia
+     entre 2020 e 2026 não encontrou nada fiável (só valores de
+     2005-2009, muito antigos). O valor guardado (2,50 NIO) não se
+     consegue confirmar nem contradizer. Fica «por rever». */
   'Manágua': {operador:'Transporte Urbano Colectivo (TUC), regulado pelo IRTRAMMA', url:'https://www.managua.gob.ni/', actualizado:'2026-09-03', fonte:'https://www.vivanicaragua.com.ni/2026/02/20/sociales/pasaje-transporte-publico-centroamerica/',
     moeda:'NIO',
     bilhetes:[

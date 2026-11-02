@@ -679,3 +679,51 @@ ficheiro:
 Application Gateway, mais a página alternativa riga.lv com erro 503).
 
 **Cerca de 116 cidades ficam por rever** para as próximas semanas.
+
+### Sexta ronda semanal, a 02 de Novembro de 2026: 10 cidades, e um erro antigo em Guatemala
+
+Tratadas as 8 cidades já por rever, mais o início do lote dos 60 dias
+(cidades do Leste Europeu, Caraíbas e América Central).
+
+**7 cidades reconfirmadas sem alteração de preço**, só a data mudou:
+Chisinau, Podgorica, Belgrado (confirmado directamente na página oficial
+do regulador: decisão municipal nº 38-4442/24-Г, gratuito desde
+1/01/2025), Kiev, Bridgetown, Havana, Santo Domingo. Bragança também
+ficou confirmada desta vez: continua sem uma única fonte, oficial ou de
+imprensa, a contradizer que o serviço é gratuito.
+
+**1 correcção de URL**, sem alteração de preço: Mónaco (o `url` antigo
+dava 404, trocado para `cam.mc/trajets-ponctuels`).
+
+**1 correcção de dados antiga, não uma subida de preço**: Cidade da
+Guatemala. O Transmetro estava guardado a 1,50 Q, mas não se encontrou
+nenhuma fonte a confirmar esse valor; em vez disso, o autarca da capital
+confirmou por mais de uma vez, directamente ("Sigue costando un quetzal
+y va a seguir costando un quetzal", Junho de 2022), que o preço é 1 Q,
+sem alteração desde então nem no reajuste de combustíveis de Julho de
+2026. Corrigido para 1 Q. O TuBus (5 Q) confirma-se sem alteração.
+
+**11 cidades ficam por rever**, cada uma com o motivo actualizado no
+ficheiro:
+- **Málaga e Valência**: sexta semana seguida bloqueadas.
+- **Setúbal**: erro 523 persistente em todas as páginas tentadas.
+- **Palma de Maiorca**: ainda sem notícia do resultado do voto do Pleno
+  de 29/10/2026.
+- **Minsk**: um sinal novo e preocupante: fontes de imprensa citam um
+  passe mensal mais barato (51,05 BYN) do que o guardado (65,84 BYN),
+  sem forma de confirmar qual data está certa.
+- **Taline e Riga**: bloqueios anti-bot persistentes.
+- **Moscovo**: entra pela primeira vez por rever; falha de certificado
+  TLS do próprio servidor impede o acesso directo, mas a imprensa russa
+  é consistente com os valores guardados.
+- **Nassau**: o Ministério dos Transportes das Bahamas já tinha dito em
+  2023 que a subida proposta nunca foi publicada em diário oficial.
+- **Roseau**: achado e lido o regulamento oficial de 2023, mas falta o
+  anexo com a tabela de preços em si.
+- **Kingston**: o `url` guardado dá 404; a página actual não tem
+  tarifário, e há tarifas diferentes por tipo de rota sem se saber qual
+  corresponde ao valor guardado.
+- **Manágua**: nenhuma fonte, oficial ou de imprensa, encontrada para o
+  período 2020-2026.
+
+**Cerca de 135 cidades ficam por rever** para as próximas semanas.
