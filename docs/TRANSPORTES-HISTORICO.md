@@ -727,3 +727,57 @@ ficheiro:
   período 2020-2026.
 
 **Cerca de 135 cidades ficam por rever** para as próximas semanas.
+
+### Sétima ronda semanal, a 09 de Novembro de 2026: Minsk resolvido, três casos de contradição deixados por rever de propósito
+
+Tratadas as 12 cidades já por rever, mais um lote de 10 capitais
+sul-americanas e do México/Peru ao fim de 67 dias.
+
+**13 cidades reconfirmadas sem alteração de preço**, só a data mudou:
+Minsk, Riga, Moscovo, Nassau, Roseau, Kingston, Quito, Montevideu,
+Brasília, Belo Horizonte, Cidade do México, Lima, e Palma de Maiorca.
+
+Dois casos merecem destaque dentro deste grupo:
+- **Minsk**: resolvida a contradição deixada em aberto há duas semanas
+  entre o passe mensal guardado (65,84 BYN) e um valor mais barato
+  citado pela imprensa (51,05 BYN). Reconstruído o histórico completo
+  de tarifas bielorrusso: 51,05 BYN era apenas o preço antigo, de
+  Agosto de 2023, já superado; 65,84 BYN confirma-se como o valor
+  correcto em vigor, decidido pelo Mingorispolkom (decisão nº 1016) a
+  27/03/2026.
+- **Palma de Maiorca**: a Inselradio (rádio alemã focada em Maiorca,
+  5/11/2026) confirma que a câmara já aprovou definitivamente a nova
+  tarifa no Pleno de 29/10, mas a entrada em vigor é só "a partir de
+  2027", sem dia exacto. O bilhete mantém-se a 2 € por agora; a próxima
+  ronda de perto do final do ano deve verificar se a subida para 3 €
+  (urbano, por zonas) já arrancou.
+
+**9 cidades ficam por rever**, cada uma com o motivo actualizado no
+ficheiro. Três são os casos mais interessantes desta ronda, por terem
+pistas concretas que, ainda assim, não chegaram para confirmar nada:
+- **Cidade do Panamá**: o Metro (Linhas 1 e 2) e o MiBus troncal
+  reconfirmam-se sem problema, mas o MiBus corredor tem uma fonte a
+  citar 1,25 US$ contra os 0,75 guardados, possivelmente confundida com
+  o custo real não-subsidiado (1,74 US$) citado noutro lado. Decidido
+  não tocar na cidade toda, para não validar por engano o valor em
+  disputa.
+- **Assunção**: achada uma contradição séria: a própria fonte guardada
+  mostra Gs 2.800 (Março de 2022), não os Gs 3.400 guardados, e a
+  imprensa paraguaia recente mostra uma disputa volátil com vários
+  valores a circular (2.300, 2.800, 3.300, 3.400 proposto). Não se
+  corrigiu para nenhum deles sem confirmação mais sólida.
+- **Caracas**: achada uma notícia (Finanzas Digital, 9/10/2026) sobre
+  uma nova subida para 160/80 Bs, mas a própria notícia admite não ter
+  confirmação oficial, só um aviso em circulação nas redes sociais.
+  Dada a dimensão da subida alegada, ficou por rever em vez de arriscar
+  um valor não confirmado.
+
+As restantes seis: **Málaga e Valência** (oitava semana seguida
+bloqueadas por TLS), **Setúbal** (erro 523 persistente), **Taline**
+(a ERR estónia noticia uma proposta de subida com os valores já
+guardados, mas sem confirmar se já está em vigor), **La Paz** (site
+oficial é uma SPA sem conteúdo acessível, sem fonte secundária fiável
+encontrada) e **Manágua** (continua sem nenhuma fonte fiável para o
+período).
+
+**Cerca de 137 cidades ficam por rever** para as próximas semanas.
