@@ -387,13 +387,10 @@ const TRANSPORTES_DESTINO = {
      zona A, e os títulos SUMA T valem na combinação AB. São os valores da
      rede de metro e eléctrico; a EMT (autocarros) tem tarifário próprio,
      que não vem nesta página. */
-  /* Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10 e
-     02/11/2026: metrovalencia.es recusa sempre a ligação (desta vez
-     até a cadeia de certificado TLS do próprio servidor falhou, mesmo
-     com o pacote de certificados completo desta sessão; não é bloqueio
-     deste lado). Fontes secundárias, não oficiais, confirmam os dois
-     «sencillo» mas não dizem nada fiável sobre os três SUMA (24/48/72h).
-     Fica «por rever». */
+  /* Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10, 02/11 e
+     09/11/2026: metrovalencia.es recusa sempre a ligação (TLS). Fontes
+     secundárias confirmam o «Sencillo, zonas AB» (2,80 €), mas não o
+     «zona A ou B» nem os três SUMA. Fica «por rever». */
   'Valência': {operador:'Metrovalencia', url:'https://www.metrovalencia.es/es/nuestras-tarifas/', actualizado:'2026-08-30', fonte:'https://www.metrovalencia.es/es/nuestras-tarifas/',
     nota:'O preço depende da zona: a cidade é a zona A. O título não inclui o suporte: o cartão SUMA anónimo custa 2,20 € em plástico ou 1,10 € em cartão, à parte. Os autocarros da EMT têm tarifário próprio.',
     bilhetes:[
@@ -406,17 +403,15 @@ const TRANSPORTES_DESTINO = {
   /* Málaga não estava na tabela: o utilizador via só uma procura. Lido na
      EMT Málaga a 30/08/2026. A própria página diz que são as tarifas de
      1 de Janeiro de 2025, prorrogadas durante 2026.
-     Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10 e
-     02/11/2026: emtmalaga.es recusa sempre a ligação (reset de TLS do
-     próprio servidor), sexta semana seguida. Fontes secundárias (não
-     oficiais) confirmam os três valores de baixo continuam correctos,
-     incluindo a dúvida de rondas passadas: o desconto municipal de
-     40-50% que está em vigor até 31/12/2026 é o que explica a «Recarga
-     de 10 viagens» a 5,00 € (a tarifa base, sem desconto, é 8,40 €, não
-     8,30 € como se tinha achado). O «Bilhete ordinário» pode ainda vir
-     a subir para 1,50 €, mas a ordenança que o propõe ainda não entrou
-     em vigor (a 7/07/2026 ainda estava em aprovação inicial). Como a
-     confirmação é só por fontes secundárias, fica «por rever». */
+     Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10, 02/11 e
+     09/11/2026: emtmalaga.es recusa sempre a ligação (reset de TLS),
+     oitava semana seguida. Fontes secundárias confirmam os três
+     valores, incluindo a dúvida de rondas passadas (o desconto
+     municipal de 40-50%, até 31/12/2026, explica a «Recarga de 10
+     viagens» a 5,00 €; tarifa base sem desconto é 8,40 €). O «Bilhete
+     ordinário» pode ainda vir a subir para 1,50 €, ordenança ainda em
+     aprovação inicial a 7/07/2026. Confirmação só por fontes
+     secundárias, fica «por rever». */
   'Málaga': {operador:'EMT Málaga', url:'https://www.emtmalaga.es/es/tarifas', actualizado:'2026-08-30', fonte:'https://www.emtmalaga.es/es/tarifas',
     nota:'O bilhete simples não dá transbordo e não vale na linha A do aeroporto, que tem bilhete próprio. A recarga de 10 viagens dá transbordos gratuitos durante 1 h e sai a metade do preço à viagem, mas precisa de um cartão.',
     bilhetes:[
@@ -727,14 +722,14 @@ const TRANSPORTES_DESTINO = {
      carrismetropolitana.pt continua a devolver erro 523/503 (origem
      incontactável); carrismetropolitana.pt/tickets e o /tarifarios/ do
      domínio principal carregam mas são SPAs vazias, sem dados no HTML.
-     Tentado de novo a 02/11/2026, mesmo resultado (523 persistente há
-     várias semanas). Parece ser uma falha real do sítio, não um
-     bloqueio. O Passe Navegante Municipal (30 €) está confirmado por
-     várias notícias de 2026 independentes da fonte guardada ("pelo
-     terceiro ano consecutivo"); os outros dois bilhetes ficam por
-     confirmar (há um indício indirecto, não uma confirmação, de que a
-     tarifa de bordo pode ter subido 2,28% em vez de ficar exactamente
-     em 1,30 €). */
+     Tentado de novo a 02/11 e a 09/11/2026, mesmo resultado (523
+     persistente há várias semanas). Parece ser uma falha real do
+     sítio, não um bloqueio. O Passe Navegante Municipal (30 €) está
+     confirmado por várias notícias de 2026 independentes da fonte
+     guardada ("pelo terceiro ano consecutivo"); os outros dois
+     bilhetes ficam por confirmar (há um indício indirecto, não uma
+     confirmação, de que a tarifa de bordo pode ter subido 2,28% em vez
+     de ficar exactamente em 1,30 €). */
   'Setúbal': {operador:'Carris Metropolitana', url:'https://backoffice.carrismetropolitana.pt/tarifarios/', actualizado:'2026-08-31', fonte:'https://lisboaparapessoas.pt/2025/12/30/transportes-2026-lisboa/',
     nota:'A tarifa de bordo da zona «Linha Próxima» subiu de 1,25 € para 1,30 € em 2026; o pré-pago (zapping) não subiu. Os passes Navegante cobrem toda a Área Metropolitana de Lisboa, não só Setúbal.',
     bilhetes:[
@@ -849,11 +844,16 @@ const TRANSPORTES_DESTINO = {
      fonte é imprensa e não o BOIB em si, fica «por rever»: a próxima
      ronda não precisa de se apressar, só voltar a verificar perto do
      final do ano.
-     Tentativa a 02/11/2026: ainda sem nenhuma notícia sobre o resultado
-     do voto do Pleno agendado para 29/10/2026, apesar de procura
-     alargada (Última Hora, Diario de Mallorca, ara Balears, Forbes,
-     BOIB directamente). Continua tudo como estava. */
-  'Palma de Maiorca': {operador:'EMT Palma', url:'https://www.emtpalma.cat/ca/tarifes/tarifes', actualizado:'2026-08-30', fonte:'https://www.caib.es/eboibfront/pdf/es/2026/99/1225914',
+     Resolvido a 09/11/2026: o Inselradio (rádio alemã focada em Maiorca,
+     5/11/2026) confirma que a câmara já aprovou definitivamente a nova
+     tarifa no Pleno de 29/10 ("Die Stadt hat die neuen EMT-Tarife jetzt
+     endgültig beschlossen"), mas a entrada em vigor é só "ab 2027" (sem
+     dia exacto). Até lá o bilhete continua a 2 €. Os valores aqui
+     mantêm-se correctos para já; a próxima ronda de perto do final do
+     ano ou já em Janeiro deve verificar se a mudança para 3 €
+     (urbano) e o novo sistema por zonas (A1=3€, A2=4,50€) já
+     arrancaram. */
+  'Palma de Maiorca': {operador:'EMT Palma', url:'https://www.emtpalma.cat/ca/tarifes/tarifes', actualizado:'2026-11-09', fonte:'https://www.caib.es/eboibfront/pdf/es/2026/99/1225914',
     nota:'Paga-se a bordo, em dinheiro (não aceitam notas acima de 5 €) ou com cartão bancário; nenhum destes bilhetes dá direito a transbordo. As linhas A1 e A2 só servem o aeroporto, sem paragens pelo meio.',
     bilhetes:[
       {nome:'Bilhete simples, urbano', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1239,7 +1239,7 @@ const TRANSPORTES_DESTINO = {
      destas datas são actuais e quais são antigas. Fica tudo «por rever»:
      a próxima ronda devia tentar ler as páginas da myfin.by na íntegra,
      não só excertos, para perceber a datação de cada número. */
-  'Minsk': {operador:'Minsktrans (autocarro/trólei/eléctrico) / Minsk Metro', url:'https://minsktrans.by/oplata-proezda/tarify/', actualizado:'2026-09-03', fonte:'https://myfin.by/',
+  'Minsk': {operador:'Minsktrans (autocarro/trólei/eléctrico) / Minsk Metro', url:'https://minsktrans.by/oplata-proezda/tarify/', actualizado:'2026-11-09', fonte:'https://myfin.by/',
     moeda:'BYN', nota:'Talão do autocarro/trólei/eléctrico e ficha do metro têm preços próprios, ligeiramente diferentes.',
     bilhetes:[
       {nome:'Talão autocarro/trólei/eléctrico', preco:1.10, unidade:'viagem', quando:'antes', modos:['autocarro','eletrico']},
@@ -1319,12 +1319,14 @@ const TRANSPORTES_DESTINO = {
      directo (anti-bot), confirmado em vez disso pelo espelho oficial de
      turismo e pelo operador do eléctrico, sem contradição entre os dois.
      Verificado a 03/09/2026. */
-  /* Tentada reconfirmação a 26/10 e 02/11/2026: tallinn.ee bloqueia
-     todos os pedidos automáticos com um desafio Cloudflare (403 em
-     todas as tentativas, incluindo com cabeçalhos de browser e via um
-     proxy leitor alternativo). Fontes não oficiais, não datadas, citam
-     o mesmo valor (2 €) mas não chegam para confirmar. Fica «por
-     rever». */
+  /* Tentada reconfirmação a 26/10, 02/11 e 09/11/2026: tallinn.ee
+     bloqueia todos os pedidos automáticos com um desafio Cloudflare
+     (403 em todas as tentativas). Desta vez achada uma pista mais
+     forte: a ERR (rádio pública estónia) noticia uma proposta
+     municipal para subir o bilhete de 1h de 1,50 para 2,00 € e o passe
+     diário de 4,50 para 5,50 €, exactamente os valores já guardados
+     aqui, mas sem confirmar se já está em vigor ou ainda é só
+     proposta. Fica «por rever» por não se saber ao certo o estado. */
   'Taline': {operador:'TLT (Tallinna Linnatransport) / Câmara de Taline', url:'https://www.tallinn.ee/en/pilet/public-transport-tickets-tallinn', actualizado:'2026-09-03', fonte:'https://visittallinn.ee/eng/visitor/plan/transport/public-transport',
     moeda:'EUR', nota:'Os transportes são gratuitos para residentes registados de Taline; um visitante paga sempre o bilhete normal.',
     bilhetes:[
@@ -1352,7 +1354,7 @@ const TRANSPORTES_DESTINO = {
      oficiais (uma app de terceiros, notícias de 2022-2023) citam os
      mesmos valores, mas sem fonte primária para confirmar. Fica «por
      rever». */
-  'Riga': {operador:'Rīgas satiksme', url:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/', actualizado:'2026-09-03', fonte:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/',
+  'Riga': {operador:'Rīgas satiksme', url:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/', actualizado:'2026-11-09', fonte:'https://www.rigassatiksme.lv/en/tickets-and-e-ticket/types-and-prices-of-tickets-1/',
     moeda:'EUR',
     bilhetes:[
       {nome:'Bilhete 90 minutos (e-talon)', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro','eletrico']},
@@ -1450,7 +1452,7 @@ const TRANSPORTES_DESTINO = {
      dois valores guardados (subida para 75 RUB a 2/01/2026, 112 RUB
      para "90 minutos"), mas sem confirmação pela própria operadora,
      fica «por rever». */
-  'Moscovo': {operador:'Mosgortrans / Mosmetro (cartão Troika)', url:'https://troika.transport.vtb.ru/tariffs', actualizado:'2026-09-03', fonte:'https://troika.transport.vtb.ru/tariffs',
+  'Moscovo': {operador:'Mosgortrans / Mosmetro (cartão Troika)', url:'https://troika.transport.vtb.ru/tariffs', actualizado:'2026-11-09', fonte:'https://troika.transport.vtb.ru/tariffs',
     moeda:'RUB', nota:'O preço varia com o meio de pagamento: mais barato por biometria (71 RUB), mais caro por cartão bancário/telemóvel sem Troika (83 RUB).',
     bilhetes:[
       {nome:'Bilhete simples (cartão Troika)', preco:75, unidade:'viagem', quando:'chegada', modos:['metro','autocarro','eletrico']},
@@ -1493,7 +1495,7 @@ const TRANSPORTES_DESTINO = {
      relatos (um da IDB, guias de viagem de 2024-2025) são consistentes
      com estes valores na prática, mas sem confirmação oficial formal,
      fica «por rever». */
-  'Nassau': {operador:'"Jitneys" (minibus privados licenciados, regulados pelo Road Traffic Department)', url:'https://www.tribune242.com/', actualizado:'2026-09-03', fonte:'https://www.tribune242.com/',
+  'Nassau': {operador:'"Jitneys" (minibus privados licenciados, regulados pelo Road Traffic Department)', url:'https://www.tribune242.com/', actualizado:'2026-11-09', fonte:'https://www.tribune242.com/',
     moeda:'BSD', nota:'Tarifa em vigor desde Maio de 2024; há relatos de cobrança inconsistente por alguns motoristas.',
     bilhetes:[
       {nome:'Bilhete simples, adulto', preco:1.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1526,7 +1528,7 @@ const TRANSPORTES_DESTINO = {
      mas o documento disponível só tem o articulado, sem o anexo (a
      tabela de preços em si). Não há como confirmar os valores
      guardados a partir deste documento. Fica «por rever». */
-  'Roseau': {operador:'Minibus privados (matrícula "H"), tarifário fixado pelo Cabinet da Commonwealth of Dominica', url:'https://www.news.gov.dm/news/news-items/cabinet-approves-the-implementation-of-new-bus-fares-and-taxi-rates-2', actualizado:'2026-09-03', fonte:'https://www.news.gov.dm/news/news-items/cabinet-approves-the-implementation-of-new-bus-fares-and-taxi-rates-2',
+  'Roseau': {operador:'Minibus privados (matrícula "H"), tarifário fixado pelo Cabinet da Commonwealth of Dominica', url:'https://www.news.gov.dm/news/news-items/cabinet-approves-the-implementation-of-new-bus-fares-and-taxi-rates-2', actualizado:'2026-11-09', fonte:'https://www.news.gov.dm/news/news-items/cabinet-approves-the-implementation-of-new-bus-fares-and-taxi-rates-2',
     moeda:'XCD', nota:'O preço depende da distância; o tarifário oficial mais recente encontrado é de Março de 2023.',
     bilhetes:[
       {nome:'Percurso curto, junto a Roseau', preco:2.00, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1618,7 +1620,7 @@ const TRANSPORTES_DESTINO = {
      (J$100 nas rotas normais da cidade, até J$700 nas rotas
      interparoquiais mais longas); não é claro se o valor guardado se
      refere à rota normal. Fica «por rever». */
-  'Kingston': {operador:'Jamaica Urban Transit Company (JUTC)', url:'https://jutc.gov.jm/faq/', actualizado:'2026-09-03', fonte:'https://jutc.gov.jm/faq/',
+  'Kingston': {operador:'Jamaica Urban Transit Company (JUTC)', url:'https://jutc.gov.jm/faq/', actualizado:'2026-11-09', fonte:'https://jutc.gov.jm/faq/',
     moeda:'JMD',
     bilhetes:[
       {nome:'Bilhete simples, adulto (dinheiro)', preco:100, unidade:'viagem', quando:'chegada', modos:['autocarro']}
@@ -1627,12 +1629,13 @@ const TRANSPORTES_DESTINO = {
      de Managua; o site oficial do IRTRAMMA não resolveu, por isso a
      fonte é de imprensa, sem página oficial de tarifário confirmada.
      Verificado a 03/09/2026.
-     Tentada reconfirmação a 02/11/2026: managua.gob.ni carrega mas não
-     tem nenhum conteúdo sobre tarifário de transportes; pesquisa
-     alargada por qualquer anúncio de preço do IRTRAMMA ou da Alcaldia
-     entre 2020 e 2026 não encontrou nada fiável (só valores de
-     2005-2009, muito antigos). O valor guardado (2,50 NIO) não se
-     consegue confirmar nem contradizer. Fica «por rever». */
+     Tentada reconfirmação a 02/11 e a 09/11/2026: managua.gob.ni
+     carrega mas não tem nenhum conteúdo sobre tarifário de
+     transportes; pesquisa alargada por qualquer anúncio de preço do
+     IRTRAMMA ou da Alcaldia entre 2020 e 2026 não encontrou nada
+     fiável (só valores de 2005-2009, muito antigos). O valor guardado
+     (2,50 NIO) não se consegue confirmar nem contradizer. Fica «por
+     rever». */
   'Manágua': {operador:'Transporte Urbano Colectivo (TUC), regulado pelo IRTRAMMA', url:'https://www.managua.gob.ni/', actualizado:'2026-09-03', fonte:'https://www.vivanicaragua.com.ni/2026/02/20/sociales/pasaje-transporte-publico-centroamerica/',
     moeda:'NIO',
     bilhetes:[
@@ -1642,7 +1645,16 @@ const TRANSPORTES_DESTINO = {
      (autocarros) têm tarifas próprias, confirmadas por várias fontes de
      2025/2026; a Linha 3 do metro ainda não tem tarifa própria
      confirmada. PAB (balboa) tem paridade 1:1 com o dólar americano.
-     Verificado a 03/09/2026. */
+     Verificado a 03/09/2026. Tentada reconfirmação a 09/11/2026: Metro
+     Linha 1 (0,35) e Linha 2 (0,50) reconfirmados por fontes oficiais,
+     incluindo relatório anual da empresa. MiBus troncal (0,25) apoiado
+     por declaração de Março de 2026 da directoria, sem subida nacional
+     autorizada. O MiBus corredor fica em dúvida: há uma fonte a citar
+     1,25 US$ em vez dos 0,75 aqui guardados, possivelmente confundido
+     com o custo real não-subsidiado (1,74 US$) referido noutra fonte.
+     Sem conseguir resolver a contradição, a cidade toda fica «por
+     rever» mais uma semana para não validar indirectamente o valor do
+     corredor. */
   'Cidade do Panamá': {operador:'Metro de Panamá / MiBus', url:'https://elmetrodepanama.com/tarifa-del-metro/', actualizado:'2026-09-03', fonte:'https://elmetrodepanama.com/tarifa-del-metro/',
     moeda:'PAB', nota:'PAB (balboa) tem paridade fixa 1:1 com o dólar americano.',
     bilhetes:[
@@ -1656,7 +1668,11 @@ const TRANSPORTES_DESTINO = {
      os autocarros municipais PumaKatari/ChikiTiti complementam a rede
      (micros/trufis privados existem mas sem tarifário centralizado).
      Confirmado pelo site oficial e por imprensa governamental/
-     independente. Verificado a 03/09/2026. */
+     independente. Verificado a 03/09/2026. Tentada reconfirmação a
+     09/11/2026: o site oficial é uma SPA sem conteúdo renderizável para
+     os pedidos automáticos, e não se achou nenhuma fonte secundária
+     datada e fiável para nenhum dos dois valores nesta ronda. Fica
+     «por rever». */
   'La Paz': {operador:'Mi Teleférico / PumaKatari', url:'https://www.miteleferico.bo/pcymt/horarios-y-tarifas', actualizado:'2026-09-03', fonte:'https://www.miteleferico.bo/pcymt/horarios-y-tarifas',
     moeda:'BOB', nota:'O teleférico cobra um valor extra por transbordo entre linhas.',
     bilhetes:[
@@ -1668,7 +1684,7 @@ const TRANSPORTES_DESTINO = {
      USD 0,60 chegou a ser anunciada para 2025, mas fontes de 2026
      confirmam que as tarifas separadas se mantiveram. Verificado a
      03/09/2026. */
-  'Quito': {operador:'Metro de Quito (EPM) / Trolebús-Ecovía (EPMTPQ)', url:'https://metrodequito.gob.ec/etiqueta/tarifas/', actualizado:'2026-09-03', fonte:'https://metrodequito.gob.ec/etiqueta/tarifas/',
+  'Quito': {operador:'Metro de Quito (EPM) / Trolebús-Ecovía (EPMTPQ)', url:'https://metrodequito.gob.ec/etiqueta/tarifas/', actualizado:'2026-11-09', fonte:'https://metrodequito.gob.ec/etiqueta/tarifas/',
     moeda:'USD', nota:'Uma tarifa integrada única chegou a ser anunciada para 2025, mas não avançou: os dois sistemas continuam com tarifas separadas.',
     bilhetes:[
       {nome:'Metro', preco:0.45, unidade:'viagem', quando:'chegada', modos:['metro']},
@@ -1678,7 +1694,15 @@ const TRANSPORTES_DESTINO = {
      licenciadas ("líneas permisionarias"), tarifa fixada pela
      Municipalidade de Assunção; subida aprovada pela Junta Municipal em
      Dezembro de 2025, confirmada por três fontes independentes.
-     Verificado a 03/09/2026. */
+     Verificado a 03/09/2026. Tentada reconfirmação a 09/11/2026: achada
+     uma contradição séria. A própria fonte aqui guardada mostra, lida
+     com atenção, Gs 2.800 (datado de Março de 2022), não os Gs 3.400
+     guardados. A imprensa paraguaia recente mostra uma disputa volátil
+     e sem resolução clara, com vários valores a circular (2.300, 2.800,
+     3.300, e uma proposta de 3.400 ainda não confirmada em vigor).
+     Decidido não corrigir para nenhum destes valores sem confirmação
+     mais sólida. Fica «por rever»; a próxima ronda deveria tentar as
+     resoluções da VMT (Viceministerio de Transporte) directamente. */
   'Assunção': {operador:'Líneas permisionarias (Municipalidade de Assunción)', url:'https://www.asuncion.gov.py/transito/reajuste-del-costo-del-pasaje-para-lineas-permisionarias-de-asuncion', actualizado:'2026-09-03', fonte:'https://www.asuncion.gov.py/transito/reajuste-del-costo-del-pasaje-para-lineas-permisionarias-de-asuncion',
     moeda:'PYG',
     bilhetes:[
@@ -1688,7 +1712,7 @@ const TRANSPORTES_DESTINO = {
      pela CUTCSA; tarifa em vigor desde 5 de Janeiro de 2026, confirmada
      pelo site oficial da câmara e por várias notícias independentes.
      Verificado a 03/09/2026. */
-  'Montevideu': {operador:'Sistema de Transporte Metropolitano (STM) / CUTCSA', url:'https://montevideo.gub.uy/areas-tematicas/sistema-de-transporte-metropolitano/tarifas-del-transporte-colectivo-urbano', actualizado:'2026-09-03', fonte:'https://montevideo.gub.uy/areas-tematicas/sistema-de-transporte-metropolitano/tarifas-del-transporte-colectivo-urbano',
+  'Montevideu': {operador:'Sistema de Transporte Metropolitano (STM) / CUTCSA', url:'https://montevideo.gub.uy/areas-tematicas/sistema-de-transporte-metropolitano/tarifas-del-transporte-colectivo-urbano', actualizado:'2026-11-09', fonte:'https://montevideo.gub.uy/areas-tematicas/sistema-de-transporte-metropolitano/tarifas-del-transporte-colectivo-urbano',
     moeda:'UYU', nota:'O bilhete com cartão STM é mais barato do que pago em dinheiro.',
     bilhetes:[
       {nome:'Boleto comum, com cartão STM', preco:52, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1701,7 +1725,13 @@ const TRANSPORTES_DESTINO = {
      Venezuela tem inflação muito elevada, e a tarifa pode já ter subido
      de novo depois da verificação; o preço do transporte urbano privado
      (fora do Metro) já tinha subido de novo em Setembro de 2026.
-     Verificado a 03/09/2026. */
+     Verificado a 03/09/2026. Tentada reconfirmação a 09/11/2026: achada
+     uma notícia de 9/10/2026 (Finanzas Digital) a referir uma nova
+     subida para 160/80 Bs, mas a própria notícia admite não ter
+     confirmação oficial, citando apenas um aviso em circulação nas
+     redes sociais. Dada a dimensão da subida alegada, e sem fonte mais
+     sólida (p. ex. Gazeta Oficial), fica «por rever» em vez de arriscar
+     um valor não confirmado. */
   'Caracas': {operador:'Metro de Caracas (C.A. Metro de Caracas)', url:'https://talcualdigital.com/metro-de-caracas-subio-el-pasaje-de-80-a-90-bolivares-sin-previo-aviso-a-los-usuarios/', actualizado:'2026-09-03', fonte:'https://talcualdigital.com/metro-de-caracas-subio-el-pasaje-de-80-a-90-bolivares-sin-previo-aviso-a-los-usuarios/',
     moeda:'VES', nota:'Inflação muito elevada na Venezuela: a tarifa subiu de 60 para 80 e depois para 90 bolívares só entre Março e Maio de 2026, e pode voltar a mudar a qualquer momento.',
     bilhetes:[
@@ -1714,7 +1744,7 @@ const TRANSPORTES_DESTINO = {
      domingos e feriados desde Março de 2025 ("Vai de Graça"), não
      representado aqui por não ser o caso comum de um dia de semana.
      Verificado a 03/09/2026. */
-  'Brasília': {operador:'Metrô-DF / DFTrans (SEMOB-DF)', url:'https://www.semob.df.gov.br/precos-das-passagens', actualizado:'2026-09-03', fonte:'https://www.semob.df.gov.br/precos-das-passagens',
+  'Brasília': {operador:'Metrô-DF / DFTrans (SEMOB-DF)', url:'https://www.semob.df.gov.br/precos-das-passagens', actualizado:'2026-11-09', fonte:'https://www.semob.df.gov.br/precos-das-passagens',
     moeda:'BRL', nota:'Autocarro e metro são gratuitos aos domingos e feriados desde Março de 2025 ("Vai de Graça").',
     bilhetes:[
       {nome:'Metrô-DF', preco:5.50, unidade:'viagem', quando:'chegada', modos:['metro']},
@@ -1724,7 +1754,7 @@ const TRANSPORTES_DESTINO = {
      concessão privada (Grupo Comporte) desde Março de 2023; valores bem
      cruzados por fontes institucionais e de imprensa. Verificado a
      03/09/2026. */
-  'Belo Horizonte': {operador:'BHTrans (autocarros) / Metrô BH', url:'https://prefeitura.pbh.gov.br/sumob/onibus/tarifas-e-integracoes', actualizado:'2026-09-03', fonte:'https://prefeitura.pbh.gov.br/sumob/onibus/tarifas-e-integracoes',
+  'Belo Horizonte': {operador:'BHTrans (autocarros) / Metrô BH', url:'https://prefeitura.pbh.gov.br/sumob/onibus/tarifas-e-integracoes', actualizado:'2026-11-09', fonte:'https://prefeitura.pbh.gov.br/sumob/onibus/tarifas-e-integracoes',
     moeda:'BRL',
     bilhetes:[
       {nome:'Autocarro convencional', preco:6.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -1734,7 +1764,7 @@ const TRANSPORTES_DESTINO = {
      três sistemas geridos pelo Governo da CDMX, cada um com tarifa
      própria; confirmado por várias fontes institucionais e de imprensa,
      mantidas de 2025 para 2026. Verificado a 03/09/2026. */
-  'Cidade do México': {operador:'Metro STC / Metrobús / Trolebús (Governo da CDMX)', url:'https://metro.cdmx.gob.mx/acerca-del-metro/mas-informacion/costo-del-boleto_boletos', actualizado:'2026-09-03', fonte:'https://metro.cdmx.gob.mx/acerca-del-metro/mas-informacion/costo-del-boleto_boletos',
+  'Cidade do México': {operador:'Metro STC / Metrobús / Trolebús (Governo da CDMX)', url:'https://metro.cdmx.gob.mx/acerca-del-metro/mas-informacion/costo-del-boleto_boletos', actualizado:'2026-11-09', fonte:'https://metro.cdmx.gob.mx/acerca-del-metro/mas-informacion/costo-del-boleto_boletos',
     moeda:'MXN',
     bilhetes:[
       {nome:'Metro STC', preco:5, unidade:'viagem', quando:'chegada', modos:['metro']},
@@ -1758,7 +1788,7 @@ const TRANSPORTES_DESTINO = {
      de Lima Linha 1 são sistemas distintos, ambos com tarifário oficial
      bem confirmado por várias fontes de 2025/2026. Verificado a
      03/09/2026. */
-  'Lima': {operador:'Metropolitano (ATU) / Metro de Lima, Linha 1', url:'https://portal.atu.gob.pe/', actualizado:'2026-09-03', fonte:'https://portal.atu.gob.pe/',
+  'Lima': {operador:'Metropolitano (ATU) / Metro de Lima, Linha 1', url:'https://portal.atu.gob.pe/', actualizado:'2026-11-09', fonte:'https://portal.atu.gob.pe/',
     moeda:'PEN',
     bilhetes:[
       {nome:'Metropolitano, troncal', preco:3.20, unidade:'viagem', quando:'chegada', modos:['autocarro']},
