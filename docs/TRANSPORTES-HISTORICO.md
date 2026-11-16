@@ -781,3 +781,57 @@ encontrada) e **Manágua** (continua sem nenhuma fonte fiável para o
 período).
 
 **Cerca de 137 cidades ficam por rever** para as próximas semanas.
+
+### Oitava ronda semanal, a 16 de Novembro de 2026: Setúbal corrigida, primeiro lote de capitais a 73 dias
+
+Tratadas as 9 cidades já por rever, mais um primeiro lote de 10 cidades
+do enorme bloco que chegou aos 73 dias de desactualização (268 cidades
+no site, 155 por rever no início desta ronda).
+
+**1 correcção de preço**, não só uma reconfirmação: **Setúbal**. O site
+oficial da Carris Metropolitana (backoffice.carrismetropolitana.pt)
+finalmente voltou a carregar depois de várias semanas com erro 523/503,
+e mostra a tarifa de bordo da Linha Próxima em 1,25 €, não 1,30 € como
+estava guardado desde Agosto (baseado numa subida de 2,28 % citada por
+um artigo, nunca confirmada directamente). Corrigido para 1,25 €; o
+pré-pago (0,85 €) e o Passe Municipal (30 €) confirmam-se sem
+alteração.
+
+**7 cidades reconfirmadas sem alteração de preço**: Vila Real, Washington
+D.C., Chicago, Wellington, Auckland, Ancara, Abu Dhabi. Chicago merece
+nota: a própria página da CTA parece desactualizada (mostra "effective
+February 20, 2023"), mas múltiplas notícias independentes confirmam que
+o aumento de Fevereiro de 2026 está mesmo em vigor, com os valores aqui
+guardados. Em Auckland, corrigido um erro à parte do preço: o bilhete a
+dinheiro só se paga no comboio, nunca a bordo do autocarro.
+
+**11 cidades ficam por rever**, cada uma com o motivo actualizado no
+ficheiro:
+- **Málaga e Valência**: nona semana seguida bloqueadas por TLS.
+- **Taline**: continua bloqueada por desafio Cloudflare.
+- **Manágua**: mudou de comportamento, já não carrega em branco, agora
+  devolve o mesmo desafio Cloudflare que Taline e Riga.
+- **Ottawa e Camberra**: entram pela primeira vez por rever, ambas
+  bloqueadas com 403 Forbidden (sites que nunca tinham bloqueado antes).
+- **Cidade do Panamá**: continua o impasse do MiBus corredor (0,75 contra
+  1,25 US$); notícias de 2026 sugerem que não houve subida, mas sem
+  confirmação directa do valor exacto.
+- **Assunção**: percebe-se agora melhor a estrutura: um decreto
+  presidencial distingue autocarros convencionais (G. 2.300) dos
+  climatizados/diferenciais (G. 3.400, possivelmente o valor aqui
+  guardado), e há ainda uma disputa à parte sobre os autocarros internos
+  geridos pela Câmara. Sem certeza de qual sistema corresponde à entrada
+  guardada, fica por rever.
+- **Caracas**: o transporte urbano geral já está indexado ao dólar (230
+  Bs desde 1/11), mas não se confirma se o Metro segue o mesmo esquema;
+  o último valor confirmado do Metro continua a ser de Maio de 2026.
+- **La Paz**: site oficial continua a devolver 503.
+- **Faro**: achada uma complicação nova. Um regulamento da AMAL de
+  Dezembro de 2025 prevê o descongelamento das tarifas dos passes
+  mensais a partir de 1/01/2026, e uma alteração anterior já previa que
+  o Passe Algarve (40 €, fixado só "no ano de 2025") passasse a ter
+  tarifários por zona depois disso. Não está claro se o valor de 40 €
+  continua em vigor; fica por rever em vez de arriscar um valor que
+  pode já estar desactualizado desde Janeiro.
+
+**Cerca de 147 cidades ficam por rever** para as próximas semanas.
