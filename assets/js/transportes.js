@@ -387,10 +387,10 @@ const TRANSPORTES_DESTINO = {
      zona A, e os títulos SUMA T valem na combinação AB. São os valores da
      rede de metro e eléctrico; a EMT (autocarros) tem tarifário próprio,
      que não vem nesta página. */
-  /* Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10, 02/11 e
-     09/11/2026: metrovalencia.es recusa sempre a ligação (TLS). Fontes
-     secundárias confirmam o «Sencillo, zonas AB» (2,80 €), mas não o
-     «zona A ou B» nem os três SUMA. Fica «por rever». */
+  /* Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10, 02/11,
+     09/11 e 16/11/2026: metrovalencia.es recusa sempre a ligação (TLS).
+     Fontes secundárias confirmam o «Sencillo, zonas AB» (2,80 €), mas
+     não o «zona A ou B» nem os três SUMA. Fica «por rever». */
   'Valência': {operador:'Metrovalencia', url:'https://www.metrovalencia.es/es/nuestras-tarifas/', actualizado:'2026-08-30', fonte:'https://www.metrovalencia.es/es/nuestras-tarifas/',
     nota:'O preço depende da zona: a cidade é a zona A. O título não inclui o suporte: o cartão SUMA anónimo custa 2,20 € em plástico ou 1,10 € em cartão, à parte. Os autocarros da EMT têm tarifário próprio.',
     bilhetes:[
@@ -403,9 +403,9 @@ const TRANSPORTES_DESTINO = {
   /* Málaga não estava na tabela: o utilizador via só uma procura. Lido na
      EMT Málaga a 30/08/2026. A própria página diz que são as tarifas de
      1 de Janeiro de 2025, prorrogadas durante 2026.
-     Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10, 02/11 e
-     09/11/2026: emtmalaga.es recusa sempre a ligação (reset de TLS),
-     oitava semana seguida. Fontes secundárias confirmam os três
+     Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10, 02/11,
+     09/11 e 16/11/2026: emtmalaga.es recusa sempre a ligação (reset de
+     TLS), nona semana seguida. Fontes secundárias confirmam os três
      valores, incluindo a dúvida de rondas passadas (o desconto
      municipal de 40-50%, até 31/12/2026, explica a «Recarga de 10
      viagens» a 5,00 €; tarifa base sem desconto é 8,40 €). O «Bilhete
@@ -624,8 +624,23 @@ const TRANSPORTES_DESTINO = {
      AMAL (autoridade de transportes do Algarve) de 21/08/2025, citação
      directa: «"Passe Algarve" tem um preço de 40€ e é válido para todas
      as carreiras de todas as linhas da rede VAMUS, à exceção do Serviço
-     AeroBus». */
-  'Faro': {operador:'Vamus Algarve', url:'https://vamus.pt/tarifario/', actualizado:'2026-09-04', fonte:'https://amal.pt/comunicacao/1110-passe-algarve-na-rede-vamus-avanca-ja-em-setembro', moeda:'EUR',
+     AeroBus».
+     Tentada reconfirmação a 16/11/2026: o `fonte` antigo (amal.pt) já dá
+     404; trocado para o postal.pt (22/08/2025, mesma citação dos 40 €).
+     Achado um sinal preocupante num regulamento da AMAL ("sexta
+     alteração ao Regulamento Intermunicipal Apoios à Mobilidade AMAL",
+     Despacho n.º 3910 de 19/12/2025): o descongelamento, a partir de
+     1/01/2026, das tarifas dos passes mensais "referidas a 2022", e uma
+     frase anterior (da alteração de Outubro/2025) que já previa que o
+     Passe Algarve, fixado em 40 € "no ano de 2025", passaria a
+     "aplicar-se tarifários zonais" depois disso. Não é claro se o Passe
+     Algarve ficou dentro desse descongelamento ou não, nem se já existe
+     um novo valor por zonas em vigor. Como há agora um motivo concreto
+     para duvidar que os 40 € continuem correctos em Novembro de 2026,
+     fica «por rever» em vez de reconfirmar o valor antigo; a próxima
+     ronda devia tentar o site oficial da AMAL (secção de tarifários) ou
+     ligar para a linha de apoio da VAMUS para esclarecer. */
+  'Faro': {operador:'Vamus Algarve', url:'https://vamus.pt/tarifario/', actualizado:'2026-09-04', fonte:'https://postal.pt/algarve/novo-passe-algarve-vai-permitir-viajar-em-toda-a-regiao-por-40-euros-mensais/', moeda:'EUR',
     nota:'Só se confirmou o passe mensal para toda a rede regional (excepto o AeroBus do aeroporto); o bilhete avulso na cidade não está confirmado, por a tabela de zonas do operador não distinguir claramente qual é a de Faro.',
     bilhetes:[
       {nome:'Passe Algarve (toda a rede Vamus, excepto AeroBus)', preco:40.00, unidade:'mês', quando:'antes', modos:['autocarro']}
@@ -714,26 +729,19 @@ const TRANSPORTES_DESTINO = {
       {nome:'Passe urbano mensal', preco:10.25, unidade:'mês', quando:'antes', modos:['autocarro']}
     ]},
   /* Setúbal é servida pela Carris Metropolitana (zona «Linha Próxima»,
-     tarifa 1). A própria página de tarifários ainda mostra os valores de
-     2025 (1,25 € / 4,50 €); o aumento de 2026 está confirmado num artigo
-     da Lisboa Para Pessoas, publicado a 30/12/2025, com fonte no regulador
-     (AMT, taxa de actualização de 2,28 %) e nas operadoras. */
-  /* Tentada reconfirmação a 12/10, 19/10 e 26/10/2026: backoffice.
-     carrismetropolitana.pt continua a devolver erro 523/503 (origem
-     incontactável); carrismetropolitana.pt/tickets e o /tarifarios/ do
-     domínio principal carregam mas são SPAs vazias, sem dados no HTML.
-     Tentado de novo a 02/11 e a 09/11/2026, mesmo resultado (523
-     persistente há várias semanas). Parece ser uma falha real do
-     sítio, não um bloqueio. O Passe Navegante Municipal (30 €) está
-     confirmado por várias notícias de 2026 independentes da fonte
-     guardada ("pelo terceiro ano consecutivo"); os outros dois
-     bilhetes ficam por confirmar (há um indício indirecto, não uma
-     confirmação, de que a tarifa de bordo pode ter subido 2,28% em vez
-     de ficar exactamente em 1,30 €). */
-  'Setúbal': {operador:'Carris Metropolitana', url:'https://backoffice.carrismetropolitana.pt/tarifarios/', actualizado:'2026-08-31', fonte:'https://lisboaparapessoas.pt/2025/12/30/transportes-2026-lisboa/',
-    nota:'A tarifa de bordo da zona «Linha Próxima» subiu de 1,25 € para 1,30 € em 2026; o pré-pago (zapping) não subiu. Os passes Navegante cobrem toda a Área Metropolitana de Lisboa, não só Setúbal.',
+     tarifa 1). Resolvido a 16/11/2026: backoffice.carrismetropolitana.pt
+     finalmente voltou a carregar (depois de várias semanas com erro
+     523/503) e mostra a tabela oficial completa. A tarifa de bordo da
+     Linha Próxima está em 1,25 €, não 1,30 € como constava aqui desde
+     Agosto, baseado num artigo da Lisboa Para Pessoas (30/12/2025) que
+     citava uma subida de 2,28 % ainda por confirmar directamente; a
+     fonte oficial não confirma essa subida. Corrigido para 1,25 €. O
+     pré-pago (0,85 €) e o Passe Navegante Municipal (30 €/mês)
+     confirmam-se sem alteração. */
+  'Setúbal': {operador:'Carris Metropolitana', url:'https://backoffice.carrismetropolitana.pt/tarifarios/', actualizado:'2026-11-16', fonte:'https://backoffice.carrismetropolitana.pt/tarifarios/',
+    nota:'A tarifa de bordo da zona «Linha Próxima» é 1,25 €; o pré-pago (zapping) é 0,85 €. Os passes Navegante cobrem toda a Área Metropolitana de Lisboa, não só Setúbal.',
     bilhetes:[
-      {nome:'Tarifa de bordo, Linha Próxima (avulso)', preco:1.30, unidade:'viagem', quando:'chegada', modos:['autocarro']},
+      {nome:'Tarifa de bordo, Linha Próxima (avulso)', preco:1.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
       {nome:'Navegante pré-pago, Linha Próxima', preco:0.85, unidade:'viagem', quando:'antes', modos:['autocarro']},
       {nome:'Passe Navegante Municipal', preco:30.00, unidade:'mês', quando:'antes', modos:['autocarro']}
     ]},
@@ -796,8 +804,11 @@ const TRANSPORTES_DESTINO = {
      embutidas como imagens. A própria página confirma «Ajustamento
      tarifário com efeitos a 1 de Janeiro de 2026», por isso é a tarifa
      actual. Não se inclui o «Multiviagens» (7,65 €) por a página não
-     dizer quantas viagens dá: melhor omitir do que adivinhar. */
-  'Vila Real': {operador:'Urbanos de Vila Real (TUVR)', url:'https://www.urbanosvilareal.pt/pt/tarifarios/', actualizado:'2026-09-04', fonte:'https://www.urbanosvilareal.pt/pt/tarifarios/', moeda:'EUR',
+     dizer quantas viagens dá: melhor omitir do que adivinhar.
+     Reconfirmado a 16/11/2026: desta vez a tabela da zona 1 leu-se como
+     texto normal (não como imagem), e os três valores guardados
+     (1,25 € / 2,30 € / 29 €) confirmam-se exactamente. */
+  'Vila Real': {operador:'Urbanos de Vila Real (TUVR)', url:'https://www.urbanosvilareal.pt/pt/tarifarios/', actualizado:'2026-11-16', fonte:'https://www.urbanosvilareal.pt/pt/tarifarios/', moeda:'EUR',
     nota:'Preços da zona 1 (a cidade). Em vigor desde 1/01/2026.',
     bilhetes:[
       {nome:'Bilhete de bordo', preco:1.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -968,14 +979,20 @@ const TRANSPORTES_DESTINO = {
      está, sim, em texto simples, só que dentro de um atributo JSON de um
      componente da página (`table-data='[...]'`), que um `curl` normal não
      lê como tabela visível. Confirmados os preços com cartão AT HOP e a
-     dinheiro (mais caro; só se compra em máquina/balcão, não a bordo). */
-  'Auckland': {operador:'Auckland Transport', url:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', actualizado:'2026-09-04', fonte:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', moeda:'NZD',
-    nota:'A tarifa é por zonas atravessadas (até 4). O tecto de gasto: no máximo 20 NZD por dia a pagar por contactless, ou 50 NZD por 7 dias com o cartão AT HOP.',
+     dinheiro (mais caro; só se compra em máquina/balcão, não a bordo).
+     Reconfirmado a 16/11/2026, por uma página dedicada da AT a "Public
+     transport fare changes 2026" (actualizada a 15/11/2026): os quatro
+     valores mantêm-se sem alteração desde 1/02/2026. Corrigido também um
+     erro: o dinheiro só se paga em comboio (em máquina/balcão da
+     estação), nunca a bordo do autocarro; os dois bilhetes a dinheiro
+     ficam só com o modo "metro". */
+  'Auckland': {operador:'Auckland Transport', url:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/bus-and-train-fares', actualizado:'2026-11-16', fonte:'https://at.govt.nz/bus-train-ferry/fares-and-discounts/public-transport-fare-changes', moeda:'NZD',
+    nota:'A tarifa é por zonas atravessadas (até 4). O tecto de gasto: no máximo 20 NZD por dia a pagar por contactless, ou 50 NZD por 7 dias com o cartão AT HOP. O dinheiro só se paga no comboio, nunca a bordo do autocarro.',
     bilhetes:[
       {nome:'Cartão AT HOP ou contactless, 1 zona', preco:3.00, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']},
       {nome:'Cartão AT HOP ou contactless, 4 ou mais zonas', preco:7.90, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']},
-      {nome:'Dinheiro (só em máquina/balcão), 1 zona', preco:4.00, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']},
-      {nome:'Dinheiro (só em máquina/balcão), 4 ou mais zonas', preco:10.00, unidade:'viagem', quando:'chegada', modos:['autocarro','metro']}
+      {nome:'Dinheiro (só em máquina/balcão do comboio), 1 zona', preco:4.00, unidade:'viagem', quando:'chegada', modos:['metro']},
+      {nome:'Dinheiro (só em máquina/balcão do comboio), 4 ou mais zonas', preco:10.00, unidade:'viagem', quando:'chegada', modos:['metro']}
     ]},
   /* Lido no MTR a 30/08/2026. A tarifa normal do metro é por distância,
      estação a estação, e o operador não publica nenhum valor único que se
@@ -1319,10 +1336,10 @@ const TRANSPORTES_DESTINO = {
      directo (anti-bot), confirmado em vez disso pelo espelho oficial de
      turismo e pelo operador do eléctrico, sem contradição entre os dois.
      Verificado a 03/09/2026. */
-  /* Tentada reconfirmação a 26/10, 02/11 e 09/11/2026: tallinn.ee
+  /* Tentada reconfirmação a 26/10, 02/11, 09/11 e 16/11/2026: tallinn.ee
      bloqueia todos os pedidos automáticos com um desafio Cloudflare
-     (403 em todas as tentativas). Desta vez achada uma pista mais
-     forte: a ERR (rádio pública estónia) noticia uma proposta
+     (403 em todas as tentativas, "Access denied"). Desta vez achada uma
+     pista mais forte: a ERR (rádio pública estónia) noticia uma proposta
      municipal para subir o bilhete de 1h de 1,50 para 2,00 € e o passe
      diário de 4,50 para 5,50 €, exactamente os valores já guardados
      aqui, mas sem confirmar se já está em vigor ou ainda é só
@@ -1635,7 +1652,10 @@ const TRANSPORTES_DESTINO = {
      IRTRAMMA ou da Alcaldia entre 2020 e 2026 não encontrou nada
      fiável (só valores de 2005-2009, muito antigos). O valor guardado
      (2,50 NIO) não se consegue confirmar nem contradizer. Fica «por
-     rever». */
+     rever». Tentada reconfirmação a 16/11/2026: o site mudou de
+     comportamento, já não carrega em branco, agora devolve um desafio
+     Cloudflare ("Just a moment...", 403) como Taline e Riga. Continua
+     sem fonte fiável. */
   'Manágua': {operador:'Transporte Urbano Colectivo (TUC), regulado pelo IRTRAMMA', url:'https://www.managua.gob.ni/', actualizado:'2026-09-03', fonte:'https://www.vivanicaragua.com.ni/2026/02/20/sociales/pasaje-transporte-publico-centroamerica/',
     moeda:'NIO',
     bilhetes:[
@@ -1654,7 +1674,11 @@ const TRANSPORTES_DESTINO = {
      com o custo real não-subsidiado (1,74 US$) referido noutra fonte.
      Sem conseguir resolver a contradição, a cidade toda fica «por
      rever» mais uma semana para não validar indirectamente o valor do
-     corredor. */
+     corredor. Tentada reconfirmação a 16/11/2026: notícias de 2026
+     sobre o aumento do combustível mostram a MiBus a ajustar rotas e
+     frequências "sem subir a tarifa", o que sugere que os 0,75 US$
+     continuam correctos, mas nenhuma fonte dá o valor exacto
+     directamente. Continua por rever. */
   'Cidade do Panamá': {operador:'Metro de Panamá / MiBus', url:'https://elmetrodepanama.com/tarifa-del-metro/', actualizado:'2026-09-03', fonte:'https://elmetrodepanama.com/tarifa-del-metro/',
     moeda:'PAB', nota:'PAB (balboa) tem paridade fixa 1:1 com o dólar americano.',
     bilhetes:[
@@ -1672,7 +1696,10 @@ const TRANSPORTES_DESTINO = {
      09/11/2026: o site oficial é uma SPA sem conteúdo renderizável para
      os pedidos automáticos, e não se achou nenhuma fonte secundária
      datada e fiável para nenhum dos dois valores nesta ronda. Fica
-     «por rever». */
+     «por rever». Tentada reconfirmação a 16/11/2026: o site oficial
+     devolve 503; pesquisa por imprensa boliviana de 2026 só encontrou
+     um relatório financeiro da empresa (Setembro de 2026), sem valores
+     de tarifa. Continua por rever. */
   'La Paz': {operador:'Mi Teleférico / PumaKatari', url:'https://www.miteleferico.bo/pcymt/horarios-y-tarifas', actualizado:'2026-09-03', fonte:'https://www.miteleferico.bo/pcymt/horarios-y-tarifas',
     moeda:'BOB', nota:'O teleférico cobra um valor extra por transbordo entre linhas.',
     bilhetes:[
@@ -1702,7 +1729,19 @@ const TRANSPORTES_DESTINO = {
      3.300, e uma proposta de 3.400 ainda não confirmada em vigor).
      Decidido não corrigir para nenhum destes valores sem confirmação
      mais sólida. Fica «por rever»; a próxima ronda deveria tentar as
-     resoluções da VMT (Viceministerio de Transporte) directamente. */
+     resoluções da VMT (Viceministerio de Transporte) directamente.
+     Tentada reconfirmação a 16/11/2026: percebe-se agora melhor a
+     estrutura. Um decreto presidencial regula as "líneas
+     permisionarias" do VMT, com G. 2.300 para autocarros convencionais
+     e G. 3.400 para os climatizados/diferenciais (o valor aqui guardado
+     pode corresponder a este último, não ao convencional). Em paralelo,
+     há uma disputa totalmente separada sobre os "autocarros internos"
+     geridos directamente pela Municipalidade (não o VMT): subiram até
+     G. 3.338 em Julho, a Câmara acordou baixá-los para G. 2.300 a
+     27/07, com aviso de voltarem a subir se o VMT não os incluir no
+     subsídio. Sem conseguir confirmar a qual dos dois sistemas
+     corresponde exactamente a entrada aqui guardada, e sem confirmação
+     mais recente que Agosto de 2026, fica «por rever». */
   'Assunção': {operador:'Líneas permisionarias (Municipalidade de Assunción)', url:'https://www.asuncion.gov.py/transito/reajuste-del-costo-del-pasaje-para-lineas-permisionarias-de-asuncion', actualizado:'2026-09-03', fonte:'https://www.asuncion.gov.py/transito/reajuste-del-costo-del-pasaje-para-lineas-permisionarias-de-asuncion',
     moeda:'PYG',
     bilhetes:[
@@ -1731,7 +1770,14 @@ const TRANSPORTES_DESTINO = {
      confirmação oficial, citando apenas um aviso em circulação nas
      redes sociais. Dada a dimensão da subida alegada, e sem fonte mais
      sólida (p. ex. Gazeta Oficial), fica «por rever» em vez de arriscar
-     um valor não confirmado. */
+     um valor não confirmado. Tentada reconfirmação a 16/11/2026: o
+     transporte urbano geral (autocarros) passou para um sistema
+     indexado ao dólar (0,25 US$, ajustado mensalmente à taxa do Banco
+     Central), chegando a 230 Bs a 1/11/2026; mas não se confirma se o
+     Metro segue o mesmo esquema de indexação ou mantém tarifa própria.
+     O último valor confirmado do Metro continua a ser 90 Bs, de Maio de
+     2026. Sem Gaceta Oficial nem comunicado do Metro para Novembro,
+     fica «por rever». */
   'Caracas': {operador:'Metro de Caracas (C.A. Metro de Caracas)', url:'https://talcualdigital.com/metro-de-caracas-subio-el-pasaje-de-80-a-90-bolivares-sin-previo-aviso-a-los-usuarios/', actualizado:'2026-09-03', fonte:'https://talcualdigital.com/metro-de-caracas-subio-el-pasaje-de-80-a-90-bolivares-sin-previo-aviso-a-los-usuarios/',
     moeda:'VES', nota:'Inflação muito elevada na Venezuela: a tarifa subiu de 60 para 80 e depois para 90 bolívares só entre Março e Maio de 2026, e pode voltar a mudar a qualquer momento.',
     bilhetes:[
@@ -2466,8 +2512,12 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Não estava na tabela. EGO opera metro, Ankaray, Başkentray e
      autocarros; subida em vigor desde 23/08/2026, confirmada por três
-     fontes noticiosas independentes. Verificado a 04/09/2026. */
-  'Ancara': {operador:'EGO (Ankara Elektrik, Gaz ve Otobüs İşletmeleri)', url:'https://www.ego.gov.tr/tr/sayfa/2098/tasima-ucretleri', actualizado:'2026-09-04', fonte:'https://www.cnnturk.com/ekonomi/ankara-otobus-ucretleri-ve-toplu-tasima-tarifesi-2026-ego-tam-ogrenci-ve-ogretmen-bileti-kac-tl-basiyor-3454688',
+     fontes noticiosas independentes. Verificado a 04/09/2026.
+     Reconfirmado directamente a 16/11/2026 na página oficial (válida
+     desde 23/08/2026): bilhete simples com o cartão Başkent Kart, tarifa
+     "TAM", continua em 40,00 TL. A Turquia tem inflação elevada, por
+     isso vale a pena voltar a verificar com regularidade. */
+  'Ancara': {operador:'EGO (Ankara Elektrik, Gaz ve Otobüs İşletmeleri)', url:'https://www.ego.gov.tr/tr/sayfa/2098/tasima-ucretleri', actualizado:'2026-11-16', fonte:'https://www.ego.gov.tr/tr/sayfa/2098/tasima-ucretleri',
     moeda:'TRY',
     bilhetes:[
       {nome:'Bilhete simples ("tam bilet")', preco:40, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']}
@@ -2475,8 +2525,12 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Abu Dhabi Mobility (ex-ITC) opera os
      autocarros públicos, pagos com o cartão Hafilat; estrutura tarifária
      unificada desde Fevereiro de 2024, confirmada por fonte oficial e
-     vários órgãos de imprensa. Verificado a 04/09/2026. */
-  'Abu Dhabi': {operador:'Abu Dhabi Mobility (autocarros públicos, cartão Hafilat)', url:'https://admobility.gov.ae/en/pb-bus-service/hafilat-passes-for-hc', actualizado:'2026-09-04', fonte:'https://www.admobility.gov.ae/en/news/standardizes-tariffs-for-public-bus-services',
+     vários órgãos de imprensa. Verificado a 04/09/2026. Reconfirmado a
+     16/11/2026: a página oficial chama aos 2 AED "Boarding Fee" (não
+     "minimum fare"), mais 5 fils/km, com o tecto de 5 AED só para
+     viagens de mais de 60 km; os dois valores guardados (2 e 5)
+     continuam correctos, embora o nome "tarifa mínima" seja impreciso. */
+  'Abu Dhabi': {operador:'Abu Dhabi Mobility (autocarros públicos, cartão Hafilat)', url:'https://admobility.gov.ae/en/pb-bus-service/hafilat-passes-for-hc', actualizado:'2026-11-16', fonte:'https://admobility.gov.ae/en/pb-bus-service/hafilat-public-buses-fees',
     moeda:'AED', nota:'Tarifa base mais 0,05 AED por km, com tecto de 5 AED por viagem.',
     bilhetes:[
       {nome:'Viagem, tarifa mínima', preco:2, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -2484,7 +2538,10 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Não estava na tabela. OC Transpo opera autocarros e o O-Train
      (Confederation Line); tarifas em vigor desde 1/1/2026, confirmadas
-     por três fontes independentes. Verificado a 04/09/2026. */
+     por três fontes independentes. Verificado a 04/09/2026. Tentada
+     reconfirmação a 16/11/2026: octranspo.com/en/fares/ devolve 403
+     Forbidden a todos os pedidos automáticos (primeira vez que este
+     site bloqueia). Fica «por rever». */
   'Ottawa': {operador:'OC Transpo (autocarro + O-Train)', url:'https://www.octranspo.com/en/fares/', actualizado:'2026-09-04', fonte:'https://www.octranspo.com/en/news/article/fare-change-takes-effect-january-1-2026',
     moeda:'CAD', nota:'O bilhete pago com cartão Presto é ligeiramente mais barato do que em dinheiro.',
     bilhetes:[
@@ -2506,7 +2563,10 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Transport Canberra opera autocarro e light
      rail com bilhética unificada MyWay+; tarifas em vigor desde
      10/1/2026, confirmadas por duas fontes jornalísticas independentes.
-     Verificado a 04/09/2026. */
+     Verificado a 04/09/2026. Tentada reconfirmação a 16/11/2026:
+     transport.act.gov.au devolve 403 Forbidden a todos os pedidos
+     automáticos (primeira vez que este site bloqueia). Fica «por
+     rever». */
   'Camberra': {operador:'Transport Canberra (MyWay+)', url:'https://www.transport.act.gov.au/tickets-and-myway/fares', actualizado:'2026-09-04', fonte:'https://www.transport.act.gov.au/tickets-and-myway/fares',
     moeda:'AUD', nota:'A tarifa na hora de ponta é mais cara do que fora dela.',
     bilhetes:[
@@ -2516,8 +2576,10 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Metlink (Greater Wellington Regional Council)
      opera autocarro, comboio e ferry; tarifas em vigor desde 15/5/2026,
      confirmadas pelo site oficial e por duas fontes jornalísticas
-     independentes. Verificado a 04/09/2026. */
-  'Wellington': {operador:'Metlink (Greater Wellington Regional Council)', url:'https://www.metlink.org.nz/getting-started/tickets-and-fares', actualizado:'2026-09-04', fonte:'https://www.metlink.org.nz/getting-started/tickets-and-fares',
+     independentes. Verificado a 04/09/2026. Reconfirmado directamente a
+     16/11/2026: a tabela oficial confirma 1,70 € (Snapper, fora de
+     ponta) e 3,00 € (dinheiro), sem alteração. */
+  'Wellington': {operador:'Metlink (Greater Wellington Regional Council)', url:'https://www.metlink.org.nz/getting-started/tickets-and-fares', actualizado:'2026-11-16', fonte:'https://www.metlink.org.nz/getting-started/tickets-and-fares',
     moeda:'NZD', nota:'O bilhete com cartão Snapper é mais barato do que em dinheiro; a tarifa em dinheiro é sempre 1 zona.',
     bilhetes:[
       {nome:'Adulto, 1 zona, Snapper, fora de ponta', preco:1.70, unidade:'viagem', quando:'chegada', modos:['autocarro','comboio']},
@@ -2658,8 +2720,16 @@ const TRANSPORTES_DESTINO = {
   /* Últimas cidades novas desta fase (EUA e resto das Caraíbas). Não
      estava na tabela. CTA (autocarro e "L"); aumento de 25 cêntimos em
      vigor desde 1/2/2026, o primeiro desde 2018, confirmado por três
-     fontes noticiosas independentes. Verificado a 04/09/2026. */
-  'Chicago': {operador:'CTA (Chicago Transit Authority)', url:'https://www.transitchicago.com/fares/', actualizado:'2026-09-04', fonte:'https://blockclubchicago.org/2025/10/14/cta-to-raise-fares-25-cents-per-ride-as-fiscal-cliff-looms/',
+     fontes noticiosas independentes. Verificado a 04/09/2026.
+     Reconfirmado a 16/11/2026: a própria página transitchicago.com/
+     fares/ ainda mostra "effective February 20, 2023" e valores antigos
+     ($2,25/$2,50), parecendo não ter sido actualizada; mas múltiplas
+     notícias de 2025/2026 (CBS News, WTTW, Fox32, Daily Herald)
+     confirmam de forma consistente que o aumento de 1/02/2026 entrou
+     mesmo em vigor, exactamente para os valores aqui guardados
+     ($2,50/$2,75). Mantido com confiança apesar da página oficial
+     parecer desactualizada. */
+  'Chicago': {operador:'CTA (Chicago Transit Authority)', url:'https://www.transitchicago.com/fares/', actualizado:'2026-11-16', fonte:'https://blockclubchicago.org/2025/10/14/cta-to-raise-fares-25-cents-per-ride-as-fiscal-cliff-looms/',
     moeda:'USD',
     bilhetes:[
       {nome:'Autocarro, bilhete simples', preco:2.50, unidade:'viagem', quando:'chegada', modos:['autocarro']},
@@ -2667,8 +2737,10 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Não estava na tabela. WMATA (Metro/Metrobus); o orçamento do ano
      fiscal de 2026 confirma que não há aumento de tarifas. Verificado a
-     04/09/2026. */
-  'Washington D.C.': {operador:'WMATA (Metro/Metrobus)', url:'https://www.wmata.com/fares/basic.cfm', actualizado:'2026-09-04', fonte:'https://www.wmata.com/fares/basic.cfm',
+     04/09/2026. Reconfirmado directamente a 16/11/2026: a página oficial
+     mostra o autocarro local a $2,25 e o mínimo do Metrorail a $2,25,
+     sem alteração. */
+  'Washington D.C.': {operador:'WMATA (Metro/Metrobus)', url:'https://www.wmata.com/fares/basic.cfm', actualizado:'2026-11-16', fonte:'https://www.wmata.com/fares/basic.cfm',
     moeda:'USD', nota:'A tarifa do Metrorail depende da distância percorrida e da hora do dia.',
     bilhetes:[
       {nome:'Metrobus, tarifa única', preco:2.25, unidade:'viagem', quando:'chegada', modos:['autocarro']},
