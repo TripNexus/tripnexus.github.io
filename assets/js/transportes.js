@@ -388,9 +388,9 @@ const TRANSPORTES_DESTINO = {
      rede de metro e eléctrico; a EMT (autocarros) tem tarifário próprio,
      que não vem nesta página. */
   /* Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10, 02/11,
-     09/11 e 16/11/2026: metrovalencia.es recusa sempre a ligação (TLS).
-     Fontes secundárias confirmam o «Sencillo, zonas AB» (2,80 €), mas
-     não o «zona A ou B» nem os três SUMA. Fica «por rever». */
+     09/11, 16/11 e 23/11/2026: metrovalencia.es recusa sempre a ligação
+     (TLS). Fontes secundárias confirmam o «Sencillo, zonas AB» (2,80 €),
+     mas não o «zona A ou B» nem os três SUMA. Fica «por rever». */
   'Valência': {operador:'Metrovalencia', url:'https://www.metrovalencia.es/es/nuestras-tarifas/', actualizado:'2026-08-30', fonte:'https://www.metrovalencia.es/es/nuestras-tarifas/',
     nota:'O preço depende da zona: a cidade é a zona A. O título não inclui o suporte: o cartão SUMA anónimo custa 2,20 € em plástico ou 1,10 € em cartão, à parte. Os autocarros da EMT têm tarifário próprio.',
     bilhetes:[
@@ -404,8 +404,9 @@ const TRANSPORTES_DESTINO = {
      EMT Málaga a 30/08/2026. A própria página diz que são as tarifas de
      1 de Janeiro de 2025, prorrogadas durante 2026.
      Tentada reconfirmação em 29/09, 05/10, 12/10, 19/10, 26/10, 02/11,
-     09/11 e 16/11/2026: emtmalaga.es recusa sempre a ligação (reset de
-     TLS), nona semana seguida. Fontes secundárias confirmam os três
+     09/11, 16/11 e 23/11/2026: emtmalaga.es recusa sempre a ligação
+     (reset de TLS), décima semana seguida. Fontes secundárias confirmam
+     os três
      valores, incluindo a dúvida de rondas passadas (o desconto
      municipal de 40-50%, até 31/12/2026, explica a «Recarga de 10
      viagens» a 5,00 €; tarifa base sem desconto é 8,40 €). O «Bilhete
@@ -426,7 +427,13 @@ const TRANSPORTES_DESTINO = {
      página de bilhetes embute a tabela tarifária como imagem
      (tabella_tariffe_05_24.jpg, lida visualmente). Os preços «Aziendale
      ANM» valem só na rede urbana da ANM; «Integrato» é o título
-     UnicoCampania, que também serve a Metropolitana Linha 1. */
+     UnicoCampania, que também serve a Metropolitana Linha 1.
+     Tentada reconfirmação a 23/11/2026: a imagem antiga já não se
+     conseguiu voltar a ler (nem a tabela nem o PDF ligado, datado de
+     Maio de 2024, abriram de forma legível). A página de texto refere
+     120 minutos de validade para os títulos integrados em QR, não os
+     90 minutos aqui guardados para a «Corsa singola B»; não é claro se
+     é o mesmo título. Fica «por rever». */
   'Nápoles': {operador:'ANM', url:'https://www2.anm.it/index.php?Itemid=320&id=1344&option=com_content&task=view', actualizado:'2026-09-04', fonte:'https://www2.anm.it/images/stories/tabella_tariffe_05_24.jpg', moeda:'EUR',
     nota:'Corsa singola A cobre funiculares e autocarros urbanos (título só ANM). A Metropolitana Linhas 1 e 6 exige o título integrado UnicoCampania.',
     bilhetes:[
@@ -639,7 +646,8 @@ const TRANSPORTES_DESTINO = {
      para duvidar que os 40 € continuem correctos em Novembro de 2026,
      fica «por rever» em vez de reconfirmar o valor antigo; a próxima
      ronda devia tentar o site oficial da AMAL (secção de tarifários) ou
-     ligar para a linha de apoio da VAMUS para esclarecer. */
+     ligar para a linha de apoio da VAMUS para esclarecer. Tentativa
+     nova a 23/11/2026: nada de novo encontrado. Continua por rever. */
   'Faro': {operador:'Vamus Algarve', url:'https://vamus.pt/tarifario/', actualizado:'2026-09-04', fonte:'https://postal.pt/algarve/novo-passe-algarve-vai-permitir-viajar-em-toda-a-regiao-por-40-euros-mensais/', moeda:'EUR',
     nota:'Só se confirmou o passe mensal para toda a rede regional (excepto o AeroBus do aeroporto); o bilhete avulso na cidade não está confirmado, por a tabela de zonas do operador não distinguir claramente qual é a de Faro.',
     bilhetes:[
@@ -1336,14 +1344,15 @@ const TRANSPORTES_DESTINO = {
      directo (anti-bot), confirmado em vez disso pelo espelho oficial de
      turismo e pelo operador do eléctrico, sem contradição entre os dois.
      Verificado a 03/09/2026. */
-  /* Tentada reconfirmação a 26/10, 02/11, 09/11 e 16/11/2026: tallinn.ee
-     bloqueia todos os pedidos automáticos com um desafio Cloudflare
-     (403 em todas as tentativas, "Access denied"). Desta vez achada uma
-     pista mais forte: a ERR (rádio pública estónia) noticia uma proposta
-     municipal para subir o bilhete de 1h de 1,50 para 2,00 € e o passe
-     diário de 4,50 para 5,50 €, exactamente os valores já guardados
-     aqui, mas sem confirmar se já está em vigor ou ainda é só
-     proposta. Fica «por rever» por não se saber ao certo o estado. */
+  /* Tentada reconfirmação a 26/10, 02/11, 09/11, 16/11 e 23/11/2026:
+     tallinn.ee bloqueia todos os pedidos automáticos com um desafio
+     Cloudflare (403 em todas as tentativas, "Access denied"). Desta vez
+     achada uma pista mais forte: a ERR (rádio pública estónia) noticia
+     uma proposta municipal para subir o bilhete de 1h de 1,50 para
+     2,00 € e o passe diário de 4,50 para 5,50 €, exactamente os valores
+     já guardados aqui, mas sem confirmar se já está em vigor ou ainda é
+     só proposta. Fica «por rever» por não se saber ao certo o
+     estado. */
   'Taline': {operador:'TLT (Tallinna Linnatransport) / Câmara de Taline', url:'https://www.tallinn.ee/en/pilet/public-transport-tickets-tallinn', actualizado:'2026-09-03', fonte:'https://visittallinn.ee/eng/visitor/plan/transport/public-transport',
     moeda:'EUR', nota:'Os transportes são gratuitos para residentes registados de Taline; um visitante paga sempre o bilhete normal.',
     bilhetes:[
@@ -1448,7 +1457,16 @@ const TRANSPORTES_DESTINO = {
      domínio actual `stb.ro`, cuja página de tarifário («Tarife») resolve
      a contradição com a tabela oficial, lida directamente da página (não
      de imprensa). O Metrorex continua sem site acessível nesta sessão,
-     mas os títulos «integrado» abaixo já incluem o metro. */
+     mas os títulos «integrado» abaixo já incluem o metro.
+     Tentada reconfirmação a 23/11/2026: os dois bilhetes avulsos (3 e
+     7 lei) confirmam-se de novo exactamente. Mas o «Card călătorie
+     turist» de 24h/72h já não aparece com esse nome na página: aparece,
+     sim, um «Abonament» de 24h/72h só-superfície (8/20 lei) e um 24h/72h
+     integrado (18/49 lei), nenhum a bater certo com os 20/40 lei aqui
+     guardados. Pode ter sido descontinuado ou renomeado. A página avisa
+     também que a STB está "em insolvência". Sem certeza do que
+     corresponde ao título aqui guardado, a cidade toda fica «por
+     rever» até se esclarecer. */
   'Bucareste': {operador:'STB (Societatea de Transport București) / Metrorex', url:'https://www.stb.ro/tarife', actualizado:'2026-09-04', fonte:'https://www.stb.ro/tarife',
     moeda:'RON',
     nota:'A «Card călătorie turist» é o título integrado (superfície + metro + comboio Gara de Nord–Aeroporto Otopeni) pensado para visitantes.',
@@ -1585,7 +1603,10 @@ const TRANSPORTES_DESTINO = {
      valor claramente dominante, que se usa aqui como tarifa base:
      0,20 USD em 157 das 1095 rotas de autocarro (a mais comum, de
      longe), e 0,25 USD em 195 das 335 rotas de microbus (mais de
-     metade). Fica o resto de fora: há tarifas por rota até 2,00 USD. */
+     metade). Fica o resto de fora: há tarifas por rota até 2,00 USD.
+     Tentada reconfirmação a 23/11/2026: tarifariociudadano.vmt.gob.sv
+     devolve 403 Forbidden, tanto a página como o XLSX. Fica «por
+     rever». */
   'San Salvador': {operador:'Autocarros/microbuses privados concessionados, regulados pelo Viceministerio de Transporte (VMT)', url:'https://tarifariociudadano.vmt.gob.sv/', actualizado:'2026-09-04', fonte:'https://tarifariociudadano.vmt.gob.sv/assets/docs/Tarifas%20Transporte%20Colectivo%20El%20Salvador.xlsx',
     moeda:'USD',
     nota:'A tarifa é fixada por rota (mais de 1400 no total); os valores abaixo são os mais comuns («tarifa base»), não um preço único citadino. Rotas específicas, sobretudo expresso ou longa distância, custam mais.',
@@ -1652,7 +1673,7 @@ const TRANSPORTES_DESTINO = {
      IRTRAMMA ou da Alcaldia entre 2020 e 2026 não encontrou nada
      fiável (só valores de 2005-2009, muito antigos). O valor guardado
      (2,50 NIO) não se consegue confirmar nem contradizer. Fica «por
-     rever». Tentada reconfirmação a 16/11/2026: o site mudou de
+     rever». Tentada reconfirmação a 16/11 e 23/11/2026: o site mudou de
      comportamento, já não carrega em branco, agora devolve um desafio
      Cloudflare ("Just a moment...", 403) como Taline e Riga. Continua
      sem fonte fiável. */
@@ -1678,7 +1699,11 @@ const TRANSPORTES_DESTINO = {
      sobre o aumento do combustível mostram a MiBus a ajustar rotas e
      frequências "sem subir a tarifa", o que sugere que os 0,75 US$
      continuam correctos, mas nenhuma fonte dá o valor exacto
-     directamente. Continua por rever. */
+     directamente. Tentativa nova a 23/11/2026: um artigo achado
+     referindo a redução de 1,25 para 0,75 US$ afinal é de 2017 (resolução
+     JD-54, com entrada em vigor prevista só "a partir de 2018"), não de
+     2026; não serve para confirmar nada de actual. Continua por
+     rever. */
   'Cidade do Panamá': {operador:'Metro de Panamá / MiBus', url:'https://elmetrodepanama.com/tarifa-del-metro/', actualizado:'2026-09-03', fonte:'https://elmetrodepanama.com/tarifa-del-metro/',
     moeda:'PAB', nota:'PAB (balboa) tem paridade fixa 1:1 com o dólar americano.',
     bilhetes:[
@@ -1699,7 +1724,9 @@ const TRANSPORTES_DESTINO = {
      «por rever». Tentada reconfirmação a 16/11/2026: o site oficial
      devolve 503; pesquisa por imprensa boliviana de 2026 só encontrou
      um relatório financeiro da empresa (Setembro de 2026), sem valores
-     de tarifa. Continua por rever. */
+     de tarifa. Tentativa nova a 23/11/2026: o site já não dá 503, mas
+     continua a ser uma SPA vazia ("Loading...") para qualquer pedido
+     automático, mesmo com navegador renderizado. Continua por rever. */
   'La Paz': {operador:'Mi Teleférico / PumaKatari', url:'https://www.miteleferico.bo/pcymt/horarios-y-tarifas', actualizado:'2026-09-03', fonte:'https://www.miteleferico.bo/pcymt/horarios-y-tarifas',
     moeda:'BOB', nota:'O teleférico cobra um valor extra por transbordo entre linhas.',
     bilhetes:[
@@ -1741,7 +1768,9 @@ const TRANSPORTES_DESTINO = {
      27/07, com aviso de voltarem a subir se o VMT não os incluir no
      subsídio. Sem conseguir confirmar a qual dos dois sistemas
      corresponde exactamente a entrada aqui guardada, e sem confirmação
-     mais recente que Agosto de 2026, fica «por rever». */
+     mais recente que Agosto de 2026, fica «por rever». Tentativa nova a
+     23/11/2026: nenhuma notícia mais recente encontrada para nenhum dos
+     dois sistemas. Continua por rever. */
   'Assunção': {operador:'Líneas permisionarias (Municipalidade de Assunción)', url:'https://www.asuncion.gov.py/transito/reajuste-del-costo-del-pasaje-para-lineas-permisionarias-de-asuncion', actualizado:'2026-09-03', fonte:'https://www.asuncion.gov.py/transito/reajuste-del-costo-del-pasaje-para-lineas-permisionarias-de-asuncion',
     moeda:'PYG',
     bilhetes:[
@@ -1777,7 +1806,11 @@ const TRANSPORTES_DESTINO = {
      Metro segue o mesmo esquema de indexação ou mantém tarifa própria.
      O último valor confirmado do Metro continua a ser 90 Bs, de Maio de
      2026. Sem Gaceta Oficial nem comunicado do Metro para Novembro,
-     fica «por rever». */
+     fica «por rever». Tentativa nova a 23/11/2026: achada menção a uma
+     subida do Metro para 160 Bs em Outubro, mas misturada no mesmo
+     artigo com os 230 Bs do transporte urbano geral, sem separar bem os
+     dois sistemas; não dá para confiar nela sozinha. Continua por
+     rever. */
   'Caracas': {operador:'Metro de Caracas (C.A. Metro de Caracas)', url:'https://talcualdigital.com/metro-de-caracas-subio-el-pasaje-de-80-a-90-bolivares-sin-previo-aviso-a-los-usuarios/', actualizado:'2026-09-03', fonte:'https://talcualdigital.com/metro-de-caracas-subio-el-pasaje-de-80-a-90-bolivares-sin-previo-aviso-a-los-usuarios/',
     moeda:'VES', nota:'Inflação muito elevada na Venezuela: a tarifa subiu de 60 para 80 e depois para 90 bolívares só entre Março e Maio de 2026, e pode voltar a mudar a qualquer momento.',
     bilhetes:[
@@ -1850,7 +1883,9 @@ const TRANSPORTES_DESTINO = {
   /* Início da ronda de África. Não estava na tabela. Metro do Cairo,
      gerido pela NAT; reajuste oficial em vigor desde 27/03/2026,
      confirmado por duas fontes noticiosas independentes. Verificado a
-     04/09/2026. */
+     04/09/2026. Tentada reconfirmação a 23/11/2026: a página oficial
+     carrega, mas a tabela de tarifas por distância está só em imagem,
+     ilegível automaticamente. Fica «por rever». */
   'Cairo': {operador:'Metro do Cairo (National Authority for Tunnels)', url:'https://www.cairometro.gov.eg/en/bookings/3', actualizado:'2026-09-04', fonte:'https://www.dailynewsegypt.com/2026/03/26/egypt-raises-train-and-metro-fares-in-latest-pricing-adjustment/',
     moeda:'EGP', nota:'O preço depende do número de estações percorridas.',
     bilhetes:[
@@ -1948,7 +1983,9 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. SOTRA é a empresa estatal de autocarros e
      bateaux-bus; valores confirmados por comunicado oficial do
      Ministério dos Transportes de Julho de 2024. Verificado a
-     04/09/2026. */
+     04/09/2026. Tentada reconfirmação a 23/11/2026: o `url` guardado dá
+     404; a página inicial sotra.ci também não respondeu. Fica «por
+     rever». */
   'Abidjan': {operador:'SOTRA (Société des Transports Abidjanais)', url:'http://www.sotra.ci/www/s/titres-et-tarifs/', actualizado:'2026-09-04', fonte:'http://www.sotra.ci/www/s/titres-et-tarifs/',
     moeda:'XOF',
     bilhetes:[
@@ -2238,7 +2275,10 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Metro de Baku (Bakı Metropoliteni), tarifa
      fixa desde 1/10/2025, confirmada com alta confiança (fonte oficial +
      agência de notícias). O BakuBus não tem tarifa fixa única (varia por
-     rota), por isso não entra aqui. Verificado a 04/09/2026. */
+     rota), por isso não entra aqui. Verificado a 04/09/2026. Tentada
+     reconfirmação a 23/11/2026: o `url` guardado dá 404; a página
+     inicial metro.gov.az/en/ devolve um redireccionamento que também
+     não chega a carregar. Fica «por rever». */
   'Baku': {operador:'Baku Metro (Bakı Metropoliteni)', url:'https://metro.gov.az/en/page/muddealar/gedis-haqqinin-odenilmesi', actualizado:'2026-09-04', fonte:'https://en.apa.az/infrastructure/metro-fare-in-baku-set-at-060-azn-per-ride-as-expansion-and-fleet-renewal-continue-479111',
     moeda:'AZN',
     bilhetes:[
@@ -2256,7 +2296,10 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Tehran Metro, tarifas do ano persa 1404
      (2025-2026), confirmadas por três fontes noticiosas iranianas
      concordantes; fontes turísticas em inglês têm números antigos ou
-     contraditórios, ignorados. Verificado a 04/09/2026. */
+     contraditórios, ignorados. Verificado a 04/09/2026. Tentada
+     reconfirmação a 23/11/2026: o site oficial não respondeu (falha de
+     ligação). Fica «por rever»; o Irão tem inflação significativa,
+     convém confirmar com prioridade assim que o site voltar. */
   'Teerão': {operador:'Tehran Metro', url:'https://metro.tehran.ir/en/Services/Tickets-Fares/Price-of-Tickets', actualizado:'2026-09-04', fonte:'https://metro.tehran.ir/en/Services/Tickets-Fares/Price-of-Tickets',
     moeda:'IRR', nota:'O preço é normalmente citado em tomans (1 toman = 10 rials); o bilhete em papel é mais caro do que com cartão bancário.',
     bilhetes:[
@@ -2265,7 +2308,9 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Mwasalat é a empresa nacional; não foi
      possível confirmar directamente na página oficial (bloqueio de
      rede), mas os valores são consistentes entre várias fontes
-     secundárias de viagem. Confiança moderada. Verificado a 04/09/2026. */
+     secundárias de viagem. Confiança moderada. Verificado a 04/09/2026.
+     Tentada reconfirmação a 23/11/2026: o site oficial continua
+     inacessível (falha de ligação). Fica «por rever». */
   'Mascate': {operador:'Mwasalat', url:'https://mwasalat.om/en-us/Tariffs-and-Fares/Tariffs-and-Fares', actualizado:'2026-09-04', fonte:'https://mwasalat.om/en-us/Tariffs-and-Fares/Tariffs-and-Fares',
     moeda:'OMR', nota:'O preço depende do número de zonas percorridas.',
     bilhetes:[
@@ -2274,8 +2319,15 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Não estava na tabela. Riyadh Metro/Riyadh Bus, operados pelo
      consórcio RATP Dev/SAPTCO sob a RCRC; confirmado por três fontes
-     independentes coincidentes. Verificado a 04/09/2026. */
-  'Riade': {operador:'Riyadh Metro / Riyadh Bus (RCRC)', url:'https://riyadhmetro.org/en/tickets/', actualizado:'2026-09-04', fonte:'https://riyadhmetro.org/en/tickets/',
+     independentes coincidentes. Verificado a 04/09/2026. Reconfirmado a
+     23/11/2026: os valores (4/10 SAR) mantêm-se, mas repare-se que o
+     riyadhmetro.org, apesar de usado como `url`/`fonte`, diz de si
+     próprio ser "an independent information site, not the official
+     one", citando a RPT (não a RCRC) como fonte dos preços. Os valores
+     continuam a bater certo com a tripla confirmação original; uma
+     ronda futura devia tentar achar uma página verdadeiramente oficial
+     da RCRC/RPT/SAPTCO. */
+  'Riade': {operador:'Riyadh Metro / Riyadh Bus (RCRC)', url:'https://riyadhmetro.org/en/tickets/', actualizado:'2026-11-23', fonte:'https://riyadhmetro.org/en/tickets/',
     moeda:'SAR',
     bilhetes:[
       {nome:'Classe regular, 2 horas', preco:4, unidade:'viagem', quando:'chegada', modos:['metro','autocarro']},
@@ -2539,9 +2591,9 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. OC Transpo opera autocarros e o O-Train
      (Confederation Line); tarifas em vigor desde 1/1/2026, confirmadas
      por três fontes independentes. Verificado a 04/09/2026. Tentada
-     reconfirmação a 16/11/2026: octranspo.com/en/fares/ devolve 403
-     Forbidden a todos os pedidos automáticos (primeira vez que este
-     site bloqueia). Fica «por rever». */
+     reconfirmação a 16/11 e 23/11/2026: octranspo.com/en/fares/
+     continua a devolver 403 Forbidden a todos os pedidos automáticos.
+     Fica «por rever». */
   'Ottawa': {operador:'OC Transpo (autocarro + O-Train)', url:'https://www.octranspo.com/en/fares/', actualizado:'2026-09-04', fonte:'https://www.octranspo.com/en/news/article/fare-change-takes-effect-january-1-2026',
     moeda:'CAD', nota:'O bilhete pago com cartão Presto é ligeiramente mais barato do que em dinheiro.',
     bilhetes:[
@@ -2563,10 +2615,9 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Transport Canberra opera autocarro e light
      rail com bilhética unificada MyWay+; tarifas em vigor desde
      10/1/2026, confirmadas por duas fontes jornalísticas independentes.
-     Verificado a 04/09/2026. Tentada reconfirmação a 16/11/2026:
-     transport.act.gov.au devolve 403 Forbidden a todos os pedidos
-     automáticos (primeira vez que este site bloqueia). Fica «por
-     rever». */
+     Verificado a 04/09/2026. Tentada reconfirmação a 16/11 e 23/11/2026:
+     transport.act.gov.au continua a devolver 403 Forbidden a todos os
+     pedidos automáticos. Fica «por rever». */
   'Camberra': {operador:'Transport Canberra (MyWay+)', url:'https://www.transport.act.gov.au/tickets-and-myway/fares', actualizado:'2026-09-04', fonte:'https://www.transport.act.gov.au/tickets-and-myway/fares',
     moeda:'AUD', nota:'A tarifa na hora de ponta é mais cara do que fora dela.',
     bilhetes:[
@@ -2588,7 +2639,8 @@ const TRANSPORTES_DESTINO = {
   /* Grandes cidades asiáticas ainda por fazer. Não estava na tabela.
      Beijing Subway, tarifa por distância; confirmado pelo portal do
      governo municipal e pelo operador oficial, coincidentes. Verificado
-     a 04/09/2026. */
+     a 04/09/2026. Tentada reconfirmação a 23/11/2026: bjsubway.com não
+     respondeu (falha de ligação). Fica «por rever». */
   'Pequim': {operador:'Beijing Subway', url:'https://www.bjsubway.com/en/', actualizado:'2026-09-04', fonte:'https://english.beijing.gov.cn/specials/beijinglifeonthesubway/noticeforpassengers/202504/t20250423_4072294.html',
     moeda:'CNY', nota:'O preço depende da distância percorrida.',
     bilhetes:[
@@ -2597,7 +2649,9 @@ const TRANSPORTES_DESTINO = {
     ]},
   /* Não estava na tabela. Shanghai Metro (Shanghai Shentong Metro
      Group), tarifa por distância; confirmado por duas fontes
-     coincidentes. Verificado a 04/09/2026. */
+     coincidentes. Verificado a 04/09/2026. Tentada reconfirmação a
+     23/11/2026: shmetro.com não respondeu (falha de ligação,
+     persistente em várias tentativas). Fica «por rever». */
   'Xangai': {operador:'Shanghai Metro (Shanghai Shentong Metro Group)', url:'https://www.shmetro.com/', actualizado:'2026-09-04', fonte:'http://service.shmetro.com/en/cczn/73.htm',
     moeda:'CNY', nota:'O preço depende da distância percorrida.',
     bilhetes:[
@@ -2607,7 +2661,10 @@ const TRANSPORTES_DESTINO = {
   /* Não estava na tabela. Seoul Metro e a rede de autocarros, ambos
      bilhética T-money; valores em vigor desde Junho de 2025 (metro) e
      Agosto de 2023 (autocarro), confirmados por quatro fontes
-     noticiosas coreanas independentes. Verificado a 04/09/2026. */
+     noticiosas coreanas independentes. Verificado a 04/09/2026. Tentada
+     reconfirmação a 23/11/2026: o `url` em http:// reencaminha sempre
+     para https://, que por sua vez reencaminha de volta para http://,
+     em ciclo, sem chegar a mostrar a página. Fica «por rever». */
   'Seul': {operador:'Seoul Metro / autocarros urbanos (cartão T-money)', url:'http://www.seoulmetro.co.kr/en/page.do?menuIdx=348', actualizado:'2026-09-04', fonte:'http://www.seoulmetro.co.kr/en/page.do?menuIdx=348',
     moeda:'KRW', nota:'O bilhete pago com cartão T-money é mais barato do que em papel.',
     bilhetes:[
