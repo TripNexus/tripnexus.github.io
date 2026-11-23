@@ -835,3 +835,40 @@ ficheiro:
   pode já estar desactualizado desde Janeiro.
 
 **Cerca de 147 cidades ficam por rever** para as próximas semanas.
+
+### Nona ronda semanal, a 23 de Novembro de 2026: semana difícil de acessos, só Riade confirmada
+
+Tratadas as 11 cidades já por rever, mais um segundo lote de 12 cidades
+do bloco a 80 dias (268 cidades no site, 164 por rever no início desta
+ronda). Semana marcada por muitas falhas de ligação (própria desta
+sessão ou dos sítios visados, sem forma de distinguir sempre qual).
+
+**1 cidade reconfirmada sem alteração de preço:** Riade (4/10 SAR). Nota
+à parte: o `riyadhmetro.org`, usado como fonte, diz de si próprio não
+ser o sítio oficial da RCRC; os valores continuam a bater certo com a
+tripla confirmação original, mas uma ronda futura devia achar uma fonte
+verdadeiramente oficial.
+
+**21 cidades ficam por rever.** As 11 já conhecidas de rondas anteriores
+continuam com os mesmos bloqueios (Málaga, Valência: TLS; Taline,
+Manágua: Cloudflare; Ottawa, Camberra: 403; Cidade do Panamá, Assunção,
+Caracas, Faro: disputas/dúvidas já documentadas, sem novidade relevante
+esta semana) excepto **La Paz**, onde o site oficial já não dá 503 mas
+continua a ser uma SPA vazia ("Loading...") mesmo com navegador
+renderizado.
+
+As 10 cidades novas desta ronda ficam todas por rever, a maioria por
+falha de acesso: **Baku** (404), **Mascate**, **Teerão**, **Pequim**,
+**Xangai** (ligação falhada), **Seul** (ciclo de redireccionamento
+http/https), **San Salvador** (403), **Abidjan** (404), **Cairo**
+(tabela só em imagem). A excepção é **Bucareste**: os dois bilhetes
+avulsos (3 e 7 lei) confirmam-se, mas o «Card călătorie turist» de
+24h/72h já não existe com esse nome no site oficial, que agora lista
+produtos diferentes (Abonamentos de 24h/72h só-superfície a 8/20 lei, e
+integrados a 18/49 lei), nenhum a bater certo com os 20/40 lei
+guardados; a cidade toda fica por rever até se esclarecer a que título
+corresponde a entrada antiga. Também novo: **Nápoles**, cuja tabela em
+imagem não se voltou a conseguir ler, com um indício de uma contradição
+nova (120 minutos de validade, não 90, para os títulos integrados).
+
+**Cerca de 163 cidades ficam por rever** para as próximas semanas.
